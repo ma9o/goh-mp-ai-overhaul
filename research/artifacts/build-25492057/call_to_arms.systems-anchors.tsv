@@ -1,0 +1,19 @@
+# RVA	Producer and callback references to review
+0xa19450	code:brain_callback_schedule
+0x8753c0	code:subject_category_insertion
+0x159ba10	data:actor_relationship_matrix	write
+0x14776c8	data:clock_duration_multiplier	write
+0x14776c0	data:world_unit_scale	write
+0x1547d9c	data:inverse_clock_multiplier	write
+0x159a068	data:scene_global	write
+0x159a058	data:current_quant_owner
+0x10e4880	vtable:Actor::eSensor
+0x10e5030	vtable:Actor::eVision
+0x10df2e8	vtable:Actor::eWeaponry
+0x10deae8	vtable:Actor::eFsm
+0x10e56a8	vtable:Actor::eCover
+0x10de138	vtable:eActor
+0x14821e0	data:cover_kind_field_8
+0x1482218	data:cover_kind_field_c
+0x10d7ff8	string:Invalid_cover_type
+0x10fc658	vtable:eSceneQuantTask

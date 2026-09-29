@@ -25,6 +25,8 @@ def main():
     exporter.add_argument("--program", required=True, help="Imported executable filename")
     exporter.add_argument("--candidates", type=Path, help="Optional additional/alternative candidate TSV")
     exporter.add_argument("--anchors", type=Path, help="Optional extra RVA/label anchors to follow (TSV)")
+    exporter.add_argument("--focused", action="store_true",
+                          help="Use only requested candidates/anchors, omitting survey anchors")
     exporter.add_argument("--output", type=Path, help="Local output directory (contains decompiled code)")
     members = sub.add_parser("members", help="Find literal member-displacement leads in analyzed instructions")
     members.add_argument("--program", required=True, help="Imported executable filename")
@@ -71,6 +73,8 @@ def main():
                 if not args.anchors.is_file():
                     parser.error("Anchor TSV does not exist")
                 command.append(str(args.anchors.resolve()))
+            if args.focused:
+                command.append("--focused")
         else:
             try:
                 offsets = [hex(int(value, 0)) for value in args.offset]

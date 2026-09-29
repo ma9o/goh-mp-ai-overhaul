@@ -22,6 +22,11 @@ weapon behavior. The upstream loader and SDK are retained as reference material.
 - [Combat estimates and cover selection](research/notes/tactics-map-25492057.md):
   Human/Tank coefficients, relationship flags, cover weights and rejection rules,
   and the randomized choice among ranked candidates.
+- [Scheduling, sensors and cover sources](research/notes/systems-map-25492057.md):
+  entity-owned work queues, scheduler intervals, observation structure and
+  geometric/terrain candidate generation.
+- [Active static frontier](research/notes/static-frontier-25492057.md): remaining
+  AI/entity questions and the criteria for exhausting productive static work.
 - [Build artifacts](research/artifacts/build-25492057): fingerprints, RTTI,
   vtables, string anchors, and candidate methods.
 - [Original upstream README](README.upstream.md): historical build and loader
@@ -73,6 +78,16 @@ An optional `--anchors path.tsv` follows references to additional data/string
 RVAs. The `members` command searches literal memory displacements across all
 analyzed instructions; matches need manual pointer/type review. See the
 [input-to-order workflow](research/notes/flow-map-25492057.md#reproduce-and-verify).
+Use `--focused` to omit the original survey anchors. A third anchor TSV column
+`write` selects direct write references only. Imported calls are represented
+as external targets with names, not image RVAs.
+
+`catalog_ai_types.py --binary "$GOH_BINARIES/call_to_arms.exe" --build-id 25492057
+--output research/artifacts/build-25492057/call_to_arms.ai-types.json` inventories
+selected native AI/entity RTTI roots, base layouts and vtable slots. Repeat for
+the editor. The present catalogs contain 392 game and 391 editor roots. These
+are structural worklists; neither the filter nor vtable scanning establishes
+complete AI coverage or callable interfaces.
 
 The checked-in `call_to_arms.followup.tsv` and `call_to_arms_ed.followup.tsv`
 add the flag-clearing wrapper and actor dispatch path identified during the

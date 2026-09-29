@@ -1,0 +1,1137 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "export_suffix": "-systems",
+  "runtime_verified": false,
+  "status": "partial_static_behavior_review",
+  "warning": "RVA addresses. Reviewed roles are analyst descriptions. No complete calling/lifetime/thread-safety contract. Inventory and direct-reference scans are not completeness claims.",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267"
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976"
+    }
+  },
+  "methods": [
+    {
+      "id": "phase1_callable_submission",
+      "entry_rvas": {
+        "game": "0xa19450"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "owner_group_enqueue",
+      "entry_rvas": {
+        "game": "0xa1d480"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "scene_quant_ordering",
+      "entry_rvas": {
+        "game": "0xa1b320"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "entity_quant_selector",
+      "entry_rvas": {
+        "game": "0xa1d680"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "worker_job_factory",
+      "entry_rvas": {
+        "game": "0xa20d80"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "worker_owner_group_execution",
+      "entry_rvas": {
+        "game": "0xa21070"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "worker_queue_submit",
+      "entry_rvas": {
+        "game": "0xa3e50"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "worker_queue_drain",
+      "entry_rvas": {
+        "game": "0xa3ee0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "actor_prepare",
+      "entry_rvas": {
+        "game": "0x7efbf0",
+        "editor": "0x671cd0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_prepare",
+      "entry_rvas": {
+        "game": "0x873910",
+        "editor": "0x6f71b0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_constructor",
+      "entry_rvas": {
+        "game": "0x8733f0",
+        "editor": "0x6f6b80"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_subject_insert",
+      "entry_rvas": {
+        "game": "0x8753c0",
+        "editor": "0x6f8d90"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_periodic_gate",
+      "entry_rvas": {
+        "game": "0x875be0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_look_around",
+      "entry_rvas": {
+        "game": "0x8798d0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_spatial_scan",
+      "entry_rvas": {
+        "game": "0x87abe0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_cached_bounds",
+      "entry_rvas": {
+        "game": "0x87a590"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "scheduled_task_constructor",
+      "entry_rvas": {
+        "game": "0x1cedc0",
+        "editor": "0x14b4e0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "scheduled_task_due",
+      "entry_rvas": {
+        "game": "0x1cef40",
+        "editor": "0x14b5c0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "scheduled_task_reset",
+      "entry_rvas": {
+        "game": "0x1cef70",
+        "editor": "0x14b5f0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "scheduled_interval_allocation",
+      "entry_rvas": {
+        "game": "0x1cf600"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "counter_read",
+      "entry_rvas": {
+        "game": "0x65e700"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "counter_to_duration",
+      "entry_rvas": {
+        "game": "0x65e710"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "duration_to_counter",
+      "entry_rvas": {
+        "game": "0x65e730"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_common_filter",
+      "entry_rvas": {
+        "game": "0x8a0b20"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_occupancy",
+      "entry_rvas": {
+        "game": "0x8a5400"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_nearby_object_clearance",
+      "entry_rvas": {
+        "game": "0x8a0d00"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_duplicate",
+      "entry_rvas": {
+        "game": "0x8a0e60"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_raster_source",
+      "entry_rvas": {
+        "game": "0x8a84a0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_terrain_source",
+      "entry_rvas": {
+        "game": "0x8a89a0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_object_geometry_source",
+      "entry_rvas": {
+        "game": "0x8a27b0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_candidate_from_kind",
+      "entry_rvas": {
+        "game": "0x8a5880"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_kind_field4",
+      "entry_rvas": {
+        "game": "0x8a98b0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_kind_field8",
+      "entry_rvas": {
+        "game": "0x8a9870"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_kind_field_c",
+      "entry_rvas": {
+        "game": "0x8a9890"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_navigation_gate",
+      "entry_rvas": {
+        "game": "0x8ac2b0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "terrain_environment_fields",
+      "entry_rvas": {
+        "game": "0xa43ab0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_measurement_wrapper",
+      "entry_rvas": {
+        "game": "0x87c780"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_height_above_ground",
+      "entry_rvas": {
+        "game": "0x87d6c0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_ray_query",
+      "entry_rvas": {
+        "game": "0x87db80"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "relationship_matrix_initialization",
+      "entry_rvas": {
+        "game": "0xa46b50"
+      },
+      "status": "static_behavior_reviewed"
+    }
+  ],
+  "fields": [
+    {
+      "id": "actor_sensor",
+      "owner": "eActor",
+      "offset": "0xdd0",
+      "width": 8,
+      "representation": "pointer",
+      "role": "Actor::eSensor component dispatch",
+      "evidence_ids": [
+        "actor_preparation",
+        "sensor_preparation"
+      ]
+    },
+    {
+      "id": "sensor_task_weapon",
+      "owner": "Actor::eSensor",
+      "offset": "0x20",
+      "width": 144,
+      "representation": "eQuantScheduledTask",
+      "role": "taskWeaponUpdate",
+      "evidence_ids": [
+        "sensor_task_construction",
+        "sensor_preparation"
+      ]
+    },
+    {
+      "id": "sensor_task_inform",
+      "owner": "Actor::eSensor",
+      "offset": "0xb0",
+      "width": 144,
+      "representation": "eQuantScheduledTask",
+      "role": "taskInform",
+      "evidence_ids": [
+        "sensor_task_construction"
+      ]
+    },
+    {
+      "id": "sensor_task_look",
+      "owner": "Actor::eSensor",
+      "offset": "0x140",
+      "width": 144,
+      "representation": "eQuantScheduledTask",
+      "role": "taskLookAround",
+      "evidence_ids": [
+        "sensor_task_construction",
+        "sensor_preparation"
+      ]
+    },
+    {
+      "id": "sensor_task_brain",
+      "owner": "Actor::eSensor",
+      "offset": "0x1d0",
+      "width": 144,
+      "representation": "eQuantScheduledTask",
+      "role": "taskBrain",
+      "evidence_ids": [
+        "sensor_task_construction"
+      ]
+    },
+    {
+      "id": "subject_entity",
+      "owner": "Actor::eSubject",
+      "offset": "0x20",
+      "width": 8,
+      "representation": "pointer",
+      "role": "Observed entity; actor view at +0x18 is conditional on entity type flag",
+      "evidence_ids": [
+        "subject_insert"
+      ]
+    },
+    {
+      "id": "subject_category",
+      "owner": "Actor::eSubject",
+      "offset": "0x10",
+      "width": 4,
+      "representation": "uint32 bits21..22",
+      "role": "Four-vector category index",
+      "evidence_ids": [
+        "subject_insert"
+      ]
+    },
+    {
+      "id": "subject_time",
+      "owner": "Actor::eSubject",
+      "offset": "0x64",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Quant counter on insertion",
+      "evidence_ids": [
+        "subject_insert",
+        "quant_counter"
+      ]
+    },
+    {
+      "id": "sensor_subject_vectors",
+      "owner": "Actor::eSensor",
+      "offset": "0x268",
+      "width": 96,
+      "representation": "four pointer vectors",
+      "role": "Category stride 0x18; four begin/end/capacity triples",
+      "evidence_ids": [
+        "subject_insert"
+      ]
+    },
+    {
+      "id": "sensor_range",
+      "owner": "Actor::eSensor",
+      "offset": "0x2f8",
+      "width": 4,
+      "representation": "float32",
+      "role": "Maximum visor range plus five spatial units",
+      "evidence_ids": [
+        "sensor_preparation",
+        "editor_sensor_prepare"
+      ]
+    },
+    {
+      "id": "task_requested_delays",
+      "owner": "eQuantScheduledTask",
+      "offset": "0x7c",
+      "width": 8,
+      "representation": "float32[2]",
+      "role": "Requested bounds; actual bucket can differ",
+      "evidence_ids": [
+        "task_reset",
+        "task_bucket_choice"
+      ]
+    },
+    {
+      "id": "task_deadline",
+      "owner": "eQuantScheduledTask",
+      "offset": "0x84",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Absolute quant deadline",
+      "evidence_ids": [
+        "task_reset",
+        "editor_task_reset"
+      ]
+    },
+    {
+      "id": "task_period",
+      "owner": "eQuantScheduledTask",
+      "offset": "0x88",
+      "width": 4,
+      "representation": "float32",
+      "role": "Allocated scheduler period",
+      "evidence_ids": [
+        "task_bucket_choice",
+        "task_reset"
+      ]
+    },
+    {
+      "id": "work_owner",
+      "owner": "scene work record",
+      "offset": "0x0",
+      "width": 8,
+      "representation": "entity pointer",
+      "role": "Owner for grouping and execution context",
+      "evidence_ids": [
+        "submit_owner_phase",
+        "queue_contract"
+      ]
+    },
+    {
+      "id": "work_callable",
+      "owner": "scene work record",
+      "offset": "0x40",
+      "width": 8,
+      "representation": "callable pointer",
+      "role": "Virtual slot 2 invocation",
+      "evidence_ids": [
+        "queue_contract",
+        "worker_groups"
+      ]
+    },
+    {
+      "id": "work_completion",
+      "owner": "scene work record",
+      "offset": "0x48",
+      "width": 8,
+      "representation": "byte pointer or null",
+      "role": "Optional completion signal after callback",
+      "evidence_ids": [
+        "queue_contract",
+        "worker_groups"
+      ]
+    },
+    {
+      "id": "cover_occupancy_id",
+      "owner": "eActor",
+      "offset": "0xdaa",
+      "width": 2,
+      "representation": "uint16",
+      "role": "Matched against one nearby occupancy record for own-ID exception",
+      "evidence_ids": [
+        "cover_occupancy_ids"
+      ]
+    },
+    {
+      "id": "cover_filters_enabled",
+      "owner": "cover search",
+      "offset": "0x11e",
+      "width": 1,
+      "representation": "bool-like",
+      "role": "False bypasses common acceptance gates",
+      "evidence_ids": [
+        "cover_common_gates"
+      ]
+    },
+    {
+      "id": "cover_own_occupancy_exception",
+      "owner": "cover search",
+      "offset": "0x11f",
+      "width": 1,
+      "representation": "bool-like",
+      "role": "Pass owner into occupancy query",
+      "evidence_ids": [
+        "cover_common_gates"
+      ]
+    },
+    {
+      "id": "cover_kind_descriptors",
+      "owner": "cover candidate",
+      "offset": "0x0",
+      "width": 16,
+      "representation": "uint32[4]",
+      "role": "kind followed by three derived kind descriptors",
+      "evidence_ids": [
+        "cover_kind_fields"
+      ]
+    }
+  ],
+  "inline_regions": [
+    {
+      "id": "scene_phase_sequence",
+      "function_rva": "0xa1b320",
+      "role": "slots22; phase1 slot21; phase2 work; phase0 residual work; slots23/24",
+      "evidence_ids": [
+        "scene_ordering",
+        "worker_groups",
+        "actor_preparation"
+      ]
+    },
+    {
+      "id": "editor_worker_mutation_diagnostic",
+      "function_rva": "0x6f8d90",
+      "role": "Subject insertion asserts !Core::IsQuantWorkerThread()",
+      "evidence_ids": [
+        "editor_subject_thread_assert",
+        "subject_insert"
+      ]
+    }
+  ],
+  "enums": [],
+  "float_constants": [
+    {
+      "id": "five_spatial_units",
+      "binary": "game",
+      "rva": "0x10124b4",
+      "value": 5.0
+    },
+    {
+      "id": "height_query_failure",
+      "binary": "game",
+      "rva": "0x10004dc",
+      "value": 9.999999680285692e+37
+    },
+    {
+      "id": "navigation_rejection",
+      "binary": "game",
+      "rva": "0x105ffc4",
+      "value": 100000.0
+    }
+  ],
+  "evidence": [
+    {
+      "id": "submit_owner_phase",
+      "binary": "game",
+      "function_rva": "0xa19450",
+      "instruction_rvas": [
+        "0xa1945d",
+        "0xa19508",
+        "0xa1950f",
+        "0xa19525"
+      ]
+    },
+    {
+      "id": "queue_contract",
+      "binary": "game",
+      "function_rva": "0xa1d480",
+      "instruction_rvas": [
+        "0xa1d498",
+        "0xa1d4ab",
+        "0xa1d4b1",
+        "0xa1d4d5",
+        "0xa1d4fe",
+        "0xa1d522",
+        "0xa1d539",
+        "0xa1d590",
+        "0xa1d5a4",
+        "0xa1d5a8",
+        "0xa1d5da",
+        "0xa1d5e1",
+        "0xa1d5e5",
+        "0xa1d5ee",
+        "0xa1d5f1",
+        "0xa1d5f5",
+        "0xa1d605",
+        "0xa1d60f",
+        "0xa1d613",
+        "0xa1d62b"
+      ]
+    },
+    {
+      "id": "scene_ordering",
+      "binary": "game",
+      "function_rva": "0xa1b320",
+      "instruction_rvas": [
+        "0xa1b7c4",
+        "0xa1b7d1",
+        "0xa1bb13",
+        "0xa1bbc4",
+        "0xa1bbd1",
+        "0xa1bc47",
+        "0xa1bc4d",
+        "0xa1bc91",
+        "0xa1c0a5",
+        "0xa1c0fe",
+        "0xa1c153",
+        "0xa1c1e7",
+        "0xa1c207",
+        "0xa1c2b1",
+        "0xa1c337",
+        "0xa1c357",
+        "0xa1c534",
+        "0xa1c541",
+        "0xa1c550"
+      ]
+    },
+    {
+      "id": "worker_groups",
+      "binary": "game",
+      "function_rva": "0xa21070",
+      "instruction_rvas": [
+        "0xa2109a",
+        "0xa210a1",
+        "0xa211f3",
+        "0xa211fa",
+        "0xa21226",
+        "0xa21230",
+        "0xa21254",
+        "0xa21260",
+        "0xa21270",
+        "0xa21280"
+      ]
+    },
+    {
+      "id": "worker_wait",
+      "binary": "game",
+      "function_rva": "0xa3ee0",
+      "instruction_rvas": [
+        "0xa3f14",
+        "0xa40c7",
+        "0xa40d2"
+      ]
+    },
+    {
+      "id": "actor_preparation",
+      "binary": "game",
+      "function_rva": "0x7efbf0",
+      "instruction_rvas": [
+        "0x7efcb7",
+        "0x7efcbc",
+        "0x7efce0",
+        "0x7efce3",
+        "0x7efcf7"
+      ]
+    },
+    {
+      "id": "sensor_task_construction",
+      "binary": "game",
+      "function_rva": "0x8733f0",
+      "instruction_rvas": [
+        "0x87344f",
+        "0x873468",
+        "0x87346f",
+        "0x873474",
+        "0x873481",
+        "0x873488",
+        "0x87348d",
+        "0x87349a",
+        "0x8734a1",
+        "0x8734a6",
+        "0x8734b3",
+        "0x8734ba"
+      ]
+    },
+    {
+      "id": "sensor_preparation",
+      "binary": "game",
+      "function_rva": "0x873910",
+      "instruction_rvas": [
+        "0x873916",
+        "0x873923",
+        "0x873961",
+        "0x873969",
+        "0x873970",
+        "0x8739b9",
+        "0x8739f3",
+        "0x873a37",
+        "0x873a43",
+        "0x873a6c",
+        "0x873a71",
+        "0x873a7f",
+        "0x873a8e",
+        "0x873a97",
+        "0x873ad3",
+        "0x873ae3"
+      ]
+    },
+    {
+      "id": "subject_insert",
+      "binary": "game",
+      "function_rva": "0x8753c0",
+      "instruction_rvas": [
+        "0x8753e0",
+        "0x875401",
+        "0x875407",
+        "0x87540d",
+        "0x875425",
+        "0x875429",
+        "0x87542e",
+        "0x875434",
+        "0x875454",
+        "0x875467",
+        "0x875476",
+        "0x8754a8",
+        "0x8754c0"
+      ]
+    },
+    {
+      "id": "task_reset",
+      "binary": "game",
+      "function_rva": "0x1cef70",
+      "instruction_rvas": [
+        "0x1cef87",
+        "0x1cefae",
+        "0x1cefe1",
+        "0x1cefed",
+        "0x1cf027",
+        "0x1cf02f",
+        "0x1cf04e",
+        "0x1cf05d",
+        "0x1cf075",
+        "0x1cf07c",
+        "0x1cf083"
+      ]
+    },
+    {
+      "id": "task_bucket_choice",
+      "binary": "game",
+      "function_rva": "0x1cf600",
+      "instruction_rvas": [
+        "0x1cf635",
+        "0x1cf69e",
+        "0x1cf6aa",
+        "0x1cf79c",
+        "0x1cf7b0",
+        "0x1cf7d9",
+        "0x1cf7e1",
+        "0x1cf7e8",
+        "0x1cf86c",
+        "0x1cf880",
+        "0x1cf8af",
+        "0x1cf8de",
+        "0x1cf8e6",
+        "0x1cf8fd"
+      ]
+    },
+    {
+      "id": "quant_counter",
+      "binary": "game",
+      "function_rva": "0x65e700",
+      "instruction_rvas": [
+        "0x65e700"
+      ]
+    },
+    {
+      "id": "cover_common_gates",
+      "binary": "game",
+      "function_rva": "0x8a0b20",
+      "instruction_rvas": [
+        "0x8a0b32",
+        "0x8a0b48",
+        "0x8a0b62",
+        "0x8a0b77",
+        "0x8a0b8f",
+        "0x8a0b9f",
+        "0x8a0ba8",
+        "0x8a0bac",
+        "0x8a0bb5",
+        "0x8a0bca",
+        "0x8a0bd4",
+        "0x8a0c19",
+        "0x8a0c21",
+        "0x8a0c73",
+        "0x8a0c7a",
+        "0x8a0c8b"
+      ]
+    },
+    {
+      "id": "cover_occupancy_ids",
+      "binary": "game",
+      "function_rva": "0x8a5400",
+      "instruction_rvas": [
+        "0x8a5420",
+        "0x8a5439",
+        "0x8a5459",
+        "0x8a545d",
+        "0x8a5463"
+      ]
+    },
+    {
+      "id": "cover_raster_source",
+      "binary": "game",
+      "function_rva": "0x8a84a0",
+      "instruction_rvas": [
+        "0x8a8761",
+        "0x8a87a7",
+        "0x8a8819",
+        "0x8a8831",
+        "0x8a8850",
+        "0x8a8858",
+        "0x8a8860",
+        "0x8a8873"
+      ]
+    },
+    {
+      "id": "cover_terrain_source",
+      "binary": "game",
+      "function_rva": "0x8a89a0",
+      "instruction_rvas": [
+        "0x8a8d04",
+        "0x8a8d19",
+        "0x8a8d2e",
+        "0x8a8d3b",
+        "0x8a8d4e"
+      ]
+    },
+    {
+      "id": "cover_geometry_source",
+      "binary": "game",
+      "function_rva": "0x8a27b0",
+      "instruction_rvas": [
+        "0x8a280d",
+        "0x8a28c1",
+        "0x8a28d8",
+        "0x8a291a",
+        "0x8a292d",
+        "0x8a2940",
+        "0x8a2953",
+        "0x8a298c",
+        "0x8a29df",
+        "0x8a29f4"
+      ]
+    },
+    {
+      "id": "cover_kind_fields",
+      "binary": "game",
+      "function_rva": "0x8a5880",
+      "instruction_rvas": [
+        "0x8a592b",
+        "0x8a5935",
+        "0x8a593c",
+        "0x8a593f",
+        "0x8a5946",
+        "0x8a5949",
+        "0x8a5953"
+      ]
+    },
+    {
+      "id": "detector_height_return",
+      "binary": "game",
+      "function_rva": "0x87d6c0",
+      "instruction_rvas": [
+        "0x87d6fb",
+        "0x87d73a",
+        "0x87d79f",
+        "0x87d7b2",
+        "0x87d7b6",
+        "0x87d7bf"
+      ]
+    },
+    {
+      "id": "editor_sensor_prepare",
+      "binary": "editor",
+      "function_rva": "0x6f71b0",
+      "instruction_rvas": [
+        "0x6f7201",
+        "0x6f7259",
+        "0x6f7262",
+        "0x6f728b",
+        "0x6f7293",
+        "0x6f72e3",
+        "0x6f730c",
+        "0x6f731f",
+        "0x6f732e",
+        "0x6f7373",
+        "0x6f7383"
+      ]
+    },
+    {
+      "id": "editor_subject_thread_assert",
+      "binary": "editor",
+      "function_rva": "0x6f8d90",
+      "instruction_rvas": [
+        "0x6f8d95",
+        "0x6f8dab",
+        "0x6f8dc7",
+        "0x6f8df2",
+        "0x6f8df8",
+        "0x6f8e01",
+        "0x6f8e16",
+        "0x6f8e1f"
+      ]
+    },
+    {
+      "id": "editor_task_reset",
+      "binary": "editor",
+      "function_rva": "0x14b5f0",
+      "instruction_rvas": [
+        "0x14b62e",
+        "0x14b6ce",
+        "0x14b714",
+        "0x14b721",
+        "0x14b728",
+        "0x14b72f"
+      ]
+    }
+  ],
+  "byte_sequences": [
+    {
+      "id": "clock_duration_default",
+      "binary": "game",
+      "rva": "0x14776c8",
+      "hex": "00007a44",
+      "role": "Initialized duration factor 1000; writable storage"
+    },
+    {
+      "id": "spatial_scale_default",
+      "binary": "game",
+      "rva": "0x14776c0",
+      "hex": "0000a041",
+      "role": "Initialized spatial factor 20; writable storage"
+    },
+    {
+      "id": "kind_field8_table",
+      "binary": "game",
+      "rva": "0x14821e0",
+      "hex": "00000000030000000300000003000000020000000100000003000000020000000100000003000000020000000100000001000000",
+      "role": "Initialized field +8 values for kinds 0..12"
+    },
+    {
+      "id": "kind_field_c_table",
+      "binary": "game",
+      "rva": "0x1482218",
+      "hex": "00000000030000000300000003000000030000000200000000000000000000000100000003000000020000000100000001000000",
+      "role": "Initialized field +0xc values for kinds 0..12"
+    },
+    {
+      "id": "counter_read_leaf",
+      "binary": "game",
+      "rva": "0x65e700",
+      "hex": "8b054287ef00c3",
+      "role": "Reads quant counter global; no executable loading"
+    }
+  ],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeSensor@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x10e4880",
+      "methods": {
+        "12": "0x873910",
+        "19": "0x8753c0"
+      }
+    },
+    {
+      "binary": "editor",
+      "mangled_name": ".?AVeSensor@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0xf48d50",
+      "methods": {
+        "12": "0x6f71b0",
+        "19": "0x6f8d90"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeQuantScheduledTask@@",
+      "subobject_offset": 0,
+      "rva": "0x1022ec0",
+      "methods": {
+        "2": "0x1cef40",
+        "3": "0x1cef70"
+      }
+    },
+    {
+      "binary": "editor",
+      "mangled_name": ".?AVeQuantScheduledTask@@",
+      "subobject_offset": 0,
+      "rva": "0xe99530",
+      "methods": {
+        "2": "0x14b5c0",
+        "3": "0x14b5f0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeSceneQuantTask@@",
+      "subobject_offset": 0,
+      "rva": "0x10fc658",
+      "methods": {
+        "1": "0xa21070"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeActor@@",
+      "subobject_offset": 0,
+      "rva": "0x10de138",
+      "methods": {
+        "21": "0x7efbf0",
+        "22": "0x71c640",
+        "23": "0x7efd10",
+        "24": "0x7effa0"
+      }
+    }
+  ],
+  "kind_descriptors": {
+    "columns": [
+      "kind",
+      "field4",
+      "field8",
+      "field_c"
+    ],
+    "rows": [
+      [
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        3,
+        3
+      ],
+      [
+        2,
+        1,
+        3,
+        3
+      ],
+      [
+        3,
+        1,
+        3,
+        3
+      ],
+      [
+        4,
+        2,
+        2,
+        3
+      ],
+      [
+        5,
+        2,
+        1,
+        2
+      ],
+      [
+        6,
+        2,
+        3,
+        0
+      ],
+      [
+        7,
+        2,
+        2,
+        0
+      ],
+      [
+        8,
+        2,
+        1,
+        1
+      ],
+      [
+        9,
+        3,
+        3,
+        3
+      ],
+      [
+        10,
+        3,
+        2,
+        2
+      ],
+      [
+        11,
+        3,
+        1,
+        1
+      ],
+      [
+        12,
+        4,
+        1,
+        1
+      ]
+    ],
+    "names": "Not yet established for descriptor columns; numerical relationship only."
+  }
+}

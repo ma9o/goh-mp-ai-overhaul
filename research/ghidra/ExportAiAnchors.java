@@ -1,5 +1,6 @@
 // Export focused static evidence without renaming functions or changing types.
-// Args: PE survey JSON, candidate TSV, output directory, optional extra anchor TSV.
+// Args: PE survey JSON, candidate TSV, output directory, optional anchor TSV and --focused.
+// An anchor TSV may have a third column "write" to follow only write references.
 // Decompiled text and instruction listings belong in ignored local-work/ only.
 //@category GoH.Research
 
@@ -38,7 +39,9 @@ public class ExportAiAnchors extends GhidraScript {
 
     private JsonObject reference(Reference ref) {
         JsonObject item = new JsonObject();
-        item.addProperty("from_rva", rva(ref.getFromAddress()));
+        if (ref.getFromAddress().getAddressSpace().equals(base.getAddressSpace()))
+            item.addProperty("from_rva", rva(ref.getFromAddress()));
+        else item.addProperty("from_address", ref.getFromAddress().toString());
         item.addProperty("kind", ref.getReferenceType().toString());
         Function owner = getFunctionContaining(ref.getFromAddress());
         if (owner != null) item.addProperty("owner_function_rva", rva(owner.getEntryPoint()));
@@ -46,14 +49,23 @@ public class ExportAiAnchors extends GhidraScript {
     }
 
     private JsonObject anchor(String label, Address target) {
+        return anchor(label, target, "all");
+    }
+
+    private JsonObject anchor(String label, Address target, String filter) {
+        if (!filter.equals("all") && !filter.equals("write"))
+            throw new IllegalArgumentException("Unknown reference filter: " + filter);
         JsonObject item = new JsonObject();
         item.addProperty("label", label);
         item.addProperty("rva", rva(target));
+        item.addProperty("reference_filter", filter);
         JsonArray refs = new JsonArray();
         ReferenceIterator iterator = currentProgram.getReferenceManager().getReferencesTo(target);
         int count = 0;
-        while (iterator.hasNext() && count++ < 128) {
+        while (iterator.hasNext() && count < 128) {
             Reference ref = iterator.next();
+            if (filter.equals("write") && !ref.getReferenceType().isWrite()) continue;
+            count++;
             refs.add(reference(ref));
             select(getFunctionContaining(ref.getFromAddress()), label);
         }
@@ -65,8 +77,15 @@ public class ExportAiAnchors extends GhidraScript {
     @Override
     public void run() throws Exception {
         String[] args = getScriptArgs();
-        if (args.length < 3 || args.length > 4) throw new IllegalArgumentException(
-            "Expected: survey.json candidates.tsv output-directory [anchors.tsv]");
+        if (args.length < 3 || args.length > 5) throw new IllegalArgumentException(
+            "Expected: survey.json candidates.tsv output-directory [anchors.tsv] [--focused]");
+        String anchorsPath = null;
+        boolean focused = false;
+        for (int i = 3; i < args.length; i++) {
+            if (args[i].equals("--focused")) focused = true;
+            else if (anchorsPath == null) anchorsPath = args[i];
+            else throw new IllegalArgumentException("Multiple anchor paths");
+        }
         Path output = Paths.get(args[2]);
         Files.createDirectories(output);
         base = currentProgram.getImageBase();
@@ -80,6 +99,7 @@ public class ExportAiAnchors extends GhidraScript {
 
         JsonObject report = new JsonObject();
         report.addProperty("schema_version", 2);
+        report.addProperty("included_survey_anchors", !focused);
         report.add("binary", survey.get("binary"));
         report.addProperty("ghidra_function_count", currentProgram.getFunctionManager().getFunctionCount());
         report.addProperty("warning", "Function names and prototypes are Ghidra analysis output; " +
@@ -105,13 +125,14 @@ public class ExportAiAnchors extends GhidraScript {
         report.add("candidates", candidates);
 
         JsonArray anchors = new JsonArray();
-        if (args.length == 4) {
-            for (String line : Files.readAllLines(Paths.get(args[3]), StandardCharsets.UTF_8)) {
+        if (anchorsPath != null) {
+            for (String line : Files.readAllLines(Paths.get(anchorsPath), StandardCharsets.UTF_8)) {
                 if (line.isBlank() || line.startsWith("#")) continue;
-                String[] fields = line.split("\t", 2);
-                anchors.add(anchor(fields[1], address(fields[0])));
+                String[] fields = line.split("\t", 3);
+                anchors.add(anchor(fields[1], address(fields[0]), fields.length > 2 ? fields[2] : "all"));
             }
         }
+        if (!focused) {
         for (Map.Entry<String, JsonElement> entry : survey.getAsJsonObject("string_anchors").entrySet())
             for (JsonElement value : entry.getValue().getAsJsonArray())
                 anchors.add(anchor("string:" + entry.getKey(), address(value.getAsString())));
@@ -123,6 +144,7 @@ public class ExportAiAnchors extends GhidraScript {
                         anchors.add(anchor("vtable:" + entry.getKey() + ":sub" +
                             locator.getAsJsonObject().get("subobject_offset").getAsInt(),
                             address(table.getAsJsonObject().get("rva").getAsString())));
+        }
         }
         report.add("anchors", anchors);
 
@@ -194,8 +216,20 @@ public class ExportAiAnchors extends GhidraScript {
                         JsonObject call = new JsonObject();
                         call.addProperty("at_rva", rva(instruction.getAddress()));
                         JsonArray targets = new JsonArray();
-                        for (Address target : instruction.getFlows()) targets.add(rva(target));
+                        JsonArray externalTargets = new JsonArray();
+                        for (Address target : instruction.getFlows()) {
+                            if (target.getAddressSpace().equals(base.getAddressSpace()))
+                                targets.add(rva(target));
+                            else {
+                                JsonObject external = new JsonObject();
+                                external.addProperty("address", target.toString());
+                                Symbol symbol = currentProgram.getSymbolTable().getPrimarySymbol(target);
+                                if (symbol != null) external.addProperty("symbol", symbol.getName(true));
+                                externalTargets.add(external);
+                            }
+                        }
                         call.add("resolved_target_rvas", targets);
+                        if (!externalTargets.isEmpty()) call.add("nonlocal_targets", externalTargets);
                         call.addProperty("computed", instruction.getFlowType().isComputed());
                         calls.add(call);
                     }
