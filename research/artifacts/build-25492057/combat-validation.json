@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "b5bad22bba563e14c7d91893ce1f8d60426042f2949c3d4cb4d62809e8ef0a2c",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "b6b19b4e5c08dff31a872fa8e9030ee60e80d7cecf855df526045e999d33096d",
+      "exact_candidates": 108,
+      "exported_functions": 145,
+      "exported_basic_blocks": 3505,
+      "checked_enums": 0,
+      "checked_constants": 5,
+      "checked_method_entries": 114,
+      "checked_instruction_locations": 439,
+      "checked_pointer_tables": 2,
+      "checked_rtti_tables": 4,
+      "checked_byte_sequences": 97
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "7252cd79806a6c6205947fa44972fa765fbbd8b1cbcdc366d67a8839f4fb94b4",
+      "exact_candidates": 8,
+      "exported_functions": 8,
+      "exported_basic_blocks": 94,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 8,
+      "checked_instruction_locations": 10,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 1,
+      "checked_byte_sequences": 95
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/airborne_bullet.inc",
+      "size": 661,
+      "sha256": "cd1a6a462f39a7bd64fe95b0580cb65dbc93e4e51e745d32f964b1c53ace68f0"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/ammo.set",
+      "size": 33555,
+      "sha256": "56d6b3196980145a49ba1d3d5affc4e30abba95b54a120a1a50fe4edd67e281b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_aa.inc",
+      "size": 1058,
+      "sha256": "9a6df6917ca7398c046479ed0640b86aba3d43deaa459c86a98e1ef6ff426ce6"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_big.inc",
+      "size": 1060,
+      "sha256": "d58a90d2505ce83d5a7a1401a000189a956b3e96cf7ba13e879344ef70188af4"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_bullet.inc",
+      "size": 793,
+      "sha256": "201982011f718e4481aabf112f7c842047ba3f07f11943a3bccb830a7ce4ec69"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_howitzer.inc",
+      "size": 799,
+      "sha256": "7290584c5aa63971693359a3c427fce84e9cfe1dc1fcb93c773154e3285e745c"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_small.inc",
+      "size": 795,
+      "sha256": "c57998a18336a34f26ccd9345f3e9f69482dc4a2274de9efd2c88c80327eef08"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_zenite.inc",
+      "size": 982,
+      "sha256": "c6567db137eba16fedffb057a98fae33546fabc3ba93e1bd889a5f418da1e486"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/car_bullet.inc",
+      "size": 785,
+      "sha256": "629adb4615a29b9102789f2301121d77740d6adb1ef754c200548d8cc12d8147"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human.inc",
+      "size": 546,
+      "sha256": "a104197eecf7dc760aebe256d74fc8e37eba159ee58d5958267589bf1701fe7b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_ap.inc",
+      "size": 1102,
+      "sha256": "b222d1853c0ad5b301b9f736bbc3d719f8681bcdffe0892942e36e5be97f7c83"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_bullet.inc",
+      "size": 815,
+      "sha256": "59924edcfbba2435a611d3c8596e4868e39b4a4fdd56a80ff70f0e31e34a19fc"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_fg.inc",
+      "size": 423,
+      "sha256": "1e84e13799c23a92b15b1a74ba87adc900bd2d7e6d207b11a579f5c4ef3d4350"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/rocket.inc",
+      "size": 604,
+      "sha256": "c043d1f0450761021e11887c1a5957afaccfb196cef8fb4af8e7ba5256525ea9"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/searchlight.inc",
+      "size": 487,
+      "sha256": "a10e67a376e5090e62fe795cf019603ee5fa1a665dc424c943011832a9457d2a"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/select.set",
+      "size": 642,
+      "sha256": "c36e2e0d957c036bc9dfec1d52c74cf6fa5ce0ac1737c994cbb5e649e49519c9"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/supergun.inc",
+      "size": 973,
+      "sha256": "64925ad613f8553cd04c9f1d1828e345e29a6c74d77bba39bf64f8acc8427193"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_bullet.inc",
+      "size": 692,
+      "sha256": "2c16abb4233f24c5ce750f5acfaeb7a7b1db2ed7ad308e2126edfc73d1e4d46a"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_heavy.inc",
+      "size": 1065,
+      "sha256": "64525645eb08f5916a338daa1c023a2e093c14d96c0a75c3c488f65de87b636b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_light.inc",
+      "size": 1068,
+      "sha256": "f878d682de663c5a468eb45757f06917771867ac3285ccd0505aabe19c05431e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_medium.inc",
+      "size": 1283,
+      "sha256": "d77c7e474694c3604af2ce33e79af81dfb49a7f05e3248d7b09d859c0969a037"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_spg.inc",
+      "size": 1029,
+      "sha256": "82b7b6dad0c33db1c48315937ca053e3ef3a91ccc0c0a9857f272d826d61a46b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_zenite.inc",
+      "size": 1023,
+      "sha256": "6adea8aa4609ada4245245b9e40409d79fd4baf3eac80577fe6403003c2b528e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/unmasking.set",
+      "size": 9133,
+      "sha256": "56b0b9a9680e47f6115fcdcef99b71ff3d368bd1e7ff0e01501297598a937718"
+    }
+  ],
+  "status": "passed"
+}

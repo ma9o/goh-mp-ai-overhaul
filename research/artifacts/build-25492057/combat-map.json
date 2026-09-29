@@ -1,0 +1,3775 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "export_suffix": "-combat",
+  "runtime_verified": false,
+  "status": "partial_static_behavior_review",
+  "warning": "RVAs; analyst roles unless named by parser/RTTI/diagnostic. Evidence-location checks do not prove semantics, callable ABI, lifetime, thread safety or completeness. See combat-map-25492057.md for qualifications.",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267"
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976"
+    }
+  },
+  "methods": [
+    {
+      "id": "target_suitability",
+      "entry_rvas": {
+        "game": "0x912ae0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_candidate_ranking",
+      "entry_rvas": {
+        "game": "0x9136e0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_weapon_check_init",
+      "entry_rvas": {
+        "game": "0x957b10"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_weapon_check_destroy",
+      "entry_rvas": {
+        "game": "0x957b70"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_weapon_check_setup",
+      "entry_rvas": {
+        "game": "0x957c00"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_weapon_check_evaluate",
+      "entry_rvas": {
+        "game": "0x957c70"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "human_target_picker",
+      "entry_rvas": {
+        "game": "0x9437a0",
+        "editor": "0x7cad70"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "human_target_changed",
+      "entry_rvas": {
+        "game": "0x944070",
+        "editor": "0x7cb5a0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "brain_enemy_visibility_notification",
+      "entry_rvas": {
+        "game": "0x9036a0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "actor_named_state_predicate",
+      "entry_rvas": {
+        "game": "0x896200"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "order_update",
+      "entry_rvas": {
+        "game": "0x901750"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "order_end",
+      "entry_rvas": {
+        "game": "0x9018d0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "attack_exec",
+      "entry_rvas": {
+        "game": "0x8edfd0"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "attack_slot20",
+      "entry_rvas": {
+        "game": "0x8edf80"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "attack_basic_exec",
+      "entry_rvas": {
+        "game": "0x8ef250"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "attack_basic_slot20",
+      "entry_rvas": {
+        "game": "0x8ef660"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_aim_target_exec",
+      "entry_rvas": {
+        "game": "0x8d7ac0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "accuracy_modifier_slot5",
+      "entry_rvas": {
+        "game": "0xa0f040"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "accuracy_modifier_slot6",
+      "entry_rvas": {
+        "game": "0xa0f170"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "sensor_observation_accumulator_increment",
+      "entry_rvas": {
+        "game": "0x891c00"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "sensor_auxiliary_manager",
+      "entry_rvas": {
+        "game": "0x88be20"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "vision_environment_query",
+      "entry_rvas": {
+        "game": "0x6f44b0"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "target_rank_pipeline",
+      "entry_rvas": {
+        "game": "0x918c70"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_rank_pipeline_for_actor",
+      "entry_rvas": {
+        "game": "0x919630"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_weapon_inventory_scan",
+      "entry_rvas": {
+        "game": "0x957f70"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_weapon_candidate_check",
+      "entry_rvas": {
+        "game": "0x958010"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "actor_equipment_view",
+      "entry_rvas": {
+        "game": "0x7ccd20"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "actor_equipment_access",
+      "entry_rvas": {
+        "game": "0x7ccdb0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "observation_registration_acquire",
+      "entry_rvas": {
+        "game": "0x88a740"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "observation_registration_release",
+      "entry_rvas": {
+        "game": "0x88a9d0"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "environment_point_strength",
+      "entry_rvas": {
+        "game": "0x57cc30"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "target_rank_stage_filter",
+      "entry_rvas": {
+        "game": "0x915a70"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_rank_stage_sort",
+      "entry_rvas": {
+        "game": "0x915d80"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_rank_registry",
+      "entry_rvas": {
+        "game": "0x913c00"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_rule_context",
+      "entry_rvas": {
+        "game": "0x9140a0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_rule_selection",
+      "entry_rvas": {
+        "game": "0x914180"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_point_reachability",
+      "entry_rvas": {
+        "game": "0x9134c0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_target_resolution",
+      "entry_rvas": {
+        "game": "0x912d60"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weaponry_primary_place",
+      "entry_rvas": {
+        "game": "0x806340"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weaponry_synthetic_place_for_item",
+      "entry_rvas": {
+        "game": "0x806850"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weaponry_selection_set",
+      "entry_rvas": {
+        "game": "0x8064d0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weaponry_mode_transition",
+      "entry_rvas": {
+        "game": "0x807a60"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_accuracy_set",
+      "entry_rvas": {
+        "game": "0x8188a0",
+        "editor": "0x69b800"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_accuracy_scale_set",
+      "entry_rvas": {
+        "game": "0x8188c0",
+        "editor": "0x69b820"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_accuracy_update",
+      "entry_rvas": {
+        "game": "0x8188e0",
+        "editor": "0x69b840"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_slot7",
+      "entry_rvas": {
+        "game": "0x819c20",
+        "editor": "0x69cb80"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_slot8",
+      "entry_rvas": {
+        "game": "0x819ac0",
+        "editor": "0x69ca20"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_slot3",
+      "entry_rvas": {
+        "game": "0x818770"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "bullet_shooter_slot1",
+      "entry_rvas": {
+        "game": "0x817f70"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "weaponry_property_parser",
+      "entry_rvas": {
+        "game": "0x807cf0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_place_set_target",
+      "entry_rvas": {
+        "game": "0x80a370"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_place_clear_target",
+      "entry_rvas": {
+        "game": "0x80a730"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "property_token_registration",
+      "entry_rvas": {
+        "game": "0x66a940",
+        "editor": "0x4dfe80"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_accuracy_refresh",
+      "entry_rvas": {
+        "game": "0x81b510"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_zeroing_factor",
+      "entry_rvas": {
+        "game": "0x818970"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_property_parser",
+      "entry_rvas": {
+        "game": "0x80f3c0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_state_property_parser",
+      "entry_rvas": {
+        "game": "0x828610"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_info_property_parser_candidate",
+      "entry_rvas": {
+        "game": "0x8299e0"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "target_rank_filter_predicate",
+      "entry_rvas": {
+        "game": "0x915850"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_rank_sort",
+      "entry_rvas": {
+        "game": "0x9182e0"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "sensor_accumulator_threshold_action",
+      "entry_rvas": {
+        "game": "0x878830"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "rocketlauncher_tag_initializer",
+      "entry_rvas": {
+        "game": "0x549c0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_tag_initializer",
+      "entry_rvas": {
+        "game": "0x54ea0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "missile_tag_initializer",
+      "entry_rvas": {
+        "game": "0x54750"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "visor_tag_initializer",
+      "entry_rvas": {
+        "game": "0x54e70"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "shooter_spread_profile_copy",
+      "entry_rvas": {
+        "game": "0x817090"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "shooter_spread_profile_scale",
+      "entry_rvas": {
+        "game": "0x817140"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "actor_accuracy_factor",
+      "entry_rvas": {
+        "game": "0x863f10"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "shooter_zeroing_validity",
+      "entry_rvas": {
+        "game": "0x81b950"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_rank_term_predicate",
+      "entry_rvas": {
+        "game": "0x91a0b0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_rank_insertion_sort",
+      "entry_rvas": {
+        "game": "0x916b90"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_selector_list_parser",
+      "entry_rvas": {
+        "game": "0x9194e0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "runtime_weapon_place_constructor",
+      "entry_rvas": {
+        "game": "0x809500"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_place_definition_constructor",
+      "entry_rvas": {
+        "game": "0x810480"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_true_predicate",
+      "entry_rvas": {
+        "game": "0x893240"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_item_predicate",
+      "entry_rvas": {
+        "game": "0x892fd0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_skin_predicate",
+      "entry_rvas": {
+        "game": "0x893190"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_speed_predicate",
+      "entry_rvas": {
+        "game": "0x8931e0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_examine_predicate",
+      "entry_rvas": {
+        "game": "0x892f70"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_pose_predicate",
+      "entry_rvas": {
+        "game": "0x893150"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_and_predicate",
+      "entry_rvas": {
+        "game": "0x892ee0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_or_predicate",
+      "entry_rvas": {
+        "game": "0x8930c0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_selector_parser",
+      "entry_rvas": {
+        "game": "0x918fe0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_rank_numeric_key",
+      "entry_rvas": {
+        "game": "0x91a4b0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_place_definition_parser",
+      "entry_rvas": {
+        "game": "0x811980"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_term_parser",
+      "entry_rvas": {
+        "game": "0x891560"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "subject_target_class",
+      "entry_rvas": {
+        "game": "0x913bc0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_place_serializer",
+      "entry_rvas": {
+        "game": "0x811e00"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "weapon_place_destructor",
+      "entry_rvas": {
+        "game": "0x812870"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_group_parser",
+      "entry_rvas": {
+        "game": "0x9186a0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "spread_scale_power_helper",
+      "entry_rvas": {
+        "game": "0xf50340"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "shooter_zeroing_update",
+      "entry_rvas": {
+        "game": "0x81af10"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_fire",
+      "entry_rvas": {
+        "game": "0x8184d0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_sample",
+      "entry_rvas": {
+        "game": "0x818a10"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "weapon_aimer_update",
+      "entry_rvas": {
+        "game": "0x81e160"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "runtime_motion_accuracy_dispatch",
+      "entry_rvas": {
+        "game": "0x80aa10"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_filter_parser",
+      "entry_rvas": {
+        "game": "0x915900"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_sort_parser",
+      "entry_rvas": {
+        "game": "0x915df0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "spread_curve_interpolate",
+      "entry_rvas": {
+        "game": "0x3fb290"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "motion_accuracy_update",
+      "entry_rvas": {
+        "game": "0x80ff40"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "bullet_shooter_create_projectile",
+      "entry_rvas": {
+        "game": "0x81a470"
+      },
+      "status": "partial_contract_review"
+    },
+    {
+      "id": "motion_sample_history_update",
+      "entry_rvas": {
+        "game": "0x1d7d30"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_term_parser",
+      "entry_rvas": {
+        "game": "0x919c50"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_numeric_key_parser",
+      "entry_rvas": {
+        "game": "0x91a380"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unknown_class_initializer",
+      "entry_rvas": {
+        "game": "0x66320"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_profile_loader",
+      "entry_rvas": {
+        "game": "0x891d90"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "reveal_profile_loader",
+      "entry_rvas": {
+        "game": "0x875ef0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "target_rule_loader",
+      "entry_rvas": {
+        "game": "0x913cb0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "ammo_rule_loader",
+      "entry_rvas": {
+        "game": "0x9144f0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "recon_manager_create",
+      "entry_rvas": {
+        "game": "0x88bcc0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmask_flag_initializer",
+      "entry_rvas": {
+        "game": "0x57da0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "unmasked_tag_initializer",
+      "entry_rvas": {
+        "game": "0x48fb0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "burning_flag_initializer",
+      "entry_rvas": {
+        "game": "0x705f0"
+      },
+      "status": "static_contract_reviewed"
+    },
+    {
+      "id": "motion_accuracy_parser",
+      "entry_rvas": {
+        "game": "0x80f8c0"
+      },
+      "status": "static_contract_reviewed"
+    }
+  ],
+  "fields": [
+    {
+      "id": "subject_unmask_progress",
+      "owner": "Actor::eSubject",
+      "offset": "0x38",
+      "width": 4,
+      "representation": "float32",
+      "role": "Disguise-detection progress; threshold100",
+      "evidence_ids": [
+        "unmask_sum",
+        "unmask_threshold"
+      ]
+    },
+    {
+      "id": "subject_target_suitability_block",
+      "owner": "Actor::eSubject",
+      "offset": "0x6c",
+      "width": 1,
+      "representation": "byte",
+      "role": "Must be clear in eligibility",
+      "evidence_ids": [
+        "eligibility"
+      ]
+    },
+    {
+      "id": "subject_target_suitability_deadline",
+      "owner": "Actor::eSubject",
+      "offset": "0x70",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Must be nonzero and due",
+      "evidence_ids": [
+        "eligibility"
+      ]
+    },
+    {
+      "id": "subject_target_rank",
+      "owner": "Actor::eSubject",
+      "offset": "0x11",
+      "width": 1,
+      "representation": "uint8",
+      "role": "Descending rank, overlaps flags word",
+      "evidence_ids": [
+        "candidate_ranking"
+      ]
+    },
+    {
+      "id": "subject_classification_flags",
+      "owner": "Actor::eSubject",
+      "offset": "0x14",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Recognized bit0; suitability bit1; unmask owner bit5; threating7; attacking8",
+      "evidence_ids": [
+        "eligibility",
+        "target_term_switch",
+        "unmask_threshold"
+      ]
+    },
+    {
+      "id": "runtime_owner",
+      "owner": "Actor::eWeapon",
+      "offset": "0x90",
+      "width": 8,
+      "representation": "pointer",
+      "role": "owner",
+      "evidence_ids": [
+        "runtime_place_ctor"
+      ]
+    },
+    {
+      "id": "runtime_weapon_definition",
+      "owner": "Actor::eWeapon",
+      "offset": "0x98",
+      "width": 8,
+      "representation": "pointer",
+      "role": "weapon_definition",
+      "evidence_ids": [
+        "runtime_place_ctor"
+      ]
+    },
+    {
+      "id": "runtime_aimer",
+      "owner": "Actor::eWeapon",
+      "offset": "0xa8",
+      "width": 8,
+      "representation": "pointer",
+      "role": "aimer",
+      "evidence_ids": [
+        "runtime_place_ctor"
+      ]
+    },
+    {
+      "id": "runtime_ammunition_charger",
+      "owner": "Actor::eWeapon",
+      "offset": "0xb0",
+      "width": 8,
+      "representation": "pointer",
+      "role": "ammunition_charger",
+      "evidence_ids": [
+        "runtime_place_ctor"
+      ]
+    },
+    {
+      "id": "runtime_shooter",
+      "owner": "Actor::eWeapon",
+      "offset": "0xb8",
+      "width": 8,
+      "representation": "pointer",
+      "role": "shooter",
+      "evidence_ids": [
+        "runtime_place_ctor"
+      ]
+    },
+    {
+      "id": "runtime_place_definition",
+      "owner": "Actor::eWeapon",
+      "offset": "0xc0",
+      "width": 8,
+      "representation": "pointer",
+      "role": "place_definition",
+      "evidence_ids": [
+        "runtime_place_ctor"
+      ]
+    },
+    {
+      "id": "runtime_mode",
+      "owner": "Actor::eWeapon",
+      "offset": "0x208",
+      "width": 4,
+      "representation": "int32",
+      "role": "Target mode; separately cleared by weaponry mode transition",
+      "evidence_ids": [
+        "runtime_place_ctor",
+        "target_install",
+        "target_clear"
+      ]
+    },
+    {
+      "id": "runtime_burst_mode",
+      "owner": "Actor::eWeapon",
+      "offset": "0x20c",
+      "width": 4,
+      "representation": "int32",
+      "role": "Target setup policy",
+      "evidence_ids": [
+        "runtime_place_ctor",
+        "target_install",
+        "target_clear"
+      ]
+    },
+    {
+      "id": "runtime_shot_limit",
+      "owner": "Actor::eWeapon",
+      "offset": "0x210",
+      "width": 4,
+      "representation": "int32",
+      "role": "Runtime clear when shot count reaches limit",
+      "evidence_ids": [
+        "runtime_place_ctor",
+        "target_install",
+        "target_clear"
+      ]
+    },
+    {
+      "id": "runtime_flags",
+      "owner": "Actor::eWeapon",
+      "offset": "0x264",
+      "width": 2,
+      "representation": "uint16 flags",
+      "role": "bit3 zero spread; bit4 state-accuracy scaling; bit6 zoom scaling",
+      "evidence_ids": [
+        "runtime_place_ctor",
+        "spread_radius"
+      ]
+    },
+    {
+      "id": "place_runtime_link",
+      "owner": "Actor::Weapon::ePlace",
+      "offset": "0x2b8",
+      "width": 8,
+      "representation": "pointer",
+      "role": "Concrete Actor::eWeapon link",
+      "evidence_ids": [
+        "place_definition_ctor",
+        "primary_place"
+      ]
+    },
+    {
+      "id": "place_motion_block",
+      "owner": "Actor::Weapon::ePlace",
+      "offset": "0xc90",
+      "width": 160,
+      "representation": "embedded motion accuracy state",
+      "role": "See motion state fields and notes; updated from aimer bone",
+      "evidence_ids": [
+        "place_definition_ctor",
+        "motion_dispatch"
+      ]
+    },
+    {
+      "id": "motion_max_linear_speed",
+      "owner": "motion accuracy block",
+      "offset": "0x0",
+      "width": 4,
+      "representation": "float32",
+      "role": "Configured scaled maximum",
+      "evidence_ids": [
+        "motion_factor"
+      ]
+    },
+    {
+      "id": "motion_linear_accuracy",
+      "owner": "motion accuracy block",
+      "offset": "0x4",
+      "width": 4,
+      "representation": "float32",
+      "role": "Factor at maximum linear speed",
+      "evidence_ids": [
+        "motion_factor"
+      ]
+    },
+    {
+      "id": "motion_max_angular_speed",
+      "owner": "motion accuracy block",
+      "offset": "0x8",
+      "width": 4,
+      "representation": "float32",
+      "role": "Configured scaled maximum",
+      "evidence_ids": [
+        "motion_factor"
+      ]
+    },
+    {
+      "id": "motion_angular_accuracy",
+      "owner": "motion accuracy block",
+      "offset": "0xc",
+      "width": 4,
+      "representation": "float32",
+      "role": "Factor at maximum angular speed",
+      "evidence_ids": [
+        "motion_factor"
+      ]
+    },
+    {
+      "id": "motion_disorder_time",
+      "owner": "motion accuracy block",
+      "offset": "0x10",
+      "width": 4,
+      "representation": "float32",
+      "role": "Downward rate duration in counter units",
+      "evidence_ids": [
+        "motion_factor"
+      ]
+    },
+    {
+      "id": "motion_order_time",
+      "owner": "motion accuracy block",
+      "offset": "0x14",
+      "width": 4,
+      "representation": "float32",
+      "role": "Upward rate duration in counter units",
+      "evidence_ids": [
+        "motion_factor"
+      ]
+    },
+    {
+      "id": "motion_linear_history",
+      "owner": "motion accuracy block",
+      "offset": "0x18",
+      "width": 48,
+      "representation": "sample history",
+      "role": "Trapezoidal average at history+18",
+      "evidence_ids": [
+        "motion_samples",
+        "motion_history"
+      ]
+    },
+    {
+      "id": "motion_angular_history",
+      "owner": "motion accuracy block",
+      "offset": "0x48",
+      "width": 48,
+      "representation": "sample history",
+      "role": "Trapezoidal average at history+18",
+      "evidence_ids": [
+        "motion_samples",
+        "motion_history"
+      ]
+    },
+    {
+      "id": "motion_last_angular_sample",
+      "owner": "motion accuracy block",
+      "offset": "0x78",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Counter",
+      "evidence_ids": [
+        "motion_samples"
+      ]
+    },
+    {
+      "id": "motion_factor",
+      "owner": "motion accuracy block",
+      "offset": "0x7c",
+      "width": 4,
+      "representation": "float32",
+      "role": "Smoothed factor read at place+D0C",
+      "evidence_ids": [
+        "motion_factor",
+        "spread_radius"
+      ]
+    },
+    {
+      "id": "motion_previous_position",
+      "owner": "motion accuracy block",
+      "offset": "0x80",
+      "width": 12,
+      "representation": "float32[3]",
+      "role": "Bone position",
+      "evidence_ids": [
+        "motion_samples"
+      ]
+    },
+    {
+      "id": "motion_previous_direction",
+      "owner": "motion accuracy block",
+      "offset": "0x8c",
+      "width": 12,
+      "representation": "float32[3]",
+      "role": "Bone direction",
+      "evidence_ids": [
+        "motion_samples"
+      ]
+    },
+    {
+      "id": "motion_initialized",
+      "owner": "motion accuracy block",
+      "offset": "0x98",
+      "width": 1,
+      "representation": "byte",
+      "role": "First sample sets factor1",
+      "evidence_ids": [
+        "motion_samples"
+      ]
+    },
+    {
+      "id": "shooter_modifier_scale4",
+      "owner": "Actor::Weapon::eBulletShooter",
+      "offset": "0x3c4",
+      "width": 4,
+      "representation": "float32",
+      "role": "Product applied during profile refresh",
+      "evidence_ids": [
+        "scale4_set",
+        "scale5_set",
+        "spread_refresh"
+      ]
+    },
+    {
+      "id": "shooter_modifier_scale5",
+      "owner": "Actor::Weapon::eBulletShooter",
+      "offset": "0x3c0",
+      "width": 4,
+      "representation": "float32",
+      "role": "Product applied during profile refresh",
+      "evidence_ids": [
+        "scale4_set",
+        "scale5_set",
+        "spread_refresh"
+      ]
+    },
+    {
+      "id": "weapon_motion_k",
+      "owner": "weapon definition",
+      "offset": "0x15f0",
+      "width": 4,
+      "representation": "float32",
+      "role": "AccuracyByMotionK; multiplier of factor-1",
+      "evidence_ids": [
+        "spread_radius",
+        "editor_radius"
+      ]
+    },
+    {
+      "id": "shooter_zeroing_count",
+      "owner": "Actor::Weapon::eBulletShooter",
+      "offset": "0x3e0",
+      "width": 4,
+      "representation": "int32",
+      "role": "Reset if position validity fails, incremented after shot",
+      "evidence_ids": [
+        "after_shot_zeroing"
+      ]
+    },
+    {
+      "id": "shooter_zeroing_muzzle",
+      "owner": "Actor::Weapon::eBulletShooter",
+      "offset": "0x3c8",
+      "width": 12,
+      "representation": "float32[3]",
+      "role": "Cached zeroing muzzle position",
+      "evidence_ids": [
+        "after_shot_zeroing"
+      ]
+    },
+    {
+      "id": "shooter_zeroing_target",
+      "owner": "Actor::Weapon::eBulletShooter",
+      "offset": "0x3d4",
+      "width": 12,
+      "representation": "float32[3]",
+      "role": "Cached zeroing target position",
+      "evidence_ids": [
+        "after_shot_zeroing"
+      ]
+    },
+    {
+      "id": "order_flags",
+      "owner": "Order::eOrder",
+      "offset": "0x18",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Base lifecycle flags",
+      "evidence_ids": [
+        "order_update",
+        "order_end"
+      ]
+    },
+    {
+      "id": "order_result",
+      "owner": "Order::eOrder",
+      "offset": "0x20",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Base lifecycle result",
+      "evidence_ids": [
+        "order_update",
+        "order_end"
+      ]
+    },
+    {
+      "id": "order_retry_remaining",
+      "owner": "Order::eOrder",
+      "offset": "0x24",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Base lifecycle retry_remaining",
+      "evidence_ids": [
+        "order_update",
+        "order_end"
+      ]
+    },
+    {
+      "id": "order_previous_retry_delay",
+      "owner": "Order::eOrder",
+      "offset": "0x28",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Base lifecycle previous_retry_delay",
+      "evidence_ids": [
+        "order_update",
+        "order_end"
+      ]
+    },
+    {
+      "id": "order_child",
+      "owner": "Order::eOrder",
+      "offset": "0x30",
+      "width": 8,
+      "representation": "pointer",
+      "role": "Base lifecycle child",
+      "evidence_ids": [
+        "order_update",
+        "order_end"
+      ]
+    },
+    {
+      "id": "ammo_rule_priority",
+      "owner": "ammo policy rule",
+      "offset": "0x390",
+      "width": 4,
+      "representation": "int32",
+      "role": "Descending source priority; fallback -1",
+      "evidence_ids": [
+        "ammo_flags_parser",
+        "weapon_choice"
+      ]
+    },
+    {
+      "id": "ammo_rule_flags",
+      "owner": "ammo policy rule",
+      "offset": "0x394",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Ground/volume/policy/readiness bits; see notes",
+      "evidence_ids": [
+        "ammo_flags_parser",
+        "ammo_gates"
+      ]
+    }
+  ],
+  "inline_regions": [
+    {
+      "id": "target_comparator",
+      "function_rva": "0x916b90",
+      "role": "Predicate groups lexicographic true-first then ascending numeric key; outer partition/heap branches remain partial",
+      "evidence_ids": [
+        "target_parser_binding",
+        "target_numeric"
+      ]
+    },
+    {
+      "id": "motion_factor_update",
+      "function_rva": "0x80ff40",
+      "role": "Minimum of linear/angular desired factors, asymmetric limited recovery/degradation",
+      "evidence_ids": [
+        "motion_factor",
+        "motion_samples"
+      ]
+    },
+    {
+      "id": "order_phase_lifecycle",
+      "function_rva": "0x901750",
+      "role": "Phase0/1 update, phase2 conditional cleanup, exponential retry delay",
+      "evidence_ids": [
+        "order_update",
+        "order_end"
+      ]
+    }
+  ],
+  "enums": [],
+  "float_constants": [
+    {
+      "id": "motion_angle_period",
+      "binary": "game",
+      "rva": "0x102195c",
+      "value": 0.10000000149011612
+    },
+    {
+      "id": "epsilon",
+      "binary": "game",
+      "rva": "0x1003f60",
+      "value": 9.999999747378752e-06
+    },
+    {
+      "id": "two_pi",
+      "binary": "game",
+      "rva": "0x1009760",
+      "value": 6.2831854820251465
+    },
+    {
+      "id": "burst_factor_floor",
+      "binary": "game",
+      "rva": "0x1017fcc",
+      "value": 0.009999999776482582
+    },
+    {
+      "id": "largest_float",
+      "binary": "game",
+      "rva": "0x10004dc",
+      "value": 9.999999680285692e+37
+    }
+  ],
+  "evidence": [
+    {
+      "id": "eligibility",
+      "binary": "game",
+      "function_rva": "0x912ae0",
+      "instruction_rvas": [
+        "0x912aef",
+        "0x912b06",
+        "0x912b1f",
+        "0x912b2c",
+        "0x912b36",
+        "0x912b46",
+        "0x912b59",
+        "0x912bd1",
+        "0x912c02",
+        "0x912c09"
+      ]
+    },
+    {
+      "id": "candidate_ranking",
+      "binary": "game",
+      "function_rva": "0x9136e0",
+      "instruction_rvas": [
+        "0x913736",
+        "0x91378d",
+        "0x9137f2",
+        "0x913842",
+        "0x91385f",
+        "0x9138b5"
+      ]
+    },
+    {
+      "id": "ammo_gates",
+      "binary": "game",
+      "function_rva": "0x914180",
+      "instruction_rvas": [
+        "0x91427b",
+        "0x914282",
+        "0x9142fe",
+        "0x914348",
+        "0x914371",
+        "0x91437e",
+        "0x914385"
+      ]
+    },
+    {
+      "id": "spread_scale",
+      "binary": "game",
+      "function_rva": "0x817140",
+      "instruction_rvas": [
+        "0x817151",
+        "0x81715c",
+        "0x81716b",
+        "0x817174",
+        "0x817178",
+        "0x8171a0",
+        "0x8171a5",
+        "0x8171a9",
+        "0x8171d0",
+        "0x8171d5",
+        "0x8171d9"
+      ]
+    },
+    {
+      "id": "spread_refresh",
+      "binary": "game",
+      "function_rva": "0x81b510",
+      "instruction_rvas": [
+        "0x81b648",
+        "0x81b65f",
+        "0x81b664",
+        "0x81b670",
+        "0x81b678",
+        "0x81b69a"
+      ]
+    },
+    {
+      "id": "spread_radius",
+      "binary": "game",
+      "function_rva": "0x819ac0",
+      "instruction_rvas": [
+        "0x819ad5",
+        "0x819b0b",
+        "0x819b22",
+        "0x819b26",
+        "0x819b3a",
+        "0x819b50",
+        "0x819b61",
+        "0x819b69",
+        "0x819b77",
+        "0x819b9b",
+        "0x819baf",
+        "0x819bc1",
+        "0x819bc9",
+        "0x819bd6",
+        "0x819bed",
+        "0x819bfd"
+      ]
+    },
+    {
+      "id": "spread_target",
+      "binary": "game",
+      "function_rva": "0x819c20",
+      "instruction_rvas": [
+        "0x819c8f",
+        "0x819cdc",
+        "0x819ce1",
+        "0x819ce5",
+        "0x819d0f",
+        "0x819d12",
+        "0x819d2a",
+        "0x819d33",
+        "0x819d3c"
+      ]
+    },
+    {
+      "id": "order_update",
+      "binary": "game",
+      "function_rva": "0x901750",
+      "instruction_rvas": [
+        "0x901759",
+        "0x901762",
+        "0x90177d",
+        "0x901799",
+        "0x9017ab",
+        "0x9017b6",
+        "0x9017cb",
+        "0x9017e7",
+        "0x9017f6",
+        "0x90180a",
+        "0x901833",
+        "0x901860",
+        "0x901874",
+        "0x90187c",
+        "0x901883",
+        "0x9018af"
+      ]
+    },
+    {
+      "id": "order_end",
+      "binary": "game",
+      "function_rva": "0x9018d0",
+      "instruction_rvas": [
+        "0x9018d6",
+        "0x9018dc",
+        "0x9018e2",
+        "0x9018eb",
+        "0x9018f0",
+        "0x9018f6",
+        "0x901902",
+        "0x901916",
+        "0x901918",
+        "0x901920"
+      ]
+    },
+    {
+      "id": "burning_binding",
+      "binary": "game",
+      "function_rva": "0x705f0",
+      "instruction_rvas": [
+        "0x705f7",
+        "0x705fe",
+        "0x70603",
+        "0x70608",
+        "0x7060d",
+        "0x70614",
+        "0x70619",
+        "0x7061e"
+      ]
+    },
+    {
+      "id": "unmask_binding",
+      "binary": "game",
+      "function_rva": "0x57da0",
+      "instruction_rvas": [
+        "0x57da7",
+        "0x57dae",
+        "0x57db3",
+        "0x57db8",
+        "0x57dbd",
+        "0x57dc4",
+        "0x57dc9",
+        "0x57dce"
+      ]
+    },
+    {
+      "id": "unmasked_binding",
+      "binary": "game",
+      "function_rva": "0x48fb0",
+      "instruction_rvas": [
+        "0x48fb4",
+        "0x48fbb",
+        "0x48fc2",
+        "0x48fc7"
+      ]
+    },
+    {
+      "id": "target_parser_binding",
+      "binary": "game",
+      "function_rva": "0x919c50",
+      "instruction_rvas": [
+        "0x919cd5",
+        "0x919d61",
+        "0x919d76",
+        "0x919ded",
+        "0x919f4c",
+        "0x919f54",
+        "0x919fcb",
+        "0x919fe8",
+        "0x919fef",
+        "0x91a005"
+      ]
+    },
+    {
+      "id": "target_term_switch",
+      "binary": "game",
+      "function_rva": "0x91a0b0",
+      "instruction_rvas": [
+        "0x91a0d3",
+        "0x91a144",
+        "0x91a182",
+        "0x91a28e",
+        "0x91a294",
+        "0x91a29a",
+        "0x91a2c3",
+        "0x91a2e4",
+        "0x91a2e7",
+        "0x91a2f8",
+        "0x91a2fb",
+        "0x91a30c",
+        "0x91a311",
+        "0x91a322",
+        "0x91a327",
+        "0x91a334",
+        "0x91a339"
+      ]
+    },
+    {
+      "id": "target_numeric",
+      "binary": "game",
+      "function_rva": "0x91a4b0",
+      "instruction_rvas": [
+        "0x91a4fa",
+        "0x91a4fe",
+        "0x91a502",
+        "0x91a506",
+        "0x91a50a",
+        "0x91a52f",
+        "0x91a56e",
+        "0x91a591",
+        "0x91a5ed",
+        "0x91a612",
+        "0x91a630"
+      ]
+    },
+    {
+      "id": "selector_temporary",
+      "binary": "game",
+      "function_rva": "0x918c70",
+      "instruction_rvas": [
+        "0x918c70",
+        "0x918c98",
+        "0x918cc8",
+        "0x918cd5",
+        "0x918cfb",
+        "0x918d0f",
+        "0x918d14",
+        "0x918db9",
+        "0x918edc"
+      ]
+    },
+    {
+      "id": "filter_append_or_replace",
+      "binary": "game",
+      "function_rva": "0x915a70",
+      "instruction_rvas": [
+        "0x915a70",
+        "0x915a9a",
+        "0x915acd",
+        "0x915b05",
+        "0x915b4f",
+        "0x915b62",
+        "0x915b6b",
+        "0x915b94",
+        "0x915bbc",
+        "0x915bcd",
+        "0x915c32",
+        "0x915c55",
+        "0x915c62",
+        "0x915c71",
+        "0x915c7f",
+        "0x915ca7",
+        "0x915ccc",
+        "0x915cdd",
+        "0x915d34"
+      ]
+    },
+    {
+      "id": "ammo_flags_parser",
+      "binary": "game",
+      "function_rva": "0x9144f0",
+      "instruction_rvas": [
+        "0x91459a",
+        "0x9145c4",
+        "0x9145d4",
+        "0x9145ef",
+        "0x914605",
+        "0x914622",
+        "0x914641",
+        "0x91464b",
+        "0x91465a",
+        "0x91499a",
+        "0x9149ac",
+        "0x914aaa",
+        "0x914abd",
+        "0x914acc",
+        "0x914ad6",
+        "0x914add",
+        "0x914ae7",
+        "0x914b1c",
+        "0x914b58",
+        "0x914b68",
+        "0x914ba3",
+        "0x914bb3",
+        "0x914bee",
+        "0x914bfe",
+        "0x914c39",
+        "0x914c49",
+        "0x914c84",
+        "0x914c94",
+        "0x914ccc",
+        "0x914cdc",
+        "0x914dbb"
+      ]
+    },
+    {
+      "id": "weapon_evaluator_context",
+      "binary": "game",
+      "function_rva": "0x957c00",
+      "instruction_rvas": [
+        "0x957c0d",
+        "0x957c17",
+        "0x957c1c",
+        "0x957c27",
+        "0x957c34",
+        "0x957c48",
+        "0x957c4c",
+        "0x957c50"
+      ]
+    },
+    {
+      "id": "weapon_choice",
+      "binary": "game",
+      "function_rva": "0x958010",
+      "instruction_rvas": [
+        "0x9582c8",
+        "0x958335",
+        "0x958346",
+        "0x958357",
+        "0x9583cb",
+        "0x95848e",
+        "0x9584b2",
+        "0x9584c3",
+        "0x958553",
+        "0x95856a",
+        "0x95858b",
+        "0x9585b0",
+        "0x9585c2"
+      ]
+    },
+    {
+      "id": "inventory_access",
+      "binary": "game",
+      "function_rva": "0x7ccd20",
+      "instruction_rvas": [
+        "0x7ccd25",
+        "0x7ccd2c",
+        "0x7ccd35"
+      ]
+    },
+    {
+      "id": "runtime_place_ctor",
+      "binary": "game",
+      "function_rva": "0x809500",
+      "instruction_rvas": [
+        "0x80954c",
+        "0x80955e",
+        "0x809565",
+        "0x809573",
+        "0x80957a",
+        "0x809581",
+        "0x8095b7",
+        "0x8095cf",
+        "0x8095e2",
+        "0x8095e9",
+        "0x8095ef",
+        "0x809610",
+        "0x809625"
+      ]
+    },
+    {
+      "id": "place_definition_ctor",
+      "binary": "game",
+      "function_rva": "0x810480",
+      "instruction_rvas": [
+        "0x810539",
+        "0x810580",
+        "0x81061a",
+        "0x810684",
+        "0x81068b"
+      ]
+    },
+    {
+      "id": "primary_place",
+      "binary": "game",
+      "function_rva": "0x806340",
+      "instruction_rvas": [
+        "0x806340",
+        "0x80634b",
+        "0x806358",
+        "0x806364",
+        "0x806368"
+      ]
+    },
+    {
+      "id": "synthetic_place",
+      "binary": "game",
+      "function_rva": "0x806850",
+      "instruction_rvas": [
+        "0x806860",
+        "0x80686d",
+        "0x806877",
+        "0x80688d",
+        "0x806897",
+        "0x80689b",
+        "0x8068bf",
+        "0x8068da",
+        "0x8068e2",
+        "0x8068ec",
+        "0x8068f5",
+        "0x8068f9",
+        "0x8068fe",
+        "0x806902",
+        "0x806915",
+        "0x80691a",
+        "0x80692e",
+        "0x806939",
+        "0x80693e",
+        "0x80694c",
+        "0x80694f"
+      ]
+    },
+    {
+      "id": "target_install",
+      "binary": "game",
+      "function_rva": "0x80a370",
+      "instruction_rvas": [
+        "0x80a401",
+        "0x80a415",
+        "0x80a41f",
+        "0x80a451",
+        "0x80a480",
+        "0x80a684",
+        "0x80a69d",
+        "0x80a6d4",
+        "0x80a6e7",
+        "0x80a704"
+      ]
+    },
+    {
+      "id": "target_clear",
+      "binary": "game",
+      "function_rva": "0x80a730",
+      "instruction_rvas": [
+        "0x80a778",
+        "0x80a796",
+        "0x80a7e2",
+        "0x80a82a",
+        "0x80a846",
+        "0x80a84f",
+        "0x80a85a",
+        "0x80a864",
+        "0x80a876",
+        "0x80a892",
+        "0x80a898",
+        "0x80a8ac",
+        "0x80a8c2",
+        "0x80a8cf",
+        "0x80a8e2",
+        "0x80a8ec"
+      ]
+    },
+    {
+      "id": "scale4_set",
+      "binary": "game",
+      "function_rva": "0x8188a0",
+      "instruction_rvas": [
+        "0x8188a0",
+        "0x8188a2",
+        "0x8188aa"
+      ]
+    },
+    {
+      "id": "scale5_set",
+      "binary": "game",
+      "function_rva": "0x8188c0",
+      "instruction_rvas": [
+        "0x8188c0",
+        "0x8188c2",
+        "0x8188ca"
+      ]
+    },
+    {
+      "id": "editor_scale4_set",
+      "binary": "editor",
+      "function_rva": "0x69b800",
+      "instruction_rvas": [
+        "0x69b800",
+        "0x69b802",
+        "0x69b80a"
+      ]
+    },
+    {
+      "id": "editor_radius",
+      "binary": "editor",
+      "function_rva": "0x69ca20",
+      "instruction_rvas": [
+        "0x69cab0",
+        "0x69cafb",
+        "0x69cb21",
+        "0x69cb29",
+        "0x69cb36",
+        "0x69cb4d",
+        "0x69cb5d"
+      ]
+    },
+    {
+      "id": "motion_dispatch",
+      "binary": "game",
+      "function_rva": "0x80aa10",
+      "instruction_rvas": [
+        "0x80aa44",
+        "0x80aa4b",
+        "0x80aa52",
+        "0x80aa5d",
+        "0x80aa9a",
+        "0x80aaf1"
+      ]
+    },
+    {
+      "id": "motion_samples",
+      "binary": "game",
+      "function_rva": "0x80ff40",
+      "instruction_rvas": [
+        "0x80ff56",
+        "0x80ff65",
+        "0x80ff82",
+        "0x80ffac",
+        "0x80ffc5",
+        "0x80ffe4",
+        "0x810013",
+        "0x81005c",
+        "0x810094",
+        "0x8100af",
+        "0x8100c8",
+        "0x8100dd",
+        "0x8100f8",
+        "0x810179",
+        "0x81017e",
+        "0x8101b3",
+        "0x8101ce",
+        "0x8101e7",
+        "0x81025d",
+        "0x810345",
+        "0x810366"
+      ]
+    },
+    {
+      "id": "motion_factor",
+      "binary": "game",
+      "function_rva": "0x80ff40",
+      "instruction_rvas": [
+        "0x8101ea",
+        "0x8101ee",
+        "0x8101f2",
+        "0x810205",
+        "0x810209",
+        "0x81021a",
+        "0x8102b7",
+        "0x8102bc",
+        "0x8102d1",
+        "0x8102d5",
+        "0x8102da",
+        "0x8102ee",
+        "0x8102f3",
+        "0x810304",
+        "0x81030d",
+        "0x810312",
+        "0x810324",
+        "0x810333",
+        "0x81033f",
+        "0x810350",
+        "0x810355",
+        "0x810359",
+        "0x81036e",
+        "0x810376",
+        "0x81037a",
+        "0x810382"
+      ]
+    },
+    {
+      "id": "motion_history",
+      "binary": "game",
+      "function_rva": "0x1d7d30",
+      "instruction_rvas": [
+        "0x1d7d35",
+        "0x1d7d3a",
+        "0x1d7d9f",
+        "0x1d7da5",
+        "0x1d7daf",
+        "0x1d7df5",
+        "0x1d7df9",
+        "0x1d7e17",
+        "0x1d7e1b",
+        "0x1d7e38",
+        "0x1d7e3f",
+        "0x1d7e6a"
+      ]
+    },
+    {
+      "id": "motion_aim_gate",
+      "binary": "game",
+      "function_rva": "0x81e160",
+      "instruction_rvas": [
+        "0x81e69f",
+        "0x81e6dd",
+        "0x81e6e5"
+      ]
+    },
+    {
+      "id": "after_shot_zeroing",
+      "binary": "game",
+      "function_rva": "0x81af10",
+      "instruction_rvas": [
+        "0x81b2b4",
+        "0x81b301",
+        "0x81b3a1",
+        "0x81b3ea",
+        "0x81b4d1"
+      ]
+    },
+    {
+      "id": "unmask_sum",
+      "binary": "game",
+      "function_rva": "0x891c00",
+      "instruction_rvas": [
+        "0x891c44",
+        "0x891c6f",
+        "0x891c72",
+        "0x891cad",
+        "0x891cb1",
+        "0x891cb5",
+        "0x891cb9",
+        "0x891cbd",
+        "0x891cf5",
+        "0x891d01",
+        "0x891d09",
+        "0x891d14",
+        "0x891d2b",
+        "0x891d2f",
+        "0x891d33",
+        "0x891d3a"
+      ]
+    },
+    {
+      "id": "unmask_threshold",
+      "binary": "game",
+      "function_rva": "0x878830",
+      "instruction_rvas": [
+        "0x87883b",
+        "0x8788a1",
+        "0x87893d"
+      ]
+    },
+    {
+      "id": "unmask_inventory",
+      "binary": "game",
+      "function_rva": "0x892fd0",
+      "instruction_rvas": [
+        "0x892fe0",
+        "0x893044",
+        "0x893056"
+      ]
+    },
+    {
+      "id": "unmask_skin",
+      "binary": "game",
+      "function_rva": "0x893190",
+      "instruction_rvas": [
+        "0x8931a8",
+        "0x8931af",
+        "0x8931c3"
+      ]
+    },
+    {
+      "id": "unmask_speed",
+      "binary": "game",
+      "function_rva": "0x8931e0",
+      "instruction_rvas": [
+        "0x8931f7",
+        "0x89321e",
+        "0x893223"
+      ]
+    },
+    {
+      "id": "unmask_pose",
+      "binary": "game",
+      "function_rva": "0x893150",
+      "instruction_rvas": [
+        "0x893157",
+        "0x89315e",
+        "0x893167",
+        "0x893172"
+      ]
+    },
+    {
+      "id": "unmask_examine",
+      "binary": "game",
+      "function_rva": "0x892f70",
+      "instruction_rvas": [
+        "0x892f84",
+        "0x892faa"
+      ]
+    },
+    {
+      "id": "reciprocal_visibility",
+      "binary": "game",
+      "function_rva": "0x9036a0",
+      "instruction_rvas": [
+        "0x9036b4",
+        "0x9036be",
+        "0x9036c7",
+        "0x9036cc"
+      ]
+    },
+    {
+      "id": "recon_player_lookup",
+      "binary": "game",
+      "function_rva": "0x88be20",
+      "instruction_rvas": [
+        "0x88be25"
+      ]
+    },
+    {
+      "id": "property_registrar",
+      "binary": "game",
+      "function_rva": "0x66a940",
+      "instruction_rvas": [
+        "0x66a940",
+        "0x66a943",
+        "0x66a947",
+        "0x66a94a",
+        "0x66a94d",
+        "0x66a94f",
+        "0x66a952",
+        "0x66a955",
+        "0x66a956",
+        "0x66a95a",
+        "0x66a95d",
+        "0x66a95f",
+        "0x66a960",
+        "0x66a963",
+        "0x66a967",
+        "0x66a96a",
+        "0x66a96c",
+        "0x66a970",
+        "0x66a973"
+      ]
+    }
+  ],
+  "byte_sequences": [
+    {
+      "id": "target_predicate_dispatch",
+      "binary": "game",
+      "rva": "0x91a348",
+      "hex": "e1a0910008a19100f9a19100e0a29100f4a2910008a391001ea3910034a391008ba29100",
+      "role": "Nine RVA jump slots; ID7 maps to default false"
+    },
+    {
+      "id": "motion_duration_conversion",
+      "binary": "game",
+      "rva": "0x14776c8",
+      "hex": "00007a44",
+      "role": "Initialized float1000, writable"
+    },
+    {
+      "id": "game_property_0x59100",
+      "binary": "game",
+      "rva": "0x59100",
+      "hex": "41b9520000004c8d05bb610801488d15fc6b5201488d0dc56d5201e920186100",
+      "role": "AimingReferenceBone ID=82 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x59120",
+      "binary": "game",
+      "rva": "0x59120",
+      "hex": "41b9500000004c8d057b610801488d15dc6b5201488d0d756d5201e900186100",
+      "role": "AnimatedAiming ID=80 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x59140",
+      "binary": "game",
+      "rva": "0x59140",
+      "hex": "41b94b0000004c8d051b610801488d15bc6b5201488d0ddd6c5201e9e0176100",
+      "role": "Current ID=75 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x59160",
+      "binary": "game",
+      "rva": "0x59160",
+      "hex": "41b94c0000004c8d0503610801488d159c6b5201488d0dd56c5201e9c0176100",
+      "role": "ManualAccuracy ID=76 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x59180",
+      "binary": "game",
+      "rva": "0x59180",
+      "hex": "41b94d0000004c8d058b130201488d157c6b5201488d0dcd6c5201e9a0176100",
+      "role": "ManualAccuracyZoom ID=77 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x591a0",
+      "binary": "game",
+      "rva": "0x591a0",
+      "hex": "41b94a0000004c8d05b3600801488d155c6b5201488d0d656c5201e980176100",
+      "role": "Number ID=74 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x591c0",
+      "binary": "game",
+      "rva": "0x591c0",
+      "hex": "41b9480000004c8d0537eb0701488d153c6b5201488d0d156c5201e960176100",
+      "role": "Place ID=72 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x591e0",
+      "binary": "game",
+      "rva": "0x591e0",
+      "hex": "41b94e0000004c8d0593600801488d151c6b5201488d0d856c5201e940176100",
+      "role": "RestoreIKTime ID=78 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x59200",
+      "binary": "game",
+      "rva": "0x59200",
+      "hex": "41b9530000004c8d0517ec0701488d15fc6a5201488d0ddd6c5201e920176100",
+      "role": "Sealed ID=83 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x59220",
+      "binary": "game",
+      "rva": "0x59220",
+      "hex": "41b9490000004c8d05675c0601488d15dc6a5201488d0dcd6b5201e900176100",
+      "role": "State ID=73 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x59240",
+      "binary": "game",
+      "rva": "0x59240",
+      "hex": "41b94f0000004c8d0543600801488d15bc6a5201488d0d3d6c5201e9e0166100",
+      "role": "TpcInstantAiming ID=79 registry=0x157fd10"
+    },
+    {
+      "id": "game_property_0x59260",
+      "binary": "game",
+      "rva": "0x59260",
+      "hex": "41b9510000004c8d054b600801488d159c6a5201488d0d4d6c5201e9c0166100",
+      "role": "UseLookatAiming ID=81 registry=0x157fd10"
+    },
+    {
+      "id": "editor_property_0x4b530",
+      "binary": "editor",
+      "rva": "0x4b530",
+      "hex": "41b9520000004c8d05db76ef00488d159cbe3901488d0d65c03901e930494900",
+      "role": "AimingReferenceBone ID=82 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b550",
+      "binary": "editor",
+      "rva": "0x4b550",
+      "hex": "41b9500000004c8d059b76ef00488d157cbe3901488d0d15c03901e910494900",
+      "role": "AnimatedAiming ID=80 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b570",
+      "binary": "editor",
+      "rva": "0x4b570",
+      "hex": "41b94b0000004c8d053b76ef00488d155cbe3901488d0d7dbf3901e9f0484900",
+      "role": "Current ID=75 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b590",
+      "binary": "editor",
+      "rva": "0x4b590",
+      "hex": "41b94c0000004c8d052376ef00488d153cbe3901488d0d75bf3901e9d0484900",
+      "role": "ManualAccuracy ID=76 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b5b0",
+      "binary": "editor",
+      "rva": "0x4b5b0",
+      "hex": "41b94d0000004c8d059b10e900488d151cbe3901488d0d6dbf3901e9b0484900",
+      "role": "ManualAccuracyZoom ID=77 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b5d0",
+      "binary": "editor",
+      "rva": "0x4b5d0",
+      "hex": "41b94a0000004c8d05d375ef00488d15fcbd3901488d0d05bf3901e990484900",
+      "role": "Number ID=74 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b5f0",
+      "binary": "editor",
+      "rva": "0x4b5f0",
+      "hex": "41b9480000004c8d05afebee00488d15dcbd3901488d0db5be3901e970484900",
+      "role": "Place ID=72 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b610",
+      "binary": "editor",
+      "rva": "0x4b610",
+      "hex": "41b94e0000004c8d05b375ef00488d15bcbd3901488d0d25bf3901e950484900",
+      "role": "RestoreIKTime ID=78 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b630",
+      "binary": "editor",
+      "rva": "0x4b630",
+      "hex": "41b9530000004c8d0587ecee00488d159cbd3901488d0d7dbf3901e930484900",
+      "role": "Sealed ID=83 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b650",
+      "binary": "editor",
+      "rva": "0x4b650",
+      "hex": "41b9490000004c8d050720ed00488d157cbd3901488d0d6dbe3901e910484900",
+      "role": "State ID=73 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b670",
+      "binary": "editor",
+      "rva": "0x4b670",
+      "hex": "41b94f0000004c8d056375ef00488d155cbd3901488d0dddbe3901e9f0474900",
+      "role": "TpcInstantAiming ID=79 registry=0x13e73e0"
+    },
+    {
+      "id": "editor_property_0x4b690",
+      "binary": "editor",
+      "rva": "0x4b690",
+      "hex": "41b9510000004c8d056b75ef00488d153cbd3901488d0dedbe3901e9d0474900",
+      "role": "UseLookatAiming ID=81 registry=0x13e73e0"
+    },
+    {
+      "id": "game_property_0x59440",
+      "binary": "game",
+      "rva": "0x59440",
+      "hex": "41b91b0000004c8d05f3620801488d15dc6a5201488d0d3d6b5201e9e0146100",
+      "role": "BurstAccuracy ID=27 registry=0x157ff30"
+    },
+    {
+      "id": "game_property_0x59460",
+      "binary": "game",
+      "rva": "0x59460",
+      "hex": "41b91c0000004c8d05e3620801488d15bc6a5201488d0d356b5201e9c0146100",
+      "role": "BurstRecoveryTime ID=28 registry=0x157ff30"
+    },
+    {
+      "id": "game_property_0x59480",
+      "binary": "game",
+      "rva": "0x59480",
+      "hex": "41b91e0000004c8d05f3620801488d159c6a5201488d0d456b5201e9a0146100",
+      "role": "BurstSpreadCount ID=30 registry=0x157ff30"
+    },
+    {
+      "id": "game_property_0x594a0",
+      "binary": "game",
+      "rva": "0x594a0",
+      "hex": "41b91d0000004c8d05bb620801488d157c6a5201488d0d0d6b5201e980146100",
+      "role": "BurstSpreadDelta ID=29 registry=0x157ff30"
+    },
+    {
+      "id": "game_property_0x594c0",
+      "binary": "game",
+      "rva": "0x594c0",
+      "hex": "41b91f0000004c8d05cb620801488d155c6a5201488d0d1d6b5201e960146100",
+      "role": "BurstSpreadWidth ID=31 registry=0x157ff30"
+    },
+    {
+      "id": "game_property_0x594e0",
+      "binary": "game",
+      "rva": "0x594e0",
+      "hex": "41b9200000004c8d05c3620801488d153c6a5201488d0d156b5201e940146100",
+      "role": "RadiusFunction ID=32 registry=0x157ff30"
+    },
+    {
+      "id": "game_property_0x59500",
+      "binary": "game",
+      "rva": "0x59500",
+      "hex": "41b9210000004c8d05b3620801488d151c6a5201488d0d0d6b5201e920146100",
+      "role": "RadiusTable ID=33 registry=0x157ff30"
+    },
+    {
+      "id": "game_property_0x59520",
+      "binary": "game",
+      "rva": "0x59520",
+      "hex": "41b91a0000004c8d0503620801488d15fc695201488d0d456a5201e900146100",
+      "role": "SpreadPower ID=26 registry=0x157ff30"
+    },
+    {
+      "id": "game_property_0x59540",
+      "binary": "game",
+      "rva": "0x59540",
+      "hex": "41b9170000004c8d05b3610801488d15dc695201488d0ddd695201e9e0136100",
+      "role": "SpreadRadius ID=23 registry=0x157ff30"
+    },
+    {
+      "id": "game_property_0x59560",
+      "binary": "game",
+      "rva": "0x59560",
+      "hex": "41b9180000004c8d05a3610801488d15bc695201488d0dd5695201e9c0136100",
+      "role": "SpreadXYRatio ID=24 registry=0x157ff30"
+    },
+    {
+      "id": "game_property_0x59580",
+      "binary": "game",
+      "rva": "0x59580",
+      "hex": "41b9190000004c8d0593610801488d159c695201488d0dcd695201e9a0136100",
+      "role": "SpreadYAdjust ID=25 registry=0x157ff30"
+    },
+    {
+      "id": "editor_property_0x4b880",
+      "binary": "editor",
+      "rva": "0x4b880",
+      "hex": "41b91b0000004c8d05bb79ef00488d156cbd3901488d0dcdbd3901e9e0454900",
+      "role": "BurstAccuracy ID=27 registry=0x13e7600"
+    },
+    {
+      "id": "editor_property_0x4b8a0",
+      "binary": "editor",
+      "rva": "0x4b8a0",
+      "hex": "41b91c0000004c8d05ab79ef00488d154cbd3901488d0dc5bd3901e9c0454900",
+      "role": "BurstRecoveryTime ID=28 registry=0x13e7600"
+    },
+    {
+      "id": "editor_property_0x4b8c0",
+      "binary": "editor",
+      "rva": "0x4b8c0",
+      "hex": "41b91e0000004c8d05bb79ef00488d152cbd3901488d0dd5bd3901e9a0454900",
+      "role": "BurstSpreadCount ID=30 registry=0x13e7600"
+    },
+    {
+      "id": "editor_property_0x4b8e0",
+      "binary": "editor",
+      "rva": "0x4b8e0",
+      "hex": "41b91d0000004c8d058379ef00488d150cbd3901488d0d9dbd3901e980454900",
+      "role": "BurstSpreadDelta ID=29 registry=0x13e7600"
+    },
+    {
+      "id": "editor_property_0x4b900",
+      "binary": "editor",
+      "rva": "0x4b900",
+      "hex": "41b91f0000004c8d059379ef00488d15ecbc3901488d0dadbd3901e960454900",
+      "role": "BurstSpreadWidth ID=31 registry=0x13e7600"
+    },
+    {
+      "id": "editor_property_0x4b920",
+      "binary": "editor",
+      "rva": "0x4b920",
+      "hex": "41b9200000004c8d058b79ef00488d15ccbc3901488d0da5bd3901e940454900",
+      "role": "RadiusFunction ID=32 registry=0x13e7600"
+    },
+    {
+      "id": "editor_property_0x4b940",
+      "binary": "editor",
+      "rva": "0x4b940",
+      "hex": "41b9210000004c8d057b79ef00488d15acbc3901488d0d9dbd3901e920454900",
+      "role": "RadiusTable ID=33 registry=0x13e7600"
+    },
+    {
+      "id": "editor_property_0x4b960",
+      "binary": "editor",
+      "rva": "0x4b960",
+      "hex": "41b91a0000004c8d05cb78ef00488d158cbc3901488d0dd5bc3901e900454900",
+      "role": "SpreadPower ID=26 registry=0x13e7600"
+    },
+    {
+      "id": "editor_property_0x4b980",
+      "binary": "editor",
+      "rva": "0x4b980",
+      "hex": "41b9170000004c8d057b78ef00488d156cbc3901488d0d6dbc3901e9e0444900",
+      "role": "SpreadRadius ID=23 registry=0x13e7600"
+    },
+    {
+      "id": "editor_property_0x4b9a0",
+      "binary": "editor",
+      "rva": "0x4b9a0",
+      "hex": "41b9180000004c8d056b78ef00488d154cbc3901488d0d65bc3901e9c0444900",
+      "role": "SpreadXYRatio ID=24 registry=0x13e7600"
+    },
+    {
+      "id": "editor_property_0x4b9c0",
+      "binary": "editor",
+      "rva": "0x4b9c0",
+      "hex": "41b9190000004c8d055b78ef00488d152cbc3901488d0d5dbc3901e9a0444900",
+      "role": "SpreadYAdjust ID=25 registry=0x13e7600"
+    },
+    {
+      "id": "game_property_0x59740",
+      "binary": "game",
+      "rva": "0x59740",
+      "hex": "41b96a0000004c8d053b610801488d15ec685201488d0dad6a5201e9e0116100",
+      "role": "AI_In_Manual ID=106 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59760",
+      "binary": "game",
+      "rva": "0x59760",
+      "hex": "41b9670000004c8d05fb600801488d15cc685201488d0d456a5201e9c0116100",
+      "role": "AccuracyByMotion ID=103 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59780",
+      "binary": "game",
+      "rva": "0x59780",
+      "hex": "41b9690000004c8d05f3600801488d15ac685201488d0d556a5201e9a0116100",
+      "role": "AimBone ID=105 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x597a0",
+      "binary": "game",
+      "rva": "0x597a0",
+      "hex": "41b95e0000004c8d056b600801488d158c685201488d0d2d695201e980116100",
+      "role": "Ammo ID=94 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x597c0",
+      "binary": "game",
+      "rva": "0x597c0",
+      "hex": "41b9610000004c8d0563600801488d156c685201488d0d55695201e960116100",
+      "role": "Barrels ID=97 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x597e0",
+      "binary": "game",
+      "rva": "0x597e0",
+      "hex": "41b9640000004c8d055b600801488d154c685201488d0d7d695201e940116100",
+      "role": "Basic ID=100 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59800",
+      "binary": "game",
+      "rva": "0x59800",
+      "hex": "41b96b0000004c8d058b600801488d152c685201488d0d056a5201e920116100",
+      "role": "Bullets ID=107 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59820",
+      "binary": "game",
+      "rva": "0x59820",
+      "hex": "41b9630000004c8d0513600801488d150c685201488d0d25695201e900116100",
+      "role": "Charger ID=99 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59840",
+      "binary": "game",
+      "rva": "0x59840",
+      "hex": "41b9590000004c8d05835f0801488d15ec675201488d0d15685201e9e0106100",
+      "role": "Foresight ID=89 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59860",
+      "binary": "game",
+      "rva": "0x59860",
+      "hex": "41b9620000004c8d05cb5f0801488d15cc675201488d0dcd685201e9c0106100",
+      "role": "Gunner ID=98 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59880",
+      "binary": "game",
+      "rva": "0x59880",
+      "hex": "41b9600000004c8d05935f0801488d15ac675201488d0d7d685201e9a0106100",
+      "role": "LinkAnimation ID=96 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x598a0",
+      "binary": "game",
+      "rva": "0x598a0",
+      "hex": "41b95f0000004c8d0563e40701488d158c675201488d0d45685201e980106100",
+      "role": "LinkBone ID=95 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x598c0",
+      "binary": "game",
+      "rva": "0x598c0",
+      "hex": "41b95b0000004c8d051b5f0801488d156c675201488d0dc5675201e960106100",
+      "role": "RestoreIKAfterAim ID=91 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x598e0",
+      "binary": "game",
+      "rva": "0x598e0",
+      "hex": "41b9580000004c8d051f7d0701488d154c675201488d0d5d675201e940106100",
+      "role": "Rotate ID=88 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59900",
+      "binary": "game",
+      "rva": "0x59900",
+      "hex": "41b9680000004c8d050be50701488d152c675201488d0dbd685201e920106100",
+      "role": "Sealable ID=104 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59920",
+      "binary": "game",
+      "rva": "0x59920",
+      "hex": "41b95c0000004c8d05d35e0801488d150c675201488d0d7d675201e900106100",
+      "role": "SequentialAim ID=92 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59940",
+      "binary": "game",
+      "rva": "0x59940",
+      "hex": "41b95a0000004c8d05935e0801488d15ec665201488d0d2d675201e9e00f6100",
+      "role": "Shooter ID=90 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59960",
+      "binary": "game",
+      "rva": "0x59960",
+      "hex": "41b9660000004c8d05e35e0801488d15cc665201488d0d2d685201e9c00f6100",
+      "role": "StationaryFiring ID=102 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x59980",
+      "binary": "game",
+      "rva": "0x59980",
+      "hex": "41b9650000004c8d05c35d0001488d15ac665201488d0df5675201e9a00f6100",
+      "role": "Type ID=101 registry=0x1580040"
+    },
+    {
+      "id": "game_property_0x599a0",
+      "binary": "game",
+      "rva": "0x599a0",
+      "hex": "41b95d0000004c8d05635e0801488d158c665201488d0d15675201e9800f6100",
+      "role": "Weapon ID=93 registry=0x1580040"
+    },
+    {
+      "id": "editor_property_0x4bba0",
+      "binary": "editor",
+      "rva": "0x4bba0",
+      "hex": "41b96a0000004c8d05e377ef00488d155cbb3901488d0d1dbd3901e9c0424900",
+      "role": "AI_In_Manual ID=106 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bbc0",
+      "binary": "editor",
+      "rva": "0x4bbc0",
+      "hex": "41b9670000004c8d05a377ef00488d153cbb3901488d0db5bc3901e9a0424900",
+      "role": "AccuracyByMotion ID=103 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bbe0",
+      "binary": "editor",
+      "rva": "0x4bbe0",
+      "hex": "41b9690000004c8d059b77ef00488d151cbb3901488d0dc5bc3901e980424900",
+      "role": "AimBone ID=105 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bc00",
+      "binary": "editor",
+      "rva": "0x4bc00",
+      "hex": "41b95e0000004c8d051377ef00488d15fcba3901488d0d9dbb3901e960424900",
+      "role": "Ammo ID=94 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bc20",
+      "binary": "editor",
+      "rva": "0x4bc20",
+      "hex": "41b9610000004c8d050b77ef00488d15dcba3901488d0dc5bb3901e940424900",
+      "role": "Barrels ID=97 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bc40",
+      "binary": "editor",
+      "rva": "0x4bc40",
+      "hex": "41b9640000004c8d050377ef00488d15bcba3901488d0dedbb3901e920424900",
+      "role": "Basic ID=100 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bc60",
+      "binary": "editor",
+      "rva": "0x4bc60",
+      "hex": "41b96b0000004c8d053377ef00488d159cba3901488d0d75bc3901e900424900",
+      "role": "Bullets ID=107 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bc80",
+      "binary": "editor",
+      "rva": "0x4bc80",
+      "hex": "41b9630000004c8d05bb76ef00488d157cba3901488d0d95bb3901e9e0414900",
+      "role": "Charger ID=99 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bca0",
+      "binary": "editor",
+      "rva": "0x4bca0",
+      "hex": "41b9590000004c8d052b76ef00488d155cba3901488d0d85ba3901e9c0414900",
+      "role": "Foresight ID=89 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bcc0",
+      "binary": "editor",
+      "rva": "0x4bcc0",
+      "hex": "41b9620000004c8d057376ef00488d153cba3901488d0d3dbb3901e9a0414900",
+      "role": "Gunner ID=98 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bce0",
+      "binary": "editor",
+      "rva": "0x4bce0",
+      "hex": "41b9600000004c8d053b76ef00488d151cba3901488d0dedba3901e980414900",
+      "role": "LinkAnimation ID=96 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bd00",
+      "binary": "editor",
+      "rva": "0x4bd00",
+      "hex": "41b95f0000004c8d05abe4ee00488d15fcb93901488d0db5ba3901e960414900",
+      "role": "LinkBone ID=95 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bd20",
+      "binary": "editor",
+      "rva": "0x4bd20",
+      "hex": "41b95b0000004c8d05c375ef00488d15dcb93901488d0d35ba3901e940414900",
+      "role": "RestoreIKAfterAim ID=91 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bd40",
+      "binary": "editor",
+      "rva": "0x4bd40",
+      "hex": "41b9580000004c8d053f72ee00488d15bcb93901488d0dcdb93901e920414900",
+      "role": "Rotate ID=88 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bd60",
+      "binary": "editor",
+      "rva": "0x4bd60",
+      "hex": "41b9680000004c8d054be5ee00488d159cb93901488d0d2dbb3901e900414900",
+      "role": "Sealable ID=104 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bd80",
+      "binary": "editor",
+      "rva": "0x4bd80",
+      "hex": "41b95c0000004c8d057b75ef00488d157cb93901488d0dedb93901e9e0404900",
+      "role": "SequentialAim ID=92 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bda0",
+      "binary": "editor",
+      "rva": "0x4bda0",
+      "hex": "41b95a0000004c8d053b75ef00488d155cb93901488d0d9db93901e9c0404900",
+      "role": "Shooter ID=90 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bdc0",
+      "binary": "editor",
+      "rva": "0x4bdc0",
+      "hex": "41b9660000004c8d058b75ef00488d153cb93901488d0d9dba3901e9a0404900",
+      "role": "StationaryFiring ID=102 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4bde0",
+      "binary": "editor",
+      "rva": "0x4bde0",
+      "hex": "41b9650000004c8d051ba2e700488d151cb93901488d0d65ba3901e980404900",
+      "role": "Type ID=101 registry=0x13e7710"
+    },
+    {
+      "id": "editor_property_0x4be00",
+      "binary": "editor",
+      "rva": "0x4be00",
+      "hex": "41b95d0000004c8d050b75ef00488d15fcb83901488d0d85b93901e960404900",
+      "role": "Weapon ID=93 registry=0x13e7710"
+    },
+    {
+      "id": "game_property_0x5ac70",
+      "binary": "game",
+      "rva": "0x5ac70",
+      "hex": "41b9fc0000004c8d05cb610801488d15bc615201488d0ddd695201e9b0fc6000",
+      "role": "AccuracyByMotionK ID=252 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ac90",
+      "binary": "game",
+      "rva": "0x5ac90",
+      "hex": "41b9e60000004c8d05572e0801488d159c615201488d0dad675201e990fc6000",
+      "role": "Aim ID=230 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5acb0",
+      "binary": "game",
+      "rva": "0x5acb0",
+      "hex": "41b9d20000004c8d05835f0801488d157c615201488d0dad655201e970fc6000",
+      "role": "AimRange ID=210 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5acd0",
+      "binary": "game",
+      "rva": "0x5acd0",
+      "hex": "41b9dc0000004c8d05e35f0801488d155c615201488d0d7d665201e950fc6000",
+      "role": "AimingTolerance ID=220 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5acf0",
+      "binary": "game",
+      "rva": "0x5acf0",
+      "hex": "41b9f00000004c8d05ab600801488d153c615201488d0d3d685201e930fc6000",
+      "role": "AmmoLocked ID=240 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ad10",
+      "binary": "game",
+      "rva": "0x5ad10",
+      "hex": "41b9e90000004c8d051b600801488d151c615201488d0d75675201e910fc6000",
+      "role": "AutoReload ID=233 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ad30",
+      "binary": "game",
+      "rva": "0x5ad30",
+      "hex": "41b9df0000004c8d05a35f0801488d15fc605201488d0d65665201e9f0fb6000",
+      "role": "Automatic ID=223 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ad50",
+      "binary": "game",
+      "rva": "0x5ad50",
+      "hex": "41b9e00000004c8d05935f0801488d15dc605201488d0d5d665201e9d0fb6000",
+      "role": "Automatic_AI ID=224 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ad70",
+      "binary": "game",
+      "rva": "0x5ad70",
+      "hex": "41b9f80000004c8d0597600801488d15bc605201488d0d7d685201e9b0fb6000",
+      "role": "Bounds ID=248 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ad90",
+      "binary": "game",
+      "rva": "0x5ad90",
+      "hex": "41b9e70000004c8d05835f0801488d159c605201488d0dc5665201e990fb6000",
+      "role": "Can_Aim ID=231 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5adb0",
+      "binary": "game",
+      "rva": "0x5adb0",
+      "hex": "41b9ed0000004c8d05bb5f0801488d157c605201488d0d35675201e970fb6000",
+      "role": "ClickSound ID=237 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5add0",
+      "binary": "game",
+      "rva": "0x5add0",
+      "hex": "41b9d80000004c8d05bb5e0801488d155c605201488d0d1d655201e950fb6000",
+      "role": "Crosshair ID=216 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5adf0",
+      "binary": "game",
+      "rva": "0x5adf0",
+      "hex": "41b9d90000004c8d05ab5e0801488d153c605201488d0d15655201e930fb6000",
+      "role": "CrosshairReloading ID=217 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ae10",
+      "binary": "game",
+      "rva": "0x5ae10",
+      "hex": "41b9d50000004c8d05e7790601488d151c605201488d0d95645201e910fb6000",
+      "role": "Cursor ID=213 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ae30",
+      "binary": "game",
+      "rva": "0x5ae30",
+      "hex": "41b9d70000004c8d054b5e0801488d15fc5f5201488d0da5645201e9f0fa6000",
+      "role": "CursorReloading ID=215 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ae50",
+      "binary": "game",
+      "rva": "0x5ae50",
+      "hex": "41b9e50000004c8d053fe40501488d15dc5f5201488d0dd5655201e9d0fa6000",
+      "role": "Fire ID=229 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ae70",
+      "binary": "game",
+      "rva": "0x5ae70",
+      "hex": "41b9ea0000004c8d05cb5e0801488d15bc5f5201488d0d2d665201e9b0fa6000",
+      "role": "FireSound ID=234 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5ae90",
+      "binary": "game",
+      "rva": "0x5ae90",
+      "hex": "41b9eb0000004c8d05bb5e0801488d159c5f5201488d0d25665201e990fa6000",
+      "role": "FireSoundClose ID=235 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5aeb0",
+      "binary": "game",
+      "rva": "0x5aeb0",
+      "hex": "41b9fb0000004c8d057b5f0801488d157c5f5201488d0d85675201e970fa6000",
+      "role": "FiringTimeout ID=251 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5aed0",
+      "binary": "game",
+      "rva": "0x5aed0",
+      "hex": "41b9de0000004c8d05f3480801488d155c5f5201488d0dad645201e950fa6000",
+      "role": "Foresight ID=222 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5aef0",
+      "binary": "game",
+      "rva": "0x5aef0",
+      "hex": "41b9da0000004c8d05b3f10501488d153c5f5201488d0d2d645201e930fa6000",
+      "role": "Gravity ID=218 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5af10",
+      "binary": "game",
+      "rva": "0x5af10",
+      "hex": "41b9f40000004c8d05bb5e0801488d151c5f5201488d0d7d665201e910fa6000",
+      "role": "MaxAngle ID=244 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5af30",
+      "binary": "game",
+      "rva": "0x5af30",
+      "hex": "41b9d30000004c8d05135d0801488d15fc5e5201488d0d45635201e9f0f96000",
+      "role": "MaxRange ID=211 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5af50",
+      "binary": "game",
+      "rva": "0x5af50",
+      "hex": "41b9d40000004c8d05035d0801488d15dc5e5201488d0d3d635201e9d0f96000",
+      "role": "MinRange ID=212 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5af70",
+      "binary": "game",
+      "rva": "0x5af70",
+      "hex": "41b9db0000004c8d05db3e0601488d15bc5e5201488d0dc5635201e9b0f96000",
+      "role": "Parameters ID=219 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5af90",
+      "binary": "game",
+      "rva": "0x5af90",
+      "hex": "41b9e20000004c8d056b5d0801488d159c5e5201488d0d4d645201e990f96000",
+      "role": "Prepare ID=226 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5afb0",
+      "binary": "game",
+      "rva": "0x5afb0",
+      "hex": "41b9d10000004c8d05472b0801488d157c5e5201488d0d95625201e970f96000",
+      "role": "Range ID=209 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5afd0",
+      "binary": "game",
+      "rva": "0x5afd0",
+      "hex": "41b9f10000004c8d05db5d0801488d155c5e5201488d0d75655201e950f96000",
+      "role": "Reactive ID=241 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5aff0",
+      "binary": "game",
+      "rva": "0x5aff0",
+      "hex": "41b9cf0000004c8d05335c0801488d153c5e5201488d0d25625201e930f96000",
+      "role": "RechargeTime ID=207 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b010",
+      "binary": "game",
+      "rva": "0x5b010",
+      "hex": "41b9f20000004c8d05a75d0801488d151c5e5201488d0d4d655201e910f96000",
+      "role": "Recoil ID=242 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b030",
+      "binary": "game",
+      "rva": "0x5b030",
+      "hex": "41b9d00000004c8d05bbf80701488d15fc5d5201488d0dfd615201e9f0f86000",
+      "role": "RecoveryTime ID=208 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b050",
+      "binary": "game",
+      "rva": "0x5b050",
+      "hex": "41b9ef0000004c8d053b5d0801488d15dc5d5201488d0dc5645201e9d0f86000",
+      "role": "RelaxationTime ID=239 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b070",
+      "binary": "game",
+      "rva": "0x5b070",
+      "hex": "41b9e30000004c8d05935c0801488d15bc5d5201488d0d85635201e9b0f86000",
+      "role": "Reload ID=227 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b090",
+      "binary": "game",
+      "rva": "0x5b090",
+      "hex": "41b9ee0000004c8d05eb5c0801488d159c5d5201488d0d6d645201e990f86000",
+      "role": "ReloadAnimBonus ID=238 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b0b0",
+      "binary": "game",
+      "rva": "0x5b0b0",
+      "hex": "41b9ec0000004c8d05ab5c0801488d157c5d5201488d0d1d645201e970f86000",
+      "role": "ReloadSound ID=236 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b0d0",
+      "binary": "game",
+      "rva": "0x5b0d0",
+      "hex": "41b9f60000004c8d051b5d0801488d155c5d5201488d0ded645201e950f86000",
+      "role": "RestoreDelay ID=246 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b0f0",
+      "binary": "game",
+      "rva": "0x5b0f0",
+      "hex": "41b9f50000004c8d05eb5c0801488d153c5d5201488d0db5645201e930f86000",
+      "role": "RestoreTime ID=245 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b110",
+      "binary": "game",
+      "rva": "0x5b110",
+      "hex": "41b9f30000004c8d05af5c0801488d151c5d5201488d0d65645201e910f86000",
+      "role": "Shoot ID=243 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b130",
+      "binary": "game",
+      "rva": "0x5b130",
+      "hex": "41b9f90000004c8d05fbea0501488d15fc5c5201488d0dd5645201e9f0f76000",
+      "role": "Speed ID=249 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b150",
+      "binary": "game",
+      "rva": "0x5b150",
+      "hex": "41b9dd0000004c8d05735b0801488d15dc5c5201488d0d15625201e9d0f76000",
+      "role": "SpreadTolerance ID=221 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b170",
+      "binary": "game",
+      "rva": "0x5b170",
+      "hex": "41b9e10000004c8d05835b0801488d15bc5c5201488d0d55625201e9b0f76000",
+      "role": "States ID=225 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b190",
+      "binary": "game",
+      "rva": "0x5b190",
+      "hex": "41b9f70000004c8d056b5c0801488d159c5c5201488d0d45645201e990f76000",
+      "role": "SwayParams ID=247 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b1b0",
+      "binary": "game",
+      "rva": "0x5b1b0",
+      "hex": "41b9fd0000004c8d05a35c0801488d157c5c5201488d0db5645201e970f76000",
+      "role": "SyncedProjectiles ID=253 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b1d0",
+      "binary": "game",
+      "rva": "0x5b1d0",
+      "hex": "41b9d60000004c8d05935a0801488d155c5c5201488d0ded605201e950f76000",
+      "role": "ToplayerVignette ID=214 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b1f0",
+      "binary": "game",
+      "rva": "0x5b1f0",
+      "hex": "41b9fa0000004c8d05235c0801488d153c5c5201488d0d2d645201e930f76000",
+      "role": "UnlimitedRangeTPC ID=250 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b210",
+      "binary": "game",
+      "rva": "0x5b210",
+      "hex": "41b9e40000004c8d05fb5a0801488d151c5c5201488d0dfd615201e910f76000",
+      "role": "Unload ID=228 registry=0x1580e40"
+    },
+    {
+      "id": "game_property_0x5b230",
+      "binary": "game",
+      "rva": "0x5b230",
+      "hex": "41b9e80000004c8d05eb5a0801488d15fc5b5201488d0d3d625201e9f0f66000",
+      "role": "Unprepare ID=232 registry=0x1580e40"
+    },
+    {
+      "id": "editor_property_0x4d360",
+      "binary": "editor",
+      "rva": "0x4d360",
+      "hex": "41b9fc0000004c8d05e378ef00488d159cb13901488d0dbdb93901e9002b4900",
+      "role": "AccuracyByMotionK ID=252 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d380",
+      "binary": "editor",
+      "rva": "0x4d380",
+      "hex": "41b9e60000004c8d05373def00488d157cb13901488d0d8db73901e9e02a4900",
+      "role": "Aim ID=230 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d3a0",
+      "binary": "editor",
+      "rva": "0x4d3a0",
+      "hex": "41b9d20000004c8d059b76ef00488d155cb13901488d0d8db53901e9c02a4900",
+      "role": "AimRange ID=210 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d3c0",
+      "binary": "editor",
+      "rva": "0x4d3c0",
+      "hex": "41b9dc0000004c8d05fb76ef00488d153cb13901488d0d5db63901e9a02a4900",
+      "role": "AimingTolerance ID=220 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d3e0",
+      "binary": "editor",
+      "rva": "0x4d3e0",
+      "hex": "41b9f00000004c8d05c377ef00488d151cb13901488d0d1db83901e9802a4900",
+      "role": "AmmoLocked ID=240 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d400",
+      "binary": "editor",
+      "rva": "0x4d400",
+      "hex": "41b9e90000004c8d053377ef00488d15fcb03901488d0d55b73901e9602a4900",
+      "role": "AutoReload ID=233 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d420",
+      "binary": "editor",
+      "rva": "0x4d420",
+      "hex": "41b9df0000004c8d05bb76ef00488d15dcb03901488d0d45b63901e9402a4900",
+      "role": "Automatic ID=223 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d440",
+      "binary": "editor",
+      "rva": "0x4d440",
+      "hex": "41b9e00000004c8d05ab76ef00488d15bcb03901488d0d3db63901e9202a4900",
+      "role": "Automatic_AI ID=224 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d460",
+      "binary": "editor",
+      "rva": "0x4d460",
+      "hex": "41b9f80000004c8d05af77ef00488d159cb03901488d0d5db83901e9002a4900",
+      "role": "Bounds ID=248 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d480",
+      "binary": "editor",
+      "rva": "0x4d480",
+      "hex": "41b9e70000004c8d059b76ef00488d157cb03901488d0da5b63901e9e0294900",
+      "role": "Can_Aim ID=231 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d4a0",
+      "binary": "editor",
+      "rva": "0x4d4a0",
+      "hex": "41b9ed0000004c8d05d376ef00488d155cb03901488d0d15b73901e9c0294900",
+      "role": "ClickSound ID=237 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d4c0",
+      "binary": "editor",
+      "rva": "0x4d4c0",
+      "hex": "41b9d80000004c8d05d375ef00488d153cb03901488d0dfdb43901e9a0294900",
+      "role": "Crosshair ID=216 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d4e0",
+      "binary": "editor",
+      "rva": "0x4d4e0",
+      "hex": "41b9d90000004c8d05c375ef00488d151cb03901488d0df5b43901e980294900",
+      "role": "CrosshairReloading ID=217 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d500",
+      "binary": "editor",
+      "rva": "0x4d500",
+      "hex": "41b9d50000004c8d05ff45ed00488d15fcaf3901488d0d75b43901e960294900",
+      "role": "Cursor ID=213 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d520",
+      "binary": "editor",
+      "rva": "0x4d520",
+      "hex": "41b9d70000004c8d056375ef00488d15dcaf3901488d0d85b43901e940294900",
+      "role": "CursorReloading ID=215 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d540",
+      "binary": "editor",
+      "rva": "0x4d540",
+      "hex": "41b9e50000004c8d050fb5ec00488d15bcaf3901488d0db5b53901e920294900",
+      "role": "Fire ID=229 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d560",
+      "binary": "editor",
+      "rva": "0x4d560",
+      "hex": "41b9ea0000004c8d05e375ef00488d159caf3901488d0d0db63901e900294900",
+      "role": "FireSound ID=234 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d580",
+      "binary": "editor",
+      "rva": "0x4d580",
+      "hex": "41b9eb0000004c8d05d375ef00488d157caf3901488d0d05b63901e9e0284900",
+      "role": "FireSoundClose ID=235 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d5a0",
+      "binary": "editor",
+      "rva": "0x4d5a0",
+      "hex": "41b9fb0000004c8d059376ef00488d155caf3901488d0d65b73901e9c0284900",
+      "role": "FiringTimeout ID=251 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d5c0",
+      "binary": "editor",
+      "rva": "0x4d5c0",
+      "hex": "41b9de0000004c8d050b5def00488d153caf3901488d0d8db43901e9a0284900",
+      "role": "Foresight ID=222 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d5e0",
+      "binary": "editor",
+      "rva": "0x4d5e0",
+      "hex": "41b9da0000004c8d0553c6ec00488d151caf3901488d0d0db43901e980284900",
+      "role": "Gravity ID=218 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d600",
+      "binary": "editor",
+      "rva": "0x4d600",
+      "hex": "41b9f40000004c8d05d375ef00488d15fcae3901488d0d5db63901e960284900",
+      "role": "MaxAngle ID=244 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d620",
+      "binary": "editor",
+      "rva": "0x4d620",
+      "hex": "41b9d30000004c8d052b74ef00488d15dcae3901488d0d25b33901e940284900",
+      "role": "MaxRange ID=211 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d640",
+      "binary": "editor",
+      "rva": "0x4d640",
+      "hex": "41b9d40000004c8d051b74ef00488d15bcae3901488d0d1db33901e920284900",
+      "role": "MinRange ID=212 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d660",
+      "binary": "editor",
+      "rva": "0x4d660",
+      "hex": "41b9db0000004c8d05bbffec00488d159cae3901488d0da5b33901e900284900",
+      "role": "Parameters ID=219 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d680",
+      "binary": "editor",
+      "rva": "0x4d680",
+      "hex": "41b9e20000004c8d058374ef00488d157cae3901488d0d2db43901e9e0274900",
+      "role": "Prepare ID=226 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d6a0",
+      "binary": "editor",
+      "rva": "0x4d6a0",
+      "hex": "41b9d10000004c8d05a739ef00488d155cae3901488d0d75b23901e9c0274900",
+      "role": "Range ID=209 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d6c0",
+      "binary": "editor",
+      "rva": "0x4d6c0",
+      "hex": "41b9f10000004c8d05f374ef00488d153cae3901488d0d55b53901e9a0274900",
+      "role": "Reactive ID=241 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d6e0",
+      "binary": "editor",
+      "rva": "0x4d6e0",
+      "hex": "41b9cf0000004c8d054b73ef00488d151cae3901488d0d05b23901e980274900",
+      "role": "RechargeTime ID=207 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d700",
+      "binary": "editor",
+      "rva": "0x4d700",
+      "hex": "41b9f20000004c8d05bf74ef00488d15fcad3901488d0d2db53901e960274900",
+      "role": "Recoil ID=242 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d720",
+      "binary": "editor",
+      "rva": "0x4d720",
+      "hex": "41b9d00000004c8d05f3faee00488d15dcad3901488d0dddb13901e940274900",
+      "role": "RecoveryTime ID=208 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d740",
+      "binary": "editor",
+      "rva": "0x4d740",
+      "hex": "41b9ef0000004c8d055374ef00488d15bcad3901488d0da5b43901e920274900",
+      "role": "RelaxationTime ID=239 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d760",
+      "binary": "editor",
+      "rva": "0x4d760",
+      "hex": "41b9e30000004c8d05ab73ef00488d159cad3901488d0d65b33901e900274900",
+      "role": "Reload ID=227 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d780",
+      "binary": "editor",
+      "rva": "0x4d780",
+      "hex": "41b9ee0000004c8d050374ef00488d157cad3901488d0d4db43901e9e0264900",
+      "role": "ReloadAnimBonus ID=238 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d7a0",
+      "binary": "editor",
+      "rva": "0x4d7a0",
+      "hex": "41b9ec0000004c8d05c373ef00488d155cad3901488d0dfdb33901e9c0264900",
+      "role": "ReloadSound ID=236 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d7c0",
+      "binary": "editor",
+      "rva": "0x4d7c0",
+      "hex": "41b9f60000004c8d053374ef00488d153cad3901488d0dcdb43901e9a0264900",
+      "role": "RestoreDelay ID=246 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d7e0",
+      "binary": "editor",
+      "rva": "0x4d7e0",
+      "hex": "41b9f50000004c8d050374ef00488d151cad3901488d0d95b43901e980264900",
+      "role": "RestoreTime ID=245 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d800",
+      "binary": "editor",
+      "rva": "0x4d800",
+      "hex": "41b9f30000004c8d05c773ef00488d15fcac3901488d0d45b43901e960264900",
+      "role": "Shoot ID=243 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d820",
+      "binary": "editor",
+      "rva": "0x4d820",
+      "hex": "41b9f90000004c8d05b3bdec00488d15dcac3901488d0db5b43901e940264900",
+      "role": "Speed ID=249 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d840",
+      "binary": "editor",
+      "rva": "0x4d840",
+      "hex": "41b9dd0000004c8d058b72ef00488d15bcac3901488d0df5b13901e920264900",
+      "role": "SpreadTolerance ID=221 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d860",
+      "binary": "editor",
+      "rva": "0x4d860",
+      "hex": "41b9e10000004c8d059b72ef00488d159cac3901488d0d35b23901e900264900",
+      "role": "States ID=225 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d880",
+      "binary": "editor",
+      "rva": "0x4d880",
+      "hex": "41b9f70000004c8d058373ef00488d157cac3901488d0d25b43901e9e0254900",
+      "role": "SwayParams ID=247 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d8a0",
+      "binary": "editor",
+      "rva": "0x4d8a0",
+      "hex": "41b9fd0000004c8d05bb73ef00488d155cac3901488d0d95b43901e9c0254900",
+      "role": "SyncedProjectiles ID=253 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d8c0",
+      "binary": "editor",
+      "rva": "0x4d8c0",
+      "hex": "41b9d60000004c8d05ab71ef00488d153cac3901488d0dcdb03901e9a0254900",
+      "role": "ToplayerVignette ID=214 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d8e0",
+      "binary": "editor",
+      "rva": "0x4d8e0",
+      "hex": "41b9fa0000004c8d053b73ef00488d151cac3901488d0d0db43901e980254900",
+      "role": "UnlimitedRangeTPC ID=250 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d900",
+      "binary": "editor",
+      "rva": "0x4d900",
+      "hex": "41b9e40000004c8d051372ef00488d15fcab3901488d0dddb13901e960254900",
+      "role": "Unload ID=228 registry=0x13e8510"
+    },
+    {
+      "id": "editor_property_0x4d920",
+      "binary": "editor",
+      "rva": "0x4d920",
+      "hex": "41b9e80000004c8d050372ef00488d15dcab3901488d0d1db23901e940254900",
+      "role": "Unprepare ID=232 registry=0x13e8510"
+    },
+    {
+      "id": "game_property_0x5b250",
+      "binary": "game",
+      "rva": "0x5b250",
+      "hex": "41b92a0200004c8d051b5c0801488d15e45b5201488d0d45645201e9d0f66000",
+      "role": "accuracy ID=554 registry=0x1580e48"
+    },
+    {
+      "id": "game_property_0x5b270",
+      "binary": "game",
+      "rva": "0x5b270",
+      "hex": "41b9290200004c8d052babfc00488d15c45b5201488d0d0d645201e9b0f66000",
+      "role": "damage ID=553 registry=0x1580e48"
+    },
+    {
+      "id": "game_property_0x5b290",
+      "binary": "game",
+      "rva": "0x5b290",
+      "hex": "41b92b0200004c8d05e75b0801488d15a45b5201488d0d1d645201e990f66000",
+      "role": "sway ID=555 registry=0x1580e48"
+    },
+    {
+      "id": "game_property_0x5b2b0",
+      "binary": "game",
+      "rva": "0x5b2b0",
+      "hex": "41b92c0200004c8d058b7b0701488d15845b5201488d0d15645201e970f66000",
+      "role": "throw_off ID=556 registry=0x1580e48"
+    },
+    {
+      "id": "game_property_0x5b2d0",
+      "binary": "game",
+      "rva": "0x5b2d0",
+      "hex": "41b92d0200004c8d05b35b0801488d15645b5201488d0d0d645201e950f66000",
+      "role": "throw_off_always ID=557 registry=0x1580e48"
+    },
+    {
+      "id": "editor_property_0x4d940",
+      "binary": "editor",
+      "rva": "0x4d940",
+      "hex": "41b92a0200004c8d053373ef00488d15c4ab3901488d0d25b43901e920254900",
+      "role": "accuracy ID=554 registry=0x13e8518"
+    },
+    {
+      "id": "editor_property_0x4d960",
+      "binary": "editor",
+      "rva": "0x4d960",
+      "hex": "41b9290200004c8d05bbece400488d15a4ab3901488d0dedb33901e900254900",
+      "role": "damage ID=553 registry=0x13e8518"
+    },
+    {
+      "id": "editor_property_0x4d980",
+      "binary": "editor",
+      "rva": "0x4d980",
+      "hex": "41b92b0200004c8d05ff72ef00488d1584ab3901488d0dfdb33901e9e0244900",
+      "role": "sway ID=555 registry=0x13e8518"
+    },
+    {
+      "id": "editor_property_0x4d9a0",
+      "binary": "editor",
+      "rva": "0x4d9a0",
+      "hex": "41b92c0200004c8d05c372ee00488d1564ab3901488d0df5b33901e9c0244900",
+      "role": "throw_off ID=556 registry=0x13e8518"
+    },
+    {
+      "id": "editor_property_0x4d9c0",
+      "binary": "editor",
+      "rva": "0x4d9c0",
+      "hex": "41b92d0200004c8d05cb72ef00488d1544ab3901488d0dedb33901e9a0244900",
+      "role": "throw_off_always ID=557 registry=0x13e8518"
+    }
+  ],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeBulletShooter@Weapon@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x10dff18",
+      "methods": {
+        "1": "0x817f70",
+        "3": "0x818770",
+        "4": "0x8188a0",
+        "5": "0x8188c0",
+        "6": "0x8188e0",
+        "7": "0x819c20",
+        "8": "0x819ac0",
+        "11": "0x8184d0"
+      }
+    },
+    {
+      "binary": "editor",
+      "mangled_name": ".?AVeBulletShooter@Weapon@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0xf43aa8",
+      "methods": {
+        "4": "0x69b800",
+        "5": "0x69b820",
+        "6": "0x69b840",
+        "7": "0x69cb80",
+        "8": "0x69ca20"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVePlace@Weapon@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x10df8d8",
+      "methods": {
+        "0": "0x812870"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeWeapon@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x10df4d0",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeWeaponEvaluator@Human@@",
+      "subobject_offset": 0,
+      "rva": "0x10ed658",
+      "methods": {}
+    }
+  ],
+  "pointer_string_tables": [
+    {
+      "id": "target_predicate_names",
+      "binary": "game",
+      "rva": "0x1482aa0",
+      "values": [
+        "class",
+        "entity",
+        "weapon",
+        "attacking",
+        "threating",
+        "invisible",
+        "out_of_range",
+        "in_ik_range",
+        "in_range"
+      ]
+    },
+    {
+      "id": "target_numeric_names",
+      "binary": "game",
+      "rva": "0x1482af0",
+      "values": [
+        "time_to_aim",
+        "distance"
+      ]
+    }
+  ],
+  "property_registry_pairs": [
+    {
+      "game_rva": "0x157fd10",
+      "editor_rva": "0x13e73e0",
+      "matching_token_ids": 12,
+      "parser_behavior_equivalence": false
+    },
+    {
+      "game_rva": "0x157ff30",
+      "editor_rva": "0x13e7600",
+      "matching_token_ids": 11,
+      "parser_behavior_equivalence": false
+    },
+    {
+      "game_rva": "0x1580040",
+      "editor_rva": "0x13e7710",
+      "matching_token_ids": 20,
+      "parser_behavior_equivalence": false
+    },
+    {
+      "game_rva": "0x1580e40",
+      "editor_rva": "0x13e8510",
+      "matching_token_ids": 47,
+      "parser_behavior_equivalence": false
+    },
+    {
+      "game_rva": "0x1580e48",
+      "editor_rva": "0x13e8518",
+      "matching_token_ids": 5,
+      "parser_behavior_equivalence": false
+    }
+  ],
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/airborne_bullet.inc",
+      "size": 661,
+      "sha256": "cd1a6a462f39a7bd64fe95b0580cb65dbc93e4e51e745d32f964b1c53ace68f0"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/ammo.set",
+      "size": 33555,
+      "sha256": "56d6b3196980145a49ba1d3d5affc4e30abba95b54a120a1a50fe4edd67e281b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_aa.inc",
+      "size": 1058,
+      "sha256": "9a6df6917ca7398c046479ed0640b86aba3d43deaa459c86a98e1ef6ff426ce6"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_big.inc",
+      "size": 1060,
+      "sha256": "d58a90d2505ce83d5a7a1401a000189a956b3e96cf7ba13e879344ef70188af4"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_bullet.inc",
+      "size": 793,
+      "sha256": "201982011f718e4481aabf112f7c842047ba3f07f11943a3bccb830a7ce4ec69"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_howitzer.inc",
+      "size": 799,
+      "sha256": "7290584c5aa63971693359a3c427fce84e9cfe1dc1fcb93c773154e3285e745c"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_small.inc",
+      "size": 795,
+      "sha256": "c57998a18336a34f26ccd9345f3e9f69482dc4a2274de9efd2c88c80327eef08"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_zenite.inc",
+      "size": 982,
+      "sha256": "c6567db137eba16fedffb057a98fae33546fabc3ba93e1bd889a5f418da1e486"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/car_bullet.inc",
+      "size": 785,
+      "sha256": "629adb4615a29b9102789f2301121d77740d6adb1ef754c200548d8cc12d8147"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human.inc",
+      "size": 546,
+      "sha256": "a104197eecf7dc760aebe256d74fc8e37eba159ee58d5958267589bf1701fe7b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_ap.inc",
+      "size": 1102,
+      "sha256": "b222d1853c0ad5b301b9f736bbc3d719f8681bcdffe0892942e36e5be97f7c83"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_bullet.inc",
+      "size": 815,
+      "sha256": "59924edcfbba2435a611d3c8596e4868e39b4a4fdd56a80ff70f0e31e34a19fc"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_fg.inc",
+      "size": 423,
+      "sha256": "1e84e13799c23a92b15b1a74ba87adc900bd2d7e6d207b11a579f5c4ef3d4350"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/rocket.inc",
+      "size": 604,
+      "sha256": "c043d1f0450761021e11887c1a5957afaccfb196cef8fb4af8e7ba5256525ea9"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/searchlight.inc",
+      "size": 487,
+      "sha256": "a10e67a376e5090e62fe795cf019603ee5fa1a665dc424c943011832a9457d2a"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/select.set",
+      "size": 642,
+      "sha256": "c36e2e0d957c036bc9dfec1d52c74cf6fa5ce0ac1737c994cbb5e649e49519c9"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/supergun.inc",
+      "size": 973,
+      "sha256": "64925ad613f8553cd04c9f1d1828e345e29a6c74d77bba39bf64f8acc8427193"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_bullet.inc",
+      "size": 692,
+      "sha256": "2c16abb4233f24c5ce750f5acfaeb7a7b1db2ed7ad308e2126edfc73d1e4d46a"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_heavy.inc",
+      "size": 1065,
+      "sha256": "64525645eb08f5916a338daa1c023a2e093c14d96c0a75c3c488f65de87b636b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_light.inc",
+      "size": 1068,
+      "sha256": "f878d682de663c5a468eb45757f06917771867ac3285ccd0505aabe19c05431e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_medium.inc",
+      "size": 1283,
+      "sha256": "d77c7e474694c3604af2ce33e79af81dfb49a7f05e3248d7b09d859c0969a037"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_spg.inc",
+      "size": 1029,
+      "sha256": "82b7b6dad0c33db1c48315937ca053e3ef3a91ccc0c0a9857f272d826d61a46b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_zenite.inc",
+      "size": 1023,
+      "sha256": "6adea8aa4609ada4245245b9e40409d79fd4baf3eac80577fe6403003c2b528e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/unmasking.set",
+      "size": 9133,
+      "sha256": "56b0b9a9680e47f6115fcdcef99b71ff3d368bd1e7ff0e01501297598a937718"
+    }
+  ]
+}

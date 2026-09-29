@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "status": "passed",
+  "runtime_verified": false,
+  "scope": "Independent Apple LLVM objdump instruction-boundary comparison with Ghidra for four selected functions; not semantic or ABI proof.",
+  "functions": [
+    {
+      "binary": "call_to_arms.exe",
+      "function_rva": "0x80ff40",
+      "matching_instruction_starts": 237
+    },
+    {
+      "binary": "call_to_arms.exe",
+      "function_rva": "0x91a0b0",
+      "matching_instruction_starts": 173
+    },
+    {
+      "binary": "call_to_arms.exe",
+      "function_rva": "0x901750",
+      "matching_instruction_starts": 102
+    },
+    {
+      "binary": "call_to_arms_ed.exe",
+      "function_rva": "0x69ca20",
+      "matching_instruction_starts": 81
+    }
+  ]
+}
