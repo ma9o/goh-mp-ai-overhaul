@@ -1,0 +1,11 @@
+# RVA	Geometry and idle property leads
+0x157ec30	idle_request_a
+0x157ec90	idle_request_b
+0x1584fcc	cover_edge_offset
+0x1584fd4	cover_high_threshold
+0x1584fe4	cover_min_height
+0x1585008	cover_query_depth
+0x1585038	cover_boundary_epsilon
+0x1575440	pose_special_weapon_tag
+0x10ed658	vtable:Human::eWeaponEvaluator
+0x10ed778	vtable:Human::eBreed
