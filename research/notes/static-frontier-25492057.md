@@ -60,7 +60,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [component repair/tool acquisition/inventory operations](repair-tooling-map-25492057.md), and
 [inventory queues/item ownership/scene retirement](inventory-ownership-map-25492057.md), and
 [hand operations/holder callbacks/FSM request boundary](equipment-actions-map-25492057.md), and
-[FSM routing/request expiry/equipment subsets/completion](fsm-routing-map-25492057.md). Their open questions
+[FSM routing/request expiry/equipment subsets/completion](fsm-routing-map-25492057.md), and
+[expanded base human FSM graph/subset reachability](human-fsm-graph-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -160,9 +161,13 @@ are historical snapshots; this frontier tracks the continuing objective.
   tick-count expiry, six phases, readiness, shortest-edge route search, priority
   comparator, last-match subset rules, split/switch tables and handler barrier
   names now mapped. GEM adds changingState/current/OUTSIDE/activeBlends assertions.
+  Base human graph now expands all16 resources,4 macro definitions/12 invocations
+  into220 states/85 requests/1152 edges; native structural checks agree. Isolated
+  request routes are modeled for all5 subsets, separating already-tagged disabled
+  sources. `lie_revive` has no matching base tag: trace callers/overrides.
   Continue all12 human handler dispatch families `0x960970`, concrete blend types
-  and quant/cancel events behind `0x5CD380`, full generated state graph with
-  include/define/args macros, command2F/idle synchronization, serialization,
+  and quant/cancel events behind `0x5CD380`, mounted resource overrides,
+  command2F/idle synchronization, serialization,
   handler/actor replacement lifetime, and tick callers/scheduling.
 - Clock: containing global `0x1556E00`; manager `0x153BEE0`, bucket creation.
   Direct `0x1556E48` writes only found initialization, so follow parent aliases.
