@@ -58,7 +58,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [crew roles/cannon states/permissions/exit actions](crew-actions-map-25492057.md), and
 [vehicle weapon/root/withdrawal/repair policy](vehicle-brain-map-25492057.md), and
 [component repair/tool acquisition/inventory operations](repair-tooling-map-25492057.md), and
-[inventory queues/item ownership/scene retirement](inventory-ownership-map-25492057.md). Their open questions
+[inventory queues/item ownership/scene retirement](inventory-ownership-map-25492057.md), and
+[hand operations/holder callbacks/FSM request boundary](equipment-actions-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -139,14 +140,23 @@ are historical snapshots; this frontier tracks the continuing objective.
   mapped. Transfer10 and cancel11 act during decode. Physical Mass differs from
   Inventory Weight. Item/world unlink allows visual retirement without item loss;
   repair's direct world deletion leaves item disposal to stuff-extender destruction.
-  Continue PrepareForItem, DropFromHand, PutFromRight, Unmount and UseItem variants;
-  all derived holder callbacks; rearrangement sort `0x7DF600`, resource clone-policy,
+  PrepareForItem, DropFromHand, PutFromRight/Left, Unmount, FreeHands, SwapHands and
+  UseItem are now mapped, including hand coexistence tags, reservations, FSM waits,
+  event3 transfer, holder attachment/equipment callbacks and command14 decode.
+  Builder destruction auto-submits. GEM has extra transfer invariant diagnostics.
+  Continue rearrangement sort `0x7DF600`, resource clone-policy,
   raw holder/box replacement and operation owner88/reentrancy. ItemDC meaning,
   `spread_items` scatter cap1480BC8 producers and inventory-kick command13 remain.
   `0x7D3620` requeues deferred events for absent child sub-IDs. Scene retirement
   `0xA1CC10` delivers mask7 before extender cleanup; general soft receivers only
   invalidate at final entity destruction. Follow actor registryA5DF80, ID reuse,
   deferred disposal652A10 and full entity spawn/build ownership.
+- Animation/FSM: request API `0x7FBD70`, owner cancellation, start/consume/drop,
+  state-switch translation slice and arbitration `0x7FE6E0` are mapped. Continue
+  request parser binding (rankCC, C9, completionDC), readiness `0x7FEE10`, route
+  builder `0x7FCEE0`, commit `0x7FD210`, comparator `0x800E30`, state records and
+  animation event3/6 production. Authored priorities and equipment tags are read
+  from properties/human_fsm resources; native field binding is still needed.
 - Clock: containing global `0x1556E00`; manager `0x153BEE0`, bucket creation.
   Direct `0x1556E48` writes only found initialization, so follow parent aliases.
   Repair reads integer delta1556E4C (initializer3D770 sets1) and sentinel1556DE8

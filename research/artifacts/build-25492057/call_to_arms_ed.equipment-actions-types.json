@@ -1,0 +1,3342 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "binary": {
+    "filename": "call_to_arms_ed.exe",
+    "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+    "image_base": "0x140000000"
+  },
+  "scope_pattern": "Equipment operation phases, holder callbacks and animation transfer events",
+  "warning": "Structural discovery only. Filtered roots are not all AI dependencies. Vtable extents are executable-pointer scans, not verified slot counts. No method semantics or runtime ABI is asserted.",
+  "types": [
+    {
+      "mangled_name": ".?AUeOperationHuman@Inventory@@",
+      "display_name": "Inventory::eOperationHuman",
+      "descriptor_rvas": [
+        "0x1372bb8"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf40148",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x655600",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x655600",
+                "end_rva": "0x655634",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x654f30",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x654f50",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x654f40",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x654fa0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6555d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x654f80",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x654fb0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c4f50",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperationHuman@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation_DropFromHand@Inventory@@",
+      "display_name": "Inventory::eOperation_DropFromHand",
+      "descriptor_rvas": [
+        "0x1372ea0"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf408a8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x658d20",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x658d20",
+                "end_rva": "0x658d5e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x658b70",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x658b70",
+                "end_rva": "0x658bb0",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x658bb0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x658bc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x654fa0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6555d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x658bd0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x658bd0",
+                "end_rva": "0x658d1f",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x654fb0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c5610",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation_DropFromHand@Inventory@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeOperationHuman@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation_FreeHands@Inventory@@",
+      "display_name": "Inventory::eOperation_FreeHands",
+      "descriptor_rvas": [
+        "0x1372e28"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf407d8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x658650",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x658650",
+                "end_rva": "0x65868e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x6584f0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6584f0",
+                "end_rva": "0x658530",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x658530",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x658540",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x654fa0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6555d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x658550",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x658550",
+                "end_rva": "0x658650",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x654fb0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c5500",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation_FreeHands@Inventory@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeOperationHuman@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation_PrepareForItem@Inventory@@",
+      "display_name": "Inventory::eOperation_PrepareForItem",
+      "descriptor_rvas": [
+        "0x1372de8"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf40778",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x6584b0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6584b0",
+                "end_rva": "0x6584ee",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x6580e0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6580e0",
+                "end_rva": "0x658120",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x658120",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x654f40",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x654fa0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6555d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x658130",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x658130",
+                "end_rva": "0x6584af",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x654fb0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c5478",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation_PrepareForItem@Inventory@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeOperationHuman@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation_PutFromLeft@Inventory@@",
+      "display_name": "Inventory::eOperation_PutFromLeft",
+      "descriptor_rvas": [
+        "0x1372d08"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf405c0",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x656f30",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656f30",
+                "end_rva": "0x656f6e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x656dd0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656dd0",
+                "end_rva": "0x656e10",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x656e10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x656e20",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x654fa0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x654f90",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x656e30",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656e30",
+                "end_rva": "0x656f2c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x654fb0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c5260",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation_PutFromLeft@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation_PutFromRight@Inventory@@",
+      "display_name": "Inventory::eOperation_PutFromRight",
+      "descriptor_rvas": [
+        "0x1372c90"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf404d0",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x656be0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656be0",
+                "end_rva": "0x656c1e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x656a80",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656a80",
+                "end_rva": "0x656ac0",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x656ac0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x656ad0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x654fa0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6555d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x656ae0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656ae0",
+                "end_rva": "0x656bdb",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x654fb0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c5150",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation_PutFromRight@Inventory@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeOperationHuman@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation_SwapHands@Inventory@@",
+      "display_name": "Inventory::eOperation_SwapHands",
+      "descriptor_rvas": [
+        "0x1372d78"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf40690",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x657890",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x657890",
+                "end_rva": "0x6578ce",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x657430",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x657430",
+                "end_rva": "0x657480",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x657480",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x657490",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x6574a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6574a0",
+                "end_rva": "0x6574bc",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6555d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x657540",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x657540",
+                "end_rva": "0x65785e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x657860",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x657860",
+                "end_rva": "0x65788f",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c5368",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation_SwapHands@Inventory@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeOperationHuman@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation_Unmount@Inventory@@",
+      "display_name": "Inventory::eOperation_Unmount",
+      "descriptor_rvas": [
+        "0x1372c58"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf40450",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x656a40",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656a40",
+                "end_rva": "0x656a7e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x6567e0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6567e0",
+                "end_rva": "0x656827",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x656830",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x654f40",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x656840",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656840",
+                "end_rva": "0x65687e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x654f90",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x656880",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656880",
+                "end_rva": "0x656a36",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x654fb0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c50d0",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation_Unmount@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation_UnmountRight@Inventory@@",
+      "display_name": "Inventory::eOperation_UnmountRight",
+      "descriptor_rvas": [
+        "0x1372d40"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf40620",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x6573f0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6573f0",
+                "end_rva": "0x65742e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x656f70",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656f70",
+                "end_rva": "0x656fb9",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x656fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x654f40",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x656fd0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x656fe0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656fe0",
+                "end_rva": "0x657005",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6555d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x657090",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x657090",
+                "end_rva": "0x657388",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x657390",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x657390",
+                "end_rva": "0x6573e7",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c52e0",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation_UnmountRight@Inventory@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeOperationHuman@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation_UseItem@Inventory@@",
+      "display_name": "Inventory::eOperation_UseItem",
+      "descriptor_rvas": [
+        "0x1372be8"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf40220",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x655c10",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x655c10",
+                "end_rva": "0x655c4e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x655640",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x655640",
+                "end_rva": "0x655680",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x655680",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x655690",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x6556a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6556a0",
+                "end_rva": "0x6556df",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x654f90",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x6556e0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6556e0",
+                "end_rva": "0x655c0c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x654fb0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c4fd0",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation_UseItem@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation__DropFromHand@Inventory@@",
+      "display_name": "Inventory::eOperation__DropFromHand",
+      "descriptor_rvas": [
+        "0x1372e60"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf40838",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x658b30",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x658b30",
+                "end_rva": "0x658b6e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x658690",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x658690",
+                "end_rva": "0x6586d9",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x6586e0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x654f40",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x6586f0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6586f0",
+                "end_rva": "0x658897",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6555d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x6588a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6588a0",
+                "end_rva": "0x658ac9",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x658ad0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x658ad0",
+                "end_rva": "0x658b27",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c5588",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation__DropFromHand@Inventory@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeOperationHuman@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeOperation__PutFromRight@Inventory@@",
+      "display_name": "Inventory::eOperation__PutFromRight",
+      "descriptor_rvas": [
+        "0x1372cc8"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf40540",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x656d90",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656d90",
+                "end_rva": "0x656dce",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x656c20",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656c20",
+                "end_rva": "0x656c60",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x656c60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x656c70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x654fc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x654f70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x654fa0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6555d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x654f60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x656c80",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x656c80",
+                "end_rva": "0x656d84",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x654fb0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c51d8",
+          "bases": [
+            {
+              "mangled_name": ".?AUeOperation__PutFromRight@Inventory@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeOperationHuman@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOperation@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVeHolderArmor@Inventory@@",
+      "display_name": "Inventory::eHolderArmor",
+      "descriptor_rvas": [
+        "0x1331110"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf3fa00",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x652250",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x652250",
+                "end_rva": "0x65228c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x652810",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x652810",
+                "end_rva": "0x65284c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x652660",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x652640",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x6531d0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6531d0",
+                "end_rva": "0x65323f",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x652000",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x652560",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x652860",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x652860",
+                "end_rva": "0x652890",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c4af8",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderArmor@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        },
+        {
+          "rva": "0xf3fa48",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x6527f4",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x96070",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x96080",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4e90e0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x4e9100",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4e9100",
+                "end_rva": "0x4e9180",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x4e9190",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x4e9330",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x652da0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x652da0",
+                "end_rva": "0x652e6e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x95ad0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x6530e0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6530e0",
+                "end_rva": "0x65311d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x653120",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653120",
+                "end_rva": "0x6531d0",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 104,
+          "locator_rva": "0x10c4ba0",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderArmor@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        },
+        {
+          "rva": "0xf3faa8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x652800",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 120,
+          "locator_rva": "0x10c4bc8",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderArmor@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVeHolderHandLeft@Inventory@@",
+      "display_name": "Inventory::eHolderHandLeft",
+      "descriptor_rvas": [
+        "0x1372af0"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf3fb80",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x652250",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x652250",
+                "end_rva": "0x65228c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x6533d0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6533d0",
+                "end_rva": "0x65340c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x652660",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x652640",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x653690",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653690",
+                "end_rva": "0x6536e4",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x652000",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x652560",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x653420",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653420",
+                "end_rva": "0x653445",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c4bf0",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderHandLeft@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        },
+        {
+          "rva": "0xf3fbc8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x6536e4",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x96070",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x96080",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4e90e0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x4e9100",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4e9100",
+                "end_rva": "0x4e9180",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x4e9190",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x4e9330",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6522f0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6522f0",
+                "end_rva": "0x6523a2",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x95ad0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x653620",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653620",
+                "end_rva": "0x653686",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x652670",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x652670",
+                "end_rva": "0x6526e6",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 104,
+          "locator_rva": "0x10c4c98",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderHandLeft@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        },
+        {
+          "rva": "0xf3fc28",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x6536f0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 120,
+          "locator_rva": "0x10c4cc0",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderHandLeft@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVeHolderHandRight@Inventory@@",
+      "display_name": "Inventory::eHolderHandRight",
+      "descriptor_rvas": [
+        "0x1372b20"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf3fca0",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x653900",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653900",
+                "end_rva": "0x65395c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x653730",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653730",
+                "end_rva": "0x6537ef",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x653800",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653800",
+                "end_rva": "0x6538a9",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x652640",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x653bd0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653bd0",
+                "end_rva": "0x653c24",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x6538b0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6538b0",
+                "end_rva": "0x6538f3",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x652560",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6521b0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6521b0",
+                "end_rva": "0x6521f1",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c4ce8",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderHandRight@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        },
+        {
+          "rva": "0xf3fce8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x653c24",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x96070",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x96080",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4e90e0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x4e9100",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4e9100",
+                "end_rva": "0x4e9180",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x4e9190",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x4e9330",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6522f0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6522f0",
+                "end_rva": "0x6523a2",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x95ad0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x653b60",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653b60",
+                "end_rva": "0x653bc6",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x652670",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x652670",
+                "end_rva": "0x6526e6",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 104,
+          "locator_rva": "0x10c4d90",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderHandRight@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        },
+        {
+          "rva": "0xf3fd48",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x653c30",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 120,
+          "locator_rva": "0x10c4db8",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderHandRight@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVeHolderWeapon@Inventory@@",
+      "display_name": "Inventory::eHolderWeapon",
+      "descriptor_rvas": [
+        "0x1372b58"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf3fe10",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x652250",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x652250",
+                "end_rva": "0x65228c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x653d20",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653d20",
+                "end_rva": "0x653f75",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x653d00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x652640",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x6540a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6540a0",
+                "end_rva": "0x6540f4",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x653c70",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653c70",
+                "end_rva": "0x653cb3",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x653f80",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653f80",
+                "end_rva": "0x653fb0",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x653cc0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x653cc0",
+                "end_rva": "0x653cf2",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c4de0",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderWeapon@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        },
+        {
+          "rva": "0xf3fe58",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x6540f4",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x96070",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x96080",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4e90e0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x4e9100",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4e9100",
+                "end_rva": "0x4e9180",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x4e9190",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x4e9330",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6522f0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6522f0",
+                "end_rva": "0x6523a2",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x95ad0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x654030",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x654030",
+                "end_rva": "0x654095",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x652670",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x652670",
+                "end_rva": "0x6526e6",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 104,
+          "locator_rva": "0x10c4e88",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderWeapon@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        },
+        {
+          "rva": "0xf3feb8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x654100",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 120,
+          "locator_rva": "0x10c4eb0",
+          "bases": [
+            {
+              "mangled_name": ".?AVeHolderWeapon@Inventory@@",
+              "contained_bases": 6,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolder@Inventory@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeHolderGeneric@Inventory@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 104,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShared@Inventory@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSharedObject@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 120,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "display_name": "eInvetoryOpStateSyncCommand",
+      "mangled_name": ".?AUeInvetoryOpStateSyncCommand@@",
+      "descriptor_rvas": [
+        "0x1360360"
+      ],
+      "vtables": [
+        {
+          "rva": "0xed06b0",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x2cdd70",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x2cdd70",
+                "end_rva": "0x2cddf7",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xf3ee0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x2cd220",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x2cd220",
+                "end_rva": "0x2cd367",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x2cd370",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x2cd370",
+                "end_rva": "0x2cd3a1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x2cdd50",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x2cdd60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0
+        }
+      ]
+    }
+  ]
+}

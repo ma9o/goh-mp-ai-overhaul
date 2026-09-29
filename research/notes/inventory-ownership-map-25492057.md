@@ -83,6 +83,11 @@ actor's inventory manager; it can emit transfer command10 and relinquishes the
 builder's operation-name/ownership state. Name ownership/freeing and
 command payload are described below. The owned-name byte98 controls freeing of
 the operation name; submit then clears name88.
+Builder destructor7CC810 **calls7CC600 before releasing params, interaction
+string and locations**. Construction followed by destruction can therefore
+enqueue work without an explicit submit call. An earlier explicit submit clears
+name88 so the destructor's attempt does not enqueue it twice. This destructor
+side effect was clarified while following the equipment holder callbacks.
 
 `7D34E0` creates a running operation from the name registry, copies source8 and
 destination48, selects an owner (explicit, else source entity, else destination

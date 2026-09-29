@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "089dc494809b16d52c076664ab76bf9861b6fd54e23f41cb918134d8b7768f41",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "4773296d0ab89f50aeaadb6836578751259d3408a197413cdbd32ec59fb52c5d",
+      "exact_candidates": 181,
+      "exported_functions": 247,
+      "exported_basic_blocks": 3473,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 102,
+      "checked_instruction_locations": 5092,
+      "checked_pointer_tables": 4,
+      "checked_rtti_tables": 25,
+      "checked_byte_sequences": 20
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "472ce9c36d0b164dae482a1bd4d5e2898d6910a355a24844d93038361311a13b",
+      "exact_candidates": 127,
+      "exported_functions": 144,
+      "exported_basic_blocks": 664,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 15,
+      "checked_instruction_locations": 1430,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 25,
+      "checked_byte_sequences": 0
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/inventory.inc",
+      "size": 712,
+      "sha256": "49036f331931e52c0b2571e9e290dfdc07e4aeef179e5ff421206358056a5ef8"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/stand.inc",
+      "size": 5322,
+      "sha256": "48cd9e0a09698ddc25af6be3d5e2ca9042152b3e8b6bbf08cfa9c60e89068240"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/request.inc",
+      "size": 3836,
+      "sha256": "4004e36c8515c2b9f49a4c7d67ee056006706ac3a2cacf5306ee9277587ded84"
+    }
+  ],
+  "status": "passed"
+}
