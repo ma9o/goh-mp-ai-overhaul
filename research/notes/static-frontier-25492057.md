@@ -61,7 +61,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [inventory queues/item ownership/scene retirement](inventory-ownership-map-25492057.md), and
 [hand operations/holder callbacks/FSM request boundary](equipment-actions-map-25492057.md), and
 [FSM routing/request expiry/equipment subsets/completion](fsm-routing-map-25492057.md), and
-[expanded base human FSM graph/subset reachability](human-fsm-graph-25492057.md). Their open questions
+[expanded base human FSM graph/subset reachability](human-fsm-graph-25492057.md), and
+[human FSM handler dispatch/action effects](human-fsm-actions-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -85,8 +86,9 @@ are historical snapshots; this frontier tracks the continuing objective.
 - Human states: detour stages `0x93ED30`, feasibility `0x940130`, pose helpers,
   idle request `0x95FCC0` and pickup score/sort now mapped. Continue bound
   intersection `0x6144E0`, network setup `0x8C6390/0x8C6400`, route refine sampler
-  `0x8C76B0`, full callers supplying equipment tags to `0x95FAD0` and animation
-  refresh `0x961710`. Handler424/42C now have13 class/six modifier tag bindings and
+  `0x8C76B0`, equipment replacement/lifetime around callback `0x939C10`→`0x95FAD0`.
+  `0x938830` returns equipped-definition EC8 tags; `0x961710` updates finger
+  animations, while pose cache `0x96A4B0` remains open. Handler424/42C have13 class/six modifier tag bindings and
   exact subset selection. Handler560 is native activeBlends, decremented by entity
   event6/subkind6; blend scheduling and synchronous completion now mapped. Continue
   concrete animation quant/cancellation and pending callback lifetime,
@@ -164,9 +166,15 @@ are historical snapshots; this frontier tracks the continuing objective.
   Base human graph now expands all16 resources,4 macro definitions/12 invocations
   into220 states/85 requests/1152 edges; native structural checks agree. Isolated
   request routes are modeled for all5 subsets, separating already-tagged disabled
-  sources. `lie_revive` has no matching base tag: trace callers/overrides.
-  Continue all12 human handler dispatch families `0x960970`, concrete blend types
-  and quant/cancel events behind `0x5CD380`, mounted resource overrides,
+  sources. `lie_revive` has no matching request tag; its implemented state carries
+  `revive`, reachable from lying under that generic request. Trace special callers.
+  All12 human handler families have195 exact name/part selectors matched against
+  GEM and joined to220 base states. Entry/exit effects, reload scaling, stored
+  throw variants, carried-corpse FSM changes, swimming inventory preparation and
+  finger animation refresh are mapped. Continue pose/walk selection
+  `0x96A4B0/0x973010`, idle/repair update, death animation feasibility/selection
+  `0x938410/0x9648E0/0x9645D0`, concrete blend types and quant/cancel behind
+  `0x5CD380`, actor1420 bit3/handler flags, mounted resource overrides,
   command2F/idle synchronization, serialization,
   handler/actor replacement lifetime, and tick callers/scheduling.
 - Clock: containing global `0x1556E00`; manager `0x153BEE0`, bucket creation.

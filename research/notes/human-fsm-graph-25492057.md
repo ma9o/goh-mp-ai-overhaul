@@ -59,6 +59,11 @@ this base graph. Its route is absent from every source and subset. This is a
 static lead: callers, resource overrides and intended use remain to be traced;
 the result alone does not establish a gameplay defect.
 
+Follow-up: [native handler mapping](human-fsm-actions-map-25492057.md) confirms
+that the state `lie_revive` exists and is implemented, but carries the generic
+`revive` tag. From `lie`, request `revive` reaches it in the default subset.
+The distinct request named `lie_revive` remains unmatched.
+
 The `walk` switch has15 pairs:11 generated split-preserving pairs for inventory,
 reload/unload, switch, holdback, belt and pistol states, plus4 explicit links
 (`stand`→`walk`, `stand`→`walk_switch_move`, `stand_recoil`→`walk_recoil`,
