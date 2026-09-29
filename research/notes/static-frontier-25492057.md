@@ -63,7 +63,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [FSM routing/request expiry/equipment subsets/completion](fsm-routing-map-25492057.md), and
 [expanded base human FSM graph/subset reachability](human-fsm-graph-25492057.md), and
 [human FSM handler dispatch/action effects](human-fsm-actions-map-25492057.md), and
-[animation control/completion/frame markers/entity motion](animation-control-map-25492057.md). Their open questions
+[animation control/completion/frame markers/entity motion](animation-control-map-25492057.md), and
+[pose/walking/idle profiles and human animation declarations](human-animation-profiles-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -89,7 +90,8 @@ are historical snapshots; this frontier tracks the continuing objective.
   intersection `0x6144E0`, network setup `0x8C6390/0x8C6400`, route refine sampler
   `0x8C76B0`, equipment replacement/lifetime around callback `0x939C10`→`0x95FAD0`.
   `0x938830` returns equipped-definition EC8 tags; `0x961710` updates finger
-  animations, while pose cache `0x96A4B0` remains open. Handler424/42C have13 class/six modifier tag bindings and
+  animations; pose cache `0x96A4B0`, all pose class branches, walking `0x973010`,
+  health/subject flag refresh, idle/repair RNG and deadlines are now mapped. Handler424/42C have13 class/six modifier tag bindings and
   exact subset selection. Handler560 is native activeBlends, decremented by entity
   event6/subkind6; blend scheduling and synchronous completion now mapped. Continue
   handler callback reentrancy and replacement lifetime (concrete animation
@@ -178,13 +180,19 @@ are historical snapshots; this frontier tracks the continuing objective.
   retention, cancellation/destruction and scene animation scheduling are now mapped.
   Sequence movement can write entity50..7C; movement is not purely visual.
   Marker event5 reaches the interaction definition's marker-name map48;
-  completion event6/subkind2 uses animation-name map60. Continue pose/walk selection
-  `0x96A4B0/0x973010`, idle/repair update, death animation feasibility/selection
-  `0x938410/0x9648E0/0x9645D0`, full resource/handler joins from
-  `_reg_human_movement.inc` and `_reg_vehicle_crew.inc`, binary animation timeline
+  completion event6/subkind2 uses animation-name map60. Pose/walk selection
+  `0x96A4B0/0x973010` and idle/repair update are now mapped, including variation
+  counter side effects, AI/player/manual shoot_walking tags, health<0.3 and
+  callback4's health-bit16 gate (not target bit14). The three base animation text
+  resources yield1545 unique declarations/790 event rows;123 of125 selector names
+  match. Resolve automatic registration/file lookup for unmatched `stand_idle_empty`
+  and `stand_idle_strap_4` before interpreting them as missing animations. Continue
+  death animation feasibility/selection `0x938410/0x9648E0/0x9645D0`,
+  binary animation timeline
   normalization, aimset/blendspace parameter producers, concrete marker action lists,
   root/bone transforms `0x5D3820/0x5D7410/0x5D8170/0x5D8250` and entity slot25,
-  actor1420 bit3/handler flags, mounted resource overrides,
+  actor1420 bit3/handler flags and cache invalidation, movement mode enum binding,
+  counter34/scale27C writers, reference bone558 binding, mounted resource overrides,
   command2F/idle synchronization, serialization,
   handler/actor replacement lifetime and callback reentrancy. Deferred mesh updates
   retain model pointers and swap two vectors on event-object kind26 (`0x5D5DE0`);

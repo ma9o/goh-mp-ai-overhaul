@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "4b1689807037b2eb66a2841889ff58ed82d2a31084f0f0dc40e53ec08f5fafca",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "fbe5323999f0aeaff983ba6d933cad9bd94b5f88a5acb134db118a1f21100131",
+      "exact_candidates": 169,
+      "exported_functions": 172,
+      "exported_basic_blocks": 727,
+      "checked_enums": 0,
+      "checked_constants": 12,
+      "checked_method_entries": 30,
+      "checked_instruction_locations": 4352,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 1,
+      "checked_byte_sequences": 149
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "dab8da43d68faf4afc7f27abe0d4a2aba9d8e045fe2a61204af83cc3ef612627",
+      "exact_candidates": 147,
+      "exported_functions": 148,
+      "exported_basic_blocks": 731,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 26,
+      "checked_instruction_locations": 4065,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 1,
+      "checked_byte_sequences": 118
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/human_anm.ext",
+      "size": 110,
+      "sha256": "451c50bc6f23b5d65cd3b912c7b09d71bbaeb0e866aae35ca93f6af7b79fd578"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/_reg_human_movement.inc",
+      "size": 69194,
+      "sha256": "482073855c59e564b6f159bfd124abacdcc7799747c167f1177d5dd4ed9a124c"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/_reg_vehicle_crew.inc",
+      "size": 55604,
+      "sha256": "1d201c2112b54676453860afe87db629ffc45c997a5993e0fd3787dbcc2537c3"
+    }
+  ],
+  "status": "passed"
+}

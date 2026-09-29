@@ -1,0 +1,6 @@
+# RVA	Human animation profile anchors
+0x10edfb0	idle_selection_event_literal
+0x1547de0	turn_parameter_to_radians	write
+0x1547ddc	radians_to_turn_parameter	write
+0x1547db8	clock_delta_conversion	write
+0x15885a4	handler_rng_float_scale	write
