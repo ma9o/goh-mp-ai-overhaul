@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "08a4cd215fc79834ce79c91d5135f8cc880d0e5f83c812c1f33b2245d3865341",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "b442ab04838c795ef3477f63b087b9cef2017fa8313e0af8637de4734a1a7449",
+      "exact_candidates": 123,
+      "exported_functions": 235,
+      "exported_basic_blocks": 5105,
+      "checked_enums": 1,
+      "checked_constants": 10,
+      "checked_method_entries": 98,
+      "checked_instruction_locations": 7664,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 13,
+      "checked_byte_sequences": 25
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "5f76414ed20e8319bf0f4f1e301be0a41a448aafe81373aa1e7c12da81eb75ed",
+      "exact_candidates": 93,
+      "exported_functions": 123,
+      "exported_basic_blocks": 1231,
+      "checked_enums": 1,
+      "checked_constants": 3,
+      "checked_method_entries": 14,
+      "checked_instruction_locations": 2007,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 13,
+      "checked_byte_sequences": 8
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/vehicle.ext",
+      "size": 19465,
+      "sha256": "2dade19bee3db0f13aa1b6e7868deeb17e3a8d3a2cfd6d7e037953ff2c7398a0"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/airborne.ext",
+      "size": 10260,
+      "sha256": "8f6f474bcbc2870eddbd8f7e72b27b52cf94dc813f04200d3ea6ca8b3f2da43c"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/inventory.inc",
+      "size": 712,
+      "sha256": "49036f331931e52c0b2571e9e290dfdc07e4aeef179e5ff421206358056a5ef8"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/component.set",
+      "size": 3307,
+      "sha256": "3f42788e2170cd646dc909355e6cf6137f11a27743b51453973d4f3e37a5dcce"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/special/repair_kit",
+      "size": 184,
+      "sha256": "77ebe3dac912eb7301e0031e23f00f01c149b75a9e677f5d697e71e3967788d0"
+    }
+  ],
+  "status": "passed"
+}

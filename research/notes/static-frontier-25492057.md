@@ -16,7 +16,7 @@ after their behavior and effect on the AI contract are established.
 
 | Area | Current evidence | Open static work |
 |---|---|---|
-| Entity/component structure | Constructor-backed Fsm/Cover/Brain/Sensor/Weaponry/Chassis pointers; direct component clone/load ownership; extender collection/cache/attach/clone/rebind; inventory cache and nested weight chain; placer ownership/clone and separate physical link tree; SoftLinkable receiver invalidation; selected IDs/fields; 392/391 native RTTI roots plus newly followed dependencies | Component replacement/removal and factory completeness; world enumeration, actor IDs/flags, subtype/lifetime relationships; inventory holder/item ownership |
+| Entity/component structure | Constructor-backed Fsm/Cover/Brain/Sensor/Weaponry/Chassis pointers; direct component clone/load ownership; extender collection/cache/attach/clone/rebind; inventory cache and nested weight chain; placer ownership/clone and separate physical link tree; SoftLinkable receiver invalidation; repair component policy and raw-pointer relationships; item placement/holder and reservation distinction; selected IDs/fields; 392/391 native RTTI roots plus newly followed dependencies | Component replacement/removal and factory completeness; world enumeration, actor IDs/flags, subtype/lifetime relationships; inventory holder/item ownership |
 | Sensor/perception | Candidate commit/categories, memory/eviction, ally sharing, grid rays, unmask rules; Recon registration/waiting counts, six searcher slots,60-sector rings and renewal; all eight signal names; sound/action definition parsers and repeat publishing; injury/corpse/hit/death-cry producers; mission signal condition/reset | Sound source cancellation/lifetime, area registration lifetime; residual Recon completed-status consumers; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine lifetimes |
 | Relationships | Neutral/enemy/ally values, 18-player defaults, symmetric setter, scene diplomacy and multiplayer setup | Ownership changes and other brain flag15 producers (placement TurnOff.Targetable now bound); downstream relationship consumers |
 | Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | Class/attacking/threating flag producers; all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
@@ -24,8 +24,8 @@ after their behavior and effect on the AI contract are established.
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle; discrete height probes, height/side-clearance kind selection, interval boundary bisection | Descriptor +8/+C consumer roles; full edge spacing and alternate offsets; geometry-query/grid construction |
 | Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set, grenade escape planning | Path request/acceptance, grid costs/probes, terrain/animation application, movement enum binding, ability/health speed modifiers; crush/obstacle order builders |
 | Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy/zeroing; named aim modes and ballistic solvers; burst sampler and stateful preview; adaptive geometry trace; live projectile fields/pool/flight and contact-to-damage bridge; TargetAccessor result gates; occupied-slot readiness; named crew slot flags, Sealed exposure, priority assignment and reservations; gunner/charger/commander/driver requests and minWorkers; cannon animation completion counter | Place/profile/owner lifetime; bone limit solvers and sway/reload; charger and animation producers; weaponry86 state; full contact/material/ricochet outcomes, guided steering and synchronization; other shooter types |
-| Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wounds/repair and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
-| Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application; vehicle allocation/root/emergency/Hideout/SmartRepair dispatcher | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; Board/Bind/Emit now mapped; actual Repair/KitExchange and group variants; scripted blow effects and melee defence/counterattack |
+| Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; RepairTime/RepairOrder, countdown/restoration and repair command59; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wound-list removal and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
+| Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application; vehicle allocation/root/emergency/Hideout/SmartRepair dispatcher; Repair/KitExchange/Collect/TakeItem/OrderTake and transfer/equip operations | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; Board/Bind/Emit now mapped; Repair phase6 reachability and group variants; scripted blow effects and melee defence/counterattack |
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion | Quant-clock producer/pause/time scale, manager bucket creation, context/RNG setup, entity lifetime through queued work; skip setter now mapped |
 | Group/vehicle behavior | Type roots; cannon fire/move/trailing states, role-index transfers, seat Disable and obstacle enable writers; place readiness/assignment; crew groups, sealing, entrance balancing, Board/Bind/Emit phases, traversal graph/animation/inventory, walker sync/cancel/load and occupant perception effects; six concrete exit callbacks; abandoned/ally_crew/any_crew/select bindings; boarder command reception; vehicle root/multiweapon allocation, gunner withdrawal, repairer selection, emergency triggers and basic airborne/animal roots; cannon command5E reception | Full squad/leader coordination, aircraft/helicopter chassis and animal scanners; exit source-pointer lifetime; full reservation/queue lifetime and derived chassis permissions, remaining availability flag producers; cannon matrix correction |
 | Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
@@ -56,7 +56,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [crew placement/assignment/entity links](placement-map-25492057.md), and
 [boarding/exit/traversal/crew collection](boarding-map-25492057.md), and
 [crew roles/cannon states/permissions/exit actions](crew-actions-map-25492057.md), and
-[vehicle weapon/root/withdrawal/repair policy](vehicle-brain-map-25492057.md). Their open questions
+[vehicle weapon/root/withdrawal/repair policy](vehicle-brain-map-25492057.md), and
+[component repair/tool acquisition/inventory operations](repair-tooling-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -91,9 +92,11 @@ are historical snapshots; this frontier tracks the continuing objective.
   graph, walker, inventory/animation, cancellation and load maps, plus the
   six registered EmitTo/OnExit objects, access predicates and synchronization reception.
   Vehicle callback triggers, Hideout group cover distribution, SmartRepair dispatcher
-  and ResetWaypointOnly destructor effects now mapped. Continue actual Repair
-  `0x8F9240` and KitExchange (`0x8FCA70` factory), component repair eligibility
-  `0x8953B0`, brain3E0 human deadline consumers and source-actor pointer lifetime. Advance byte39
+  and ResetWaypointOnly destructor effects now mapped. Actual Repair, KitExchange,
+  component duration/priority, Collect, TakeItem/OrderTake, transfer/equip
+  operations and command59 are now mapped in the repair-tooling pass. Continue
+  Repair phase6 setter, component-name lookup `0x895E40`, component/volume raw
+  pointer lifetime, brain3E0 human deadline consumers and source-actor pointer lifetime. Advance byte39
   is cleared at start; its set-side and state2 reachability remain open.
   Melee loader/parser `0x95ED00/0x95D230`, variant lookup, damage/knockdown
   calculation and animation timing now connected; follow defence/counterattack,
@@ -129,14 +132,28 @@ are historical snapshots; this frontier tracks the continuing objective.
   finish edge spacing `0x8A73B0`, route clearance `0x8AC3F0`, geometry ray
   `0xA23D60`; grid exclusion `0x882C20/0x882C70` and construction;
   environment query `0x6F44B0` and class bindings.
+- Inventory: Repair/tooling now distinguishes holder reservations80/88 from item3D8,
+  action completion (ID no longer in adapterA8/B0) from transfer success, and
+  item inventory30/holder38/world-entity60 with placementD8. Follow adapter queue
+  creation/update/cancel and action/sub-ID lifetime; iterator representation
+  `0x7CE320..0x7CF8B0`; root-operation token `0x7D33B0`; capacity/stack mutation
+  `0x7DA890/0x7CEEB0/0x7CEFC0/0x7C9C30`; PrepareForItem, DropFromHand, PutFromRight,
+  Unmount and UseItem variants. Item materialization `0x7C9D80` and refresh
+  `0x7C9720`, holder/container replacement and entity event4 deletion handlers
+  remain. `0x6FCDC0/0x6FEBC0` requests deletion of the repair-kit wrapper, but the
+  underlying item fate has not been established. `0x7D3620` requeues deferred
+  events when their child-operation sub-ID is not yet present.
 - Clock: containing global `0x1556E00`; manager `0x153BEE0`, bucket creation.
   Direct `0x1556E48` writes only found initialization, so follow parent aliases.
+  Repair reads integer delta1556E4C (initializer3D770 sets1) and sentinel1556DE8
+  (BSS, no direct WRITE xrefs). Full time producer/alias review remains necessary.
 - Vehicle policy: `0x988FC0/0x989A80/0x98ABA0` candidate/weapon allocation,
   `0x98F0A0/0x990870` ordered interrupt/execute branches, `0x991C20` idle scanning,
   `0x781720/0x7819F0` actual exposed-to-internal gunner transfer,
   `0x992950` repairer selection and `0x8FB330` SmartRepair decisions now mapped.
-  Continue weapon definition1544/1548 timer names, last-enemy exclusion tag156FCC0,
-  crew-sort median98C190, full actor/brain factory selection. `eABS_Root` means
+  Last-enemy exclusion tag156FCC0=`airborne`, crew-sort median98C190 and retained
+  swap98D6E0 are now mapped. Continue weapon definition1544/1548 timer names and
+  full actor/brain factory selection. `eABS_Root` means
   airborne; `eAS_Root` means animal. Follow aircraft/helicopter chassis,
   misspelled `eAirboneBrainClient`, animal crush/obstacle scanners and
   definition tag15985D0. Shared idle-scan counter1484C00 warrants lifetime review.
