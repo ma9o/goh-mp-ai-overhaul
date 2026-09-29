@@ -1,0 +1,17 @@
+# RVA	Infantry game/editor policy checks
+0x95b10	Human::eHumanState:slot4
+0x7cee40	Human::eCoverBattle:slot3
+0x7cf390	Human::eCoverBattle:slot4
+0x7cf660	Human::eCoverBattle:slot2
+0x7d1450	Human::eOutdoorsBattle:slot4
+0x7d18f0	Human::eOutdoorsBattle:slot2
+0x7d1bd0	Human::eOutdoorsBattle:slot3
+0x7d3910	Human::eOutdoorsFindEnemy:slot2
+0x7d3c90	Human::eOutdoorsFindEnemy:slot4
+0x7d3de0	Human::eOutdoorsFindEnemy:slot3
+0x7d6290	Human::eOutdoorsIdle:slot4
+0x7d6430	Human::eOutdoorsIdle:slot2
+0x7d6570	Human::eOutdoorsIdle:slot3
+0x7d7a90	Human::eHumanState:slot2
+0x7d7c10	Human::eHumanState:slot3
+0x7d9700	healing_restore_gate

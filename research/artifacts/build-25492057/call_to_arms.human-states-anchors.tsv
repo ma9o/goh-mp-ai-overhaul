@@ -1,0 +1,19 @@
+# RVA	Policy inputs and bindings
+0x1482e30	data:injury_cover_distance
+0x1482e40	data:battle_action_names
+0x1575aa0	data:healing_item_tag
+0x1598508	data:speed_ability_id
+0x153f198	data:medic_ability_id
+0x15840b0	data:recon_search_rings
+0x15984e8	data:health_ability_id
+0x1575860	data:alternate_weapon_tag
+0x157dfd0	data:medic_patient_tag
+0x157e750	data:medic_fsm_tag
+0x157e7b0	data:healing_low_tag
+0x157e810	data:healing_mid_tag
+0x157e870	data:healing_high_tag
+0x1584094	data:recon_ring_scale
+0x889ab0	recon_search_start_callers
+0x1575380	data:weapon_stow_tag
+0x1575c80	data:ground_pickup_tag
+0x1587c60	data:stance_crawl_exclusion

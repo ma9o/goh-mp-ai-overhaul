@@ -17,14 +17,14 @@ after their behavior and effect on the AI contract are established.
 | Area | Current evidence | Open static work |
 |---|---|---|
 | Entity/component structure | Constructor-backed Fsm/Cover/Brain/Sensor/Weaponry/Chassis pointers; selected IDs/fields; 392/391 native RTTI roots | Concrete component attachment and replacement; world enumeration, actor IDs/flags, subtype/lifetime relationships |
-| Sensor/perception | Candidate commit/categories, visibility memory/eviction, ally sharing, grid rays; unmask accumulator/rules; eReconBase registrations; reveal loader and reciprocal visibility | Signal publishers; Recon zone bookkeeping; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine helper lifetimes |
+| Sensor/perception | Candidate commit/categories, memory/eviction, ally sharing, grid rays, unmask rules; Recon registration/waiting counts, six searcher slots,60-sector rings and renewal; threat/injury signal handler | Signal publishers; residual Recon completed-status consumers; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine lifetimes |
 | Relationships | Neutral/enemy/ally values, 18-player defaults, symmetric setter, scene diplomacy and multiplayer setup | Ownership changes and brain flag 15; downstream relationship consumers |
 | Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | Class/attacking/threating flag producers; all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
-| Human decision states | State hierarchy, attach/activate/deactivate, ordered interrupts, root hazards, saved-order restoration; initial idle/battle/search branch review | Remaining per-state helpers and event producers; healing/following/boarding; active branch reachability; full search coordination |
+| Human decision states | State hierarchy/dispatch/hazards; reviewed idle/battle/cover/search flow; stance thresholds, attack return codes, tactical movement, search coordination, healing and medic gating, following and weapon changes | General idle helper; detour feasibility/temporary pose evaluation; cover masks/healing validator; ground-weapon score/comparator; full event producers; action-order inner execution |
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle | Kind selection inside 8A8040; descriptor +8/+C consumer roles; height sampling and precise edge spacing |
 | Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set, grenade escape planning | Path request/acceptance, grid costs/probes, terrain/animation application, movement enum binding, ability/health speed modifiers; crush/obstacle order builders |
 | Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy producer; zeroing after-shot producer; firing/projectile-creation path | Place attachment/lifetime; detailed aiming/sway/reload; full sampler and ballistics; projectile collision/damage; actual weapon safety/readiness helpers |
-| Health/morale | Named morale dispatch and scalar update | Event IDs, damage/suppression propagation, health/stamina/ability calculations, recovery |
+| Health/morale | Named morale update; effective health ratio through health/veterancy abilities; Heal percentage increment and Medic patient reservation; healing-restore impossible-pointer gate in game/editor | Concrete component attachment; health setters and death/revive flags; damage/suppression signal propagation; stamina/recovery; medic completion/statistics |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; attack outer lifecycle and WeaponAimTarget | Internal attack states; all AI action families; concrete cancellation/rejection and ownership |
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion | Quant-clock producer/pause/time scale, manager bucket creation, context/RNG setup, entity lifetime through queued work; skip setter now mapped |
 | Group/vehicle behavior | Type roots only | Squad/leader coordination, vehicle/airborne brains, mounted weapons and crew |
@@ -45,15 +45,22 @@ Existing completed passes: [initial structure](build-25492057.md),
 [scheduling/sensors/cover sources](systems-map-25492057.md), and
 [perception/memory/entity inputs](perception-map-25492057.md), and
 [target/weapon/accuracy/unmasking](combat-map-25492057.md), and
-[state hierarchy/hazards/movement](movement-map-25492057.md). Their open questions
+[state hierarchy/hazards/movement](movement-map-25492057.md), and
+[infantry policy/search/healing](human-states-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
 
-- Human states: cover battle `0x948160`, outdoors battle helpers `0x952AB0`,
-  `0x9537C0/0x9538A0/0x954B40/0x954F80`, search `0x94DD50` and Recon
-  `0x88AEA0/0x88B110/0x88B170/0x88B660`. Healing restore `0x9520B0` has
-  an address-equals-negative-offset gate requiring a reachability/editor audit.
+- Entity/health: actor `+578 -> +18` effective health component, setters
+  `0x925190/0x924610`, medic completion `0x371960`, injury signal `0x877D20`.
+  Trace concrete attachment, death/revive flags and signal publishers.
+- Human states: detour placement `0x93ED30`, feasibility `0x940130`, pose helpers
+  `0x937FE0/0x96B530`; general idle `0x95FCC0`; weapon pickup ranking
+  `0x958610/0x9469C0`; healing-cover validator. Search cleanup flag `+3E1`
+  has no set-side located in Execute. Healing-restore gate is confirmed in both binaries.
+- Action orders: `WeaponFire` Execute `0x8D77B0`, `Advance` `0x8D02B0`
+  with replacement slots `0x8D0F50/0x8D0FA0`, `Fight` `0x8E69E0`, boarding
+  factory `0x8E3B00`; follow the work routines and concrete cancellation.
 - Movement: path request `0x8C8F60`, route probe `0x8AE780`, moving-entity
   registry `0x8AA360`; profile initialization/config; low-ratio speed modifier
   reads `0x925010/0x924F90`, abilities `0x936580/0x9744E0`.
