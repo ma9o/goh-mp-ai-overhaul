@@ -16,7 +16,7 @@ after their behavior and effect on the AI contract are established.
 
 | Area | Current evidence | Open static work |
 |---|---|---|
-| Entity/component structure | Constructor-backed Fsm/Cover/Brain/Sensor/Weaponry/Chassis pointers; direct component clone/load ownership; extender collection/cache/attach/clone/rebind; inventory cache and nested weight chain; placer ownership/clone and separate physical link tree; SoftLinkable receiver invalidation; repair component policy and raw-pointer relationships; item placement/holder and reservation distinction; selected IDs/fields; 392/391 native RTTI roots plus newly followed dependencies | Component replacement/removal and factory completeness; world enumeration, actor IDs/flags, subtype/lifetime relationships; inventory holder/item ownership |
+| Entity/component structure | Constructor-backed Fsm/Cover/Brain/Sensor/Weaponry/Chassis pointers; direct component clone/load ownership; extender collection/cache/attach/clone/rebind; inventory queue, item/box/holder ownership, filling mass and stack limits; placer ownership/clone and physical link tree; deletion request→scene retirement→delivery callbacks→reference release→SoftLinkable invalidation; repair component policy; selected IDs/fields; 392/391 native RTTI roots plus dependencies | Component replacement/removal and factory completeness; enumeration/ID reuse/actor registry; deferred reference disposal; raw owner/holder/box replacement; derived holder behavior |
 | Sensor/perception | Candidate commit/categories, memory/eviction, ally sharing, grid rays, unmask rules; Recon registration/waiting counts, six searcher slots,60-sector rings and renewal; all eight signal names; sound/action definition parsers and repeat publishing; injury/corpse/hit/death-cry producers; mission signal condition/reset | Sound source cancellation/lifetime, area registration lifetime; residual Recon completed-status consumers; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine lifetimes |
 | Relationships | Neutral/enemy/ally values, 18-player defaults, symmetric setter, scene diplomacy and multiplayer setup | Ownership changes and other brain flag15 producers (placement TurnOff.Targetable now bound); downstream relationship consumers |
 | Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | Class/attacking/threating flag producers; all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
@@ -57,7 +57,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [boarding/exit/traversal/crew collection](boarding-map-25492057.md), and
 [crew roles/cannon states/permissions/exit actions](crew-actions-map-25492057.md), and
 [vehicle weapon/root/withdrawal/repair policy](vehicle-brain-map-25492057.md), and
-[component repair/tool acquisition/inventory operations](repair-tooling-map-25492057.md). Their open questions
+[component repair/tool acquisition/inventory operations](repair-tooling-map-25492057.md), and
+[inventory queues/item ownership/scene retirement](inventory-ownership-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -76,8 +77,8 @@ are historical snapshots; this frontier tracks the continuing objective.
   vehicle response `0x98B200` now mapped (mandie triggers exposed-gunner withdrawal and pending passenger exit). Human direct brain callback `0x903690` is empty.
 - Resistance/inventory: `0x975890/0x975CD0` named levels and first-applicable
   lookup `0x9744E0` mapped; follow ability info setup/level selection; drop-weapon/melee/fire consumers
-  `0x936C60/0x95D820/0xA75CD0`. Inventory handle weight `0x7E2420` includes
-  secondary definition/count; resolve identity and lifetime.
+  `0x936C60/0x95D820/0xA75CD0`. Inventory handle mass `0x7E2420` includes
+  filling contents; filling tags/unit/capacity and item/world ownership are now mapped.
 - Human states: detour stages `0x93ED30`, feasibility `0x940130`, pose helpers,
   idle request `0x95FCC0` and pickup score/sort now mapped. Continue bound
   intersection `0x6144E0`, network setup `0x8C6390/0x8C6400`, route refine sampler
@@ -95,7 +96,7 @@ are historical snapshots; this frontier tracks the continuing objective.
   and ResetWaypointOnly destructor effects now mapped. Actual Repair, KitExchange,
   component duration/priority, Collect, TakeItem/OrderTake, transfer/equip
   operations and command59 are now mapped in the repair-tooling pass. Continue
-  Repair phase6 setter, component-name lookup `0x895E40`, component/volume raw
+  Repair phase6 setter (component-name lookup `0x895E40` now mapped), component/volume raw
   pointer lifetime, brain3E0 human deadline consumers and source-actor pointer lifetime. Advance byte39
   is cleared at start; its set-side and state2 reachability remain open.
   Melee loader/parser `0x95ED00/0x95D230`, variant lookup, damage/knockdown
@@ -132,17 +133,20 @@ are historical snapshots; this frontier tracks the continuing objective.
   finish edge spacing `0x8A73B0`, route clearance `0x8AC3F0`, geometry ray
   `0xA23D60`; grid exclusion `0x882C20/0x882C70` and construction;
   environment query `0x6F44B0` and class bindings.
-- Inventory: Repair/tooling now distinguishes holder reservations80/88 from item3D8,
-  action completion (ID no longer in adapterA8/B0) from transfer success, and
-  item inventory30/holder38/world-entity60 with placementD8. Follow adapter queue
-  creation/update/cancel and action/sub-ID lifetime; iterator representation
-  `0x7CE320..0x7CF8B0`; root-operation token `0x7D33B0`; capacity/stack mutation
-  `0x7DA890/0x7CEEB0/0x7CEFC0/0x7C9C30`; PrepareForItem, DropFromHand, PutFromRight,
-  Unmount and UseItem variants. Item materialization `0x7C9D80` and refresh
-  `0x7C9720`, holder/container replacement and entity event4 deletion handlers
-  remain. `0x6FCDC0/0x6FEBC0` requests deletion of the repair-kit wrapper, but the
-  underlying item fate has not been established. `0x7D3620` requeues deferred
-  events when their child-operation sub-ID is not yet present.
+- Inventory: queue creation/update/blocking/cancel, action/sub-ID assignment,
+  root token, all location representations, codec, direct-item reservations,
+  cell capacity/stack mutation, item clone/materialization and retirement are now
+  mapped. Transfer10 and cancel11 act during decode. Physical Mass differs from
+  Inventory Weight. Item/world unlink allows visual retirement without item loss;
+  repair's direct world deletion leaves item disposal to stuff-extender destruction.
+  Continue PrepareForItem, DropFromHand, PutFromRight, Unmount and UseItem variants;
+  all derived holder callbacks; rearrangement sort `0x7DF600`, resource clone-policy,
+  raw holder/box replacement and operation owner88/reentrancy. ItemDC meaning,
+  `spread_items` scatter cap1480BC8 producers and inventory-kick command13 remain.
+  `0x7D3620` requeues deferred events for absent child sub-IDs. Scene retirement
+  `0xA1CC10` delivers mask7 before extender cleanup; general soft receivers only
+  invalidate at final entity destruction. Follow actor registryA5DF80, ID reuse,
+  deferred disposal652A10 and full entity spawn/build ownership.
 - Clock: containing global `0x1556E00`; manager `0x153BEE0`, bucket creation.
   Direct `0x1556E48` writes only found initialization, so follow parent aliases.
   Repair reads integer delta1556E4C (initializer3D770 sets1) and sentinel1556DE8

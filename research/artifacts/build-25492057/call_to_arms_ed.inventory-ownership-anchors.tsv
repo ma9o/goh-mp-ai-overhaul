@@ -1,0 +1,16 @@
+# RVA	Inventory lifetime anchors
+0xf40ac0	Inventory::eBox_vtable_sub0
+0xf3f8d0	Inventory::eHolder_vtable_sub0
+0xf3f918	Inventory::eHolder_vtable_sub104
+0xf3f978	Inventory::eHolder_vtable_sub120
+0xf3ec68	Inventory::eItem_vtable_sub0
+0xf3ec80	Inventory::eItem_vtable_sub8
+0xf3f020	Inventory::eManager_vtable_sub0
+0xf3f070	Inventory::eManager_vtable_sub8
+0xf3ff80	Inventory::eOperation_vtable_sub0
+0xf3ec58	Inventory::eShared_vtable_sub0
+0xf3d2e8	Entity::eStuffExtender_vtable_sub0
+0xf3d338	Entity::eStuffExtender_vtable_sub8
+0xed0490	eInventoryTransferCommand_vtable_sub0
+0xed0508	eInventoryTransferCancelCommand_vtable_sub0
+0xe8f0e8	eEntityDeleteCommand_vtable_sub0
