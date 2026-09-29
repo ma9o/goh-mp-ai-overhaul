@@ -3,6 +3,7 @@
   "steam_build_id": "25492057",
   "status": "partial_static_behavior_review",
   "runtime_verified": false,
+  "followup_map": "flow-map.json",
   "address_convention": "RVA; member offsets are from the complete brain object unless stated otherwise",
   "warning": "Analyst descriptions, not recovered symbols or callable ABI declarations. Instruction checks verify evidence locations, not semantic correctness.",
   "binaries": {

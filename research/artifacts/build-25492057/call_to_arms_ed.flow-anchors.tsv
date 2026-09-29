@@ -1,0 +1,8 @@
+# RVA	Additional named anchors
+0xf52028	string:retreat
+0xf52030	string:advance
+0xf522d8	string:eHumanBrain::TryAttackEnemy
+0xf529d8	string:stop_advance
+0xf63d60	string:v_aiRetreat
+0xf63d70	string:v_aiMorale
+0xf51fc0	table:decision_state_names

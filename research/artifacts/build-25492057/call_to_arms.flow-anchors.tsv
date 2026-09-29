@@ -1,0 +1,8 @@
+# RVA	Additional named anchors; labels do not establish related function roles
+0x10ec788	string:retreat
+0x10ec790	string:advance
+0x10eca00	string:eHumanBrain::TryAttackEnemy
+0x10ecfb8	string:stop_advance
+0x10fd478	string:v_aiRetreat
+0x10fd488	string:v_aiMorale
+0x10ec720	table:decision_state_names

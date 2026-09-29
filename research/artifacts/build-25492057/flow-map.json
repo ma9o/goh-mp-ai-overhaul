@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "export_suffix": "-flow",
+  "runtime_verified": false,
+  "status": "partial_static_behavior_review",
+  "warning": "RVA addresses. Function roles are analyst descriptions. Table presence does not prove field association. No complete runtime or ownership contract is asserted.",
+  "binaries": {
+    "game": {"filename": "call_to_arms.exe", "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267"},
+    "editor": {"filename": "call_to_arms_ed.exe", "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976"}
+  },
+  "fields": [
+    {"id": "input_A", "offset": "0x518", "width": 4, "representation": "float32", "role": "Sum of position- and age-weighted perceived-subject contributions divided by their distribution over self and support candidates", "semantic_candidate": "relative incoming pressure", "evidence_ids": ["producer_arguments", "producer_A"]},
+    {"id": "input_B", "offset": "0x51c", "width": 4, "representation": "float32", "role": "Pair-ratio of self plus eligible support-subject values against summed opposing-subject values", "semantic_candidate": "relative self/support capacity", "evidence_ids": ["producer_arguments", "producer_B"]},
+    {"id": "scalar_S", "offset": "0x474", "width": 4, "representation": "float32", "role": "Morale-associated scalar", "confidence": "Named Scene::Stats::eMoraleProcessor dispatches brain slot 29; Human slot 29 writes this field. Complete morale behavior remains open.", "evidence_ids": ["morale_dispatch", "morale_setter"]},
+    {"id": "decision_state", "offset": "0x52c", "width": 4, "role": "Selects movement branches, timing and cover-search parameters; full state-name association remains provisional", "evidence_ids": ["movement_state_branches", "order_creation"]}
+  ],
+  "methods": [
+    {"id": "subject_score_aggregation", "entry_rvas": {"game": "0x877170", "editor": "0x6fae20"}, "arguments": "RCX=owner component at actor+0xdd0, RDX=&brain+0x51c (B), R8=&brain+0x518 (A)", "role": "Build self Actor::eSubject, collect two-component subject values, write A and B"},
+    {"id": "pair_ratio", "entry_rvas": {"game": "0x8129d0"}, "role": "For each of two components, divide numerator by denominator if denominator>=float32(0.1), otherwise use 10; return the lesser result for finite inputs"},
+    {"id": "subject_position_weight", "entry_rvas": {"game": "0x876f60"}, "role": "Scale subject+0x48/+0x4c by distance/range factor and age decay", "unresolved": "Exact distance helper and clock units; range and age globals may be configured"},
+    {"id": "subject_value_refresh", "entry_rvas": {"game": "0x878740"}, "role": "Populate subject+0x48/+0x4c, range at +0x50 and opposing pair at +0x54/+0x58"},
+    {"id": "subject_constructor", "entry_rvas": {"game": "0x873290"}, "role": "Install RTTI-named Actor::eSubject vtable and initialize its fields"},
+    {"id": "subject_pair_from_equipment", "entry_rvas": {"game": "0x8137d0"}, "role": "Select equipment/object via actor+0xdd8 and pass to 0x813c20; fallback pair is zero", "unresolved": "Meaning and units of the two pair components"},
+    {"id": "subject_comparison_pair", "entry_rvas": {"game": "0x8136e0"}, "role": "Human path obtains a Human::eParams_Health value as first component and zero as second; other entities use a matching classification-table pair"},
+    {"id": "morale_event_processor", "entry_rvas": {"game": "0xa5a490"}, "role": "RTTI Scene::Stats::eMoraleProcessor primary slot 4; handles numeric event types 3 and 5 and invokes brain slot 29", "unresolved": "Event names and complete distribution of morale changes"},
+    {"id": "morale_delta", "entry_rvas": {"game": "0x945010", "editor": "0x7cc510"}, "role": "Human primary slot 29; add delta to +0x474 with clamp and recovery deadline"},
+    {"id": "callback_registration", "entry_rvas": {"game": "0x941bc0"}, "role": "Human slot 23 conditionally constructs a member callback for 0x944de0 and passes it to 0xa19450", "unresolved": "Callback scheduler, thread and cadence"},
+    {"id": "outlined_state_selection", "entry_rvas": {"game": "0x944e10", "editor": "0x7cc310"}, "role": "Separate copy of the numeric state-selection logic also inlined into human slot 35"},
+    {"id": "movement_decision", "entry_rvas": {"game": "0x9538a0", "editor": "0x7daed0"}, "role": "Read context+0x30 brain state; choose direction/action parameters; try cover then movement path; create an order sequence on success"},
+    {"id": "action_label_and_state", "entry_rvas": {"game": "0x9545f0"}, "role": "Index action label table; append _to_cover or _move, record action code at context+0x3dc, snapshot position and reset retry count"},
+    {"id": "cover_search_adapter", "entry_rvas": {"game": "0x951210"}, "role": "Run 0x89feb0 then 0x8a0660 and copy a 0x88-byte candidate descriptor on success", "unresolved": "Cover candidate scoring, validity and ownership"},
+    {"id": "movement_change_factory", "entry_rvas": {"game": "0x8f3930"}, "role": "Construct RTTI Order::eMovementChange"},
+    {"id": "move_to_cover_factory", "entry_rvas": {"game": "0x8cd320"}, "role": "Construct RTTI Order::eMoveToCover"},
+    {"id": "move_factory", "entry_rvas": {"game": "0x8f34f0"}, "role": "Allocate 0x1c0 bytes, call Order::eMove constructor and copy path data"},
+    {"id": "move_constructor", "entry_rvas": {"game": "0x8f7b50"}, "role": "Install Order::eMove primary vtable"},
+    {"id": "install_complex_order", "entry_rvas": {"game": "0x912370"}, "role": "Allocate/construct eComplexOrder and invoke brain slot 13 when different from current order; return it"},
+    {"id": "complex_order_constructor", "entry_rvas": {"game": "0x8ffd50"}, "role": "Install eComplexOrder primary vtable"},
+    {"id": "order_list_insert", "entry_rvas": {"game": "0x900a60"}, "role": "Insert/link child order into the compound order path; complete ownership contract remains open"}
+  ],
+  "input_formulas": {
+    "notation": "P(subject)=two floats at +0x48/+0x4c; Q(subject)=two floats at +0x54/+0x58; R(P,Q)=0x8129d0. Threat/support are analyst candidate roles; exact bit filters follow.",
+    "threat_candidates": "Component list +0x280..+0x288; flags+0x14 bit4 clear AND (bit1 set OR (bit0 clear AND flags+0x10 bit28 set AND bit19 clear))",
+    "support_candidates_for_A": "Component list +0x298..+0x2a0; flags+0x14 bit2 set",
+    "support_candidates_for_B": "Same list, bit2 set AND bit4 clear",
+    "A": "For each eligible threat t: h0=R(weighted_P(t,self_position),Q(self)); H=h0+sum_s R(weighted_P(t,s.position),Q(self)); if H>0, accumulate (h0/H)*h0. Note Q(self) is reused for every s.",
+    "B": "R(P(self)+sum_eligible_support P(s), sum_eligible_threat Q(t))",
+    "weight": "weighted_P = P * (2-min(distance_helper(position,t.position)/t.range,2)) * (1-clamp(convert_counter(now-t.timestamp)/60,0,1)); preserve float operation order in an implementation",
+    "open": "Subject membership semantics, two-component units, zero-range cases, helper internals and runtime values. These are richer than simple nearby unit counts."
+  },
+  "inline_regions": [
+    {"id": "movement_state_branch", "parent_method": "movement_decision", "evidence_ids": ["movement_state_branches"], "scope": "Branch with brain flag bit6 clear; other flags and helper predicates still gate execution", "behavior": "State 2 returns without this move. State 0 selects action 3 (retreat), except predicate 0x902980 can select 8 (rush_back). State 1 selects 8. States 3/4 can select 2 (advance) or 7 (rush_ahead) using target distance versus equipment helper 0x80a910."},
+    {"id": "cover_success", "parent_method": "movement_decision", "evidence_ids": ["order_creation"], "behavior": "Record action with _to_cover suffix; construct/install eComplexOrder; link eMovementChange, eMoveToCover, and a trailing context order from 0x9125d0."},
+    {"id": "path_success", "parent_method": "movement_decision", "evidence_ids": ["order_creation"], "behavior": "Record action with _move suffix; construct/install eComplexOrder; link eMovementChange, eMove, and a trailing context order from 0x9125d0."}
+  ],
+  "enums": [
+    {"id": "unbound_state_name_table", "values": {"flee": 0, "retreat": 1, "none": 2, "advance": 3, "charge": 4}, "table_rvas": {"game": "0x10ec720", "editor": "0xf51fc0"}, "association_status": "Provisional for brain+0x52c. Both tables decode identically, but Ghidra found no direct references to their starts and an absolute-pointer scan found none in the game. Do not promote solely from proximity and matching values."}
+  ],
+  "pointer_string_tables": [
+    {"id": "movement_action_labels", "binary": "game", "rva": "0x1482e40", "values": ["std", "detour", "advance", "retreat", "task", "fight", "follow", "rush_ahead", "rush_back"], "status": "File-initialized values in writable .data; indexed by 0x9545f0. These action codes differ from brain state codes."}
+  ],
+  "rtti_vtables": [
+    {"binary": "game", "mangled_name": ".?AVeMoraleProcessor@Stats@Scene@@", "subobject_offset": 0, "rva": "0x10ff320", "methods": {"4": "0xa5a490"}},
+    {"binary": "game", "mangled_name": ".?AVeHumanBrain@Actor@@", "subobject_offset": 0, "rva": "0x10ec7c8", "methods": {"23": "0x941bc0", "29": "0x945010"}},
+    {"binary": "game", "mangled_name": ".?AUeMovementChange@Order@@", "subobject_offset": 0, "rva": "0x10e9980"},
+    {"binary": "game", "mangled_name": ".?AUeMove@Order@@", "subobject_offset": 0, "rva": "0x10e9770"},
+    {"binary": "game", "mangled_name": ".?AVeComplexOrder@@", "subobject_offset": 0, "rva": "0x10e9e00"},
+    {"binary": "game", "mangled_name": ".?AUeMoveToCover@Order@@", "subobject_offset": 0, "rva": "0x10e6bd8"}
+  ],
+  "byte_sequences": [
+    {"id": "game_input_bridge", "binary": "game", "rva": "0x944de0", "hex": "4c8d8118050000488d911c050000488b4938488b89d00d0000e97223f3ff", "role": "LEA R8,[brain+0x518]; LEA RDX,[brain+0x51c]; load owner and its +0xdd0 component; tail jump 0x877170", "status": "Five instructions present but no Ghidra function object or unwind entry; independently disassembled with LLVM"},
+    {"id": "editor_input_bridge", "binary": "editor", "rva": "0x7cc2e0", "hex": "4c8d8118050000488d911c050000488b4938488b89d00d0000e922ebf2ff", "role": "Same argument bridge; tail jump 0x6fae20", "status": "Five instructions present but no Ghidra function object or unwind entry; independently disassembled with LLVM"}
+  ],
+  "float_constants": [
+    {"binary": "game", "rva": "0x102195c", "value": 0.10000000149011612},
+    {"binary": "game", "rva": "0x1004044", "value": 10.0},
+    {"binary": "game", "rva": "0x101804c", "value": 60.0},
+    {"binary": "game", "rva": "0x10004d4", "value": 2.0},
+    {"binary": "game", "rva": "0x10004d0", "value": 1.0}
+  ],
+  "evidence": [
+    {"id": "producer_arguments", "binary": "game", "function_rva": "0x877170", "instruction_rvas": ["0x877173", "0x877188", "0x87718f", "0x87721a", "0x87721e"]},
+    {"id": "producer_A", "binary": "game", "function_rva": "0x877170", "instruction_rvas": ["0x877267", "0x87726f", "0x87729c", "0x8772bc", "0x8772c7", "0x8772d5", "0x877303", "0x877322", "0x87733d", "0x877341", "0x87734b"]},
+    {"id": "producer_B", "binary": "game", "function_rva": "0x877170", "instruction_rvas": ["0x8771eb", "0x877224", "0x877229", "0x8773d7", "0x8773dd", "0x8773e3", "0x8773ed", "0x877408", "0x877412"]},
+    {"id": "ratio_components", "binary": "game", "function_rva": "0x8129d0", "instruction_rvas": ["0x8129d4", "0x8129df", "0x8129ed", "0x812a0b", "0x812a22"]},
+    {"id": "subject_weight", "binary": "game", "function_rva": "0x876f60", "instruction_rvas": ["0x876f8d", "0x876f92", "0x876fc1", "0x876fce", "0x876fd3", "0x877022", "0x877029", "0x877044"]},
+    {"id": "morale_dispatch", "binary": "game", "function_rva": "0xa5a490", "instruction_rvas": ["0xa5a4d3", "0xa5a4e7", "0xa5a541", "0xa5a5a3", "0xa5a5ad"]},
+    {"id": "morale_setter", "binary": "game", "function_rva": "0x945010", "instruction_rvas": ["0x945021", "0x945067"]},
+    {"id": "producer_callback", "binary": "game", "function_rva": "0x941bc0", "instruction_rvas": ["0x941c9f", "0x941cd3"]},
+    {"id": "movement_state_branches", "binary": "game", "function_rva": "0x9538a0", "instruction_rvas": ["0x953ba9", "0x953baf", "0x953c50", "0x953c85", "0x953cc8", "0x953cfb", "0x953d14", "0x953d32"]},
+    {"id": "order_creation", "binary": "game", "function_rva": "0x9538a0", "instruction_rvas": ["0x9540fe", "0x954195", "0x9541af", "0x9541ba", "0x9541d7", "0x9541e8", "0x954443", "0x954468", "0x95448a", "0x95449b"]},
+    {"id": "action_labels", "binary": "game", "function_rva": "0x9545f0", "instruction_rvas": ["0x954612", "0x95462b", "0x954656", "0x95465d", "0x954664", "0x954765"]}
+  ],
+  "remaining_static_work": [
+    "Trace classification flags for subject lists and fully name the two-component values from 0x813c20 and classification data",
+    "Map cover scoring and movement fallback constraints below 0x89feb0/0x8a0660 and 0x8c88d0",
+    "Recover scheduler 0xa19450 and context construction to connect every caller and timing rule",
+    "Find direct evidence for state-name-table association or keep numeric states with observed action branches"
+  ],
+  "later_runtime_questions": [
+    "Observed subject-list contents and scores in a controlled scenario",
+    "Which gated movement path executes and whether pathfinding/order validation accepts it",
+    "Callback cadence, thread and reference/order lifetime",
+    "Configured multipliers and whether writable label/data tables change during initialization"
+  ]
+}

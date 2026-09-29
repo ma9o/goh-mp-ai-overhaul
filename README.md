@@ -17,6 +17,8 @@ weapon behavior. The upstream loader and SDK are retained as reference material.
   installed game and GEM editor, with addresses separated by executable.
 - [Fine-grained brain map](research/notes/fine-map-25492057.md): field masks,
   enum values, small predicates, setter side effects, and inlined state rules.
+- [Input-to-order trace](research/notes/flow-map-25492057.md): subject-score
+  formulas, the morale connection, and state-dependent movement/cover orders.
 - [Build artifacts](research/artifacts/build-25492057): fingerprints, RTTI,
   vtables, string anchors, and candidate methods.
 - [Original upstream README](README.upstream.md): historical build and loader
@@ -64,6 +66,10 @@ blocks, and outgoing flow edges so that inlined decisions can be mapped.
 They do not rename functions or apply guessed types. Additional RVAs can be
 supplied in a two-column TSV (`RVA`, `label`) via
 `export --candidates path.tsv --output local-work/exports/followup`.
+An optional `--anchors path.tsv` follows references to additional data/string
+RVAs. The `members` command searches literal memory displacements across all
+analyzed instructions; matches need manual pointer/type review. See the
+[input-to-order workflow](research/notes/flow-map-25492057.md#reproduce-and-verify).
 
 The checked-in `call_to_arms.followup.tsv` and `call_to_arms_ed.followup.tsv`
 add the flag-clearing wrapper and actor dispatch path identified during the

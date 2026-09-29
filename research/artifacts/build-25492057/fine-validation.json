@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "steam_build_id": "25492057",
-  "fine_map_sha256": "803d86b6bb38e35dda15e53f55dc55c62f7205b703149480feb13a062e08d691",
+  "fine_map_sha256": "5575378bfb05f75523ad8ca448a794fbda507e43c55a5050f5908ea1ba90616b",
   "runtime_verified": false,
   "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
   "binaries": {
@@ -15,7 +15,10 @@
       "checked_enums": 4,
       "checked_constants": 11,
       "checked_method_entries": 19,
-      "checked_instruction_locations": 87
+      "checked_instruction_locations": 87,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 0,
+      "checked_byte_sequences": 0
     },
     "editor": {
       "filename": "call_to_arms_ed.exe",
@@ -27,7 +30,10 @@
       "checked_enums": 4,
       "checked_constants": 7,
       "checked_method_entries": 10,
-      "checked_instruction_locations": 19
+      "checked_instruction_locations": 19,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 0,
+      "checked_byte_sequences": 0
     }
   },
   "status": "passed"

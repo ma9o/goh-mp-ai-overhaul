@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Check a reviewed map against local PE files and schema-2 Ghidra exports.
 
-Checks fingerprints, enum tables, read-only float constants, exact entries and
-instruction evidence locations. Does not prove analyst interpretations or ABI.
+Checks fingerprints, tables, RTTI, literal bytes, read-only float constants,
+exact entries and instruction locations. Does not prove interpretations or ABI.
 No executable is loaded or modified. Uses only the Python standard library.
 """
 from __future__ import annotations
@@ -60,7 +60,7 @@ def verify(manifest_path: Path, binaries: Path, exports: Path) -> dict:
         binary = binaries / info["filename"]
         require(digest(binary) == info["sha256"], f"Binary hash mismatch: {binary.name}")
         images[key] = PEImage(binary.read_bytes())
-        directories[key] = exports / (binary.stem + "-fine")
+        directories[key] = exports / (binary.stem + manifest.get("export_suffix", "-fine"))
         report_path = directories[key] / "export.json"
         report = json.loads(report_path.read_text())
         require(report["schema_version"] == 2, f"Need schema-2 export: {key}")
@@ -80,6 +80,7 @@ def verify(manifest_path: Path, binaries: Path, exports: Path) -> dict:
             "exported_basic_blocks": sum(len(f["basic_blocks"]) for f in report["functions"]),
             "checked_enums": 0, "checked_constants": 0,
             "checked_method_entries": 0, "checked_instruction_locations": 0,
+            "checked_pointer_tables": 0, "checked_rtti_tables": 0, "checked_byte_sequences": 0,
         }
 
     def entry(key: str, rva: str) -> dict:
@@ -91,8 +92,36 @@ def verify(manifest_path: Path, binaries: Path, exports: Path) -> dict:
         for key, table in item["table_rvas"].items():
             actual = enum_values(images[key], int(table, 16))
             require(actual == item["values"], f"Enum mismatch: {key} {item['id']}: {actual}")
-            entry(key, item["parser_rvas"][key])
+            if key in item.get("parser_rvas", {}):
+                entry(key, item["parser_rvas"][key])
             result["binaries"][key]["checked_enums"] += 1
+    for item in manifest.get("pointer_string_tables", []):
+        key, rva = item["binary"], int(item["rva"], 16)
+        image = images[key]
+        actual = []
+        for index in range(len(item["values"])):
+            pointer = image.read("<Q", rva + index * 8)[0]
+            actual.append(image.cstring(pointer - image.image_base))
+        require(actual == item["values"], f"Pointer table mismatch: {item['id']}")
+        result["binaries"][key]["checked_pointer_tables"] += 1
+    for item in manifest.get("rtti_vtables", []):
+        key = item["binary"]
+        tables = [table for descriptor in images[key].rtti(item["mangled_name"])
+                  for locator in descriptor["locators"]
+                  if locator["subobject_offset"] == item["subobject_offset"]
+                  for table in locator["vtables"] if table["rva"] == item["rva"]]
+        require(len(tables) == 1, f"RTTI table mismatch: {item['mangled_name']}")
+        slots = {method["slot"]: method["rva"] for method in tables[0]["methods"]}
+        for slot, target in item.get("methods", {}).items():
+            require(slots.get(int(slot)) == target, f"Vtable slot mismatch: {item['rva']}:{slot}")
+        result["binaries"][key]["checked_rtti_tables"] += 1
+    for item in manifest.get("byte_sequences", []):
+        key, rva = item["binary"], int(item["rva"], 16)
+        expected = bytes.fromhex(item["hex"])
+        start = images[key].offset(rva, len(expected))
+        require(images[key].data[start:start + len(expected)] == expected,
+                f"Byte sequence mismatch: {key} {item['rva']}")
+        result["binaries"][key]["checked_byte_sequences"] += 1
     for item in manifest["float_constants"]:
         key, rva = item["binary"], int(item["rva"], 16)
         readonly(images[key], rva, 4)

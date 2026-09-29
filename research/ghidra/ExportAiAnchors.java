@@ -1,5 +1,5 @@
 // Export focused static evidence without renaming functions or changing types.
-// Args: PE survey JSON, candidate TSV, output directory.
+// Args: PE survey JSON, candidate TSV, output directory, optional extra anchor TSV.
 // Decompiled text and instruction listings belong in ignored local-work/ only.
 //@category GoH.Research
 
@@ -65,8 +65,8 @@ public class ExportAiAnchors extends GhidraScript {
     @Override
     public void run() throws Exception {
         String[] args = getScriptArgs();
-        if (args.length != 3) throw new IllegalArgumentException(
-            "Expected: survey.json candidates.tsv output-directory");
+        if (args.length < 3 || args.length > 4) throw new IllegalArgumentException(
+            "Expected: survey.json candidates.tsv output-directory [anchors.tsv]");
         Path output = Paths.get(args[2]);
         Files.createDirectories(output);
         base = currentProgram.getImageBase();
@@ -105,6 +105,13 @@ public class ExportAiAnchors extends GhidraScript {
         report.add("candidates", candidates);
 
         JsonArray anchors = new JsonArray();
+        if (args.length == 4) {
+            for (String line : Files.readAllLines(Paths.get(args[3]), StandardCharsets.UTF_8)) {
+                if (line.isBlank() || line.startsWith("#")) continue;
+                String[] fields = line.split("\t", 2);
+                anchors.add(anchor(fields[1], address(fields[0])));
+            }
+        }
         for (Map.Entry<String, JsonElement> entry : survey.getAsJsonObject("string_anchors").entrySet())
             for (JsonElement value : entry.getValue().getAsJsonArray())
                 anchors.add(anchor("string:" + entry.getKey(), address(value.getAsString())));
