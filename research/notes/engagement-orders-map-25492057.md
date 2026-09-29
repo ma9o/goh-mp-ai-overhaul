@@ -55,9 +55,12 @@ distance from aimer slot6's position, requires distance >= weapon-state `+28`,
 and normally <= weapon-state `+24`. If chassis `83FB80` and state `+7C` are
 both true, it omits the upper limit. Exact chassis flag names remain open.
 
-`8107D0` is a place update, not a boolean safety query: when `+C88` is zero
+`8107D0` combines a place update with a readiness query: when `+C88` is zero
 or due it sets `+D31` bit1, clears the timer and notifies controller `781410`
-with place `+2C8`; it always calls controller `781D50` afterward.
+with place `+2C8`. It then **tail-jumps to `781D50` and preserves its return**.
+The shooter caller `817F70` tests AL from this call. The void decompiler
+signature hides that result; it must not be taken as evidence that the helper
+only updates state. The controller predicate itself is a follow-up.
 
 ## Obstruction checks can send events
 
