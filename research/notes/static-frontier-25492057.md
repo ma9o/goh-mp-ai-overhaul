@@ -26,7 +26,7 @@ after their behavior and effect on the AI contract are established.
 | Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy/zeroing; named aim modes and ballistic solvers; burst sampler and stateful preview; adaptive geometry trace; live projectile fields/pool/flight and contact-to-damage bridge; TargetAccessor result gates; occupied-slot readiness; named crew slot flags, Sealed exposure, priority assignment and reservations; gunner/charger/commander/driver requests and minWorkers; cannon animation completion counter | Place/profile/owner lifetime; bone limit solvers and sway/reload; charger and animation producers; weaponry86 state; full contact/material/ricochet outcomes, guided steering and synchronization; other shooter types |
 | Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; RepairTime/RepairOrder, countdown/restoration and repair command59; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wound-list removal and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application; vehicle allocation/root/emergency/Hideout/SmartRepair dispatcher; Repair/KitExchange/Collect/TakeItem/OrderTake and transfer/equip operations | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; Board/Bind/Emit now mapped; Repair phase6 reachability and group variants; scripted blow effects and melee defence/counterattack |
-| Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion | Quant-clock producer/pause/time scale, manager bucket creation, context/RNG setup, entity lifetime through queued work; skip setter now mapped |
+| Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion; animation manager pending/active membership, scene phase and immediate request-side Quant | Quant-clock producer/pause/time scale, manager bucket creation, context/RNG setup, entity lifetime through queued work; full deferred mesh drain; skip setter now mapped |
 | Group/vehicle behavior | Type roots; cannon fire/move/trailing states, role-index transfers, seat Disable and obstacle enable writers; place readiness/assignment; crew groups, sealing, entrance balancing, Board/Bind/Emit phases, traversal graph/animation/inventory, walker sync/cancel/load and occupant perception effects; six concrete exit callbacks; abandoned/ally_crew/any_crew/select bindings; boarder command reception; vehicle root/multiweapon allocation, gunner withdrawal, repairer selection, emergency triggers and basic airborne/animal roots; cannon command5E reception | Full squad/leader coordination, aircraft/helicopter chassis and animal scanners; exit source-pointer lifetime; full reservation/queue lifetime and derived chassis permissions, remaining availability flag producers; cannon matrix correction |
 | Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
 | Cross-binary comparison | Selected game/editor contracts | Compare newly reviewed contracts; distinguish outlining/inlining and behavior differences |
@@ -62,7 +62,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [hand operations/holder callbacks/FSM request boundary](equipment-actions-map-25492057.md), and
 [FSM routing/request expiry/equipment subsets/completion](fsm-routing-map-25492057.md), and
 [expanded base human FSM graph/subset reachability](human-fsm-graph-25492057.md), and
-[human FSM handler dispatch/action effects](human-fsm-actions-map-25492057.md). Their open questions
+[human FSM handler dispatch/action effects](human-fsm-actions-map-25492057.md), and
+[animation control/completion/frame markers/entity motion](animation-control-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -91,7 +92,8 @@ are historical snapshots; this frontier tracks the continuing objective.
   animations, while pose cache `0x96A4B0` remains open. Handler424/42C have13 class/six modifier tag bindings and
   exact subset selection. Handler560 is native activeBlends, decremented by entity
   event6/subkind6; blend scheduling and synchronous completion now mapped. Continue
-  concrete animation quant/cancellation and pending callback lifetime,
+  handler callback reentrancy and replacement lifetime (concrete animation
+  Quant/cancellation/destruction differences now mapped),
   healing-cover validator. Search cleanup flag `+3E1`
   has no set-side located in Execute. Healing-restore gate is confirmed in both binaries.
 - Action orders: WeaponFire, Advance, Fight and Attack inner work now mapped in
@@ -171,12 +173,22 @@ are historical snapshots; this frontier tracks the continuing objective.
   All12 human handler families have195 exact name/part selectors matched against
   GEM and joined to220 base states. Entry/exit effects, reload scaling, stored
   throw variants, carried-corpse FSM changes, swimming inventory preparation and
-  finger animation refresh are mapped. Continue pose/walk selection
+  finger animation refresh are mapped. Concrete sequence/blend/aimset/blendspace/UV
+  control, completion/loop/idle protocol, variant RNG, frame markers, resumable
+  retention, cancellation/destruction and scene animation scheduling are now mapped.
+  Sequence movement can write entity50..7C; movement is not purely visual.
+  Marker event5 reaches the interaction definition's marker-name map48;
+  completion event6/subkind2 uses animation-name map60. Continue pose/walk selection
   `0x96A4B0/0x973010`, idle/repair update, death animation feasibility/selection
-  `0x938410/0x9648E0/0x9645D0`, concrete blend types and quant/cancel behind
-  `0x5CD380`, actor1420 bit3/handler flags, mounted resource overrides,
+  `0x938410/0x9648E0/0x9645D0`, full resource/handler joins from
+  `_reg_human_movement.inc` and `_reg_vehicle_crew.inc`, binary animation timeline
+  normalization, aimset/blendspace parameter producers, concrete marker action lists,
+  root/bone transforms `0x5D3820/0x5D7410/0x5D8170/0x5D8250` and entity slot25,
+  actor1420 bit3/handler flags, mounted resource overrides,
   command2F/idle synchronization, serialization,
-  handler/actor replacement lifetime, and tick callers/scheduling.
+  handler/actor replacement lifetime and callback reentrancy. Deferred mesh updates
+  retain model pointers and swap two vectors on event-object kind26 (`0x5D5DE0`);
+  release/cancel/apply are reviewed, full drain and registration remain open.
 - Clock: containing global `0x1556E00`; manager `0x153BEE0`, bucket creation.
   Direct `0x1556E48` writes only found initialization, so follow parent aliases.
   Repair reads integer delta1556E4C (initializer3D770 sets1) and sentinel1556DE8

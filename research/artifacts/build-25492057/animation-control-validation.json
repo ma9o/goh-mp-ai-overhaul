@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "5a14ea2f352bfd100753ea3835d07a59f625532364c0d8df28cc3557712928b3",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "3f8f811cf895b7c4cc85f54c151c1edb95a89ad571c83a1c6feae858cc112661",
+      "exact_candidates": 130,
+      "exported_functions": 250,
+      "exported_basic_blocks": 6129,
+      "checked_enums": 0,
+      "checked_constants": 10,
+      "checked_method_entries": 73,
+      "checked_instruction_locations": 9827,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 15,
+      "checked_byte_sequences": 9
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "b790d1683a0ecc73f499b0ab18c2bcd89d94b702caf1fe1261141e738c10d650",
+      "exact_candidates": 114,
+      "exported_functions": 138,
+      "exported_basic_blocks": 2279,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 54,
+      "checked_instruction_locations": 7980,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 15,
+      "checked_byte_sequences": 7
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/human_anm.ext",
+      "size": 110,
+      "sha256": "451c50bc6f23b5d65cd3b912c7b09d71bbaeb0e866aae35ca93f6af7b79fd578"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/_reg_human_movement.inc",
+      "size": 69194,
+      "sha256": "482073855c59e564b6f159bfd124abacdcc7799747c167f1177d5dd4ed9a124c"
+    }
+  ],
+  "status": "passed"
+}
