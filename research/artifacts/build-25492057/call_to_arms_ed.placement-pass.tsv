@@ -1,0 +1,7 @@
+# RVA	Selected editor placement contracts
+0x5fc7d0	placement_parse_dispatch
+0x5fd1b0	placement_serialize_dispatch
+0x5ffe60	placement_clone
+0x5ffea0	placement_factory
+0x5fc8b0	placement_parse
+0x5fd230	placement_serialize

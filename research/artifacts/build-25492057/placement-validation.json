@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "990a778b8d098849ad5a538bd5d0b2394ed7d68fa9f5229af9202f58013b7596",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "650e892c40218756f7414104df156a8f028681af5ffae75de4834d2cbda7cc9c",
+      "exact_candidates": 57,
+      "exported_functions": 87,
+      "exported_basic_blocks": 2152,
+      "checked_enums": 0,
+      "checked_constants": 1,
+      "checked_method_entries": 77,
+      "checked_instruction_locations": 8894,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 1,
+      "checked_byte_sequences": 38
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "6517e4c9446180151065f29d4f1992ad7e2ba2826609cd24417754c7f543cffb",
+      "exact_candidates": 6,
+      "exported_functions": 6,
+      "exported_basic_blocks": 168,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 6,
+      "checked_instruction_locations": 883,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 1,
+      "checked_byte_sequences": 33
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/vehicle.ext",
+      "size": 19465,
+      "sha256": "2dade19bee3db0f13aa1b6e7868deeb17e3a8d3a2cfd6d7e037953ff2c7398a0"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/tank_crew.ext",
+      "size": 15459,
+      "sha256": "8b22f36dab75976bd0653d80656f797ff3901376e1618ad49cdc0692aea1b627"
+    }
+  ],
+  "status": "passed"
+}

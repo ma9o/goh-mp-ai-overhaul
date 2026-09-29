@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "binary": {
+    "filename": "call_to_arms.exe",
+    "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+    "image_base": "0x140000000"
+  },
+  "scope_pattern": "Exact newly reviewed Entity::ePlacer dependency;Entity namespace omitted by original broad filter",
+  "warning": "Structural discovery only. Filtered roots are not all AI dependencies. Vtable extents are executable-pointer scans, not verified slot counts. No method semantics or runtime ABI is asserted.",
+  "types": [
+    {
+      "mangled_name": ".?AVePlacer@Entity@@",
+      "display_name": "Entity::ePlacer",
+      "descriptor_rvas": [
+        "0x150a928"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10d7f38",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x780bb0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x780bb0",
+                "end_rva": "0x780c9d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xa7a00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xa7a10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x673690",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x6736a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6736a0",
+                "end_rva": "0x673720",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x77e510",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x77e510",
+                "end_rva": "0x77e57e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x6738d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x77dbd0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x77dbd0",
+                "end_rva": "0x77dc9c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0xa7480",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x780f00",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x780f00",
+                "end_rva": "0x780fa2",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x780ec0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x780ec0",
+                "end_rva": "0x780ef7",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x1273f70",
+          "bases": [
+            {
+              "mangled_name": ".?AVePlacer@Entity@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
