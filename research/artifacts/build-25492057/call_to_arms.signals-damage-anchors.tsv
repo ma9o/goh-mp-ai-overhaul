@@ -1,0 +1,20 @@
+# RVA	Signal definition and factory leads
+0x10d4830	vtable:.?AUeAction_Signal@Interaction@@
+0x10c0624	signal_lowercase
+0x1081d6c	Signal_token
+0x10d24f0	eHealthDamage_vtable
+0x10d25e0	eHealthDamagePierce_vtable
+0x10d2668	eHealthDamageBlast_vtable
+0x10d26f0	eHealthDamageCount_vtable
+0x10d2778	eHealthDamageBlow_vtable
+0x10d2800	eHealthDamageCrush_vtable
+0x10d35a0	eVehicleHealthDamage_vtable
+0x10d3608	eVehicleHealthDamagePierce_vtable
+0x10d3770	eVehicleHealthDamageBlast_vtable
+0xa5c9c0	signal_descriptor_parse
+0x159c7b0	blast_health_curve
+0x147fe90	signal_action_registry
+0x1485958	signal_scene_condition_registry
+0x1571040	armor_required_item_tag
+0x15984c8	avoidance_ability_id
+0x1547d90	projectile_distance_scale

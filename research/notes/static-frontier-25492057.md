@@ -16,15 +16,15 @@ after their behavior and effect on the AI contract are established.
 
 | Area | Current evidence | Open static work |
 |---|---|---|
-| Entity/component structure | Constructor-backed Fsm/Cover/Brain/Sensor/Weaponry/Chassis pointers; direct component clone/load ownership; extender collection/cache/attach/clone/rebind; selected IDs/fields; 392/391 native RTTI roots | Component replacement/removal and factory completeness; world enumeration, actor IDs/flags, subtype/lifetime relationships |
-| Sensor/perception | Candidate commit/categories, memory/eviction, ally sharing, grid rays, unmask rules; Recon registration/waiting counts, six searcher slots,60-sector rings and renewal; injury signal4 producer, world signal distribution, corpse signal6 producer | Effect/action signal definition parsers and remaining type names; residual Recon completed-status consumers; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine lifetimes |
+| Entity/component structure | Constructor-backed Fsm/Cover/Brain/Sensor/Weaponry/Chassis pointers; direct component clone/load ownership; extender collection/cache/attach/clone/rebind; inventory cache and nested weight chain; selected IDs/fields; 392/391 native RTTI roots | Component replacement/removal and factory completeness; world enumeration, actor IDs/flags, subtype/lifetime relationships; inventory holder/item ownership |
+| Sensor/perception | Candidate commit/categories, memory/eviction, ally sharing, grid rays, unmask rules; Recon registration/waiting counts, six searcher slots,60-sector rings and renewal; all eight signal names; sound/action definition parsers and repeat publishing; injury/corpse/hit/death-cry producers; mission signal condition/reset | Sound source cancellation/lifetime, area registration lifetime; residual Recon completed-status consumers; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine lifetimes |
 | Relationships | Neutral/enemy/ally values, 18-player defaults, symmetric setter, scene diplomacy and multiplayer setup | Ownership changes and brain flag 15; downstream relationship consumers |
 | Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | Class/attacking/threating flag producers; all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
 | Human decision states | State hierarchy/dispatch/hazards; reviewed idle/battle/cover/search flow; stance thresholds, attack return codes, tactical movement, search coordination, healing and medic gating, following and weapon changes | General idle helper; detour feasibility/temporary pose evaluation; cover masks/healing validator; ground-weapon score/comparator; full event producers; action-order inner execution |
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle | Kind selection inside 8A8040; descriptor +8/+C consumer roles; height sampling and precise edge spacing |
 | Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set, grenade escape planning | Path request/acceptance, grid costs/probes, terrain/animation application, movement enum binding, ability/health speed modifiers; crush/obstacle order builders |
 | Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy producer; zeroing after-shot producer; firing/projectile-creation path | Place attachment/lifetime; detailed aiming/sway/reload; full sampler and ballistics; projectile collision/damage; actual weapon safety/readiness helpers |
-| Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and movement cap; Heal/Medic; outer damage-to-injury signal path | Damage action subclasses/calculation; configuration event execution; blinding/knockdown producers; carried-patient predicate; replication thresholds; load producer; morale/suppression links; medic statistics |
+| Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup; Avoidance parameters; damage reaction event selection | Armor/material helpers and component health; remaining outer damage gates; configuration event execution; blinding/knockdown producers; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; attack outer lifecycle and WeaponAimTarget | Internal attack states; all AI action families; concrete cancellation/rejection and ownership |
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion | Quant-clock producer/pause/time scale, manager bucket creation, context/RNG setup, entity lifetime through queued work; skip setter now mapped |
 | Group/vehicle behavior | Type roots only | Squad/leader coordination, vehicle/airborne brains, mounted weapons and crew |
@@ -47,18 +47,25 @@ Existing completed passes: [initial structure](build-25492057.md),
 [target/weapon/accuracy/unmasking](combat-map-25492057.md), and
 [state hierarchy/hazards/movement](movement-map-25492057.md), and
 [infantry policy/search/healing](human-states-map-25492057.md), and
-[entity components/vitality/signals](entity-health-map-25492057.md). Their open questions
+[entity components/vitality/signals](entity-health-map-25492057.md), and
+[signals/damage/resistance/load](signals-damage-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
 
-- Entity/health: mapped `+578` collection cache, health setters and state propagation.
-  Follow damage action `0x741710` virtuals, vehicle damage `0x745960`, blinding/
-  knockdown callers, load producer for actor `+A2C`, and limits-sort partition.
-- Signals: world publisher `0xA5CA90`, definition-driven effect sources
-  `0x4D2810/0x4D1D20`, Interaction signal action `0x74F220`; resolve parsers and
-  signal names. Corpse signal6 producer `0x903B10`, vehicle response `0x98B200`.
-  Human direct brain signal callback is empty `0x903690`; sensor updates carry reactions.
+- Entity/health: mapped damage virtual formulas and inventory load producer `0x71DD90`.
+  Follow armor/material helpers `0x7E72E0/0x7E7560/0x7E7800/0x7E7CB0/0x7E8030`,
+  vehicle component health `0x893550/0x895480`, holder `+770/+774` parsers,
+  interaction event dispatcher `0x76E0B0`, outer damage cover/distance `0xA5AA50`,
+  blinding/knockdown callers, and limits-sort partition.
+- Signals: named type/action/sound parsers and scene condition now mapped.
+  Follow source pointer ownership/cancellation in `0x4D2810/0x4D1D20`, area lookup
+  `0x9D2020`, receiver threshold binding; remaining perception publishers and
+  vehicle response `0x98B200`. Human direct brain callback `0x903690` is empty.
+- Resistance/inventory: `0x975890/0x975CD0` named levels; selection helper
+  `0x9744E0` and ability info setup; drop-weapon/melee/fire consumers
+  `0x936C60/0x95D820/0xA75CD0`. Inventory handle weight `0x7E2420` includes
+  secondary definition/count; resolve identity and lifetime.
 - Human states: detour placement `0x93ED30`, feasibility `0x940130`, pose helpers
   `0x937FE0/0x96B530`; general idle `0x95FCC0`; weapon pickup ranking
   `0x958610/0x9469C0`; healing-cover validator. Search cleanup flag `+3E1`
