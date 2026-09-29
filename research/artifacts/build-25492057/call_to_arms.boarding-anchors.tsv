@@ -1,0 +1,15 @@
+# RVA	Boarding order vtables
+0x10e7f40	Order::eBindForBoard_primary_vtable
+0x10e84f8	Order::eBoard_primary_vtable
+0x10e8770	Order::eEmit_primary_vtable
+0x10d82e8	boarder_primary_vtable
+0x78ee10	boarder_walker_advance_callers
+0x78b710	boarder_door_node_callers
+0x78b7a0	boarder_place_node_callers
+0x78de70	boarder_quant_callers
+0x783130	boarder_destructor_callers
+0x78e5b0	boarder_StartWalker_callers
+0x78a660	boarder_rebuild_callers
+0x78abe0	boarder_graph_rebuild_callers
+0x78d620	boarder_cancel_callers
+0x78d810	boarder_restore_callers
