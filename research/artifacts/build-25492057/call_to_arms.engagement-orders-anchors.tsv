@@ -1,0 +1,11 @@
+# RVA	Native tags and melee resistance name
+0x15768e0	dummy_ammo_tag
+0x157eb70	fight_stop_request
+0x157ebb0	fight_stop_replication
+0x157ebd0	fight_animation_tag
+0x157ef90	fight_abort_tag
+0x15984d8	melee_ability_key
+0x1586780	cannon_extender_key
+0x10edd10	blow_configuration_directory
+0x10e6fe8	advance_vtable
+0x15805d0	runtime_weapon_kind_name

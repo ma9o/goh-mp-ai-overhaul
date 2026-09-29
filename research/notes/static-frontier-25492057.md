@@ -20,12 +20,12 @@ after their behavior and effect on the AI contract are established.
 | Sensor/perception | Candidate commit/categories, memory/eviction, ally sharing, grid rays, unmask rules; Recon registration/waiting counts, six searcher slots,60-sector rings and renewal; all eight signal names; sound/action definition parsers and repeat publishing; injury/corpse/hit/death-cry producers; mission signal condition/reset | Sound source cancellation/lifetime, area registration lifetime; residual Recon completed-status consumers; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine lifetimes |
 | Relationships | Neutral/enemy/ally values, 18-player defaults, symmetric setter, scene diplomacy and multiplayer setup | Ownership changes and brain flag 15; downstream relationship consumers |
 | Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | Class/attacking/threating flag producers; all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
-| Human decision states | State hierarchy/dispatch/hazards; reviewed idle/battle/cover/search flow; stance thresholds, attack return codes, tactical movement, search coordination, healing and medic gating, following and weapon changes; detour pose/cover/point stages and budgets; temporary bone/pose trials; idle request gate; dropped-weapon memory, proficiency score and sort | Detour bound construction and pather route acceptance; animation state/tag producers and completion counter; full cover masks/healing validator; equipment flag/Veterancy property binding; full event producers; action-order inner execution |
+| Human decision states | State hierarchy/dispatch/hazards; reviewed idle/battle/cover/search flow; stance thresholds, attack return codes, tactical movement, search coordination, healing and medic gating, following and weapon changes; detour pose/cover/point stages and budgets; temporary bone/pose trials; idle request gate; dropped-weapon memory, proficiency score and sort | Detour bound construction and pather route acceptance; animation state/tag producers and completion counter; full cover masks/healing validator; Veterancy property binding; full event producers; residual action-order helpers |
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle; discrete height probes, height/side-clearance kind selection, interval boundary bisection | Descriptor +8/+C consumer roles; full edge spacing and alternate offsets; geometry-query/grid construction |
 | Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set, grenade escape planning | Path request/acceptance, grid costs/probes, terrain/animation application, movement enum binding, ability/health speed modifiers; crush/obstacle order builders |
-| Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy producer; zeroing after-shot producer; firing/projectile-creation path; TargetAccessor trial context and ordered ally/target/trajectory-distance result | Place attachment/lifetime; concrete aiming/bone limits/sway/reload; full sampler and ballistics; shooter-specific collision construction/damage; actual weapon safety/readiness helpers |
-| Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wounds/repair and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics |
-| Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; attack outer lifecycle and WeaponAimTarget | Internal attack states; all AI action families; concrete cancellation/rejection and ownership |
+| Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy producer; zeroing after-shot producer; firing/projectile-creation path; TargetAccessor trial context and ordered ally/target/trajectory-distance result | Place attachment/lifetime; concrete aiming/bone limits/sway/reload; full sampler and ballistics; shooter-specific collision construction/damage; remaining controller/charger readiness producers and bone limits |
+| Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wounds/repair and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
+| Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; complete vehicle/cannon/group variants; scripted blow effects and melee defence/counterattack |
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion | Quant-clock producer/pause/time scale, manager bucket creation, context/RNG setup, entity lifetime through queued work; skip setter now mapped |
 | Group/vehicle behavior | Type roots only | Squad/leader coordination, vehicle/airborne brains, mounted weapons and crew |
 | Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
@@ -50,7 +50,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [entity components/vitality/signals](entity-health-map-25492057.md), and
 [signals/damage/resistance/load](signals-damage-map-25492057.md), and
 [armor/component damage/interruption events](armor-events-map-25492057.md), and
-[infantry geometry/firing trials/equipment choice](human-geometry-map-25492057.md). Their open questions
+[infantry geometry/firing trials/equipment choice](human-geometry-map-25492057.md), and
+[engagement orders/readiness/melee](engagement-orders-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -77,9 +78,13 @@ are historical snapshots; this frontier tracks the continuing objective.
   `0x8C76B0`, animation tag/handler `+424/+42C` producers and `+560` decrement,
   healing-cover validator. Search cleanup flag `+3E1`
   has no set-side located in Execute. Healing-restore gate is confirmed in both binaries.
-- Action orders: `WeaponFire` Execute `0x8D77B0`, `Advance` `0x8D02B0`
-  with replacement slots `0x8D0F50/0x8D0FA0`, `Fight` `0x8E69E0`, boarding
-  factory `0x8E3B00`; follow the work routines and concrete cancellation.
+- Action orders: WeaponFire, Advance, Fight and Attack inner work now mapped in
+  the engagement pass. Continue WaitReady, body-turn `0x8D68E0`, AttackProximityCharge,
+  boarding factory `0x8E3B00`, cannon states/crew and group effects. Advance byte39
+  is cleared at start; its set-side and state2 reachability remain open.
+  Melee loader/parser `0x95ED00/0x95D230`, variant lookup, damage/knockdown
+  calculation and animation timing now connected; follow defence/counterattack,
+  stroke-mask `0x977D90`, animation completion and blow event action lists.
 - Movement: path request `0x8C8F60`, route probe `0x8AE780`, moving-entity
   registry `0x8AA360`; profile initialization/config; low-ratio speed modifier
   reads `0x925010/0x924F90`, abilities `0x936580/0x9744E0`.
@@ -88,10 +93,14 @@ are historical snapshots; this frontier tracks the continuing objective.
 - Weapons: TargetAccessor `0x820A40`, bone trial `0x821490`, collision result
   `0x821AD0` mapped through selected gates; follow actual aimer slots16/17/18,
   shooter slot3 trajectory construction, bone solvers `0x5C5760/0x5C5400`,
-  readiness `0x820030/0x80A070`, actor `+DB4` bit8 and definition `+15E8/+15F8`.
+  actor `+DB4` bit8. Definition `+15E8` is AimingTolerance and `+15F8` bit0
+  AmmoLocked; other flags now bound. `0x820030/0x820150` obstruction path can emit
+  break_window. `0x80A070` structural readiness, `0x8174D0/0x819DA0` shooter
+  range dispatch and `0x8107D0` place update now mapped; continue controller
+  `0x77B8A0`, charger `+10/+14` and slot1 object `+DC` producers.
   Sampler `0x818A10` ballistic/burst branches, projectile constructor
-  `0x8321F0`, initialization `0x8327B0`; readiness `0x8174D0/0x8107D0`;
-  attack inner states `0x8ED670/0x8EC470` and aiming `0x81F030`.
+  `0x8321F0`, initialization `0x8327B0`; concrete bone angle limits and motion.
+  Attack inner states and `0x81F030` time-to-aim trial now reviewed.
 - Perception: signal-type publishers, eReconBase zone bookkeeping, unmasking
   helper `0x7C97E0` and appearance/examine object lifetime.
 - Geometry: cover kind chooser and discrete height/interval helpers now mapped;
