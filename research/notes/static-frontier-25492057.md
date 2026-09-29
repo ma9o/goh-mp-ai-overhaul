@@ -20,9 +20,9 @@ after their behavior and effect on the AI contract are established.
 | Sensor/perception | Candidate commit/categories, visibility memory/eviction, ally sharing, grid rays; unmask accumulator/rules; eReconBase registrations; reveal loader and reciprocal visibility | Signal publishers; Recon zone bookkeeping; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine helper lifetimes |
 | Relationships | Neutral/enemy/ally values, 18-player defaults, symmetric setter, scene diplomacy and multiplayer setup | Ownership changes and brain flag 15; downstream relationship consumers |
 | Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | Class/attacking/threating flag producers; all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
-| Human decision states | Numeric state rules and movement consumer | Every human state/context virtual method, interrupts and transition side effects |
+| Human decision states | State hierarchy, attach/activate/deactivate, ordered interrupts, root hazards, saved-order restoration; initial idle/battle/search branch review | Remaining per-state helpers and event producers; healing/following/boarding; active branch reachability; full search coordination |
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle | Kind selection inside 8A8040; descriptor +8/+C consumer roles; height sampling and precise edge spacing |
-| Path/movement | Order creation and path-cost score | Path request/acceptance, stance/speed/chassis state, obstacles and motion completion |
+| Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set, grenade escape planning | Path request/acceptance, grid costs/probes, terrain/animation application, movement enum binding, ability/health speed modifiers; crush/obstacle order builders |
 | Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy producer; zeroing after-shot producer; firing/projectile-creation path | Place attachment/lifetime; detailed aiming/sway/reload; full sampler and ballistics; projectile collision/damage; actual weapon safety/readiness helpers |
 | Health/morale | Named morale dispatch and scalar update | Event IDs, damage/suppression propagation, health/stamina/ability calculations, recovery |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; attack outer lifecycle and WeaponAimTarget | Internal attack states; all AI action families; concrete cancellation/rejection and ownership |
@@ -44,11 +44,19 @@ Existing completed passes: [initial structure](build-25492057.md),
  [combat estimates/cover scoring](tactics-map-25492057.md), and
 [scheduling/sensors/cover sources](systems-map-25492057.md), and
 [perception/memory/entity inputs](perception-map-25492057.md), and
-[target/weapon/accuracy/unmasking](combat-map-25492057.md). Their open questions
+[target/weapon/accuracy/unmasking](combat-map-25492057.md), and
+[state hierarchy/hazards/movement](movement-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
 
+- Human states: cover battle `0x948160`, outdoors battle helpers `0x952AB0`,
+  `0x9537C0/0x9538A0/0x954B40/0x954F80`, search `0x94DD50` and Recon
+  `0x88AEA0/0x88B110/0x88B170/0x88B660`. Healing restore `0x9520B0` has
+  an address-equals-negative-offset gate requiring a reachability/editor audit.
+- Movement: path request `0x8C8F60`, route probe `0x8AE780`, moving-entity
+  registry `0x8AA360`; profile initialization/config; low-ratio speed modifier
+  reads `0x925010/0x924F90`, abilities `0x936580/0x9744E0`.
 - Target selection: class at actor +0xDE8; subject +0x14 bits7/8 writers;
   `0x913230/0x912EB0` ground/volume resolution; sorter partition/heap branches.
 - Weapons: sampler `0x818A10` ballistic/burst branches, projectile constructor

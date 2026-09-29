@@ -1,0 +1,27 @@
+# RVA	Human state construction/references
+0x10ecdb8	vtable:Human::eHorizontalBattle
+0x10ecce0	vtable:Human::eHorizontalLocation
+0x10ecf78	vtable:Human::eOutdoorsBattle
+0x10ed0a8	vtable:Human::eOutdoorsFindEnemy
+0x10ed108	vtable:Human::eOutdoorsIdle
+0x10ed148	vtable:Human::eOutdoorsIdleCivilian
+0x10ecf18	vtable:Human::eOutdoorsLocation
+0x10ecec8	vtable:Human::eVerticalBattle
+0x10ece88	vtable:Human::eVerticalIdle
+0x10ece30	vtable:Human::eVerticalLocation
+0x10ed260	vtable:Human::eBattleGeneric
+0x10ecd78	vtable:Human::eCoverBattle
+0x10ecb58	vtable:Human::eCoverIdle
+0x10ed510	vtable:Human::eHS_RootCivilian
+0x10ed4a0	vtable:Human::eHS_RootGeneric
+0x10ed4d8	vtable:Human::eHS_RootSoldier
+0x10ecb28	vtable:Human::eHumanState
+0x10ecd38	vtable:Human::eLocationGeneric
+0x1575b60	data:grenade_scan_tag
+0x1582050	data:foot_chassis_property_registry
+0x157ef30	data:swim_state_tag
+0x1587f90	data:human_brain_property_registry
+0x1482978	data:chassis_to_order_result
+0x1481170	data:movement_mode_lookup
+0x157eab0	data:movement_fsm_tag
+0x157f2f0	data:special_movement_fsm_tag
