@@ -3,6 +3,7 @@
   "steam_build_id": "25492057",
   "evidence_level": "static_behavior_reviewed",
   "runtime_verified": false,
+  "followup_map": "fine-map.json",
   "warning": "Analyst role names and member associations, not a callable SDK. Use binary hashes from the PE surveys. Object lifetime and execution context remain unverified.",
   "methods": [
     {
@@ -30,7 +31,7 @@
       "game_rva": "0x941d00",
       "editor_rva": "0x7c9290",
       "evidence": "Human override of the slot reached by the wrapper. Game implementation uses float fields +0x524 and +0x528, associated below with advance_ratio and retreat_ratio.",
-      "open": "Individual branches, state transitions, return meaning, and all side effects still need review. This is not established as the entire AI loop."
+      "open": "The core numeric state-selection region is reviewed in fine-map.json. Input meanings, downstream action semantics, and complete side effects remain open. This is not established as the entire AI loop."
     },
     {
       "proposed_role": "brain_update_order_sets_request_flag",

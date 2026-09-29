@@ -1,0 +1,16 @@
+# RVA	Independently paired editor methods; descriptive roles remain provisional
+0x7c9290	human_reconsideration
+0x7cad70	human_target_selection_candidate
+0x7cb5a0	human_target_change_helper
+0x78a090	base_brain_reconsideration
+0x7896b0	set_move_mode_candidate
+0x789730	set_move_speed_candidate
+0x7942c0	fire_mode_property_adapter
+0x796b00	fire_mode_value_parser
+0x7944d0	move_mode_property_adapter
+0x797090	move_mode_value_parser
+0x7973c0	move_speed_value_parser
+0x7cc510	human_bounded_scalar_delta
+0x78be20	brain_order_progression
+0x829320	actor_state_command_execution
+0x7967d0	control_value_parser

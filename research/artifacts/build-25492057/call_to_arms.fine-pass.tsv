@@ -1,0 +1,27 @@
+# RVA	Focused fine-grained review; descriptive roles remain provisional
+0x941d00	human_reconsideration
+0x943560	human_predecision_helper
+0x944070	human_target_change_helper
+0x903b10	base_brain_reconsideration
+0x902950	brain_predicate_902950
+0x902ad0	brain_predicate_902ad0
+0x903140	set_move_mode_candidate
+0x9031c0	set_move_speed_candidate
+0x90d790	fire_mode_property_adapter
+0x90ffb0	fire_mode_value_parser
+0x90d9a0	move_mode_property_adapter
+0x9105b0	move_mode_value_parser
+0x9108d0	move_speed_value_parser
+0x9ad750	command_fire_mode_value_adapter
+0x9ad940	command_move_mode_value_adapter
+0x945010	human_bounded_scalar_delta
+0x65e700	clock_counter_candidate
+0x65e730	duration_conversion_candidate
+0x905710	brain_order_progression
+0x99f940	actor_state_command_execution
+0x942c10	human_predicate_942c10
+0x942cb0	human_predicate_942cb0
+0x942d10	human_predicate_942d10
+0x905be0	brain_predicate_905be0
+0x90fc90	control_value_parser
+0x9437a0	human_target_selection_candidate

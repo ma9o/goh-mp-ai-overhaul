@@ -15,6 +15,8 @@ weapon behavior. The upstream loader and SDK are retained as reference material.
   or unverified in the inherited SDK.
 - [Current build findings](research/notes/build-25492057.md): evidence from the
   installed game and GEM editor, with addresses separated by executable.
+- [Fine-grained brain map](research/notes/fine-map-25492057.md): field masks,
+  enum values, small predicates, setter side effects, and inlined state rules.
 - [Build artifacts](research/artifacts/build-25492057): fingerprints, RTTI,
   vtables, string anchors, and candidate methods.
 - [Original upstream README](README.upstream.md): historical build and loader
@@ -57,8 +59,10 @@ directory elements, so the project is deliberately outside `.work/`.
 
 Exports check the imported executable's SHA-256 against the survey, require
 exact function entries for candidate RVAs, and collect references, calls,
-assembly, and decompilation. They do not rename functions or apply guessed
-types. Additional RVAs can be supplied in a two-column TSV (`RVA`, `label`) via
+assembly, and decompilation. Schema-2 exports also include body ranges, basic
+blocks, and outgoing flow edges so that inlined decisions can be mapped.
+They do not rename functions or apply guessed types. Additional RVAs can be
+supplied in a two-column TSV (`RVA`, `label`) via
 `export --candidates path.tsv --output local-work/exports/followup`.
 
 The checked-in `call_to_arms.followup.tsv` and `call_to_arms_ed.followup.tsv`
@@ -68,6 +72,13 @@ first review. For example:
 ```sh
 python3 research/scripts/run_headless.py --build-id 25492057 export --program call_to_arms.exe --candidates research/artifacts/build-25492057/call_to_arms.followup.tsv --output local-work/exports/build-25492057/game-followup
 ```
+
+The `*.fine-pass.tsv` files extend the investigation into predicates, mode
+parsers, target selection, and state transitions. The
+[fine-map reproduction commands](research/notes/fine-map-25492057.md#reproduction-and-checks)
+also run `verify_fine_map.py`, which checks binary hashes, enum tables, constants,
+and instruction evidence locations. Passing these checks does not prove the
+analyst's semantic interpretations or a callable ABI.
 
 Game binaries, Ghidra databases, logs, and decompiled bodies stay untracked in
 `local-work/`. Commit tools, small address/evidence manifests, and analyst notes.
@@ -82,13 +93,18 @@ game update and regenerate the survey before comparing it.
    a proposed role. State the evidence and unresolved ABI/lifetime details.
 3. **Runtime verified:** observations on the exact fingerprinted executable
    confirm the call, object, thread, and lifetime assumptions. Nothing in this
-   initial research pass has this status.
+   research has this status yet.
 
 All addresses in new reports are **RVAs** unless explicitly labeled otherwise.
 Add the executable's module base to obtain a virtual address. Game and editor
 addresses must be mapped independently; a matching vtable slot is a comparison
 anchor, not a compatibility guarantee. Do not transfer research candidates into
 the loader's hook table before their signatures and lifecycle are established.
+
+Map the smallest behavior supported by evidence: individual bit fields,
+predicates, score calculations, state transitions, and side effects, including
+operations inlined into larger functions. Record unknown meanings explicitly;
+pair game/editor behavior even when compilation changes function boundaries.
 
 The upstream repository mentions MIT but contains no standalone license file;
 this fork preserves that state and does not assign a new license to upstream

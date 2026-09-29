@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "status": "partial_static_behavior_review",
+  "runtime_verified": false,
+  "address_convention": "RVA; member offsets are from the complete brain object unless stated otherwise",
+  "warning": "Analyst descriptions, not recovered symbols or callable ABI declarations. Instruction checks verify evidence locations, not semantic correctness.",
+  "binaries": {
+    "game": {"filename": "call_to_arms.exe", "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267"},
+    "editor": {"filename": "call_to_arms_ed.exe", "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976"}
+  },
+  "enums": [
+    {
+      "id": "control", "offset": "0x398", "mask": "0x3", "shift": 0,
+      "values": {"AI": 0, "user": 1},
+      "table_rvas": {"game": "0x10ea4d0", "editor": "0xf4fcc0"},
+      "parser_rvas": {"game": "0x90fc90", "editor": "0x7967d0"}
+    },
+    {
+      "id": "fire_mode", "offset": "0x398", "mask": "0xc00", "shift": 10,
+      "values": {"hold": 1, "return": 2, "open": 0},
+      "table_rvas": {"game": "0x10ea410", "editor": "0xf4fc00"},
+      "parser_rvas": {"game": "0x90ffb0", "editor": "0x796b00"}
+    },
+    {
+      "id": "move_mode", "offset": "0x398", "mask": "0x3000", "shift": 12,
+      "values": {"hold": 1, "zone": 2, "free": 0},
+      "table_rvas": {"game": "0x10ea460", "editor": "0xf4fc50"},
+      "parser_rvas": {"game": "0x9105b0", "editor": "0x797090"}
+    },
+    {
+      "id": "move_speed", "offset": "0x398", "mask": "0x4000", "shift": 14,
+      "values": {"fast": 0, "slow": 1},
+      "table_rvas": {"game": "0x10ea4a0", "editor": "0xf4fc90"},
+      "parser_rvas": {"game": "0x9108d0", "editor": "0x7973c0"}
+    }
+  ],
+  "fields": [
+    {"id": "owner_actor", "offset": "0x38", "width": 8, "representation": "pointer", "evidence_ids": ["move_mode_setter", "state_inputs"]},
+    {"id": "zone_anchor", "offset": "0x128", "width": 8, "representation": "copied bytes", "meaning": "Copied from owner+0x74 when entering zone mode; coordinate interpretation remains provisional", "evidence_ids": ["move_mode_setter"]},
+    {"id": "follow_commander", "offset": "0x39c", "width": 4, "mask": "0x08000000", "meaning": "Named actor_state property", "evidence_ids": ["command_human_fields"]},
+    {"id": "old_target_candidate", "offset": "0x3b0", "width": 8, "representation": "reference-counted pointer", "evidence_ids": ["target_refresh_game", "target_refresh_editor"]},
+    {"id": "current_target_candidate", "offset": "0x3b8", "width": 8, "representation": "reference-counted pointer", "evidence_ids": ["target_refresh_game", "target_refresh_editor"]},
+    {"id": "preferred_target_candidate", "offset": "0x3d0", "width": 8, "representation": "reference-counted pointer", "evidence_ids": ["target_refresh_game", "target_refresh_editor"]},
+    {"id": "fix_inventory", "offset": "0x3db", "width": 1, "representation": "boolean", "evidence_ids": ["human_property_binding"]},
+    {"id": "scalar_S", "offset": "0x474", "width": 4, "representation": "float32", "meaning": "Gameplay meaning unresolved; slot 29 adds a delta and clamps to 0..100 for finite inputs", "evidence_ids": ["scalar_delta", "constructor_defaults"]},
+    {"id": "scalar_recovery_deadline", "offset": "0x478", "width": 4, "representation": "uint32 counter", "evidence_ids": ["scalar_delta", "scalar_recovery"]},
+    {"id": "input_A", "offset": "0x518", "width": 4, "representation": "float32", "meaning": "Producer and gameplay meaning unresolved", "evidence_ids": ["state_inputs"]},
+    {"id": "input_B", "offset": "0x51c", "width": 4, "representation": "float32", "meaning": "Producer and gameplay meaning unresolved", "evidence_ids": ["state_inputs"]},
+    {"id": "no_advance", "offset": "0x520", "width": 1, "representation": "boolean", "evidence_ids": ["human_property_binding", "command_human_fields", "advance_branch"]},
+    {"id": "no_retreat", "offset": "0x521", "width": 1, "representation": "boolean", "evidence_ids": ["human_property_binding", "command_human_fields", "retreat_branch"]},
+    {"id": "advance_ratio", "offset": "0x524", "width": 4, "representation": "float32", "evidence_ids": ["human_property_binding", "command_human_fields", "state_inputs"]},
+    {"id": "retreat_ratio", "offset": "0x528", "width": 4, "representation": "float32", "evidence_ids": ["human_property_binding", "command_human_fields", "state_inputs"]},
+    {"id": "decision_state", "offset": "0x52c", "width": 4, "representation": "int32", "observed_codes": [0, 1, 2, 3, 4], "meaning": "Numeric codes; action names unresolved", "evidence_ids": ["state_deadline", "state_zero", "advance_branch", "retreat_branch"]},
+    {"id": "decision_deadline", "offset": "0x530", "width": 4, "representation": "uint32 counter", "evidence_ids": ["state_deadline", "state_zero"]}
+  ],
+  "methods": [
+    {
+      "id": "human_reconsideration", "entry_rvas": {"game": "0x941d00", "editor": "0x7c9290"}, "primary_vtable_slot": 35,
+      "role": "Refresh target references, update decision state, update other actor components, call base reconsideration, recover scalar S",
+      "unresolved": "Full side effects and downstream action semantics; not established as the whole AI loop"
+    },
+    {
+      "id": "human_property_binding", "entry_rvas": {"game": "0x9426e0", "editor": "0x7c9d10"}, "this_adjustment": "0x10",
+      "role": "Bind named properties through the secondary brain interface"
+    },
+    {
+      "id": "base_property_binding", "entry_rvas": {"game": "0x9089f0", "editor": "0x78f360"}, "this_adjustment": "0x10",
+      "role": "Bind control/fire/movement modes and other properties; calls movement setters with the complete brain pointer"
+    },
+    {
+      "id": "actor_state_execution", "entry_rvas": {"game": "0x99f940", "editor": "0x829320"},
+      "role": "Apply command fields to actor/brain; independently corroborates named member associations",
+      "unresolved": "This pass covers selected fields, not the complete command contract"
+    },
+    {
+      "id": "set_move_mode", "entry_rvas": {"game": "0x903140", "editor": "0x7896b0"},
+      "reads": ["brain+0x398", "brain+0x38", "owner+0x74", "brain+0xe0", "context+0x28"],
+      "writes": ["brain+0x398 bits 12..13", "brain+0x128 when masked input is 2", "context+0x28"],
+      "side_effects": "If current extracted mode differs from unmasked input, update mode; for zone copy 8 bytes from owner+0x74; if context exists, call game 0x912520 on its nonnull +0x28 pointer with argument 0, then clear that pointer",
+      "unresolved": "Context type and cleanup callee contract"
+    },
+    {
+      "id": "set_move_speed", "entry_rvas": {"game": "0x9031c0", "editor": "0x789730"},
+      "role": "Compare extracted bit 14 to input and replace only that bit when different; no outgoing call in reviewed body"
+    },
+    {
+      "id": "add_scalar_delta", "entry_rvas": {"game": "0x945010", "editor": "0x7cc510"}, "primary_vtable_slot": 29,
+      "role": "Add float delta to S, clamp to 0..100 for finite inputs; negative delta sets recovery deadline to now+convert(10)",
+      "unresolved": "Gameplay name of S, time units, and other writers"
+    },
+    {
+      "id": "order_progression", "entry_rvas": {"game": "0x905710", "editor": "0x78be20"}, "primary_vtable_slot": 24,
+      "role": "Invoke current order callback, process due delayed entries, progress main order queue",
+      "side_effects": "Bracket current-order slot 3 with brain+0x39c bit 24; conditionally invoke cleanup/destruction; process 16-byte delayed entries from brain+0x98..0xa0",
+      "unresolved": "Ownership, reentrancy, and complete scheduling contract"
+    },
+    {
+      "id": "target_refresh", "entry_rvas": {"game": "0x943560"},
+      "role": "Refresh +0x3d0, snapshot +0x3b8 into +0x3b0, clear +0x3da, call target picker and assign +0x3b8 with reference counting",
+      "editor_correspondence": "Inlined into 0x7c9290 before 0x7c93b5; no separate entry asserted"
+    },
+    {
+      "id": "target_picker_candidate", "entry_rvas": {"game": "0x9437a0", "editor": "0x7cad70"},
+      "role": "Global gate; prefer nonnull +0x3d0; otherwise filter owner component +0xdd0 list at +0x280..0x288, pass the list to helper 0x9136e0, run a candidate check, and return a candidate",
+      "unresolved": "Gate meaning, suitability rules, ranking helper, candidate-check object type; candidate does not yet mean verified shootable enemy"
+    },
+    {
+      "id": "target_change_cleanup", "entry_rvas": {"game": "0x944070", "editor": "0x7cb5a0"},
+      "role": "If the resource component exists, release/reset a nonnegative handle at brain+0x3e4 and conditionally acquire a replacement when the new target has bit 25 at +0x10",
+      "unresolved": "Resource type and handle ownership"
+    },
+    {
+      "id": "predicate_902950", "entry_rvas": {"game": "0x902950"},
+      "returns_true_when": "control == user AND owner dword+0xdb4 bit 17 is set",
+      "unresolved": "Meaning of owner bit 17"
+    },
+    {
+      "id": "predicate_902ad0", "entry_rvas": {"game": "0x902ad0"},
+      "returns_true_when": "brain pointer+0x100 exists AND its pointer+0xa8 exists AND that pointer differs from the brain owner pointer at +0x38",
+      "unresolved": "Type of +0x100 and identity of linked actor"
+    },
+    {
+      "id": "predicate_905be0", "entry_rvas": {"game": "0x905be0"},
+      "returns_true_when": "brain pointer+0x1f8 exists OR (brain pointer+0x100 exists AND its pointer+0x1c8 exists)",
+      "unresolved": "Pointee types and gameplay meaning"
+    },
+    {
+      "id": "predicate_942d10", "entry_rvas": {"game": "0x942d10"},
+      "returns_true_when": "brain flags+0x39c bit 9 AND predicate_902ad0 AND follow_commander AND NOT predicate_902950"
+    },
+    {
+      "id": "predicate_942c10", "entry_rvas": {"game": "0x942c10"},
+      "returns_true_when": "NOT owner+0x1c0 bit 28 AND (move_mode != hold OR predicate_942d10 conditions) AND NOT (control == user AND brain flags+0x39c bit 28)"
+    },
+    {
+      "id": "predicate_942cb0", "entry_rvas": {"game": "0x942cb0"},
+      "returns_true_when": "move_mode != hold AND control == AI AND move_mode != zone AND NOT brain flags+0x39c bit 6 AND signed decision_state > 2 AND NOT predicate_905be0",
+      "unresolved": "Likely advance eligibility; gameplay role not yet proven. Do not simplify to move_mode == free for the unnamed bit pattern 3."
+    },
+    {"id": "read_counter", "entry_rvas": {"game": "0x65e700"}, "role": "Read mutable dword at game RVA 0x1556e48"},
+    {"id": "convert_duration", "entry_rvas": {"game": "0x65e730"}, "role": "Multiply input float by mutable float at game RVA 0x14776c8 and truncate to integer", "unresolved": "Multiplier initialization, units and out-of-range behavior"}
+  ],
+  "inline_regions": [
+    {"id": "state_inputs", "parent_method": "human_reconsideration", "evidence_ids": ["state_inputs"], "behavior": "Ta=A*advance_ratio*k; Tr=B*retreat_ratio*k; k=1.5 if owner component+0xdc0 field+0x24 is 1 or 2, otherwise 1"},
+    {"id": "state_deadline", "parent_method": "human_reconsideration", "evidence_ids": ["state_deadline"], "behavior": "If deadline nonzero, unsigned now>=deadline clears state and deadline; both pending and expired cases skip state selection this pass"},
+    {"id": "state_zero", "parent_method": "human_reconsideration", "evidence_ids": ["state_zero"], "behavior": "With no deadline and state 0, unscaled B*retreat_ratio>=A adds 5 via slot 29 then sets state 2; otherwise S>50 sets state 3 with randomized deadline; otherwise stays 0"},
+    {"id": "advance_branch", "parent_method": "human_reconsideration", "evidence_ids": ["advance_branch"], "behavior": "With no deadline and nonzero state, start at 2; if S>70 and !no_advance and B>Ta, choose 4 when B>2*Ta, otherwise 3"},
+    {"id": "retreat_override", "parent_method": "human_reconsideration", "evidence_ids": ["retreat_branch"], "behavior": "After advance branch, if !no_retreat: A>Tr or S<30 gives 0; else S<50 gives 1; otherwise retain state"},
+    {"id": "scalar_recovery", "parent_method": "human_reconsideration", "evidence_ids": ["scalar_recovery"], "behavior": "After base reconsideration, if recovery deadline allows, add (0.5*100)/120 via slot 29 and set recovery deadline now+convert(0.5)"}
+  ],
+  "float_constants": [
+    {"rva": "0x10d205c", "binary": "game", "value": 70.0},
+    {"rva": "0x10004d0", "binary": "game", "value": 1.0},
+    {"rva": "0x10004d4", "binary": "game", "value": 2.0},
+    {"rva": "0x10220d4", "binary": "game", "value": 1.5},
+    {"rva": "0x10099b0", "binary": "game", "value": 50.0},
+    {"rva": "0x10124b4", "binary": "game", "value": 5.0},
+    {"rva": "0x105ffbc", "binary": "game", "value": 30.0},
+    {"rva": "0x1003158", "binary": "game", "value": 0.5},
+    {"rva": "0x1004048", "binary": "game", "value": 100.0},
+    {"rva": "0x10e4b70", "binary": "game", "value": 120.0},
+    {"rva": "0x1004044", "binary": "game", "value": 10.0},
+    {"rva": "0xf33ca4", "binary": "editor", "value": 70.0},
+    {"rva": "0xe82d28", "binary": "editor", "value": 1.0},
+    {"rva": "0xe82d2c", "binary": "editor", "value": 2.0},
+    {"rva": "0xe99fa0", "binary": "editor", "value": 1.5},
+    {"rva": "0xe87960", "binary": "editor", "value": 50.0},
+    {"rva": "0xe8a51c", "binary": "editor", "value": 5.0},
+    {"rva": "0xec6918", "binary": "editor", "value": 30.0}
+  ],
+  "evidence": [
+    {"id": "base_modes", "binary": "game", "function_rva": "0x9089f0", "instruction_rvas": ["0x908a03", "0x908a6b", "0x908aed", "0x908b03", "0x908b75", "0x908c6b"]},
+    {"id": "human_property_binding", "binary": "game", "function_rva": "0x9426e0", "instruction_rvas": ["0x942702", "0x942795", "0x9427c0", "0x94283e", "0x942861", "0x9428df", "0x942903", "0x94299f", "0x9429af", "0x942a4b"]},
+    {"id": "command_human_fields", "binary": "game", "function_rva": "0x99f940", "instruction_rvas": ["0x99f9c0", "0x99fe24", "0x99fe3b", "0x99fe72", "0x99feab", "0x99fec0", "0x99fed7"]},
+    {"id": "move_mode_setter", "binary": "game", "function_rva": "0x903140", "instruction_rvas": ["0x903144", "0x903170", "0x90317f", "0x903184", "0x9031a3", "0x9031a8"]},
+    {"id": "constructor_defaults", "binary": "game", "function_rva": "0x9417e0", "instruction_rvas": ["0x94190b", "0x941929", "0x941936", "0x941944", "0x94194e", "0x941958"]},
+    {"id": "target_refresh_game", "binary": "game", "function_rva": "0x943560", "instruction_rvas": ["0x943578", "0x9435c1", "0x943607", "0x943616", "0x94365f"]},
+    {"id": "target_refresh_editor", "binary": "editor", "function_rva": "0x7c9290", "instruction_rvas": ["0x7c92aa", "0x7c92c8", "0x7c931d", "0x7c935f", "0x7c937d"]},
+    {"id": "state_inputs", "binary": "game", "function_rva": "0x941d00", "instruction_rvas": ["0x941d8a", "0x941d92", "0x941d9d", "0x941daf", "0x941dc5", "0x941dcd"]},
+    {"id": "state_deadline", "binary": "game", "function_rva": "0x941d00", "instruction_rvas": ["0x941deb", "0x941dfa", "0x941dff", "0x941e07", "0x941e0e"]},
+    {"id": "state_zero", "binary": "game", "function_rva": "0x941d00", "instruction_rvas": ["0x941e13", "0x941e20", "0x941e24", "0x941e37", "0x941e3d", "0x941e54", "0x941e69", "0x941e73", "0x941e86", "0x941e9b", "0x941ea9", "0x941eb3"]},
+    {"id": "advance_branch", "binary": "game", "function_rva": "0x941d00", "instruction_rvas": ["0x941ec6", "0x941ecd", "0x941ed9", "0x941ee2", "0x941ef2", "0x941efb"]},
+    {"id": "retreat_branch", "binary": "game", "function_rva": "0x941d00", "instruction_rvas": ["0x941f01", "0x941f12", "0x941f1f", "0x941f31", "0x941f36", "0x941f42"]},
+    {"id": "editor_state_correspondence", "binary": "editor", "function_rva": "0x7c9290", "instruction_rvas": ["0x7c93f8", "0x7c941d", "0x7c9433", "0x7c9451", "0x7c946d", "0x7c9486", "0x7c949d", "0x7c94ec", "0x7c950f", "0x7c953f", "0x7c9561", "0x7c9567", "0x7c959c", "0x7c95a8"]},
+    {"id": "scalar_delta", "binary": "game", "function_rva": "0x945010", "instruction_rvas": ["0x945021", "0x945041", "0x945057", "0x945067", "0x94506f", "0x94508f"]},
+    {"id": "scalar_recovery", "binary": "game", "function_rva": "0x941d00", "instruction_rvas": ["0x942256", "0x94225b", "0x94229b", "0x9422a4", "0x9422ab", "0x9422b2"]}
+  ],
+  "frontier": [
+    "Find producers of input_A and input_B; recover their units and aggregation scope",
+    "Name scalar_S from property/debug evidence and inspect every writer before assuming morale or suppression",
+    "Follow decision_state consumers into advance/retreat/cover order construction; current codes have no verified action names",
+    "Review target suitability 0x912ae0, ranking helper 0x9136e0, and candidate check 0x957c00/0x957c70",
+    "Resolve context at brain+0xe0 and cleanup 0x912520 before treating movement setter as a callable interface",
+    "Recover timer multiplier and PRNG normalization initialization; random scale RVA 0x1587c54 is not file-backed",
+    "Map accuracy, aiming, visibility and cover scoring separately; fire_mode is a firing policy field, not an accuracy control"
+  ]
+}

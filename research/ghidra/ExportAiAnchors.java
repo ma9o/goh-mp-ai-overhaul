@@ -7,6 +7,9 @@ import com.google.gson.*;
 import ghidra.app.decompiler.*;
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressRange;
+import ghidra.program.model.address.AddressRangeIterator;
+import ghidra.program.model.block.*;
 import ghidra.program.model.listing.*;
 import ghidra.program.model.symbol.*;
 import java.nio.charset.StandardCharsets;
@@ -76,7 +79,7 @@ public class ExportAiAnchors extends GhidraScript {
             throw new IllegalArgumentException("Rebased program: import at preferred image base first");
 
         JsonObject report = new JsonObject();
-        report.addProperty("schema_version", 1);
+        report.addProperty("schema_version", 2);
         report.add("binary", survey.get("binary"));
         report.addProperty("ghidra_function_count", currentProgram.getFunctionManager().getFunctionCount());
         report.addProperty("warning", "Function names and prototypes are Ghidra analysis output; " +
@@ -130,6 +133,41 @@ public class ExportAiAnchors extends GhidraScript {
                 item.addProperty("ghidra_name", function.getName(true));
                 item.addProperty("ghidra_prototype", function.getPrototypeString(false, false));
                 item.addProperty("body_address_count", function.getBody().getNumAddresses());
+                JsonArray ranges = new JsonArray();
+                AddressRangeIterator rangeIterator = function.getBody().getAddressRanges();
+                while (rangeIterator.hasNext()) {
+                    AddressRange range = rangeIterator.next();
+                    JsonObject extent = new JsonObject();
+                    extent.addProperty("start_rva", rva(range.getMinAddress()));
+                    extent.addProperty("end_rva_inclusive", rva(range.getMaxAddress()));
+                    ranges.add(extent);
+                }
+                item.add("body_ranges", ranges);
+                JsonArray blocks = new JsonArray();
+                BasicBlockModel model = new BasicBlockModel(currentProgram);
+                CodeBlockIterator blockIterator = model.getCodeBlocksContaining(function.getBody(), monitor);
+                while (blockIterator.hasNext()) {
+                    CodeBlock block = blockIterator.next();
+                    JsonObject detail = new JsonObject();
+                    detail.addProperty("start_rva", rva(block.getFirstStartAddress()));
+                    detail.addProperty("end_rva_inclusive", rva(block.getMaxAddress()));
+                    JsonArray edges = new JsonArray();
+                    CodeBlockReferenceIterator destinations = block.getDestinations(monitor);
+                    while (destinations.hasNext()) {
+                        CodeBlockReference destination = destinations.next();
+                        if (destination.getFlowType().isCall()) continue; // Calls are recorded separately.
+                        Address target = destination.getDestinationAddress();
+                        if (!target.getAddressSpace().equals(base.getAddressSpace())) continue;
+                        JsonObject edge = new JsonObject();
+                        edge.addProperty("destination_rva", rva(target));
+                        edge.addProperty("kind", destination.getFlowType().toString());
+                        edge.addProperty("inside_function_body", function.getBody().contains(target));
+                        edges.add(edge);
+                    }
+                    detail.add("outgoing_edges", edges);
+                    blocks.add(detail);
+                }
+                item.add("basic_blocks", blocks);
                 JsonArray why = new JsonArray();
                 for (String reason : reasons.get(entry)) why.add(reason);
                 item.add("selection_reasons", why);
