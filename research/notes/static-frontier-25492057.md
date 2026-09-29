@@ -59,7 +59,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [vehicle weapon/root/withdrawal/repair policy](vehicle-brain-map-25492057.md), and
 [component repair/tool acquisition/inventory operations](repair-tooling-map-25492057.md), and
 [inventory queues/item ownership/scene retirement](inventory-ownership-map-25492057.md), and
-[hand operations/holder callbacks/FSM request boundary](equipment-actions-map-25492057.md). Their open questions
+[hand operations/holder callbacks/FSM request boundary](equipment-actions-map-25492057.md), and
+[FSM routing/request expiry/equipment subsets/completion](fsm-routing-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -83,7 +84,11 @@ are historical snapshots; this frontier tracks the continuing objective.
 - Human states: detour stages `0x93ED30`, feasibility `0x940130`, pose helpers,
   idle request `0x95FCC0` and pickup score/sort now mapped. Continue bound
   intersection `0x6144E0`, network setup `0x8C6390/0x8C6400`, route refine sampler
-  `0x8C76B0`, animation tag/handler `+424/+42C` producers and `+560` decrement,
+  `0x8C76B0`, full callers supplying equipment tags to `0x95FAD0` and animation
+  refresh `0x961710`. Handler424/42C now have13 class/six modifier tag bindings and
+  exact subset selection. Handler560 is native activeBlends, decremented by entity
+  event6/subkind6; blend scheduling and synchronous completion now mapped. Continue
+  concrete animation quant/cancellation and pending callback lifetime,
   healing-cover validator. Search cleanup flag `+3E1`
   has no set-side located in Execute. Healing-restore gate is confirmed in both binaries.
 - Action orders: WeaponFire, Advance, Fight and Attack inner work now mapped in
@@ -151,12 +156,14 @@ are historical snapshots; this frontier tracks the continuing objective.
   `0xA1CC10` delivers mask7 before extender cleanup; general soft receivers only
   invalidate at final entity destruction. Follow actor registryA5DF80, ID reuse,
   deferred disposal652A10 and full entity spawn/build ownership.
-- Animation/FSM: request API `0x7FBD70`, owner cancellation, start/consume/drop,
-  state-switch translation slice and arbitration `0x7FE6E0` are mapped. Continue
-  request parser binding (rankCC, C9, completionDC), readiness `0x7FEE10`, route
-  builder `0x7FCEE0`, commit `0x7FD210`, comparator `0x800E30`, state records and
-  animation event3/6 production. Authored priorities and equipment tags are read
-  from properties/human_fsm resources; native field binding is still needed.
+- Animation/FSM: request parser (priorityCC, interruptC9, durationD0), callbackDC,
+  tick-count expiry, six phases, readiness, shortest-edge route search, priority
+  comparator, last-match subset rules, split/switch tables and handler barrier
+  names now mapped. GEM adds changingState/current/OUTSIDE/activeBlends assertions.
+  Continue all12 human handler dispatch families `0x960970`, concrete blend types
+  and quant/cancel events behind `0x5CD380`, full generated state graph with
+  include/define/args macros, command2F/idle synchronization, serialization,
+  handler/actor replacement lifetime, and tick callers/scheduling.
 - Clock: containing global `0x1556E00`; manager `0x153BEE0`, bucket creation.
   Direct `0x1556E48` writes only found initialization, so follow parent aliases.
   Repair reads integer delta1556E4C (initializer3D770 sets1) and sentinel1556DE8

@@ -1,0 +1,11 @@
+# RVA	FSM routing anchors
+0xf58260	Actor::eAnimalFsmHandler_vtable
+0xf4c7a0	Order::eFsmRequest_vtable
+0xf42300	Actor::eFsm_vtable
+0xf53aa8	Human::eFsmHandler_vtable
+0xf42228	Actor::Fsm::eHandler_vtable
+0x13e5728	fsm_property_registry
+0xf42660	next state not found
+0xf42678	wrong phase
+0xf426b8	eFsm::MakeRequest - %s
+0xf426e8	subset `%1%` not found

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "76b21d6e89257776f3a884845bc2c1e3fa6c8be02d0cb97638024ece083ce6fe",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "bc96cd7305fd2c7e01ff505f9dd6977e0a8de86e1dd7d8232b6b07314929e04d",
+      "exact_candidates": 119,
+      "exported_functions": 132,
+      "exported_basic_blocks": 1372,
+      "checked_enums": 0,
+      "checked_constants": 1,
+      "checked_method_entries": 85,
+      "checked_instruction_locations": 5951,
+      "checked_pointer_tables": 1,
+      "checked_rtti_tables": 5,
+      "checked_byte_sequences": 49
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "9cfc3ab5ed63b66f009547b33900f45a1b9b83087ce013ff642e79a39830fa95",
+      "exact_candidates": 62,
+      "exported_functions": 80,
+      "exported_basic_blocks": 1043,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 19,
+      "checked_instruction_locations": 3187,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 5,
+      "checked_byte_sequences": 20
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm.ext",
+      "size": 548,
+      "sha256": "553c117307edd532730d487cbcab1d896f755951f3213997ee42c26958b30191"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/request.inc",
+      "size": 3836,
+      "sha256": "4004e36c8515c2b9f49a4c7d67ee056006706ac3a2cacf5306ee9277587ded84"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/inventory.inc",
+      "size": 712,
+      "sha256": "49036f331931e52c0b2571e9e290dfdc07e4aeef179e5ff421206358056a5ef8"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/stand.inc",
+      "size": 5322,
+      "sha256": "48cd9e0a09698ddc25af6be3d5e2ca9042152b3e8b6bbf08cfa9c60e89068240"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/subset.inc",
+      "size": 602,
+      "sha256": "17bca1c6e884b44341f1ca9d903f171cac212424680968daa0ea9bcc067b5644"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/switch.inc",
+      "size": 298,
+      "sha256": "958f0ef351e34e116b7e843295d2db85789178272ce0afeed00e8c06027cedda"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/look.inc",
+      "size": 1947,
+      "sha256": "4b3b6f0b1dc76130636925983755d225c9fd683d3ab8fbf4e2da0cc8d3711f7a"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/human_fsm/die.inc",
+      "size": 1639,
+      "sha256": "31af34021ab571e46950e3ba6df32ad82c235b217a29900fa48f98edb71a633e"
+    }
+  ],
+  "status": "passed"
+}
