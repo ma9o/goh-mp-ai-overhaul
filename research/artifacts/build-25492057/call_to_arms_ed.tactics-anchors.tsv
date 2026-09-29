@@ -1,0 +1,3 @@
+# RVA	Configuration parser anchors
+0xf435b8	string:hitpoints
+0xf435c8	string:attackrate

@@ -19,6 +19,9 @@ weapon behavior. The upstream loader and SDK are retained as reference material.
   enum values, small predicates, setter side effects, and inlined state rules.
 - [Input-to-order trace](research/notes/flow-map-25492057.md): subject-score
   formulas, the morale connection, and state-dependent movement/cover orders.
+- [Combat estimates and cover selection](research/notes/tactics-map-25492057.md):
+  Human/Tank coefficients, relationship flags, cover weights and rejection rules,
+  and the randomized choice among ranked candidates.
 - [Build artifacts](research/artifacts/build-25492057): fingerprints, RTTI,
   vtables, string anchors, and candidate methods.
 - [Original upstream README](README.upstream.md): historical build and loader
@@ -83,7 +86,9 @@ The `*.fine-pass.tsv` files extend the investigation into predicates, mode
 parsers, target selection, and state transitions. The
 [fine-map reproduction commands](research/notes/fine-map-25492057.md#reproduction-and-checks)
 also run `verify_fine_map.py`, which checks binary hashes, enum tables, constants,
-and instruction evidence locations. Passing these checks does not prove the
+and instruction evidence locations. Maps with `resource_members` also require
+`--resources-dir` and verify the named archive members by size and SHA-256.
+Passing these checks does not prove the
 analyst's semantic interpretations or a callable ABI.
 
 Game binaries, Ghidra databases, logs, and decompiled bodies stay untracked in

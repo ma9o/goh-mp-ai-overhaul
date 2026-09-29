@@ -2,6 +2,7 @@
   "schema_version": 1,
   "steam_build_id": "25492057",
   "export_suffix": "-flow",
+  "followup_map": "tactics-map.json",
   "runtime_verified": false,
   "status": "partial_static_behavior_review",
   "warning": "RVA addresses. Function roles are analyst descriptions. Table presence does not prove field association. No complete runtime or ownership contract is asserted.",

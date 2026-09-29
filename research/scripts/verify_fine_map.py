@@ -2,7 +2,8 @@
 """Check a reviewed map against local PE files and schema-2 Ghidra exports.
 
 Checks fingerprints, tables, RTTI, literal bytes, read-only float constants,
-exact entries and instruction locations. Does not prove interpretations or ABI.
+exact entries, instruction locations and optional archive-member hashes.
+Does not prove interpretations or ABI.
 No executable is loaded or modified. Uses only the Python standard library.
 """
 from __future__ import annotations
@@ -10,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import zipfile
 from pathlib import Path
 
 from scan_pe import PEImage
@@ -44,7 +46,8 @@ def enum_values(image: PEImage, table: int) -> dict[str, int]:
     raise ValueError(f"Unterminated enum table at {table:#x}")
 
 
-def verify(manifest_path: Path, binaries: Path, exports: Path) -> dict:
+def verify(manifest_path: Path, binaries: Path, exports: Path,
+           resources: Path | None = None) -> dict:
     manifest = json.loads(manifest_path.read_text())
     require(manifest["schema_version"] == 1, "Unsupported fine-map schema")
     images, functions, directories = {}, {}, {}
@@ -82,6 +85,20 @@ def verify(manifest_path: Path, binaries: Path, exports: Path) -> dict:
             "checked_method_entries": 0, "checked_instruction_locations": 0,
             "checked_pointer_tables": 0, "checked_rtti_tables": 0, "checked_byte_sequences": 0,
         }
+
+    if manifest.get("resource_members"):
+        require(resources is not None, "This map requires --resources-dir")
+        result["resource_members"] = []
+        for item in manifest["resource_members"]:
+            with zipfile.ZipFile(resources / item["archive"]) as archive:
+                data = archive.read(item["member"])
+            require(len(data) == item["size"], f"Resource size mismatch: {item['member']}")
+            actual = hashlib.sha256(data).hexdigest()
+            require(actual == item["sha256"], f"Resource hash mismatch: {item['member']}")
+            result["resource_members"].append({
+                "archive": item["archive"], "member": item["member"],
+                "size": len(data), "sha256": actual,
+            })
 
     def entry(key: str, rva: str) -> dict:
         require(rva in functions[key], f"Function not in export: {key} {rva}")
@@ -159,11 +176,13 @@ def main() -> None:
     parser.add_argument("--map", type=Path, required=True)
     parser.add_argument("--binaries-dir", type=Path, required=True)
     parser.add_argument("--exports-dir", type=Path, required=True)
+    parser.add_argument("--resources-dir", type=Path,
+                        help="Installed resource directory; required for maps with archive members")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     try:
-        report = verify(args.map, args.binaries_dir, args.exports_dir)
-    except (ValueError, KeyError, OSError) as error:
+        report = verify(args.map, args.binaries_dir, args.exports_dir, args.resources_dir)
+    except (ValueError, KeyError, OSError, zipfile.BadZipFile) as error:
         parser.exit(1, f"Verification failed: {error}\n")
     rendered = json.dumps(report, indent=2) + "\n"
     if args.output:

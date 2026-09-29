@@ -1,0 +1,1016 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "export_suffix": "-tactics",
+  "runtime_verified": false,
+  "status": "partial_static_behavior_review",
+  "warning": "RVA addresses. Analyst roles are not recovered API names. Human/Tank and HitPoints/AttackRate have parser/configuration evidence. No verified calling, lifetime, scheduler or complete visibility contract.",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267"
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976"
+    }
+  },
+  "fields": [
+    {
+      "id": "subject_attack_pair",
+      "owner": "Actor::eSubject",
+      "offset": "0x48",
+      "width": 8,
+      "representation": "float32[2]",
+      "channels": [
+        "Human",
+        "Tank"
+      ],
+      "role": "AttackRate coefficients, selected-object lookup or cached available-equipment maxima",
+      "evidence_ids": [
+        "attack_config",
+        "subject_refresh",
+        "cached_pair_arguments",
+        "equipment_maxima"
+      ]
+    },
+    {
+      "id": "subject_comparison_pair",
+      "owner": "Actor::eSubject",
+      "offset": "0x54",
+      "width": 8,
+      "representation": "float32[2]",
+      "channels": [
+        "Human",
+        "Tank"
+      ],
+      "role": "Human health value and zero, or HitPoints classification pair",
+      "evidence_ids": [
+        "hitpoints_config",
+        "comparison_pair_source"
+      ]
+    },
+    {
+      "id": "subject_relationship_flags",
+      "owner": "Actor::eSubject",
+      "offset": "0x14",
+      "width": 4,
+      "representation": "uint32 bitfield",
+      "role": "Relationship/update flags; raw predicates retained below",
+      "evidence_ids": [
+        "subject_relationship_flags",
+        "actor_relationship_ids"
+      ]
+    },
+    {
+      "id": "cached_attack_pair",
+      "owner": "actor component at +0xdd0",
+      "offset": "0x35c",
+      "width": 8,
+      "representation": "float32[2]",
+      "role": "Per-channel maximum over eligible inventory/equipment AttackRate rows",
+      "evidence_ids": [
+        "cached_pair_arguments",
+        "equipment_maxima"
+      ]
+    },
+    {
+      "id": "cover_weights",
+      "owner": "cover search context",
+      "offset": "0x170",
+      "width": 32,
+      "representation": "float32[8]",
+      "role": "Eight multipliers; indexed by offsets below",
+      "evidence_ids": [
+        "cover_total",
+        "movement_weights",
+        "editor_movement_weights"
+      ]
+    },
+    {
+      "id": "cover_total",
+      "owner": "0x88-byte cover candidate",
+      "offset": "0x80",
+      "width": 4,
+      "representation": "float32",
+      "role": "Eight weighted terms plus direct priority; sorted descending before rank selection",
+      "evidence_ids": [
+        "cover_total",
+        "cover_sort_call"
+      ]
+    },
+    {
+      "id": "cover_validator",
+      "owner": "cover search context",
+      "offset": "0x168",
+      "width": 8,
+      "representation": "pointer",
+      "role": "Optional rejection callback; true removes candidate",
+      "evidence_ids": [
+        "cover_rejection",
+        "direction_predicate"
+      ]
+    }
+  ],
+  "methods": [
+    {
+      "id": "hitpoints_configuration",
+      "entry_rvas": {
+        "game": "0x812a40",
+        "editor": "0x695560"
+      },
+      "role": "Load HitPoints property filters and Human/Tank pair values"
+    },
+    {
+      "id": "attack_configuration",
+      "entry_rvas": {
+        "game": "0x813110",
+        "editor": "0x695c70"
+      },
+      "role": "Load AttackRate property filters and Human/Tank pair values"
+    },
+    {
+      "id": "attack_pair_lookup",
+      "entry_rvas": {
+        "game": "0x813c20"
+      },
+      "role": "First matching object-property filter, zero fallback"
+    },
+    {
+      "id": "available_equipment_pair",
+      "entry_rvas": {
+        "game": "0x813870"
+      },
+      "role": "Per-channel maximum over eligible equipment/inventory rows; eligibility helper meanings incomplete"
+    },
+    {
+      "id": "cached_pair_refresh",
+      "entry_rvas": {
+        "game": "0x875860"
+      },
+      "role": "Tail bridge to available-equipment pair with output component+0x35c and component owner"
+    },
+    {
+      "id": "subject_refresh",
+      "entry_rvas": {
+        "game": "0x878740",
+        "editor": "0x6fc3e0"
+      },
+      "role": "Update subject attack pair, range and comparison pair"
+    },
+    {
+      "id": "subject_relationship_update",
+      "entry_rvas": {
+        "game": "0x878560"
+      },
+      "role": "Set relationship bits from actor IDs/matrix and actor flags"
+    },
+    {
+      "id": "actor_relationship",
+      "entry_rvas": {
+        "game": "0xa467b0"
+      },
+      "role": "Same-ID result2 or mutable matrix lookup; result0 fallback"
+    },
+    {
+      "id": "subject_insertion",
+      "entry_rvas": {
+        "game": "0x8753c0"
+      },
+      "role": "Insert into category vector and store category bits"
+    },
+    {
+      "id": "cover_initializer",
+      "entry_rvas": {
+        "game": "0x89fb60",
+        "editor": "0x724850"
+      },
+      "role": "Initialize vector, bounding circle and search defaults"
+    },
+    {
+      "id": "cover_reset",
+      "entry_rvas": {
+        "game": "0x89fbe0",
+        "editor": "0x7248e0"
+      },
+      "role": "Set search flags/default weights, actor and circle"
+    },
+    {
+      "id": "cover_search",
+      "entry_rvas": {
+        "game": "0x89feb0",
+        "editor": "0x724bc0"
+      },
+      "role": "Collect candidates and optionally score/filter/sort them"
+    },
+    {
+      "id": "cover_scoring",
+      "entry_rvas": {
+        "game": "0x8a0ed0",
+        "editor": "0x725c30"
+      },
+      "role": "Calculate eight weighted terms plus priority, then remove rejected candidates"
+    },
+    {
+      "id": "cover_path_terms",
+      "entry_rvas": {
+        "game": "0x8a1ef0"
+      },
+      "role": "Path-network cost and own engagement-range term"
+    },
+    {
+      "id": "segment_intersection",
+      "entry_rvas": {
+        "game": "0x8a55a0"
+      },
+      "role": "2D segment intersection with epsilon/parallel guards"
+    },
+    {
+      "id": "cover_sort",
+      "entry_rvas": {
+        "game": "0x8a4680"
+      },
+      "role": "Sort 0x88-byte records using supplied comparator"
+    },
+    {
+      "id": "cover_rank_select",
+      "entry_rvas": {
+        "game": "0x8a0660",
+        "editor": "0x725360"
+      },
+      "role": "Geometric rank draw clamped to the last candidate"
+    },
+    {
+      "id": "cover_adapter",
+      "entry_rvas": {
+        "game": "0x951210",
+        "editor": "0x7d8830"
+      },
+      "role": "Search, select with p=.5, copy candidate descriptor"
+    },
+    {
+      "id": "cover_candidate_init",
+      "entry_rvas": {
+        "game": "0x8a5970"
+      },
+      "role": "Clear score fields and candidate metadata"
+    },
+    {
+      "id": "cover_weight_fill",
+      "entry_rvas": {
+        "game": "0x8a5820"
+      },
+      "role": "Assign same float to all eight search weights"
+    },
+    {
+      "id": "cover_bounding_circle",
+      "entry_rvas": {
+        "game": "0x9516e0"
+      },
+      "role": "Fill search bounding circle from leader or movement-zone state; not score weights"
+    },
+    {
+      "id": "direction_reject",
+      "entry_rvas": {
+        "game": "0x955800",
+        "editor": "0x7dccc0"
+      },
+      "role": "Reject insufficient displacement/direction; mutate accepted special candidate"
+    },
+    {
+      "id": "movement_policy",
+      "entry_rvas": {
+        "game": "0x9538a0"
+      },
+      "role": "Includes cover weight setup inline before order path"
+    },
+    {
+      "id": "editor_cover_policy",
+      "entry_rvas": {
+        "editor": "0x7dbc00"
+      },
+      "role": "Outlined counterpart of game movement cover setup"
+    },
+    {
+      "id": "subject_comparison_pair",
+      "entry_rvas": {
+        "game": "0x8136e0"
+      },
+      "role": "Human path gets health value and zero; other entities use first matching HitPoints pair"
+    }
+  ],
+  "inline_regions": [
+    {
+      "id": "state_cover_weights",
+      "parent_method": "movement_policy",
+      "evidence_ids": [
+        "movement_weights",
+        "editor_movement_weights"
+      ],
+      "behavior": "Caller resets eight weights then applies common and state-specific groups."
+    },
+    {
+      "id": "weighted_cover_score",
+      "parent_method": "cover_scoring",
+      "evidence_ids": [
+        "cover_total",
+        "editor_cover_total"
+      ],
+      "behavior": "total80 = w184*c70 + w174*c60 + w178*c64 + w17c*c68 + w170*c5c + w180*c6c + w188*c74 + w18c*c78 + c7c; game float addition order. Editor exchanges first two summands."
+    }
+  ],
+  "enums": [],
+  "float_constants": [
+    {
+      "binary": "game",
+      "rva": "0x10004d0",
+      "value": 1.0
+    },
+    {
+      "binary": "game",
+      "rva": "0x10004d8",
+      "value": 16777216.0
+    },
+    {
+      "binary": "game",
+      "rva": "0x1003158",
+      "value": 0.5
+    },
+    {
+      "binary": "game",
+      "rva": "0x105ecb8",
+      "value": 7.0
+    },
+    {
+      "binary": "game",
+      "rva": "0x1003f60",
+      "value": 9.999999747378752e-06
+    },
+    {
+      "binary": "game",
+      "rva": "0x101249c",
+      "value": 0.949999988079071
+    },
+    {
+      "binary": "editor",
+      "rva": "0xe85ea0",
+      "value": 0.5
+    },
+    {
+      "binary": "editor",
+      "rva": "0xe82d28",
+      "value": 1.0
+    },
+    {
+      "binary": "editor",
+      "rva": "0xe86dc8",
+      "value": 9.999999747378752e-06
+    }
+  ],
+  "byte_sequences": [
+    {
+      "id": "sort_comparator",
+      "binary": "game",
+      "rva": "0x8a2e60",
+      "hex": "f30f1081800000000f2f82800000000f97c0c3",
+      "role": "MOVSS score80; COMISS other.score80; SETA AL; RET. No Ghidra function or unwind entry; independently disassembled."
+    },
+    {
+      "id": "random_scale_initializer",
+      "binary": "game",
+      "rva": "0x61060",
+      "hex": "f30f100568f4f900f30f5e0568f4f900f30f1105343d5201c3",
+      "role": "Write 1/16777216 to cover random scale; RET. No Ghidra function or unwind entry; independently disassembled."
+    },
+    {
+      "id": "random_scale_initializer_pointer",
+      "binary": "game",
+      "rva": "0xff8d98",
+      "hex": "6010064001000000",
+      "role": "File-backed pointer to 0x140061060; initializer execution not runtime observed"
+    },
+    {
+      "id": "hitpoints_key",
+      "binary": "game",
+      "rva": "0x10dfa90",
+      "hex": "686974706f696e747300",
+      "role": "Parser key hitpoints plus NUL"
+    },
+    {
+      "id": "attackrate_key",
+      "binary": "game",
+      "rva": "0x10dfaa0",
+      "hex": "61747461636b7261746500",
+      "role": "Parser key attackrate plus NUL"
+    },
+    {
+      "id": "editor_sort_comparator",
+      "binary": "editor",
+      "rva": "0x727bc0",
+      "hex": "f30f1081800000000f2f82800000000f97c0c3",
+      "role": "Same score80 greater-than comparator; byte match checked independently"
+    }
+  ],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeDirectionValidator@Human@@",
+      "subobject_offset": 0,
+      "rva": "0x10ed318",
+      "methods": {
+        "0": "0x955800"
+      }
+    },
+    {
+      "binary": "editor",
+      "mangled_name": ".?AUeDirectionValidator@Human@@",
+      "subobject_offset": 0,
+      "rva": "0xf52da0",
+      "methods": {
+        "0": "0x7dccc0"
+      }
+    }
+  ],
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/registry/hitpoints.reg",
+      "size": 1163,
+      "sha256": "f19e4cbe8441dc8df60a6f8a6275a7bbd9a6fdd5ae9e047a51ced3746c1970b6",
+      "scope": "Installed archive member only; active override/load precedence unverified"
+    }
+  ],
+  "classification_tables": [
+    {
+      "id": "HitPoints",
+      "game_begin_global": "0x1580328",
+      "game_end_global": "0x1580330",
+      "entry_stride": "0x338",
+      "channel_offsets": {
+        "Human": "0x330",
+        "Tank": "0x334"
+      },
+      "sample_archive_rows": {
+        "tank": [
+          0,
+          2
+        ],
+        "vehicle": [
+          3,
+          0
+        ]
+      },
+      "human_override": "Human entity path reads Human::eParams_Health instead of this table; second channel zero"
+    },
+    {
+      "id": "AttackRate",
+      "game_begin_global": "0x1580340",
+      "game_end_global": "0x1580348",
+      "entry_stride": "0x338",
+      "channel_offsets": {
+        "Human": "0x330",
+        "Tank": "0x334"
+      },
+      "sample_archive_rows": {
+        "weapon mgun": [
+          4,
+          0.1
+        ],
+        "weapon rifle": [
+          1,
+          0.1
+        ],
+        "weapon at_rifle": [
+          0.2,
+          1
+        ]
+      },
+      "lookup": "First matching property-filter row; no match returns zero pair",
+      "units": "AI coefficients; no claim of literal DPS or weapon accuracy"
+    }
+  ],
+  "subject_flag_rules": {
+    "function_rva": "0x878560",
+    "field_offset": "0x14",
+    "relation_call": "r=0xa467b0(component.owner, subject.actor, bool(old_flags & 0x20))",
+    "bits": {
+      "0": "Set on entry",
+      "1": "r==1 AND actor exists AND actor.brain.flags398 bit15",
+      "2": "r==2",
+      "3": "0xa467b0(owner,actor,true)==2",
+      "4": "actor exists AND (actor.flagsDB4 bit8 clear OR actor.flags38 bit9 set)"
+    },
+    "relation_contract": "Actor must exist and have DB4 bit8. Owner DA8 matching selected target DAC/DA8 or target DA8 returns 2. Otherwise eligible DA8 IDs <18 index mutable relationship matrix at global 0x159ba10 with dimension global 0x159ba20. Other cases return 0.",
+    "open": "Relationship-matrix values and ID field names; brain flag15; all list-category assignment callers. Do not equate matrix result 1 with a fully verified enemy enum.",
+    "list_insertion": "0x8753c0 records category in subject.flags10 bits21..22; vector at component+0x268+category*0x18. Categories 1/2 yield the A/B lists at +0x280/+0x298."
+  },
+  "cover_terms": [
+    {
+      "weight": "0x170",
+      "candidate": "0x5c",
+      "role": "Inverted normalized path cost",
+      "formula": "1-clamp(raw_cost/D,0,1), D=max(1,min(search_budget,max_valid_cost+1)); raw invalid-node cost=100000",
+      "evidence_ids": [
+        "cover_path_cost"
+      ]
+    },
+    {
+      "weight": "0x174",
+      "candidate": "0x60",
+      "role": "Current-target geometric screening term",
+      "formula": "When weight>0, current target exists and candidate flag50 bit3 set: segment test true with geometry flag gives 1, otherwise 0.5; initialized zero outside this gate",
+      "evidence_ids": [
+        "target_screening"
+      ]
+    },
+    {
+      "weight": "0x178",
+      "candidate": "0x64",
+      "role": "Screened Human-channel threat fraction",
+      "formula": "candidate54/candidate58 if denominator>0 else1, except special candidate kind +04==3; numerator sums geometrically eligible weighted_P.Human, denominator sums all collected weighted_P.Human",
+      "evidence_ids": [
+        "screened_fraction"
+      ]
+    },
+    {
+      "weight": "0x17c",
+      "candidate": "0x68",
+      "role": "Detector-flag score",
+      "formula": "Usually 0 if flags50&5; else0.5 if flags50&10; else1. Kind3 uses candidate4c threshold float32(0.95)",
+      "evidence_ids": [
+        "detector_score"
+      ]
+    },
+    {
+      "weight": "0x180",
+      "candidate": "0x6c",
+      "role": "Own engagement range",
+      "formula": "Set1 when owner/target/equipment gates pass and 7*unit_scale < distance(candidate,target) < selected-equipment range; initialized0",
+      "evidence_ids": [
+        "cover_own_range"
+      ]
+    },
+    {
+      "weight": "0x184",
+      "candidate": "0x70",
+      "role": "Outside all collected threat ranges",
+      "formula": "float((~(flags50>>4))&1); bit4 set if candidate lies strictly inside any collected subject range",
+      "evidence_ids": [
+        "outside_threat_range"
+      ]
+    },
+    {
+      "weight": "0x188",
+      "candidate": "0x74",
+      "role": "Candidate metadata boolean",
+      "formula": "float(candidate.byte30==0 OR candidate.dword34==0)",
+      "semantic_status": "Exact meaning unknown",
+      "evidence_ids": [
+        "candidate_metadata"
+      ]
+    },
+    {
+      "weight": "0x18c",
+      "candidate": "0x78",
+      "role": "Preferred ID match",
+      "formula": "float(candidate.dword18==search.dword190)",
+      "evidence_ids": [
+        "candidate_priority"
+      ]
+    },
+    {
+      "weight": null,
+      "candidate": "0x7c",
+      "role": "Direct priority",
+      "formula": "When candidate.ptr28 exists, signed int16 at linked record+0x78 converted to float; initialized zero",
+      "semantic_status": "Designer-facing name unconfirmed",
+      "evidence_ids": [
+        "candidate_priority"
+      ]
+    }
+  ],
+  "cover_formula": "total80 = w184*c70 + w174*c60 + w178*c64 + w17c*c68 + w170*c5c + w180*c6c + w188*c74 + w18c*c78 + c7c; game float addition order. Editor exchanges first two summands.",
+  "movement_cover_weights": {
+    "scope": "Specific state-driven movement caller; all weights cleared first",
+    "all_states_if_reached": {
+      "0x170": 10,
+      "0x178": 10
+    },
+    "states_0_1_add": {
+      "0x17c": 10,
+      "0x184": 10
+    },
+    "states_3_4_add": {
+      "0x174": 10,
+      "0x180": 10
+    },
+    "game_region": [
+      "0x954060",
+      "0x9540e6"
+    ],
+    "editor_function": "0x7dbc00"
+  },
+  "direction_validator": {
+    "arguments": "RCX=validator, RDX=candidate; AL=true means reject",
+    "fields": {
+      "origin_xy": "0x8",
+      "minimum_distance": "0x10",
+      "requested_direction_xy": "0x14"
+    },
+    "finite_rule": "d<minimum OR (minimum>0 AND dot(unit_displacement,requested_direction)<0.5)",
+    "degenerate": "Squared displacement<=float32(0.00001): distance0 and fallback XY vector from writable global data",
+    "side_effect": "Accepted candidate with dword+4==3 gets byte+0x48=1",
+    "cone": "For a unit-length requested direction, dot>=0.5 corresponds to a 60-degree half-angle"
+  },
+  "rank_selection": {
+    "caller_probability": 0.5,
+    "input": "Nonempty candidate vector sorted descending by score80 on the reviewed path",
+    "algorithm": "r=(next_rng_state>>8)*scale; rank=0; mass=p; remaining=1; while r>mass: r-=mass; rank++; remaining-=mass; mass=remaining*p; clamp rank to [0,count-1]",
+    "rng_update": "uint32 state=state*0x7ff8a3ed+0x2aa01d31",
+    "initial_scale": "0x61060 writes 1/16777216 to 0x1584dac; pointer at 0xff8d98",
+    "probabilities": "Approximately 50%,25%,12.5%,... for p=.5 under uniform initialized RNG, remaining tail at last rank. Discrete boundaries, ties and live values unverified. Score magnitude gaps do not enter selection."
+  },
+  "evidence": [
+    {
+      "id": "hitpoints_config",
+      "binary": "game",
+      "function_rva": "0x812a40",
+      "instruction_rvas": [
+        "0x812a92",
+        "0x812aa0",
+        "0x812de1",
+        "0x812e89",
+        "0x812f20"
+      ]
+    },
+    {
+      "id": "attack_config",
+      "binary": "game",
+      "function_rva": "0x813110",
+      "instruction_rvas": [
+        "0x813162",
+        "0x81316d",
+        "0x813440",
+        "0x8134e8",
+        "0x81357f"
+      ]
+    },
+    {
+      "id": "attack_lookup",
+      "binary": "game",
+      "function_rva": "0x813c20",
+      "instruction_rvas": [
+        "0x813c34",
+        "0x813c4a",
+        "0x813c57",
+        "0x813c60",
+        "0x813c8f"
+      ]
+    },
+    {
+      "id": "cached_pair_arguments",
+      "binary": "game",
+      "function_rva": "0x875860",
+      "instruction_rvas": [
+        "0x875860",
+        "0x875864",
+        "0x87586b",
+        "0x875872"
+      ]
+    },
+    {
+      "id": "equipment_maxima",
+      "binary": "game",
+      "function_rva": "0x813870",
+      "instruction_rvas": [
+        "0x813a35",
+        "0x813a42",
+        "0x813b95",
+        "0x813ba2"
+      ]
+    },
+    {
+      "id": "subject_refresh",
+      "binary": "game",
+      "function_rva": "0x878740",
+      "instruction_rvas": [
+        "0x8787ab",
+        "0x8787c6",
+        "0x8787ce",
+        "0x8787dd",
+        "0x8787e5",
+        "0x8787f8"
+      ]
+    },
+    {
+      "id": "subject_relationship_flags",
+      "binary": "game",
+      "function_rva": "0x878560",
+      "instruction_rvas": [
+        "0x87857d",
+        "0x878594",
+        "0x87859e",
+        "0x8785b3",
+        "0x8785e9",
+        "0x8785f3",
+        "0x878611",
+        "0x87863e"
+      ]
+    },
+    {
+      "id": "actor_relationship_ids",
+      "binary": "game",
+      "function_rva": "0xa467b0",
+      "instruction_rvas": [
+        "0xa467b8",
+        "0xa467ca",
+        "0xa467d3",
+        "0xa467da",
+        "0xa467e4",
+        "0xa467ef",
+        "0xa467ff",
+        "0xa46812",
+        "0xa46816",
+        "0xa4681c"
+      ]
+    },
+    {
+      "id": "cover_total",
+      "binary": "game",
+      "function_rva": "0x8a0ed0",
+      "instruction_rvas": [
+        "0x8a1b0f",
+        "0x8a1b1b",
+        "0x8a1b36",
+        "0x8a1b4c",
+        "0x8a1b5d",
+        "0x8a1b70",
+        "0x8a1b83",
+        "0x8a1b2a",
+        "0x8a1b98",
+        "0x8a1b9e"
+      ]
+    },
+    {
+      "id": "cover_path_cost",
+      "binary": "game",
+      "function_rva": "0x8a1ef0",
+      "instruction_rvas": [
+        "0x8a2008",
+        "0x8a2084",
+        "0x8a20aa",
+        "0x8a20f4",
+        "0x8a21f1",
+        "0x8a21f6",
+        "0x8a221c",
+        "0x8a2248",
+        "0x8a224c"
+      ]
+    },
+    {
+      "id": "target_screening",
+      "binary": "game",
+      "function_rva": "0x8a0ed0",
+      "instruction_rvas": [
+        "0x8a1824",
+        "0x8a18a0",
+        "0x8a18bd",
+        "0x8a18c6",
+        "0x8a18d0"
+      ]
+    },
+    {
+      "id": "screened_fraction",
+      "binary": "game",
+      "function_rva": "0x8a0ed0",
+      "instruction_rvas": [
+        "0x8a19e4",
+        "0x8a19e9",
+        "0x8a19fa",
+        "0x8a1a0f",
+        "0x8a1a9d",
+        "0x8a1aa7"
+      ]
+    },
+    {
+      "id": "detector_score",
+      "binary": "game",
+      "function_rva": "0x8a0ed0",
+      "instruction_rvas": [
+        "0x8a1aac",
+        "0x8a1ab5",
+        "0x8a1abe",
+        "0x8a1ac2",
+        "0x8a1bcb",
+        "0x8a1bd4"
+      ]
+    },
+    {
+      "id": "cover_own_range",
+      "binary": "game",
+      "function_rva": "0x8a1ef0",
+      "instruction_rvas": [
+        "0x8a2132",
+        "0x8a2155",
+        "0x8a216a",
+        "0x8a216f",
+        "0x8a2171"
+      ]
+    },
+    {
+      "id": "outside_threat_range",
+      "binary": "game",
+      "function_rva": "0x8a0ed0",
+      "instruction_rvas": [
+        "0x8a1934",
+        "0x8a1937",
+        "0x8a193e",
+        "0x8a1a3f",
+        "0x8a1a42",
+        "0x8a1a4e"
+      ]
+    },
+    {
+      "id": "candidate_metadata",
+      "binary": "game",
+      "function_rva": "0x8a0ed0",
+      "instruction_rvas": [
+        "0x8a1a54",
+        "0x8a1a5a",
+        "0x8a1a77"
+      ]
+    },
+    {
+      "id": "candidate_priority",
+      "binary": "game",
+      "function_rva": "0x8a0ed0",
+      "instruction_rvas": [
+        "0x8a1acb",
+        "0x8a1ad2",
+        "0x8a1ae4",
+        "0x8a1aef",
+        "0x8a1afa"
+      ]
+    },
+    {
+      "id": "cover_sort_call",
+      "binary": "game",
+      "function_rva": "0x89feb0",
+      "instruction_rvas": [
+        "0x8a050c",
+        "0x8a0518",
+        "0x8a0520",
+        "0x8a054d"
+      ]
+    },
+    {
+      "id": "cover_rejection",
+      "binary": "game",
+      "function_rva": "0x8a0ed0",
+      "instruction_rvas": [
+        "0x8a1d13",
+        "0x8a1d28",
+        "0x8a1d2a",
+        "0x8a1d2c",
+        "0x8a1d2e",
+        "0x8a1d3b",
+        "0x8a1d48",
+        "0x8a1d77",
+        "0x8a1d7c"
+      ]
+    },
+    {
+      "id": "direction_predicate",
+      "binary": "game",
+      "function_rva": "0x955800",
+      "instruction_rvas": [
+        "0x95584d",
+        "0x955856",
+        "0x95588a",
+        "0x9558a5",
+        "0x9558ad",
+        "0x9558b5",
+        "0x9558b9",
+        "0x9558bd"
+      ]
+    },
+    {
+      "id": "movement_weights",
+      "binary": "game",
+      "function_rva": "0x9538a0",
+      "instruction_rvas": [
+        "0x954048",
+        "0x954060",
+        "0x954070",
+        "0x95407a",
+        "0x9540ad",
+        "0x9540c6",
+        "0x9540d0",
+        "0x9540dc",
+        "0x9540e6"
+      ]
+    },
+    {
+      "id": "rank_probability",
+      "binary": "game",
+      "function_rva": "0x951210",
+      "instruction_rvas": [
+        "0x951223",
+        "0x95122c",
+        "0x95123c"
+      ]
+    },
+    {
+      "id": "rank_draw",
+      "binary": "game",
+      "function_rva": "0x8a0660",
+      "instruction_rvas": [
+        "0x8a06b1",
+        "0x8a06c4",
+        "0x8a06ce",
+        "0x8a06f0",
+        "0x8a06fd",
+        "0x8a0717",
+        "0x8a0721"
+      ]
+    },
+    {
+      "id": "candidate_initialization",
+      "binary": "game",
+      "function_rva": "0x8a5970",
+      "instruction_rvas": [
+        "0x8a5993",
+        "0x8a5997",
+        "0x8a599b",
+        "0x8a599f",
+        "0x8a59a3",
+        "0x8a59aa"
+      ]
+    },
+    {
+      "id": "editor_movement_weights",
+      "binary": "editor",
+      "function_rva": "0x7dbc00",
+      "instruction_rvas": [
+        "0x7dbce6",
+        "0x7dbceb",
+        "0x7dbcf5",
+        "0x7dbd2d",
+        "0x7dbd46",
+        "0x7dbd50",
+        "0x7dbd5c",
+        "0x7dbd66"
+      ]
+    },
+    {
+      "id": "editor_cover_total",
+      "binary": "editor",
+      "function_rva": "0x725c30",
+      "instruction_rvas": [
+        "0x72689e",
+        "0x7268aa",
+        "0x7268ba",
+        "0x7268ca",
+        "0x7268db",
+        "0x7268ee",
+        "0x726901",
+        "0x72690e",
+        "0x726921"
+      ]
+    },
+    {
+      "id": "editor_direction_predicate",
+      "binary": "editor",
+      "function_rva": "0x7dccc0",
+      "instruction_rvas": [
+        "0x7dccc0"
+      ]
+    },
+    {
+      "id": "comparison_pair_source",
+      "binary": "game",
+      "function_rva": "0x8136e0",
+      "instruction_rvas": [
+        "0x813706",
+        "0x813723",
+        "0x81373a",
+        "0x813745",
+        "0x81374a",
+        "0x81378e",
+        "0x8137a5"
+      ]
+    }
+  ],
+  "remaining_static_work": [
+    "Trace cover-source flags and bounding-circle enforcement below collection helpers",
+    "Name sensor/visibility terms and special candidate kinds",
+    "Map relationship matrix initialization, brain flag15 and subject category-assignment callers",
+    "Recover callback scheduling/cadence and complete order ownership/validation"
+  ],
+  "later_runtime_questions": [
+    "Effective registry rows after overrides",
+    "Threat/support contents and enabled cover candidates in a controlled scenario",
+    "Actual score values, rejection reasons and accepted movement orders",
+    "Thread, callback cadence and lifetime before exposing a callable custom-brain API"
+  ]
+}
