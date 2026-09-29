@@ -1,0 +1,20 @@
+# RVA	Crew action dependency vtables
+0xf51250	Order::eCannonState_vtable
+0xe977c8	Order::eEmitTo_vtable
+0xf4dc30	Order::eEmitToPoint_vtable
+0xe90cf8	eBoarderCancelCommand_vtable
+0xe90bb8	eBoarderCollectCommand_vtable
+0xe90b38	eBoarderEmitCommand_vtable
+0xe90c38	eBoarderMoveCommand_vtable
+0xe90bf8	eBoarderStartInCommand_vtable
+0xe90b78	eBoarderStartOutCommand_vtable
+0xe90c78	eBoarderSwapCommand_vtable
+0xe96c98	Helper::eEmitToWaypoint_vtable
+0xf51060	Entity::eCannonExtender_vtable
+0xf510b8	Entity::eCannonExtender_vtable
+0xf433e0	Actor::Weapon::ePlace_vtable
+0xf51118	Order::eAnimationCompleted_vtable
+0xf58d08	eEmitAndBurn_vtable
+0xf58bb0	eEmitAndRepair_vtable
+0xf58cb8	eEmitOnAttack_vtable
+0xf58c68	eEmitOnSink_vtable

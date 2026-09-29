@@ -23,11 +23,11 @@ after their behavior and effect on the AI contract are established.
 | Human decision states | State hierarchy/dispatch/hazards; reviewed idle/battle/cover/search flow; stance thresholds, attack return codes, tactical movement, search coordination, healing and medic gating, following and weapon changes; detour pose/cover/point stages and budgets; temporary bone/pose trials; idle request gate; dropped-weapon memory, proficiency score and sort | Detour bound construction and pather route acceptance; animation state/tag producers and completion counter; full cover masks/healing validator; Veterancy property binding; full event producers; residual action-order helpers |
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle; discrete height probes, height/side-clearance kind selection, interval boundary bisection | Descriptor +8/+C consumer roles; full edge spacing and alternate offsets; geometry-query/grid construction |
 | Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set, grenade escape planning | Path request/acceptance, grid costs/probes, terrain/animation application, movement enum binding, ability/health speed modifiers; crush/obstacle order builders |
-| Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy/zeroing; named aim modes and ballistic solvers; burst sampler and stateful preview; adaptive geometry trace; live projectile fields/pool/flight and contact-to-damage bridge; TargetAccessor result gates; occupied-slot readiness; named crew slot flags, Sealed exposure, priority assignment and reservations | Place/profile/owner lifetime; bone limit solvers and sway/reload; charger and animation producers; request role/count parsers (blocking byte now linked to Emit mode3); full contact/material/ricochet outcomes, guided steering and synchronization; other shooter types |
+| Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy/zeroing; named aim modes and ballistic solvers; burst sampler and stateful preview; adaptive geometry trace; live projectile fields/pool/flight and contact-to-damage bridge; TargetAccessor result gates; occupied-slot readiness; named crew slot flags, Sealed exposure, priority assignment and reservations; gunner/charger/commander/driver requests and minWorkers; cannon animation completion counter | Place/profile/owner lifetime; bone limit solvers and sway/reload; charger and animation producers; weaponry86 state; full contact/material/ricochet outcomes, guided steering and synchronization; other shooter types |
 | Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wounds/repair and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; Board/Bind/Emit now mapped; complete other vehicle/cannon/group variants; scripted blow effects and melee defence/counterattack |
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion | Quant-clock producer/pause/time scale, manager bucket creation, context/RNG setup, entity lifetime through queued work; skip setter now mapped |
-| Group/vehicle behavior | Type roots; selected cannon orders; place readiness/assignment; crew groups, sealing, entrance balancing, Board/Bind/Emit phases, traversal graph/animation/inventory, walker sync/cancel/load and occupant perception effects | Squad/leader coordination, vehicle/airborne brains, mounted weapons; concrete OnExit/EmitTo behavior, full reservation/queue lifetime and permissions, remaining availability flag producers |
+| Group/vehicle behavior | Type roots; cannon fire/move/trailing states, role-index transfers, seat Disable and obstacle enable writers; place readiness/assignment; crew groups, sealing, entrance balancing, Board/Bind/Emit phases, traversal graph/animation/inventory, walker sync/cancel/load and occupant perception effects; six concrete exit callbacks; abandoned/ally_crew/any_crew/select bindings; boarder command reception | Squad/leader coordination, vehicle/airborne brains, mounted weapons; exit-trigger and source-pointer lifetime; full reservation/queue lifetime and derived chassis permissions, remaining availability flag producers; cannon matrix correction and command5E reception |
 | Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
 | Cross-binary comparison | Selected game/editor contracts | Compare newly reviewed contracts; distinguish outlining/inlining and behavior differences |
 
@@ -54,7 +54,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [engagement orders/readiness/melee](engagement-orders-map-25492057.md), and
 [aiming/ballistics/projectile lifetime](ballistics-map-25492057.md), and
 [crew placement/assignment/entity links](placement-map-25492057.md), and
-[boarding/exit/traversal/crew collection](boarding-map-25492057.md). Their open questions
+[boarding/exit/traversal/crew collection](boarding-map-25492057.md), and
+[crew roles/cannon states/permissions/exit actions](crew-actions-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -83,9 +84,13 @@ are historical snapshots; this frontier tracks the continuing objective.
   has no set-side located in Execute. Healing-restore gate is confirmed in both binaries.
 - Action orders: WeaponFire, Advance, Fight and Attack inner work now mapped in
   the engagement pass. Continue WaitReady, body-turn `0x8D68E0`, AttackProximityCharge,
-  cannon states/crew and group effects. Board/Bind/Emit now have phase, entrance,
-  graph, walker, inventory/animation, cancellation and load maps; continue concrete
-  EmitTo/OnExit objects, access predicates and synchronization reception. Advance byte39
+  group effects and residual cannon helpers. Cannon fire/move/trailing, role transfers,
+  seat enable/obstacle policy and animation completion are now mapped.
+  Board/Bind/Emit now have phase, entrance,
+  graph, walker, inventory/animation, cancellation and load maps, plus the
+  six registered EmitTo/OnExit objects, access predicates and synchronization reception.
+  Continue vehicle-brain callback triggers, SmartRepair/Hideout/ResetWaypointOnly,
+  brain3E0 deadline consumers and source-actor pointer lifetime. Advance byte39
   is cleared at start; its set-side and state2 reachability remain open.
   Melee loader/parser `0x95ED00/0x95D230`, variant lookup, damage/knockdown
   calculation and animation timing now connected; follow defence/counterattack,
@@ -104,8 +109,10 @@ are historical snapshots; this frontier tracks the continuing objective.
   Controller `0x781D50` readiness and `0x781F60` assignment feasibility now mapped;
   `Entity::ePlacer` binding, slot bit20=Sealed, priority assignment and Include/Exclude
   side effects are bound. Feasibility mutates temporary flags and some early exits
-  bypass cleanup. Follow request role/count parsers (weapon place+2C8/+608/+948,
-  chassis+80), other slot flags and sync reception. Placer blocked+48 is now
+  bypass cleanup. Request roles are gunner+2C8/charger+608/commander+948,
+  chassis Driver+80; minWorkers parser and priorities are mapped. Cannon state writes
+  slot Disable bit4 with trailing>move>attack role precedence. Follow weaponry+86,
+  request replacement, other slot flags and animation/charger producers. Placer blocked+48 is now
   set by Emit mode3 execution and cleared by its destructor.
   Projectile initialization, pool, manager, deferred retirement, FalloffMeter/
   FalloffStrength and live contact bridge are now mapped; continue precise
@@ -130,11 +137,17 @@ are historical snapshots; this frontier tracks the continuing objective.
   `0x779180/0x779E80` mode gates. Boarder graph uses attached entities; rebuilding
   stops active walkers. Walker records move on every Quant and cancellation.
   Follow node-definition skip+68 producer, graph/profile replacement lifetime,
-  access `0x7FA9D0`, inventory action sets, and skeleton-rebind phase producers.
-  Walker sync state receiver is mapped; StartIn/StartOut/move/cancel reception
-  remains. `0x8DF160` may omit approach points without pruning door names: trace
+  derived chassis slot36 access, inventory action sets, and skeleton-rebind phase producers.
+  Access `0x7FA9D0` now binds abandoned/ally_crew/any_crew; selection binds select.
+  Walker sync and StartIn/StartOut/move/collect/swap/cancel reception are mapped;
+  routing IDs, delivery ordering and full failure behavior remain. Cancel releases
+  reservations without stopping traversal or removing queued entrants.
+  `0x8DF160` may omit approach points without pruning door names: trace
   failed-probe reachability before assuming candidate/name index alignment.
   OnExit registry `0x8E6370`, construction `0x8E4D60`, and virtual slots3/4/5
-  are direct leads. GetStateForQuit `0x785F50` has stance/movement predicates.
+  are mapped for Point/Waypoint/OnAttack/OnSink/AndBurn/AndRepair. Position callbacks
+  can consume RNG; source actor+28 is not a SoftLinkable receiver. Follow triggers,
+  actor lifetime, and destruction around cannon shared-counter resets.
+  GetStateForQuit `0x785F50` has stance/movement predicates.
   Finish copies brain low2 policy/player state and may transfer selection; follow
   ownership/selection gates and airborne/landing predicates.

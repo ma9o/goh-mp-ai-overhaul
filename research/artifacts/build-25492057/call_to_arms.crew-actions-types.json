@@ -1,0 +1,2595 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "binary": {
+    "filename": "call_to_arms.exe",
+    "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+    "image_base": "0x140000000"
+  },
+  "scope_pattern": "Exact crew exit callbacks, boarder commands, cannon order/extender dependencies",
+  "warning": "Structural discovery only. Filtered roots are not all AI dependencies. Vtable extents are executable-pointer scans, not verified slot counts. No method semantics or runtime ABI is asserted.",
+  "types": [
+    {
+      "mangled_name": ".?AUeCannonState@Order@@",
+      "display_name": "Order::eCannonState",
+      "descriptor_rvas": [
+        "0x150eef8"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10eba08",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x92e7e0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92e7e0",
+                "end_rva": "0x92e81e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x8ff5c0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8ff5c0",
+                "end_rva": "0x8ff7c0",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x901ac0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x901750",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x901750",
+                "end_rva": "0x901805",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x9018d0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x9018d0",
+                "end_rva": "0x90192d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x92eb40",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x9019a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x9019a0",
+                "end_rva": "0x901a2d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x8ff7d0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8ff7d0",
+                "end_rva": "0x8ff7ed",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0xb5570",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x92ea90",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92ea90",
+                "end_rva": "0x92eaaa",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x92ec40",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 11,
+              "rva": "0x901a40",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x901a40",
+                "end_rva": "0x901a90",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 12,
+              "rva": "0x901aa0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 13,
+              "rva": "0xb55a0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 14,
+              "rva": "0xb55b0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 15,
+              "rva": "0x901b40",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x901b40",
+                "end_rva": "0x901b63",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 16,
+              "rva": "0x92ebf0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92ebf0",
+                "end_rva": "0x92ec39",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 17,
+              "rva": "0x901b70",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x901b70",
+                "end_rva": "0x901bf4",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 18,
+              "rva": "0xb55d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 19,
+              "rva": "0x92d310",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92d310",
+                "end_rva": "0x92d420",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x127fef8",
+          "bases": [
+            {
+              "mangled_name": ".?AUeCannonState@Order@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSingleOrder@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOrder@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeEmitTo@Order@@",
+      "display_name": "Order::eEmitTo",
+      "descriptor_rvas": [
+        "0x14de750"
+      ],
+      "vtables": [
+        {
+          "rva": "0x1020c38",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x19bdf0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x19bdf0",
+                "end_rva": "0x19be1e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xa7a00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xa7a10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x19bdc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0xf1bcb4",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0xf1bcb4",
+                "end_rva": "0xf1bcce",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0xf1bcb4",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0xf1bcb4",
+                "end_rva": "0xf1bcce",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0xf1bcb4",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0xf1bcb4",
+                "end_rva": "0xf1bcce",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x19bdd0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x19bde0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x120dbc0",
+          "bases": [
+            {
+              "mangled_name": ".?AUeEmitTo@Order@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeEmitToPoint@Order@@",
+      "display_name": "Order::eEmitToPoint",
+      "descriptor_rvas": [
+        "0x150e600"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10e86c8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x8e6300",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8e6300",
+                "end_rva": "0x8e632e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xa7a00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xa7a10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x19bdc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x8e4ee0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8e4ee0",
+                "end_rva": "0x8e4f1c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x8e4f30",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x8e66b0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x8e4f50",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8e4f50",
+                "end_rva": "0x8e4f92",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x8e4fa0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8e4fa0",
+                "end_rva": "0x8e4fe8",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x127e1e0",
+          "bases": [
+            {
+              "mangled_name": ".?AUeEmitToPoint@Order@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitTo@Order@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeBoarderCancelCommand@@",
+      "display_name": "eBoarderCancelCommand",
+      "descriptor_rvas": [
+        "0x14da830"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10179d8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x15cf80",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15cf80",
+                "end_rva": "0x15cfa1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x14c010",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x14c010",
+                "end_rva": "0x14c037",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x15bae0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15bae0",
+                "end_rva": "0x15bb16",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x15bb20",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15bb20",
+                "end_rva": "0x15bbba",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x15cf60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x15cf70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x12058b0",
+          "bases": [
+            {
+              "mangled_name": ".?AUeBoarderCancelCommand@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AV?$eEntityCommand@VeGameEntity@@$0DI@@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeEntityCommandBase@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeBoarderCollectCommand@@",
+      "display_name": "eBoarderCollectCommand",
+      "descriptor_rvas": [
+        "0x14da600"
+      ],
+      "vtables": [
+        {
+          "rva": "0x1017898",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x15cde0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15cde0",
+                "end_rva": "0x15ce01",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x14c010",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x14c010",
+                "end_rva": "0x14c037",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x15ae30",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15ae30",
+                "end_rva": "0x15ae7b",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x15ae90",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15ae90",
+                "end_rva": "0x15aec1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x15cdc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x15cdd0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x1205450",
+          "bases": [
+            {
+              "mangled_name": ".?AUeBoarderCollectCommand@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AV?$eEntityCommand@VeGameEntity@@$0DD@@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeEntityCommandBase@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeBoarderEmitCommand@@",
+      "display_name": "eBoarderEmitCommand",
+      "descriptor_rvas": [
+        "0x14da520"
+      ],
+      "vtables": [
+        {
+          "rva": "0x1017818",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x15cd20",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15cd20",
+                "end_rva": "0x15cd58",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x14c010",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x14c010",
+                "end_rva": "0x14c037",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x15a930",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15a930",
+                "end_rva": "0x15a9ff",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x15aa10",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15aa10",
+                "end_rva": "0x15aa4e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x15cd00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x15cd10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x1205290",
+          "bases": [
+            {
+              "mangled_name": ".?AUeBoarderEmitCommand@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AV?$eEntityCommand@VeGameEntity@@$0DB@@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeEntityCommandBase@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeBoarderMoveCommand@@",
+      "display_name": "eBoarderMoveCommand",
+      "descriptor_rvas": [
+        "0x14da6e0"
+      ],
+      "vtables": [
+        {
+          "rva": "0x1017918",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x15ce90",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15ce90",
+                "end_rva": "0x15ceb1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x14c010",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x14c010",
+                "end_rva": "0x14c037",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x15b730",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15b730",
+                "end_rva": "0x15b799",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x15b7a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15b7a0",
+                "end_rva": "0x15b7d2",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x15ce70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x15ce80",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x1205610",
+          "bases": [
+            {
+              "mangled_name": ".?AUeBoarderMoveCommand@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AV?$eEntityCommand@VeGameEntity@@$0DF@@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeEntityCommandBase@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeBoarderStartInCommand@@",
+      "display_name": "eBoarderStartInCommand",
+      "descriptor_rvas": [
+        "0x14da670"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10178d8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x15ce30",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15ce30",
+                "end_rva": "0x15ce68",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x14c010",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x14c010",
+                "end_rva": "0x14c037",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x15af90",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15af90",
+                "end_rva": "0x15b081",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x15b090",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15b090",
+                "end_rva": "0x15b0c9",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x15ce10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x15ce20",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x1205530",
+          "bases": [
+            {
+              "mangled_name": ".?AUeBoarderStartInCommand@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AV?$eEntityCommand@VeGameEntity@@$0DE@@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeEntityCommandBase@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeBoarderStartOutCommand@@",
+      "display_name": "eBoarderStartOutCommand",
+      "descriptor_rvas": [
+        "0x14da590"
+      ],
+      "vtables": [
+        {
+          "rva": "0x1017858",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x15cd80",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15cd80",
+                "end_rva": "0x15cdb8",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x14c010",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x14c010",
+                "end_rva": "0x14c037",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x15abd0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15abd0",
+                "end_rva": "0x15acab",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x15acc0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15acc0",
+                "end_rva": "0x15acf8",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x15cd60",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x15cd70",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x1205370",
+          "bases": [
+            {
+              "mangled_name": ".?AUeBoarderStartOutCommand@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AV?$eEntityCommand@VeGameEntity@@$0DC@@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeEntityCommandBase@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeBoarderSwapCommand@@",
+      "display_name": "eBoarderSwapCommand",
+      "descriptor_rvas": [
+        "0x14da750"
+      ],
+      "vtables": [
+        {
+          "rva": "0x1017958",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x15cee0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15cee0",
+                "end_rva": "0x15cf01",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x14c010",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x14c010",
+                "end_rva": "0x14c037",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x15b8c0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15b8c0",
+                "end_rva": "0x15b8fb",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x15b910",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x15b910",
+                "end_rva": "0x15b941",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x15cec0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x15ced0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x12056f0",
+          "bases": [
+            {
+              "mangled_name": ".?AUeBoarderSwapCommand@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AV?$eEntityCommand@VeGameEntity@@$0DG@@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeEntityCommandBase@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeEmitToWaypoint@Helper@@",
+      "display_name": "Helper::eEmitToWaypoint",
+      "descriptor_rvas": [
+        "0x14de7d8"
+      ],
+      "vtables": [
+        {
+          "rva": "0x1020d28",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x19c060",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x19c060",
+                "end_rva": "0x19c0a5",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xa7a00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xa7a10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x19bdc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x19bf00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x19bf30",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x19bf30",
+                "end_rva": "0x19bff0",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x19bef0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x19bff0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x19bff0",
+                "end_rva": "0x19c01f",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x19c020",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x19c020",
+                "end_rva": "0x19c052",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x120dd48",
+          "bases": [
+            {
+              "mangled_name": ".?AUeEmitToWaypoint@Helper@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitTo@Order@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVeCannonExtender@Entity@@",
+      "display_name": "Entity::eCannonExtender",
+      "descriptor_rvas": [
+        "0x14c0c40"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10eb820",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x92e6a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92e6a0",
+                "end_rva": "0x92e6a9",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x683be0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x92a550",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92a550",
+                "end_rva": "0x92b1a6",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x683c00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x798bd0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0xbef10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0xbef20",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x92b1b0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92b1b0",
+                "end_rva": "0x92b1d1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x92b980",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92b980",
+                "end_rva": "0x92ba4f",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x9296f0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x9296f0",
+                "end_rva": "0x929739",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x127fdb0",
+          "bases": [
+            {
+              "mangled_name": ".?AVeCannonExtender@Entity@@",
+              "contained_bases": 4,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeExtender@Entity@@",
+              "contained_bases": 3,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeServer@DDA@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 8,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 8,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        },
+        {
+          "rva": "0x10eb878",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x92e5b8",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xa7a00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xa7a10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x673690",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x798d90",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x798dc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x6738d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6738e0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6738e0",
+                "end_rva": "0x673979",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0xa7480",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x92eb50",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92eb50",
+                "end_rva": "0x92eb94",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x92eab0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92eab0",
+                "end_rva": "0x92eb2e",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 8,
+          "locator_rva": "0x127fe48",
+          "bases": [
+            {
+              "mangled_name": ".?AVeCannonExtender@Entity@@",
+              "contained_bases": 4,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeExtender@Entity@@",
+              "contained_bases": 3,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeServer@DDA@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 8,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 8,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVePlace@Weapon@Actor@@",
+      "display_name": "Actor::Weapon::ePlace",
+      "descriptor_rvas": [
+        "0x150c4a8"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10df8d8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x812870",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x812870",
+                "end_rva": "0x812952",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xa7a00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xa7a10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x673690",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x6736a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6736a0",
+                "end_rva": "0x673720",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x811d80",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x811d80",
+                "end_rva": "0x811dee",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x6738d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x8118a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8118a0",
+                "end_rva": "0x81196c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0xa7480",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x8129a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8129a0",
+                "end_rva": "0x8129c4",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x812960",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x812960",
+                "end_rva": "0x81299e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 11,
+              "rva": "0x8103c0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8103c0",
+                "end_rva": "0x810478",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x1278f10",
+          "bases": [
+            {
+              "mangled_name": ".?AVePlace@Weapon@Actor@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeResource@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeAnimationCompleted@Order@@",
+      "display_name": "Order::eAnimationCompleted",
+      "descriptor_rvas": [
+        "0x150eec8"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10eb8d8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x92e600",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92e600",
+                "end_rva": "0x92e60d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x8ff5c0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8ff5c0",
+                "end_rva": "0x8ff7c0",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x901ac0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x901750",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x901750",
+                "end_rva": "0x901805",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x9018d0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x9018d0",
+                "end_rva": "0x90192d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x92eb30",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x9019a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x9019a0",
+                "end_rva": "0x901a2d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x8ff7d0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x8ff7d0",
+                "end_rva": "0x8ff7ed",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0xb5570",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0xb5580",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0xb5590",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 11,
+              "rva": "0x901a40",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x901a40",
+                "end_rva": "0x901a90",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 12,
+              "rva": "0x901aa0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 13,
+              "rva": "0xb55a0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 14,
+              "rva": "0xb55b0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 15,
+              "rva": "0x901b40",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x901b40",
+                "end_rva": "0x901b63",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 16,
+              "rva": "0x92eba0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x92eba0",
+                "end_rva": "0x92ebe9",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 17,
+              "rva": "0x901b70",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x901b70",
+                "end_rva": "0x901bf4",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 18,
+              "rva": "0xb55d0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 19,
+              "rva": "0x8ef250",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x127fe70",
+          "bases": [
+            {
+              "mangled_name": ".?AUeAnimationCompleted@Order@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeSingleOrder@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeOrder@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeEmitAndBurn@@",
+      "display_name": "eEmitAndBurn",
+      "descriptor_rvas": [
+        "0x150ff18"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10f2ae8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x98e240",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98e240",
+                "end_rva": "0x98e26e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xa7a00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xa7a10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x98e7d0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98e7d0",
+                "end_rva": "0x98e7e9",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x98ea60",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98ea60",
+                "end_rva": "0x98eadb",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x98e330",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98e330",
+                "end_rva": "0x98e4eb",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x98e300",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x98db60",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98db60",
+                "end_rva": "0x98db94",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x98dba0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98dba0",
+                "end_rva": "0x98dbd5",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x1283320",
+          "bases": [
+            {
+              "mangled_name": ".?AUeEmitAndBurn@@",
+              "contained_bases": 4,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitWithBody@@",
+              "contained_bases": 3,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitToPoint@Order@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitTo@Order@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeEmitAndRepair@@",
+      "display_name": "eEmitAndRepair",
+      "descriptor_rvas": [
+        "0x150fea0"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10f2990",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x98dd40",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98dd40",
+                "end_rva": "0x98dd6e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xa7a00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xa7a10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x19bdc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x98dc50",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98dc50",
+                "end_rva": "0x98dd3d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x98dbf0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98dbf0",
+                "end_rva": "0x98dc46",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x98dbe0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x98db60",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98db60",
+                "end_rva": "0x98db94",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x98dba0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98dba0",
+                "end_rva": "0x98dbd5",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x1283128",
+          "bases": [
+            {
+              "mangled_name": ".?AUeEmitAndRepair@@",
+              "contained_bases": 4,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitWithBody@@",
+              "contained_bases": 3,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitToPoint@Order@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitTo@Order@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeEmitOnAttack@@",
+      "display_name": "eEmitOnAttack",
+      "descriptor_rvas": [
+        "0x150fef0"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10f2a98",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x98e270",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98e270",
+                "end_rva": "0x98e29e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xa7a00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xa7a10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x19bdc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x98eae0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98eae0",
+                "end_rva": "0x98ed4b",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x98e720",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98e720",
+                "end_rva": "0x98e7c1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x98e310",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x98db60",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98db60",
+                "end_rva": "0x98db94",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x98dba0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98dba0",
+                "end_rva": "0x98dbd5",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x1283280",
+          "bases": [
+            {
+              "mangled_name": ".?AUeEmitOnAttack@@",
+              "contained_bases": 5,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitOnSink@@",
+              "contained_bases": 4,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitWithBody@@",
+              "contained_bases": 3,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitToPoint@Order@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitTo@Order@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AUeEmitOnSink@@",
+      "display_name": "eEmitOnSink",
+      "descriptor_rvas": [
+        "0x150fec8"
+      ],
+      "vtables": [
+        {
+          "rva": "0x10f2a48",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x98e2a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98e2a0",
+                "end_rva": "0x98e2ce",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0xa7a00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xa7a10",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x19bdc0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x98eae0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98eae0",
+                "end_rva": "0x98ed4b",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x98e720",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98e720",
+                "end_rva": "0x98e7c1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x98e320",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x98db60",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98db60",
+                "end_rva": "0x98db94",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x98dba0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x98dba0",
+                "end_rva": "0x98dbd5",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x12831e8",
+          "bases": [
+            {
+              "mangled_name": ".?AUeEmitOnSink@@",
+              "contained_bases": 4,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitWithBody@@",
+              "contained_bases": 3,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitToPoint@Order@@",
+              "contained_bases": 2,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AUeEmitTo@Order@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeReferenced@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
