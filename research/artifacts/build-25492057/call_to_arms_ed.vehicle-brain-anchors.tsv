@@ -1,0 +1,18 @@
+# RVA	Vehicle policy anchors
+0xe82448	Actor::eVehicleBrain_vtable_sub0
+0xe82578	Actor::eVehicleBrain_vtable_sub16
+0xe82858	Actor::eVehicleBrainClient_vtable_sub0
+0xe82988	Actor::eVehicleBrainClient_vtable_sub16
+0xf58748	Actor::eAirborneBrain_vtable_sub0
+0xf58870	Actor::eAirborneBrain_vtable_sub16
+0xf58898	Actor::eHelicopterBrain_vtable_sub0
+0xf589c0	Actor::eHelicopterBrain_vtable_sub16
+0xe82b00	Actor::eHelicopterBrainClient_vtable_sub0
+0xe82c28	Actor::eHelicopterBrainClient_vtable_sub16
+0xf58dc8	Actor::eVS_Root_vtable_sub0
+0xf58200	Actor::eAS_Root_vtable_sub0
+0xf589e8	Actor::eABS_Root_vtable_sub0
+0xe84d68	eCannonStateCommand_vtable_sub0
+0xf4c058	Order::eHideout_vtable_sub0
+0xe84da8	Order::eSmartRepair_vtable_sub0
+0xf58a80	Order::eResetWaypointOnly_vtable_sub0
