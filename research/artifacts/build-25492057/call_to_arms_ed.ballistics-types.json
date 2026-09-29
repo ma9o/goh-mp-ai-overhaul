@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "binary": {
+    "filename": "call_to_arms_ed.exe",
+    "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+    "image_base": "0x140000000"
+  },
+  "scope_pattern": "Selected bullet aimer/shooter vtables",
+  "warning": "Structural discovery only. Filtered roots are not all AI dependencies. Vtable extents are executable-pointer scans, not verified slot counts. No method semantics or runtime ABI is asserted.",
+  "types": [
+    {
+      "mangled_name": ".?AVeBulletAimer@Weapon@Actor@@",
+      "display_name": "Actor::Weapon::eBulletAimer",
+      "descriptor_rvas": [
+        "0x13737a0"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf44318",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x6aace0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6aace0",
+                "end_rva": "0x6aad1e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x6a0a20",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x6a0a50",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x6a4b40",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a4b40",
+                "end_rva": "0x6a4b61",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x6ab1c0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6ab1c0",
+                "end_rva": "0x6ab213",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x6ab150",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6ab150",
+                "end_rva": "0x6ab1a3",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x6a4c00",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a4c00",
+                "end_rva": "0x6a4c59",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x6ab1b0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x6ab410",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6ab410",
+                "end_rva": "0x6ab428",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x6a1190",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a1190",
+                "end_rva": "0x6a1861",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x6a6260",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a6260",
+                "end_rva": "0x6a62df",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 11,
+              "rva": "0x6a64c0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a64c0",
+                "end_rva": "0x6a64f5",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 12,
+              "rva": "0x6a24a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a24a0",
+                "end_rva": "0x6a254d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 13,
+              "rva": "0x6a2560",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a2560",
+                "end_rva": "0x6a259f",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 14,
+              "rva": "0x6a6490",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 15,
+              "rva": "0x6a5110",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 16,
+              "rva": "0x6a5480",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a5480",
+                "end_rva": "0x6a5576",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 17,
+              "rva": "0x6a5c80",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a5c80",
+                "end_rva": "0x6a5cb5",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 18,
+              "rva": "0x6a6150",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a6150",
+                "end_rva": "0x6a618d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 19,
+              "rva": "0x6a2ed0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 20,
+              "rva": "0x6a6640",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x6a6640",
+                "end_rva": "0x6a66c6",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 21,
+              "rva": "0x6ab360",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c6e88",
+          "bases": [
+            {
+              "mangled_name": ".?AVeBulletAimer@Weapon@Actor@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeAimer@Weapon@Actor@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVeBulletShooter@Weapon@Actor@@",
+      "display_name": "Actor::Weapon::eBulletShooter",
+      "descriptor_rvas": [
+        "0x13252c0"
+      ],
+      "vtables": [
+        {
+          "rva": "0xf43aa8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x69edb0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x69edb0",
+                "end_rva": "0x69edfe",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x69aef0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x69aef0",
+                "end_rva": "0x69b0b4",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x69ab00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x69b6d0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x69b6d0",
+                "end_rva": "0x69b7f9",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x69b800",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x69b820",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x69b840",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x69cb80",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x69cb80",
+                "end_rva": "0x69cca6",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x69ca20",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x69ca20",
+                "end_rva": "0x69ca54",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x69ccb0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x69ccb0",
+                "end_rva": "0x69cce3",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x69ccf0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 11,
+              "rva": "0x69b450",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x69b450",
+                "end_rva": "0x69b6ca",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 12,
+              "rva": "0x69cd00",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x69cd00",
+                "end_rva": "0x69cdd5",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 13,
+              "rva": "0x69cde0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 14,
+              "rva": "0x69cdf0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 15,
+              "rva": "0x69a480",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 16,
+              "rva": "0x69e630",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x69e630",
+                "end_rva": "0x69e762",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 17,
+              "rva": "0x69f0a0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0,
+          "locator_rva": "0x10c6ce0",
+          "bases": [
+            {
+              "mangled_name": ".?AVeBulletShooter@Weapon@Actor@@",
+              "contained_bases": 1,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            },
+            {
+              "mangled_name": ".?AVeShooter@Weapon@Actor@@",
+              "contained_bases": 0,
+              "pmd": {
+                "member_displacement": 0,
+                "vbtable_pointer_displacement": -1,
+                "vbtable_entry_displacement": 0
+              },
+              "attributes": "0x40"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

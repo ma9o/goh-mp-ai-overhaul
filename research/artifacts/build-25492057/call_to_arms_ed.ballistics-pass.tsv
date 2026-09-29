@@ -1,0 +1,12 @@
+# RVA	Selected editor ballistics contracts
+0x69b6d0	bullet_trajectory_trial
+0x69b450	bullet_shoot
+0x6a5c80	bullet_aimer_ballistic_solution
+0x6a6150	bullet_aimer_apply
+0x6ab360	bullet_trajectory_mode
+0x6ab410	bullet_straight_mode
+0x6ab1b0	bullet_direction
+0x69b970	bullet_sample_velocity
+0x6bdaa0	trajectory_query_constructor
+0x6bdb90	trajectory_query_flags
+0x6bdbb0	trajectory_query_execute

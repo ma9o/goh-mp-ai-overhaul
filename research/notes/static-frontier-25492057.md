@@ -23,11 +23,11 @@ after their behavior and effect on the AI contract are established.
 | Human decision states | State hierarchy/dispatch/hazards; reviewed idle/battle/cover/search flow; stance thresholds, attack return codes, tactical movement, search coordination, healing and medic gating, following and weapon changes; detour pose/cover/point stages and budgets; temporary bone/pose trials; idle request gate; dropped-weapon memory, proficiency score and sort | Detour bound construction and pather route acceptance; animation state/tag producers and completion counter; full cover masks/healing validator; Veterancy property binding; full event producers; residual action-order helpers |
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle; discrete height probes, height/side-clearance kind selection, interval boundary bisection | Descriptor +8/+C consumer roles; full edge spacing and alternate offsets; geometry-query/grid construction |
 | Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set, grenade escape planning | Path request/acceptance, grid costs/probes, terrain/animation application, movement enum binding, ability/health speed modifiers; crush/obstacle order builders |
-| Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy producer; zeroing after-shot producer; firing/projectile-creation path; TargetAccessor trial context and ordered ally/target/trajectory-distance result | Place attachment/lifetime; concrete aiming/bone limits/sway/reload; full sampler and ballistics; shooter-specific collision construction/damage; remaining controller/charger readiness producers and bone limits |
+| Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy/zeroing; named aim modes and ballistic solvers; burst sampler and stateful preview; adaptive geometry trace; live projectile fields/pool/flight and contact-to-damage bridge; TargetAccessor result gates; occupied-slot readiness | Place/profile/owner lifetime; bone limit solvers and sway/reload; charger and animation producers; placement slot flags/assignment; full contact/material/ricochet outcomes, guided steering and synchronization; other shooter types |
 | Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wounds/repair and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; complete vehicle/cannon/group variants; scripted blow effects and melee defence/counterattack |
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion | Quant-clock producer/pause/time scale, manager bucket creation, context/RNG setup, entity lifetime through queued work; skip setter now mapped |
-| Group/vehicle behavior | Type roots only | Squad/leader coordination, vehicle/airborne brains, mounted weapons and crew |
+| Group/vehicle behavior | Type roots; selected cannon orders; place readiness counts occupied controller slots and can reassign them | Squad/leader coordination, vehicle/airborne brains, mounted weapons; placement ownership, crew role assignment and availability flag producers |
 | Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
 | Cross-binary comparison | Selected game/editor contracts | Compare newly reviewed contracts; distinguish outlining/inlining and behavior differences |
 
@@ -51,7 +51,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [signals/damage/resistance/load](signals-damage-map-25492057.md), and
 [armor/component damage/interruption events](armor-events-map-25492057.md), and
 [infantry geometry/firing trials/equipment choice](human-geometry-map-25492057.md), and
-[engagement orders/readiness/melee](engagement-orders-map-25492057.md). Their open questions
+[engagement orders/readiness/melee](engagement-orders-map-25492057.md), and
+[aiming/ballistics/projectile lifetime](ballistics-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -90,17 +91,21 @@ are historical snapshots; this frontier tracks the continuing objective.
   reads `0x925010/0x924F90`, abilities `0x936580/0x9744E0`.
 - Target selection: class at actor +0xDE8; subject +0x14 bits7/8 writers;
   `0x913230/0x912EB0` ground/volume resolution; sorter partition/heap branches.
-- Weapons: TargetAccessor `0x820A40`, bone trial `0x821490`, collision result
-  `0x821AD0` mapped through selected gates; follow actual aimer slots16/17/18,
-  shooter slot3 trajectory construction, bone solvers `0x5C5760/0x5C5400`,
-  actor `+DB4` bit8. Definition `+15E8` is AimingTolerance and `+15F8` bit0
-  AmmoLocked; other flags now bound. `0x820030/0x820150` obstruction path can emit
-  break_window. `0x80A070` structural readiness, `0x8174D0/0x819DA0` shooter
-  range dispatch and `0x8107D0` place update now mapped; continue controller
-  `0x77B8A0`, charger `+10/+14` and slot1 object `+DC` producers.
-  Sampler `0x818A10` ballistic/burst branches, projectile constructor
-  `0x8321F0`, initialization `0x8327B0`; concrete bone angle limits and motion.
-  Attack inner states and `0x81F030` time-to-aim trial now reviewed.
+- Weapons: aim modes `direct/curved/adaptive/nocurve`, solvers `0x5E8290/0x5E7E80`,
+  arc length `0x5E8050`, sampler `0x818A10` burst/anisotropic/target-plane branches,
+  context commit and adaptive trace `0x83A460..0x83B040` now mapped. Preview sampler
+  consumes RNG and can reset burst state. Continue bone limits/constraints
+  `0x5C5760/0x5C5400/0x5C5F50`, geometry solver `0x823470`, aimer+11C/+48 producers,
+  charger+10/+14 and slot1 object+DC, animation firing transitions, other shooters.
+  Controller `0x781D50` counts occupied stride298 slots with +248 bit20 clear;
+  `0x781410/0x782100` work slot requests. Follow `Entity::ePlacer` binding,
+  assignment `0x782310`, remove/move `0x77B950/0x77C140`, slot bit20 producers.
+  Projectile initialization, pool, manager, deferred retirement, FalloffMeter/
+  FalloffStrength and live contact bridge are now mapped; continue precise
+  ATGM steering `0x833DE0`, ricochet material tables and perturbation, all contact
+  outcomes `0x836B40`, synchronized terminal flags and definition/owner lifetime.
+  Broad/narrow collision `0xA21E50/0xA21EB0/0xA21F50/0x795270/0xA24080`, contact
+  sorting `0x839630/0x83BE10`, owner-specific region `0xA27FD0/0xA26850` remain.
 - Perception: signal-type publishers, eReconBase zone bookkeeping, unmasking
   helper `0x7C97E0` and appearance/examine object lifetime.
 - Geometry: cover kind chooser and discrete height/interval helpers now mapped;

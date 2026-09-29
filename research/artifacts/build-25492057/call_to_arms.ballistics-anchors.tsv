@@ -1,0 +1,15 @@
+# RVA	Projectile source and effect anchors
+0x10e15e8	bullet_source_filename
+0x10e1680	bullet_hit_effect
+0x10e1698	pierce_effect
+0x10e1640	bullet_arrive
+0x10e1658	bullet_missed
+0x10e1670	bullet_burnt
+0x1581e58	active_bullet_vector
+0x1575c20	projectile_distance_tag
+0x10e1570	bullet_miss_distance_setting
+0x1577120	guided_ammo_tag
+0x1577180	impact_ammo_tag_a
+0x1577960	impact_ammo_tag_b
+0x15772a0	contact_ammo_tag
+0x1575860	weapon_fire_ammo_tag
