@@ -1248,12 +1248,12 @@
       ]
     },
     {
-      "id": "armor_holder_items",
+      "id": "armor_holder_volume_tags",
       "owner": "Inventory::eHolderArmor",
       "offset": "0x758",
       "width": 16,
-      "representation": "pointer-vector begin/end",
-      "role": "Must be nonempty",
+      "representation": "tag-vector begin/end",
+      "role": "Volume tags inside+440 tag-set; must be nonempty",
       "evidence_ids": [
         "game_7d1b70",
         "game_7d1e00"

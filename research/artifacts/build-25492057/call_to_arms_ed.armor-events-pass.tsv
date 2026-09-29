@@ -1,0 +1,10 @@
+# RVA	Selected armor/interaction comparisons
+0x5c0070	.?AUeKnockDown@Interaction@@_slot5
+0x5bffa0	.?AUeKnockDown@Interaction@@_slot9
+0x21c2d0	.?AUeAction_ThrowOnGround@Interaction@@_slot5
+0x5bccc0	.?AUeAction_Die@Interaction@@_slot9
+0x5bf590	.?AUeAction_ThrowOff@Interaction@@_slot5
+0x5bf9e0	.?AUeAction_ThrowOff@Interaction@@_slot9
+0x5bff50	.?AUeAction_ThrowOnGround@Interaction@@_slot9
+0x652da0	armor_holder_property_wrapper
+0x652e80	armor_holder_property_dispatch

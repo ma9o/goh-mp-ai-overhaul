@@ -192,8 +192,8 @@ times definition `+198`.
 
 `0x7D1E00` walks the inventory extender's holder vector `+88/+90` and returns
 `+770` from the **first** eligible `Inventory::eHolderArmor`; otherwise0. Predicate
-`0x7D1B70` requires holder slot6 to return false, a nonempty `+758/+760` contents
-vector, hit-part membership in the holder's `+440` set, and the first item's
+`0x7D1B70` requires holder slot6 to return false, a nonempty `+758/+760` volume-tag
+vector (inside the `+440` tag set), hit-part membership in that set, and the first item's
 definition tags `+11E0/+11E8` to contain `armor`. Initializer `0x48560` proves
 that name for global tag `0x1571040`. `0x7D0FF0` returns the selected item handle
 at slot3-result `+40`, or a shared empty handle. Armor is not summed over all

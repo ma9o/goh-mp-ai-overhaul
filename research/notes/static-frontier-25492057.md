@@ -24,7 +24,7 @@ after their behavior and effect on the AI contract are established.
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle | Kind selection inside 8A8040; descriptor +8/+C consumer roles; height sampling and precise edge spacing |
 | Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set, grenade escape planning | Path request/acceptance, grid costs/probes, terrain/animation application, movement enum binding, ability/health speed modifiers; crush/obstacle order builders |
 | Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy producer; zeroing after-shot producer; firing/projectile-creation path | Place attachment/lifetime; detailed aiming/sway/reload; full sampler and ballistics; projectile collision/damage; actual weapon safety/readiness helpers |
-| Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup; Avoidance parameters; damage reaction event selection | Armor/material helpers and component health; remaining outer damage gates; configuration event execution; blinding/knockdown producers; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics |
+| Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wounds/repair and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; attack outer lifecycle and WeaponAimTarget | Internal attack states; all AI action families; concrete cancellation/rejection and ownership |
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion | Quant-clock producer/pause/time scale, manager bucket creation, context/RNG setup, entity lifetime through queued work; skip setter now mapped |
 | Group/vehicle behavior | Type roots only | Squad/leader coordination, vehicle/airborne brains, mounted weapons and crew |
@@ -48,22 +48,26 @@ Existing completed passes: [initial structure](build-25492057.md),
 [state hierarchy/hazards/movement](movement-map-25492057.md), and
 [infantry policy/search/healing](human-states-map-25492057.md), and
 [entity components/vitality/signals](entity-health-map-25492057.md), and
-[signals/damage/resistance/load](signals-damage-map-25492057.md). Their open questions
+[signals/damage/resistance/load](signals-damage-map-25492057.md), and
+[armor/component damage/interruption events](armor-events-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
 
-- Entity/health: mapped damage virtual formulas and inventory load producer `0x71DD90`.
-  Follow armor/material helpers `0x7E72E0/0x7E7560/0x7E7800/0x7E7CB0/0x7E8030`,
-  vehicle component health `0x893550/0x895480`, holder `+770/+774` parsers,
-  interaction event dispatcher `0x76E0B0`, outer damage cover/distance `0xA5AA50`,
-  blinding/knockdown callers, and limits-sort partition.
+- Entity/health: armor helpers, holder `+770/+774` parsers and component health
+  transitions now mapped; `+758/+760` corrected to volume tags, equipped item `+3D8`.
+  Follow material `+E0` parser, wound `0x7EA860/0x7EB780`, component event IDs
+  `+CC/+CE/+D0` producers, outer damage cover/distance `0xA5AA50`, blinding callers,
+  and limits-sort partition. Interaction list `0x761B50` calls slot2 of `+10`
+  subobject; resolve its concrete action/conditional implementations. Knockdown
+  expiry `0x939EC0`/recovery `0x93ABE0` now traced; continue FSM `0x95FC00`,
+  throwoff trajectory `0x93BDD0`, motion `0x93DCE0`, and landing callbacks.
 - Signals: named type/action/sound parsers and scene condition now mapped.
   Follow source pointer ownership/cancellation in `0x4D2810/0x4D1D20`, area lookup
   `0x9D2020`, receiver threshold binding; remaining perception publishers and
   vehicle response `0x98B200`. Human direct brain callback `0x903690` is empty.
-- Resistance/inventory: `0x975890/0x975CD0` named levels; selection helper
-  `0x9744E0` and ability info setup; drop-weapon/melee/fire consumers
+- Resistance/inventory: `0x975890/0x975CD0` named levels and first-applicable
+  lookup `0x9744E0` mapped; follow ability info setup/level selection; drop-weapon/melee/fire consumers
   `0x936C60/0x95D820/0xA75CD0`. Inventory handle weight `0x7E2420` includes
   secondary definition/count; resolve identity and lifetime.
 - Human states: detour placement `0x93ED30`, feasibility `0x940130`, pose helpers
