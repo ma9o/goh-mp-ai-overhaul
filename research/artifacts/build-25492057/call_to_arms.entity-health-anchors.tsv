@@ -1,0 +1,18 @@
+# RVA	Attachment and event producers
+0x10ebdd8	vtable:eHuman
+0x10d0420	vtable:Entity::eManager
+0x1003cd0	vtable:Entity::eExtender
+0x10eb4c0	vtable:Actor::eVitalityExtender
+0x877d20	sensor_signal_dispatch
+0x10e4908	sensor_signal_slot
+0x15984e8	health_ability_id
+0x157dfd0	personage_flag_id
+0x156ee40	default_entity_extenders
+0x157dfc8	select_flag
+0x15708c0	health_incapacitated_tag
+0x7f0430	direct_injury_signal
+0x925190	health_setter_publishers
+0x9259b0	incapacitation_publishers
+0x1586620	vitality_property_registry
+0xa5ca90	signal_publishers
+0x74f220	ia_signal_dispatch
