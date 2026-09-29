@@ -1,0 +1,20 @@
+# RVA	Relationship, cover and quant-clock producers
+0x159ba10	data:actor_relationship_matrix
+0x159ba28	data:relationship_source_matrix
+0x1556e48	data:quant_clock	write
+0x10fe260	string:diplomacy
+0x10f7b10	string:Enemy
+0x10f7b18	string:Neutral
+0x1482088	data:cover_occupancy_index
+0x8a5c80	code:cover_occupancy_claim
+0x8a5cb0	code:cover_occupancy_release
+0x1481438	data:grid_detector_enabled	write
+0x1481439	data:worker_visibility_enabled	write
+0x1556e38	data:quant_clock_tree
+0x157c230	data:actor_default_db8
+0x157d0c0	data:actor_default_de0
+0x157d4f0	data:actor_default_dd0
+0x157d860	data:actor_default_dc0
+0x157d910	data:actor_default_dd8
+0x1cec40	code:scheduled_task_skip_setter
+0xa46b00	code:relationship_setter

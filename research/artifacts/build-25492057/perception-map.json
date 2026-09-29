@@ -1,0 +1,1647 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "export_suffix": "-perception",
+  "runtime_verified": false,
+  "status": "partial_static_behavior_review",
+  "warning": "RVAs, analyst roles unless attributed to a diagnostic/parser. Checks validate evidence locations and data, not semantic completeness, callable ABI, lifetime or thread safety.",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267"
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976"
+    }
+  },
+  "methods": [
+    {
+      "id": "sensor_candidate_evaluation",
+      "entry_rvas": {
+        "game": "0x87ae10"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_post_scan",
+      "entry_rvas": {
+        "game": "0x873b00",
+        "editor": "0x6f73a0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_slot_14",
+      "entry_rvas": {
+        "game": "0x873cb0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_slot_15",
+      "entry_rvas": {
+        "game": "0x873d20"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_slot_16",
+      "entry_rvas": {
+        "game": "0x873d60",
+        "editor": "0x6f7790"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_slot_17",
+      "entry_rvas": {
+        "game": "0x877d20"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_position_only_subject",
+      "entry_rvas": {
+        "game": "0x8783f0",
+        "editor": "0x6fc090"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_subject_removal",
+      "entry_rvas": {
+        "game": "0x87a4d0",
+        "editor": "0x6fe300"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_additional_scan",
+      "entry_rvas": {
+        "game": "0x879630"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_cached_bounds",
+      "entry_rvas": {
+        "game": "0x87a590"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_ray_height",
+      "entry_rvas": {
+        "game": "0x87dd70"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_point_angle_gate",
+      "entry_rvas": {
+        "game": "0x87d7e0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_kind_name_parser",
+      "entry_rvas": {
+        "game": "0x8a9720"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_geometry_context",
+      "entry_rvas": {
+        "game": "0x8a6e00"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_circle_candidates",
+      "entry_rvas": {
+        "game": "0x8a7140"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_edge_candidates",
+      "entry_rvas": {
+        "game": "0x8a73b0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "actor_relationship_lookup",
+      "entry_rvas": {
+        "game": "0xa467b0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "quant_worker_completion_predicate",
+      "entry_rvas": {
+        "game": "0xa58f0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_candidate_append_deduplicated",
+      "entry_rvas": {
+        "game": "0x8784e0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_commit_observations",
+      "entry_rvas": {
+        "game": "0x878ae0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_inform",
+      "entry_rvas": {
+        "game": "0x879c50"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_observer_count_transition",
+      "entry_rvas": {
+        "game": "0x87a3b0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_mode_refresh",
+      "entry_rvas": {
+        "game": "0x875580"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_find_subject",
+      "entry_rvas": {
+        "game": "0x873bf0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_share_observation",
+      "entry_rvas": {
+        "game": "0x875230"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_entity_query",
+      "entry_rvas": {
+        "game": "0x87c790"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "vision_effective_range",
+      "entry_rvas": {
+        "game": "0x88ea30"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_initial_height",
+      "entry_rvas": {
+        "game": "0x87e310"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_grid_entity_visibility",
+      "entry_rvas": {
+        "game": "0x87d1f0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "vision_conditional_value",
+      "entry_rvas": {
+        "game": "0x88e4c0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "vision_condition_predicate",
+      "entry_rvas": {
+        "game": "0x88e5a0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_get_or_create_subject",
+      "entry_rvas": {
+        "game": "0x874570"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_destroy_subject",
+      "entry_rvas": {
+        "game": "0x8754f0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_eviction_priority",
+      "entry_rvas": {
+        "game": "0x878320"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_entity_visibility_refresh",
+      "entry_rvas": {
+        "game": "0x87a320"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_receive_informed_subjects",
+      "entry_rvas": {
+        "game": "0x87a090"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_reveal_duration",
+      "entry_rvas": {
+        "game": "0x876610"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_enemy_visibility_notification",
+      "entry_rvas": {
+        "game": "0x8752d0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_subject_relationship_refresh",
+      "entry_rvas": {
+        "game": "0x878560"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "relationship_matrix_lookup",
+      "entry_rvas": {
+        "game": "0xa46ac0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "relationship_matrix_set",
+      "entry_rvas": {
+        "game": "0xa46b00"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "scheduled_task_skip_count",
+      "entry_rvas": {
+        "game": "0x1cec40"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_grid_point_visibility",
+      "entry_rvas": {
+        "game": "0x87d4c0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_object_exclusion_begin",
+      "entry_rvas": {
+        "game": "0x887ca0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_object_exclusion_end",
+      "entry_rvas": {
+        "game": "0x887cc0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "vision_condition_settings_parser",
+      "entry_rvas": {
+        "game": "0x88c810"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "vision_definition_parser",
+      "entry_rvas": {
+        "game": "0x88eac0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "quant_manager_access",
+      "entry_rvas": {
+        "game": "0x1d1740"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "detector_grid_ray_visibility",
+      "entry_rvas": {
+        "game": "0x87e050"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "vision_condition_tree_parser",
+      "entry_rvas": {
+        "game": "0x88db50"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "vision_modifier_parser",
+      "entry_rvas": {
+        "game": "0x88dfe0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "chassis_constructor",
+      "entry_rvas": {
+        "game": "0x83f140"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_component_constructor",
+      "entry_rvas": {
+        "game": "0x8987e0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "fsm_constructor",
+      "entry_rvas": {
+        "game": "0x7fb2b0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "weaponry_constructor",
+      "entry_rvas": {
+        "game": "0x806040"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "sensor_constructor",
+      "entry_rvas": {
+        "game": "0x8733f0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "relationship_filter_predicate",
+      "entry_rvas": {
+        "game": "0x9e84d0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "relationship_filter_display_name",
+      "entry_rvas": {
+        "game": "0x9e7800"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "vision_global_loader",
+      "entry_rvas": {
+        "game": "0x88f2d0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "actor_constructor",
+      "entry_rvas": {
+        "game": "0x7ef100",
+        "editor": "0x671300"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_claim",
+      "entry_rvas": {
+        "game": "0x8a5c80"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_release",
+      "entry_rvas": {
+        "game": "0x8a5cb0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_enter",
+      "entry_rvas": {
+        "game": "0x898ad0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "cover_exit",
+      "entry_rvas": {
+        "game": "0x898c50"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "move_to_cover_execute",
+      "entry_rvas": {
+        "game": "0x8ce670"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "relationship_matrix_default",
+      "entry_rvas": {
+        "game": "0xa46b50"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "diplomacy_parser",
+      "entry_rvas": {
+        "game": "0xa46ed0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "diplomacy_serializer",
+      "entry_rvas": {
+        "game": "0xa472c0"
+      },
+      "status": "static_behavior_reviewed"
+    },
+    {
+      "id": "multiplayer_relationship_setup",
+      "entry_rvas": {
+        "game": "0xd0ecf0"
+      },
+      "status": "static_behavior_reviewed"
+    }
+  ],
+  "fields": [
+    {
+      "id": "actor_fsm",
+      "owner": "eActor",
+      "offset": "0xdb8",
+      "width": 8,
+      "representation": "component pointer",
+      "role": "fsm; shared default does not establish concrete ownership",
+      "evidence_ids": [
+        "actor_component_defaults",
+        "default_fsm"
+      ]
+    },
+    {
+      "id": "actor_cover",
+      "owner": "eActor",
+      "offset": "0xdc0",
+      "width": 8,
+      "representation": "component pointer",
+      "role": "cover; shared default does not establish concrete ownership",
+      "evidence_ids": [
+        "actor_component_defaults",
+        "default_cover"
+      ]
+    },
+    {
+      "id": "actor_sensor",
+      "owner": "eActor",
+      "offset": "0xdd0",
+      "width": 8,
+      "representation": "component pointer",
+      "role": "sensor; shared default does not establish concrete ownership",
+      "evidence_ids": [
+        "actor_component_defaults",
+        "default_sensor"
+      ]
+    },
+    {
+      "id": "actor_weaponry",
+      "owner": "eActor",
+      "offset": "0xdd8",
+      "width": 8,
+      "representation": "component pointer",
+      "role": "weaponry; shared default does not establish concrete ownership",
+      "evidence_ids": [
+        "actor_component_defaults",
+        "default_weaponry"
+      ]
+    },
+    {
+      "id": "actor_chassis",
+      "owner": "eActor",
+      "offset": "0xde0",
+      "width": 8,
+      "representation": "component pointer",
+      "role": "chassis; shared default does not establish concrete ownership",
+      "evidence_ids": [
+        "actor_component_defaults",
+        "default_chassis"
+      ]
+    },
+    {
+      "id": "actor_brain",
+      "owner": "eActor",
+      "offset": "0xdc8",
+      "width": 8,
+      "representation": "pointer",
+      "role": "Brain; null in base constructor",
+      "evidence_ids": [
+        "actor_component_defaults"
+      ]
+    },
+    {
+      "id": "candidate_visible",
+      "owner": "sensor candidate",
+      "offset": "0x10",
+      "width": 1,
+      "representation": "bool-like",
+      "role": "visible",
+      "evidence_ids": [
+        "candidate_diagnostic_fields",
+        "editor_candidate_fields"
+      ]
+    },
+    {
+      "id": "candidate_inRangeForAlly",
+      "owner": "sensor candidate",
+      "offset": "0x11",
+      "width": 1,
+      "representation": "bool-like",
+      "role": "inRangeForAlly",
+      "evidence_ids": [
+        "candidate_diagnostic_fields",
+        "editor_candidate_fields"
+      ]
+    },
+    {
+      "id": "candidate_requestRecognize",
+      "owner": "sensor candidate",
+      "offset": "0x12",
+      "width": 1,
+      "representation": "bool-like",
+      "role": "requestRecognize",
+      "evidence_ids": [
+        "candidate_diagnostic_fields",
+        "editor_candidate_fields"
+      ]
+    },
+    {
+      "id": "sensor_force_update",
+      "owner": "Actor::eSensor",
+      "offset": "0x1c",
+      "width": 1,
+      "representation": "bool-like",
+      "role": "forceUpdate diagnostic name",
+      "evidence_ids": [
+        "candidate_diagnostic_fields",
+        "sensor_mode"
+      ]
+    },
+    {
+      "id": "sensor_commit_pending",
+      "owner": "Actor::eSensor",
+      "offset": "0x1b",
+      "width": 1,
+      "representation": "bool-like",
+      "role": "Look-around completion awaits main-side commit",
+      "evidence_ids": [
+        "main_sensor_gate",
+        "editor_sensor_main"
+      ]
+    },
+    {
+      "id": "sensor_reduced_update_mode",
+      "owner": "Actor::eSensor",
+      "offset": "0x1a",
+      "width": 1,
+      "representation": "bool-like",
+      "role": "Changes skip scheduling; public state name unresolved",
+      "evidence_ids": [
+        "sensor_mode"
+      ]
+    },
+    {
+      "id": "sensor_mode_deadline",
+      "owner": "Actor::eSensor",
+      "offset": "0x358",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Expiry restores mode true",
+      "evidence_ids": [
+        "sensor_mode",
+        "main_sensor_gate"
+      ]
+    },
+    {
+      "id": "task_skip_count",
+      "owner": "eQuantScheduledTask",
+      "offset": "0x6c",
+      "width": 4,
+      "representation": "int32",
+      "role": "Replaced only if below one or forced",
+      "evidence_ids": [
+        "skip_setter"
+      ]
+    },
+    {
+      "id": "subject_position",
+      "owner": "Actor::eSubject",
+      "offset": "0x28",
+      "width": 12,
+      "representation": "float32[3]",
+      "role": "Last-known position",
+      "evidence_ids": [
+        "observation_commit",
+        "eviction_formula"
+      ]
+    },
+    {
+      "id": "subject_uncertainty",
+      "owner": "Actor::eSubject",
+      "offset": "0x34",
+      "width": 4,
+      "representation": "float32",
+      "role": "Position uncertainty/radius; direct sight writes zero",
+      "evidence_ids": [
+        "observation_commit",
+        "eviction_formula"
+      ]
+    },
+    {
+      "id": "subject_accumulator",
+      "owner": "Actor::eSubject",
+      "offset": "0x38",
+      "width": 4,
+      "representation": "float32",
+      "role": "891c00 contribution, threshold 100; semantics unresolved",
+      "evidence_ids": [
+        "observation_commit"
+      ]
+    },
+    {
+      "id": "subject_time_visibility_transition",
+      "owner": "Actor::eSubject",
+      "offset": "0x60",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Timestamp for visibility_transition",
+      "evidence_ids": [
+        "observation_commit"
+      ]
+    },
+    {
+      "id": "subject_time_position_observation",
+      "owner": "Actor::eSubject",
+      "offset": "0x64",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Timestamp for position_observation",
+      "evidence_ids": [
+        "observation_commit"
+      ]
+    },
+    {
+      "id": "subject_time_signal_flags",
+      "owner": "Actor::eSubject",
+      "offset": "0x68",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Timestamp for signal_flags",
+      "evidence_ids": [
+        "observation_commit"
+      ]
+    },
+    {
+      "id": "subject_aux_handle",
+      "owner": "Actor::eSubject",
+      "offset": "0x78",
+      "width": 4,
+      "representation": "int32",
+      "role": "Auxiliary registered observation handle; manager type unresolved",
+      "evidence_ids": [
+        "observation_commit",
+        "editor_subject_detach"
+      ]
+    },
+    {
+      "id": "subject_flags",
+      "owner": "Actor::eSubject",
+      "offset": "0x10",
+      "width": 4,
+      "representation": "uint32 flags",
+      "role": "Visibility bits 29/30, known position 28, category 21..22; see notes for other bits",
+      "evidence_ids": [
+        "observation_commit"
+      ]
+    },
+    {
+      "id": "actor_observer_records",
+      "owner": "eActor",
+      "offset": "0xbf8",
+      "width": 432,
+      "representation": "18 records, stride 0x18",
+      "role": "Per-player observer visibility, signed16 count at +A, visible byte+C, deadline+14",
+      "evidence_ids": [
+        "observer_count"
+      ]
+    },
+    {
+      "id": "chassis_stance",
+      "owner": "Actor::eChassis",
+      "offset": "0x2c",
+      "width": 4,
+      "representation": "uint32",
+      "role": "0 stand, 2 squat, 1/3 crawl in vision predicate",
+      "evidence_ids": [
+        "vision_predicates"
+      ]
+    },
+    {
+      "id": "human_stealth",
+      "owner": "eHuman",
+      "offset": "0x1420",
+      "width": 4,
+      "representation": "uint32 bit5",
+      "role": "stealth vision predicate",
+      "evidence_ids": [
+        "vision_predicates"
+      ]
+    },
+    {
+      "id": "weaponry_last_fire",
+      "owner": "Actor::eWeaponry",
+      "offset": "0x90",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Timestamp checked by firing condition",
+      "evidence_ids": [
+        "vision_predicates"
+      ]
+    },
+    {
+      "id": "weaponry_last_weapon",
+      "owner": "Actor::eWeaponry",
+      "offset": "0x98",
+      "width": 8,
+      "representation": "pointer",
+      "role": "Last weapon used by custom firing property condition",
+      "evidence_ids": [
+        "vision_predicates"
+      ]
+    },
+    {
+      "id": "human_breed",
+      "owner": "eHuman",
+      "offset": "0x1390",
+      "width": 8,
+      "representation": "pointer",
+      "role": "Breed used for property lookup at breed+128",
+      "evidence_ids": [
+        "vision_predicates"
+      ]
+    },
+    {
+      "id": "entity_definition",
+      "owner": "eActor/entity",
+      "offset": "0x548",
+      "width": 8,
+      "representation": "pointer",
+      "role": "Actor tag vector +330..338 stride60",
+      "evidence_ids": [
+        "vision_predicates"
+      ]
+    },
+    {
+      "id": "cover_resident",
+      "owner": "Actor::eCover",
+      "offset": "0x20",
+      "width": 136,
+      "representation": "cover candidate",
+      "role": "Resident cover; group+4 is vision cover predicate and tactical multiplier input",
+      "evidence_ids": [
+        "cover_enter",
+        "cover_exit",
+        "vision_predicates"
+      ]
+    },
+    {
+      "id": "candidate_claim_uid",
+      "owner": "cover candidate",
+      "offset": "0x24",
+      "width": 4,
+      "representation": "uint32",
+      "role": "Actor uint16 UID widened to occupancy key",
+      "evidence_ids": [
+        "cover_claim",
+        "cover_release"
+      ]
+    },
+    {
+      "id": "vision_conservative_max_range",
+      "owner": "Actor::eVision",
+      "offset": "0x70",
+      "width": 4,
+      "representation": "float32",
+      "role": "conservative_max_range",
+      "evidence_ids": [
+        "vision_definition"
+      ]
+    },
+    {
+      "id": "vision_uncover_distance",
+      "owner": "Actor::eVision",
+      "offset": "0x7c",
+      "width": 4,
+      "representation": "float32",
+      "role": "uncover_distance",
+      "evidence_ids": [
+        "vision_definition"
+      ]
+    },
+    {
+      "id": "vision_horizontal_fov",
+      "owner": "Actor::eVision",
+      "offset": "0x80",
+      "width": 4,
+      "representation": "float32",
+      "role": "horizontal_fov",
+      "evidence_ids": [
+        "vision_definition"
+      ]
+    },
+    {
+      "id": "vision_vertical_fov",
+      "owner": "Actor::eVision",
+      "offset": "0x84",
+      "width": 4,
+      "representation": "float32",
+      "role": "vertical_fov",
+      "evidence_ids": [
+        "vision_definition"
+      ]
+    },
+    {
+      "id": "vision_base_radius",
+      "owner": "Actor::eVision",
+      "offset": "0x88",
+      "width": 4,
+      "representation": "float32",
+      "role": "base_radius",
+      "evidence_ids": [
+        "vision_definition"
+      ]
+    },
+    {
+      "id": "vision_wide_mode",
+      "owner": "Actor::eVision",
+      "offset": "0xc0",
+      "width": 1,
+      "representation": "bool-like",
+      "role": "wide_mode",
+      "evidence_ids": [
+        "vision_definition"
+      ]
+    },
+    {
+      "id": "vision_wide_curve_power",
+      "owner": "Actor::eVision",
+      "offset": "0xc4",
+      "width": 4,
+      "representation": "float32",
+      "role": "wide_curve_power",
+      "evidence_ids": [
+        "vision_definition"
+      ]
+    }
+  ],
+  "inline_regions": [
+    {
+      "id": "observation_categories",
+      "function_rva": "0x878ae0",
+      "role": "Reassign using relation/recognition/type flags, followed by staged eviction",
+      "evidence_ids": [
+        "observation_commit",
+        "eviction_formula"
+      ]
+    },
+    {
+      "id": "move_to_cover_reservation",
+      "function_rva": "0x8ce670",
+      "role": "Claim destination during child move; release on cleanup; install resident cover after success",
+      "evidence_ids": [
+        "cover_order_lifecycle",
+        "cover_claim",
+        "cover_release",
+        "cover_enter"
+      ]
+    }
+  ],
+  "enums": [],
+  "float_constants": [
+    {
+      "id": "one_duration",
+      "binary": "game",
+      "rva": "0x10004d0",
+      "value": 1.0
+    },
+    {
+      "id": "three",
+      "binary": "game",
+      "rva": "0x100a284",
+      "value": 3.0
+    },
+    {
+      "id": "one_hundred",
+      "binary": "game",
+      "rva": "0x1004048",
+      "value": 100.0
+    },
+    {
+      "id": "sixty",
+      "binary": "game",
+      "rva": "0x101804c",
+      "value": 60.0
+    },
+    {
+      "id": "half",
+      "binary": "game",
+      "rva": "0x1003158",
+      "value": 0.5
+    }
+  ],
+  "evidence": [
+    {
+      "id": "actor_component_defaults",
+      "binary": "game",
+      "function_rva": "0x7ef100",
+      "instruction_rvas": [
+        "0x7ef242",
+        "0x7ef2a5",
+        "0x7ef2b1",
+        "0x7ef2b8",
+        "0x7ef2bf",
+        "0x7ef2c6",
+        "0x7ef2cd",
+        "0x7ef2d4",
+        "0x7ef2db",
+        "0x7ef2e2",
+        "0x7ef2e9"
+      ]
+    },
+    {
+      "id": "default_chassis",
+      "binary": "game",
+      "function_rva": "0x574a0",
+      "instruction_rvas": [
+        "0x574a4",
+        "0x574ab",
+        "0x574b0"
+      ]
+    },
+    {
+      "id": "default_cover",
+      "binary": "game",
+      "function_rva": "0x574c0",
+      "instruction_rvas": [
+        "0x574c6",
+        "0x574cd",
+        "0x574d2"
+      ]
+    },
+    {
+      "id": "default_fsm",
+      "binary": "game",
+      "function_rva": "0x574f0",
+      "instruction_rvas": [
+        "0x574f4",
+        "0x574fb",
+        "0x57500"
+      ]
+    },
+    {
+      "id": "default_sensor",
+      "binary": "game",
+      "function_rva": "0x57510",
+      "instruction_rvas": [
+        "0x57514",
+        "0x5751b",
+        "0x57520"
+      ]
+    },
+    {
+      "id": "default_weaponry",
+      "binary": "game",
+      "function_rva": "0x57530",
+      "instruction_rvas": [
+        "0x57536",
+        "0x5753d",
+        "0x57542"
+      ]
+    },
+    {
+      "id": "candidate_diagnostic_fields",
+      "binary": "game",
+      "function_rva": "0x873d60",
+      "instruction_rvas": [
+        "0x873e2a",
+        "0x873e62",
+        "0x873e84",
+        "0x873ea6",
+        "0x873ee4"
+      ]
+    },
+    {
+      "id": "main_sensor_gate",
+      "binary": "game",
+      "function_rva": "0x873b00",
+      "instruction_rvas": [
+        "0x873b0a",
+        "0x873b16",
+        "0x873b25",
+        "0x873b67",
+        "0x873b84",
+        "0x873b89",
+        "0x873b91",
+        "0x873b94",
+        "0x873ba3"
+      ]
+    },
+    {
+      "id": "sensor_mode",
+      "binary": "game",
+      "function_rva": "0x873cb0",
+      "instruction_rvas": [
+        "0x873cb6",
+        "0x873cc1",
+        "0x873cc4",
+        "0x873cc9",
+        "0x873cd1",
+        "0x873cf6",
+        "0x873d07"
+      ]
+    },
+    {
+      "id": "skip_setter",
+      "binary": "game",
+      "function_rva": "0x1cec40",
+      "instruction_rvas": [
+        "0x1cec40",
+        "0x1cec44",
+        "0x1cec46",
+        "0x1cec49",
+        "0x1cec4b"
+      ]
+    },
+    {
+      "id": "observation_commit",
+      "binary": "game",
+      "function_rva": "0x878ae0",
+      "instruction_rvas": [
+        "0x878ba6",
+        "0x878dec",
+        "0x878df6",
+        "0x878e0e",
+        "0x878e11",
+        "0x878e3d",
+        "0x878e50",
+        "0x878ea0",
+        "0x878eeb",
+        "0x878f1a",
+        "0x878f39",
+        "0x878f43",
+        "0x878fb8",
+        "0x878fca",
+        "0x878fe8",
+        "0x879090",
+        "0x87909e",
+        "0x8790a3",
+        "0x8790ab",
+        "0x8790c1",
+        "0x8790d0",
+        "0x8790e0",
+        "0x87913a",
+        "0x879142",
+        "0x879169",
+        "0x879194",
+        "0x87921b",
+        "0x8792a2",
+        "0x8792b5",
+        "0x87932a",
+        "0x879347",
+        "0x879352",
+        "0x8793fe"
+      ]
+    },
+    {
+      "id": "eviction_formula",
+      "binary": "game",
+      "function_rva": "0x878320",
+      "instruction_rvas": [
+        "0x87832f",
+        "0x87833d",
+        "0x878342",
+        "0x878346",
+        "0x878355",
+        "0x878362",
+        "0x87836c",
+        "0x878376",
+        "0x878392",
+        "0x878397",
+        "0x87839b",
+        "0x8783a0",
+        "0x8783a8",
+        "0x8783b0",
+        "0x8783b8",
+        "0x8783bc",
+        "0x8783c0",
+        "0x8783c6"
+      ]
+    },
+    {
+      "id": "observer_count",
+      "binary": "game",
+      "function_rva": "0x87a3b0",
+      "instruction_rvas": [
+        "0x87a3c0",
+        "0x87a3d7",
+        "0x87a3de",
+        "0x87a3e6",
+        "0x87a3ee",
+        "0x87a3f1",
+        "0x87a3f8",
+        "0x87a3fb",
+        "0x87a402",
+        "0x87a409",
+        "0x87a412",
+        "0x87a41a",
+        "0x87a420",
+        "0x87a423",
+        "0x87a427",
+        "0x87a42a",
+        "0x87a42e",
+        "0x87a43a",
+        "0x87a442",
+        "0x87a451",
+        "0x87a459"
+      ]
+    },
+    {
+      "id": "vision_predicates",
+      "binary": "game",
+      "function_rva": "0x88e5a0",
+      "instruction_rvas": [
+        "0x88e5af",
+        "0x88e5c0",
+        "0x88e5c7",
+        "0x88e5ce",
+        "0x88e5d1",
+        "0x88e5da",
+        "0x88e5df",
+        "0x88e5f4",
+        "0x88e5fe",
+        "0x88e60e",
+        "0x88e612",
+        "0x88e619",
+        "0x88e63b",
+        "0x88e642",
+        "0x88e649",
+        "0x88e660",
+        "0x88e667",
+        "0x88e670",
+        "0x88e692",
+        "0x88e699",
+        "0x88e69f",
+        "0x88e6a8",
+        "0x88e6b5",
+        "0x88e6be",
+        "0x88e6d2",
+        "0x88e6d9",
+        "0x88e6f8",
+        "0x88e70c",
+        "0x88e71c",
+        "0x88e722",
+        "0x88e73a",
+        "0x88e741",
+        "0x88e75b",
+        "0x88e762",
+        "0x88e77c",
+        "0x88e783",
+        "0x88e786",
+        "0x88e788",
+        "0x88e7ac",
+        "0x88e7b6",
+        "0x88e7bc",
+        "0x88e7e3",
+        "0x88e7ff",
+        "0x88e818",
+        "0x88e81f",
+        "0x88e836"
+      ]
+    },
+    {
+      "id": "vision_definition",
+      "binary": "game",
+      "function_rva": "0x88eac0",
+      "instruction_rvas": [
+        "0x88eacc",
+        "0x88ebf6",
+        "0x88ecf2",
+        "0x88ed36",
+        "0x88ed85",
+        "0x88ed95",
+        "0x88ee68",
+        "0x88eeb8",
+        "0x88efa8"
+      ]
+    },
+    {
+      "id": "detector_branch",
+      "binary": "game",
+      "function_rva": "0x87c790",
+      "instruction_rvas": [
+        "0x87c7a0",
+        "0x87c7c4",
+        "0x87c888",
+        "0x87c8f9"
+      ]
+    },
+    {
+      "id": "detector_point_dispatch",
+      "binary": "game",
+      "function_rva": "0x87d4c0",
+      "instruction_rvas": [
+        "0x87d559",
+        "0x87d687"
+      ]
+    },
+    {
+      "id": "detector_ray_gates",
+      "binary": "game",
+      "function_rva": "0x87e050",
+      "instruction_rvas": [
+        "0x87e145",
+        "0x87e179",
+        "0x87e1c8",
+        "0x87e1df",
+        "0x87e210",
+        "0x87e28d"
+      ]
+    },
+    {
+      "id": "relationship_filter",
+      "binary": "game",
+      "function_rva": "0x9e84d0",
+      "instruction_rvas": [
+        "0x9e84f4",
+        "0x9e84f9",
+        "0x9e84fc"
+      ]
+    },
+    {
+      "id": "relationship_names",
+      "binary": "game",
+      "function_rva": "0x9e7800",
+      "instruction_rvas": [
+        "0x9e7836",
+        "0x9e7861",
+        "0x9e788b"
+      ]
+    },
+    {
+      "id": "relationship_actor_ids",
+      "binary": "game",
+      "function_rva": "0xa467b0",
+      "instruction_rvas": [
+        "0xa467b8",
+        "0xa467ca",
+        "0xa467d3",
+        "0xa467da",
+        "0xa467e6",
+        "0xa467f5",
+        "0xa467fa",
+        "0xa467ff",
+        "0xa4680b",
+        "0xa46816"
+      ]
+    },
+    {
+      "id": "cover_claim",
+      "binary": "game",
+      "function_rva": "0x8a5c80",
+      "instruction_rvas": [
+        "0x8a5c80",
+        "0x8a5c86",
+        "0x8a5c91",
+        "0x8a5c94",
+        "0x8a5c9b"
+      ]
+    },
+    {
+      "id": "cover_release",
+      "binary": "game",
+      "function_rva": "0x8a5cb0",
+      "instruction_rvas": [
+        "0x8a5cb6",
+        "0x8a5cc4",
+        "0x8a5ccb",
+        "0x8a5cd0"
+      ]
+    },
+    {
+      "id": "cover_enter",
+      "binary": "game",
+      "function_rva": "0x898ad0",
+      "instruction_rvas": [
+        "0x898add",
+        "0x898af1",
+        "0x898b0d",
+        "0x898b65",
+        "0x898b6a",
+        "0x898b71",
+        "0x898b75",
+        "0x898b7a",
+        "0x898b89",
+        "0x898b9a"
+      ]
+    },
+    {
+      "id": "cover_exit",
+      "binary": "game",
+      "function_rva": "0x898c50",
+      "instruction_rvas": [
+        "0x898c59",
+        "0x898c6a",
+        "0x898c88",
+        "0x898c91",
+        "0x898c96",
+        "0x898ca5",
+        "0x898cb6"
+      ]
+    },
+    {
+      "id": "cover_order_lifecycle",
+      "binary": "game",
+      "function_rva": "0x8ce670",
+      "instruction_rvas": [
+        "0x8ce69f",
+        "0x8ce6ac",
+        "0x8ce6b7",
+        "0x8ce6c1",
+        "0x8ce6dd",
+        "0x8ce710",
+        "0x8ce732",
+        "0x8ce740",
+        "0x8ce74b",
+        "0x8ce750",
+        "0x8ce776",
+        "0x8ce7d0",
+        "0x8ce7d4",
+        "0x8ce7db",
+        "0x8ce7e0",
+        "0x8ce7f1",
+        "0x8ce803",
+        "0x8ce80a"
+      ]
+    },
+    {
+      "id": "editor_sensor_main",
+      "binary": "editor",
+      "function_rva": "0x6f73a0",
+      "instruction_rvas": [
+        "0x6f73cb",
+        "0x6f73d9",
+        "0x6f73e8",
+        "0x6f744c",
+        "0x6f7454",
+        "0x6f7466"
+      ]
+    },
+    {
+      "id": "editor_subject_detach",
+      "binary": "editor",
+      "function_rva": "0x6fe300",
+      "instruction_rvas": [
+        "0x6fe310",
+        "0x6fe32c",
+        "0x6fe331",
+        "0x6fe36c",
+        "0x6fe380",
+        "0x6fe38b",
+        "0x6fe3a4",
+        "0x6fe3bd",
+        "0x6fe3c1"
+      ]
+    },
+    {
+      "id": "editor_candidate_fields",
+      "binary": "editor",
+      "function_rva": "0x6f7790",
+      "instruction_rvas": [
+        "0x6f7859",
+        "0x6f7891",
+        "0x6f78b3",
+        "0x6f78d5",
+        "0x6f7c9c",
+        "0x6f7cd4",
+        "0x6f7d5c",
+        "0x6f7d94",
+        "0x6f7e1c",
+        "0x6f7e54",
+        "0x6f7edc",
+        "0x6f7f14"
+      ]
+    }
+  ],
+  "byte_sequences": [
+    {
+      "id": "category_limits",
+      "binary": "game",
+      "rva": "0x10e4bf8",
+      "hex": "0a000000140000001400000005000000",
+      "role": "int32 category limits 10,20,20,5"
+    },
+    {
+      "id": "vision_condition_switch",
+      "binary": "game",
+      "rva": "0x88e85c",
+      "hex": "19e7880037e7880058e7880079e78800a0e78800d9e7880015e8880036e88800",
+      "role": "Eight native predicate branch RVAs"
+    },
+    {
+      "id": "grid_detector_default",
+      "binary": "game",
+      "rva": "0x1481438",
+      "hex": "01",
+      "role": "Initialized enabled byte"
+    },
+    {
+      "id": "worker_visibility_default",
+      "binary": "game",
+      "rva": "0x1481439",
+      "hex": "01",
+      "role": "Initialized enabled byte"
+    },
+    {
+      "id": "environment_range_factor",
+      "binary": "game",
+      "rva": "0x1481658",
+      "hex": "b81e053e",
+      "role": "Initialized writable float0.13"
+    }
+  ],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeSensor@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x10e4880",
+      "methods": {
+        "13": "0x873b00",
+        "14": "0x873cb0",
+        "15": "0x873d20",
+        "16": "0x873d60",
+        "17": "0x877d20",
+        "18": "0x8783f0",
+        "20": "0x87a4d0"
+      }
+    },
+    {
+      "binary": "editor",
+      "mangled_name": ".?AVeSensor@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0xf48d50",
+      "methods": {
+        "13": "0x6f73a0",
+        "16": "0x6f7790",
+        "18": "0x6fc090",
+        "20": "0x6fe300"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeFsm@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x10deae8",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeChassis@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x10e1ae0",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeCover@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x10e56a8",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeWeaponry@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x10df2e8",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeSF_Relation@Selection@Helper@@",
+      "subobject_offset": 0,
+      "rva": "0x10f7ac8",
+      "methods": {
+        "5": "0x9e84d0",
+        "7": "0x9e7800"
+      }
+    }
+  ],
+  "pointer_string_tables": [
+    {
+      "id": "cover_kind_names",
+      "binary": "game",
+      "rva": "0x1482170",
+      "values": [
+        "none",
+        "look_left",
+        "look_right",
+        "look_2way",
+        "snipe_cover",
+        "squat_lie",
+        "hide_stand",
+        "hide_squat",
+        "open_lie",
+        "bush_stand",
+        "bush_squat",
+        "bush_lie",
+        "terrain_lie"
+      ]
+    }
+  ],
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/vision/settings.set",
+      "size": 2742,
+      "sha256": "af1fbb2c7f70486f264de05a8673bf560a19005487d615e9686f47c942ce9233"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/vision/vision.set",
+      "size": 310,
+      "sha256": "e28c2792ed7630f9a432bdbdc10a342be8de1d4407df5c653279b49f75df2eda"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/vision/spotting.inc",
+      "size": 18355,
+      "sha256": "3e2382791a97c7f748a6ef14c5d345ce004080778c011c87c4dca7df8c07ff66"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/vision/hearing.inc",
+      "size": 13556,
+      "sha256": "20ae649a2fdac3e9527256e2c507c7e5542e8e86f6497e93690666d447a19ae3"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/vision/vision_fields.inc",
+      "size": 8954,
+      "sha256": "3910186347e371914e7cc8d58528ec434585bdd1354f4d1ad99b05c279bb8dd4"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/detect.set",
+      "size": 2178,
+      "sha256": "fa9863e6479393a5f4be20d5769fdd5a6adfbb861943d3289303c2cb8ca0e254"
+    }
+  ]
+}

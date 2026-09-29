@@ -25,6 +25,9 @@ weapon behavior. The upstream loader and SDK are retained as reference material.
 - [Scheduling, sensors and cover sources](research/notes/systems-map-25492057.md):
   entity-owned work queues, scheduler intervals, observation structure and
   geometric/terrain candidate generation.
+- [Perception, memory and entity inputs](research/notes/perception-map-25492057.md):
+  vision predicates, last-known positions, ally information sharing, relationship
+  values, component identities, and cover occupancy.
 - [Active static frontier](research/notes/static-frontier-25492057.md): remaining
   AI/entity questions and the criteria for exhausting productive static work.
 - [Build artifacts](research/artifacts/build-25492057): fingerprints, RTTI,
