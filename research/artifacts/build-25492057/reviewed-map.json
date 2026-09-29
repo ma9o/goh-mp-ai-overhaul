@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "evidence_level": "static_behavior_reviewed",
+  "runtime_verified": false,
+  "warning": "Analyst role names and member associations, not a callable SDK. Use binary hashes from the PE surveys. Object lifetime and execution context remain unverified.",
+  "methods": [
+    {
+      "proposed_role": "actor_quant_dispatch",
+      "class": "eActor",
+      "subobject_offset": "0x0",
+      "vtable_slot": 23,
+      "game_rva": "0x7efd10",
+      "editor_rva": "0x671df0",
+      "evidence": "Contains scene:quant:actor:bup and buq profiler regions; reads actor+0xdc8, tests brain flags bit 25, invokes the wrapper below, and separately calls brain vtable slot 24.",
+      "game_evidence_rvas": ["0x7efe6e", "0x7efe7f", "0x7efea7", "0x7efee6"],
+      "editor_evidence_rvas": ["0x671f59", "0x671f6a", "0x671f93", "0x671fd0"]
+    },
+    {
+      "proposed_role": "brain_clear_request_and_dispatch",
+      "game_rva": "0x9035c0",
+      "editor_rva": "0x789b40",
+      "evidence": "Clears mask 0x02000000 in the dword at this+0x39c, then tail-dispatches primary vtable byte offset 0x118 (slot 35)."
+    },
+    {
+      "proposed_role": "human_brain_reconsider_candidate",
+      "class": "Actor::eHumanBrain",
+      "subobject_offset": "0x0",
+      "vtable_slot": 35,
+      "game_rva": "0x941d00",
+      "editor_rva": "0x7c9290",
+      "evidence": "Human override of the slot reached by the wrapper. Game implementation uses float fields +0x524 and +0x528, associated below with advance_ratio and retreat_ratio.",
+      "open": "Individual branches, state transitions, return meaning, and all side effects still need review. This is not established as the entire AI loop."
+    },
+    {
+      "proposed_role": "brain_update_order_sets_request_flag",
+      "class": "Order::eBrainUpdate",
+      "vtable_slot": 19,
+      "game_rva": "0x8cedc0",
+      "editor_rva": "0x754ee0",
+      "evidence": "When the second integer argument is zero, follows order+8 through actor subobject +0xaf0 and ORs mask 0x02000000 into brain+0x39c. Returns integer 1. Does not itself execute the human decision routine."
+    },
+    {
+      "proposed_role": "human_brain_named_property_binding",
+      "class": "Actor::eHumanBrain",
+      "subobject_offset": "0x10",
+      "vtable_slot": 2,
+      "game_rva": "0x9426e0",
+      "editor_rva": "0x7c9d10",
+      "evidence": "Binds advance_ratio and retreat_ratio names to addresses at +0x514/+0x518 relative to its secondary-subobject this pointer."
+    }
+  ],
+  "fields": [
+    {"owner": "eActor", "offset": "0xdc8", "width": 8, "proposed_role": "brain_pointer", "evidence": "Actor quant dispatch and BrainUpdate order reach the same pointee; the dispatch wrapper invokes its brain vtable."},
+    {"owner": "Actor::eBrain", "offset": "0x39c", "width": 4, "proposed_role": "flags", "known_mask": "0x02000000", "mask_role": "pending_brain_update_request"},
+    {"owner": "Actor::eHumanBrain", "offset": "0x524", "width": 4, "representation": "float", "property": "advance_ratio", "game_property_reference_rva": "0x94299f", "editor_property_reference_rva": "0x7c9fcf"},
+    {"owner": "Actor::eHumanBrain", "offset": "0x528", "width": 4, "representation": "float", "property": "retreat_ratio", "game_property_reference_rva": "0x942a4b", "editor_property_reference_rva": "0x7ca07b"}
+  ]
+}

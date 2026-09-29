@@ -1,0 +1,4841 @@
+{
+  "schema_version": 1,
+  "evidence_level": "static_structure_only",
+  "warning": "Neither RTTI nor a function boundary proves a hook signature or behavior. Unwind records may describe function fragments; leaf functions can lack records.",
+  "binary": {
+    "name": "call_to_arms_ed.exe",
+    "steam_build_id": "25492057",
+    "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+    "file_size": 21650944,
+    "image_base": "0x140000000",
+    "image_size": 22228992,
+    "coff_timestamp": 1790172547
+  },
+  "sections": [
+    {
+      "name": ".text",
+      "rva": 4096,
+      "virtual_size": 15138143,
+      "raw_offset": 1024,
+      "raw_size": 15138304,
+      "characteristics": 1610612768
+    },
+    {
+      "name": ".rdata",
+      "rva": 15142912,
+      "virtual_size": 4696020,
+      "raw_offset": 15139328,
+      "raw_size": 4696064,
+      "characteristics": 1073741888
+    },
+    {
+      "name": ".data",
+      "rva": 19841024,
+      "virtual_size": 1221840,
+      "raw_offset": 19835392,
+      "raw_size": 662016,
+      "characteristics": 3221225536
+    },
+    {
+      "name": ".pdata",
+      "rva": 21065728,
+      "virtual_size": 785112,
+      "raw_offset": 20497408,
+      "raw_size": 785408,
+      "characteristics": 1073741888
+    },
+    {
+      "name": ".gem",
+      "rva": 21852160,
+      "virtual_size": 80,
+      "raw_offset": 21282816,
+      "raw_size": 512,
+      "characteristics": 1073741888
+    },
+    {
+      "name": ".rsrc",
+      "rva": 21856256,
+      "virtual_size": 144824,
+      "raw_offset": 21283328,
+      "raw_size": 144896,
+      "characteristics": 1073741888
+    },
+    {
+      "name": ".reloc",
+      "rva": 22003712,
+      "virtual_size": 222520,
+      "raw_offset": 21428224,
+      "raw_size": 222720,
+      "characteristics": 1107296320
+    }
+  ],
+  "unwind_record_count": 65426,
+  "rtti_type_string_count": 5971,
+  "types": {
+    "eActor": [
+      {
+        "type_descriptor_rva": "0x1324a70",
+        "locators": [
+          {
+            "rva": "0x10c5ac8",
+            "subobject_offset": 0,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AVeActor@@",
+                "contained_bases": 8,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeGameEntity@@",
+                "contained_bases": 6,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeEntity@@",
+                "contained_bases": 4,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeResource@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeReferenced@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 16,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVSoftLinkable@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 24,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeSender@Delivery@Entity@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 408,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeOrdered@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 2800,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf417c8",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x676510",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x676510",
+                      "end_rva": "0x676544",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "rva": "0x96070",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "rva": "0x96080",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "rva": "0x4e90e0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 4,
+                    "rva": "0x4e9100",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x4e9100",
+                      "end_rva": "0x4e9180",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 5,
+                    "rva": "0x678110",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x678110",
+                      "end_rva": "0x67817e",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 6,
+                    "rva": "0x675a10",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x675a10",
+                      "end_rva": "0x675a45",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 7,
+                    "rva": "0x6778b0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x6778b0",
+                      "end_rva": "0x67797c",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 8,
+                    "rva": "0x95ad0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 9,
+                    "rva": "0x676b20",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x676b20",
+                      "end_rva": "0x676b4d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 10,
+                    "rva": "0x676ac0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x676ac0",
+                      "end_rva": "0x676b1a",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 11,
+                    "rva": "0x596f80",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x596f80",
+                      "end_rva": "0x596f9b",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 12,
+                    "rva": "0x575ae0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x575ae0",
+                      "end_rva": "0x575b10",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 13,
+                    "rva": "0x5968c0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x5968c0",
+                      "end_rva": "0x5968e8",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 14,
+                    "rva": "0x5988b0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x5988b0",
+                      "end_rva": "0x5988cf",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 15,
+                    "rva": "0x575c90",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x575c90",
+                      "end_rva": "0x575e96",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 16,
+                    "rva": "0x59a6b0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x59a6b0",
+                      "end_rva": "0x59a6db",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 17,
+                    "rva": "0x6721e0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x6721e0",
+                      "end_rva": "0x67222a",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 18,
+                    "rva": "0x672440",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x672440",
+                      "end_rva": "0x6724c3",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 19,
+                    "rva": "0x672360",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x672360",
+                      "end_rva": "0x672438",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 20,
+                    "rva": "0x594c90",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x594c90",
+                      "end_rva": "0x594d0f",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 21,
+                    "rva": "0x671cd0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x671cd0",
+                      "end_rva": "0x671ceb",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 22,
+                    "rva": "0x597370",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x597370",
+                      "end_rva": "0x597d3b",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 23,
+                    "rva": "0x671df0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x671df0",
+                      "end_rva": "0x672091",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 24,
+                    "rva": "0x6720a0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 25,
+                    "rva": "0x6724d0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 26,
+                    "rva": "0x6773d0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x6773d0",
+                      "end_rva": "0x677526",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 27,
+                    "rva": "0x676bc0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 28,
+                    "rva": "0xaa050",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 29,
+                    "rva": "0x6720b0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x6720b0",
+                      "end_rva": "0x672108",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 30,
+                    "rva": "0x5794f0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 31,
+                    "rva": "0x672150",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x672150",
+                      "end_rva": "0x6721d9",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 32,
+                    "rva": "0x673970",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x673970",
+                      "end_rva": "0x673a67",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 33,
+                    "rva": "0x673b70",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x673b70",
+                      "end_rva": "0x673bbd",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 34,
+                    "rva": "0x596bb0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x596bb0",
+                      "end_rva": "0x596bdc",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 35,
+                    "rva": "0x673bd0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x673bd0",
+                      "end_rva": "0x674a7c",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 36,
+                    "rva": "0x597030",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x597030",
+                      "end_rva": "0x5971ae",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 37,
+                    "rva": "0x578600",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x578600",
+                      "end_rva": "0x57862d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 38,
+                    "rva": "0x5971c0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x5971c0",
+                      "end_rva": "0x597356",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 39,
+                    "rva": "0x676950",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 40,
+                    "rva": "0x673a70",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x673a70",
+                      "end_rva": "0x673b07",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 41,
+                    "rva": "0x674bd0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x674bd0",
+                      "end_rva": "0x674c01",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 42,
+                    "rva": "0x5941d0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x5941d0",
+                      "end_rva": "0x594280",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 43,
+                    "rva": "0x594290",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 44,
+                    "rva": "0x5942c0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 45,
+                    "rva": "0x672680",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x672680",
+                      "end_rva": "0x672851",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 46,
+                    "rva": "0x673440",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 47,
+                    "rva": "0x6717a0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x6717a0",
+                      "end_rva": "0x6717ff",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 48,
+                    "rva": "0x672500",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x672500",
+                      "end_rva": "0x67251b",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 49,
+                    "rva": "0x59ace0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 50,
+                    "rva": "0x59b2f0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x59b2f0",
+                      "end_rva": "0x59b3fe",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 51,
+                    "rva": "0x674a90",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x674a90",
+                      "end_rva": "0x674b33",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 52,
+                    "rva": "0x675a50",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x675a50",
+                      "end_rva": "0x675a7b",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 53,
+                    "rva": "0x675a90",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x675a90",
+                      "end_rva": "0x675af0",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 54,
+                    "rva": "0x679430",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x679430",
+                      "end_rva": "0x67944b",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 55,
+                    "rva": "0x672110",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x672110",
+                      "end_rva": "0x672147",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 56,
+                    "rva": "0x674c10",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x674c10",
+                      "end_rva": "0x674c2d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 57,
+                    "rva": "0x671070",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x671070",
+                      "end_rva": "0x6710b4",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 58,
+                    "rva": "0x6710c0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x6710c0",
+                      "end_rva": "0x6711db",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 59,
+                    "rva": "0x6711f0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x6711f0",
+                      "end_rva": "0x6712a5",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 60,
+                    "rva": "0x6712b0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x6712b0",
+                      "end_rva": "0x6712f2",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 61,
+                    "rva": "0x672530",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x672530",
+                      "end_rva": "0x6725eb",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 62,
+                    "rva": "0x672600",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x672600",
+                      "end_rva": "0x672675",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 63,
+                    "rva": "0x6732e0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x6732e0",
+                      "end_rva": "0x67336a",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 64,
+                    "rva": "0x673470",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x673470",
+                      "end_rva": "0x673815",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 65,
+                    "rva": "0x673840",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x673840",
+                      "end_rva": "0x67389e",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 66,
+                    "rva": "0x6738b0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x6738b0",
+                      "end_rva": "0x673962",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 67,
+                    "rva": "0x673b10",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          },
+          {
+            "rva": "0x10c5c00",
+            "subobject_offset": 16,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AVeActor@@",
+                "contained_bases": 8,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeGameEntity@@",
+                "contained_bases": 6,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeEntity@@",
+                "contained_bases": 4,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeResource@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeReferenced@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 16,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVSoftLinkable@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 24,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeSender@Delivery@Entity@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 408,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeOrdered@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 2800,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf419f0",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x6762a0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "rva": "0x676940",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "rva": "0x678680",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x678680",
+                      "end_rva": "0x67941c",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "rva": "0x4f9f00",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          },
+          {
+            "rva": "0x10c5c28",
+            "subobject_offset": 24,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AVeActor@@",
+                "contained_bases": 8,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeGameEntity@@",
+                "contained_bases": 6,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeEntity@@",
+                "contained_bases": 4,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeResource@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeReferenced@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 16,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVSoftLinkable@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 24,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeSender@Delivery@Entity@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 408,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeOrdered@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 2800,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf41a18",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x6762ac",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          },
+          {
+            "rva": "0x10c5c50",
+            "subobject_offset": 408,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AVeActor@@",
+                "contained_bases": 8,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeGameEntity@@",
+                "contained_bases": 6,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeEntity@@",
+                "contained_bases": 4,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeResource@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeReferenced@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 16,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVSoftLinkable@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 24,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeSender@Delivery@Entity@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 408,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeOrdered@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 2800,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf41a28",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x6762b8",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          },
+          {
+            "rva": "0x10c5c78",
+            "subobject_offset": 2800,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AVeActor@@",
+                "contained_bases": 8,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeGameEntity@@",
+                "contained_bases": 6,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeEntity@@",
+                "contained_bases": 4,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeResource@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeReferenced@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 16,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVSoftLinkable@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 24,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeSender@Delivery@Entity@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 408,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeOrdered@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 2800,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf41a38",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x6762c4",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Actor::eBrain": [
+      {
+        "type_descriptor_rva": "0x13403d0",
+        "locators": [
+          {
+            "rva": "0x10cd108",
+            "subobject_offset": 0,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AVeBrain@Actor@@",
+                "contained_bases": 3,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeResource@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeReferenced@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 16,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf4f848",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x78af90",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78af90",
+                      "end_rva": "0x78afc4",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "rva": "0x96070",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "rva": "0x96080",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "rva": "0x4e90e0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 4,
+                    "rva": "0x4e9100",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x4e9100",
+                      "end_rva": "0x4e9180",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 5,
+                    "rva": "0x7900b0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7900b0",
+                      "end_rva": "0x79011e",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 6,
+                    "rva": "0x78f350",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 7,
+                    "rva": "0x78fc20",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78fc20",
+                      "end_rva": "0x78fcec",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 8,
+                    "rva": "0x95ad0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 9,
+                    "rva": "0x78b0b0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78b0b0",
+                      "end_rva": "0x78b0dd",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 10,
+                    "rva": "0x959d0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x959d0",
+                      "end_rva": "0x95a0e",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 11,
+                    "rva": "0x78b9c0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78b9c0",
+                      "end_rva": "0x78b9f8",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 12,
+                    "rva": "0x7887c0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7887c0",
+                      "end_rva": "0x788848",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 13,
+                    "rva": "0x78ba00",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78ba00",
+                      "end_rva": "0x78bae0",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 14,
+                    "rva": "0x788850",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 15,
+                    "rva": "0x7888a0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7888a0",
+                      "end_rva": "0x78892b",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 16,
+                    "rva": "0x788940",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x788940",
+                      "end_rva": "0x788979",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 17,
+                    "rva": "0x788980",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x788980",
+                      "end_rva": "0x7889ce",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 18,
+                    "rva": "0x78baf0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78baf0",
+                      "end_rva": "0x78bc37",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 19,
+                    "rva": "0x78bc40",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78bc40",
+                      "end_rva": "0x78bc53",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 20,
+                    "rva": "0x95970",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 21,
+                    "rva": "0x95980",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 22,
+                    "rva": "0x789a10",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x789a10",
+                      "end_rva": "0x789b3a",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 23,
+                    "rva": "0x789b60",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x789b60",
+                      "end_rva": "0x789c07",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 24,
+                    "rva": "0x78be20",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78be20",
+                      "end_rva": "0x78c040",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 25,
+                    "rva": "0x789c10",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 26,
+                    "rva": "0x789c60",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x789c60",
+                      "end_rva": "0x789cad",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 27,
+                    "rva": "0x95990",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 28,
+                    "rva": "0x78f910",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78f910",
+                      "end_rva": "0x78fa79",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 29,
+                    "rva": "0x959a0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 30,
+                    "rva": "0x959b0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 31,
+                    "rva": "0x959c0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 32,
+                    "rva": "0x78c050",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78c050",
+                      "end_rva": "0x78c10f",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 33,
+                    "rva": "0x78c120",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78c120",
+                      "end_rva": "0x78c1bc",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 34,
+                    "rva": "0x95a10",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 35,
+                    "rva": "0x78a090",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78a090",
+                      "end_rva": "0x78a5d2",
+                      "offset_into_range": 0
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          },
+          {
+            "rva": "0x10cd130",
+            "subobject_offset": 16,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AVeBrain@Actor@@",
+                "contained_bases": 3,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeResource@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeReferenced@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 16,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf4f970",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x78af7c",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "rva": "0x4f9ee0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "rva": "0x78f360",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78f360",
+                      "end_rva": "0x78f8ff",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "rva": "0x4f9f00",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Actor::eHumanBrain": [
+      {
+        "type_descriptor_rva": "0x1340458",
+        "locators": [
+          {
+            "rva": "0x10ce480",
+            "subobject_offset": 0,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AVeHumanBrain@Actor@@",
+                "contained_bases": 4,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeBrain@Actor@@",
+                "contained_bases": 3,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeResource@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeReferenced@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 16,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf52068",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x7ce420",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7ce420",
+                      "end_rva": "0x7ce532",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "rva": "0x96070",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "rva": "0x96080",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "rva": "0x4e90e0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 4,
+                    "rva": "0x4e9100",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x4e9100",
+                      "end_rva": "0x4e9180",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 5,
+                    "rva": "0x7900b0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7900b0",
+                      "end_rva": "0x79011e",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 6,
+                    "rva": "0x7c9b40",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 7,
+                    "rva": "0x78fc20",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78fc20",
+                      "end_rva": "0x78fcec",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 8,
+                    "rva": "0x95ad0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 9,
+                    "rva": "0x7ce540",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7ce540",
+                      "end_rva": "0x7ce56d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 10,
+                    "rva": "0x95a80",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x95a80",
+                      "end_rva": "0x95acc",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 11,
+                    "rva": "0x78b9c0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78b9c0",
+                      "end_rva": "0x78b9f8",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 12,
+                    "rva": "0x7887c0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7887c0",
+                      "end_rva": "0x788848",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 13,
+                    "rva": "0x78ba00",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78ba00",
+                      "end_rva": "0x78bae0",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 14,
+                    "rva": "0x788850",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 15,
+                    "rva": "0x7888a0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7888a0",
+                      "end_rva": "0x78892b",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 16,
+                    "rva": "0x788940",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x788940",
+                      "end_rva": "0x788979",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 17,
+                    "rva": "0x788980",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x788980",
+                      "end_rva": "0x7889ce",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 18,
+                    "rva": "0x78baf0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78baf0",
+                      "end_rva": "0x78bc37",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 19,
+                    "rva": "0x7c9b50",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7c9b50",
+                      "end_rva": "0x7c9b6b",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 20,
+                    "rva": "0x95970",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 21,
+                    "rva": "0x7cb7f0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7cb7f0",
+                      "end_rva": "0x7cba02",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 22,
+                    "rva": "0x7c90e0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7c90e0",
+                      "end_rva": "0x7c9144",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 23,
+                    "rva": "0x7c9150",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7c9150",
+                      "end_rva": "0x7c927d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 24,
+                    "rva": "0x78be20",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78be20",
+                      "end_rva": "0x78c040",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 25,
+                    "rva": "0x789c10",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 26,
+                    "rva": "0x789c60",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x789c60",
+                      "end_rva": "0x789cad",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 27,
+                    "rva": "0x7c9940",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7c9940",
+                      "end_rva": "0x7c99c7",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 28,
+                    "rva": "0x7c9be0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7c9be0",
+                      "end_rva": "0x7c9cfc",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 29,
+                    "rva": "0x7cc510",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7cc510",
+                      "end_rva": "0x7cc577",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 30,
+                    "rva": "0x7cc5b0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7cc5b0",
+                      "end_rva": "0x7cc5ef",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 31,
+                    "rva": "0x7cc650",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7cc650",
+                      "end_rva": "0x7cc6e8",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 32,
+                    "rva": "0x7ca1e0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7ca1e0",
+                      "end_rva": "0x7ca235",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 33,
+                    "rva": "0x78c120",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x78c120",
+                      "end_rva": "0x78c1bc",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 34,
+                    "rva": "0x95a10",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 35,
+                    "rva": "0x7c9290",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7c9290",
+                      "end_rva": "0x7c9299",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 36,
+                    "rva": "0x7c8ae0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7c8ae0",
+                      "end_rva": "0x7c8e29",
+                      "offset_into_range": 0
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          },
+          {
+            "rva": "0x10ce4a8",
+            "subobject_offset": 16,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AVeHumanBrain@Actor@@",
+                "contained_bases": 4,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeBrain@Actor@@",
+                "contained_bases": 3,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeResource@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeReferenced@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 16,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf52198",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x7ce414",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "rva": "0x4f9ee0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "rva": "0x7c9d10",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7c9d10",
+                      "end_rva": "0x7ca1ce",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "rva": "0x4f9f00",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Order::eBrainUpdate": [
+      {
+        "type_descriptor_rva": "0x1375348",
+        "locators": [
+          {
+            "rva": "0x10cae48",
+            "subobject_offset": 0,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AUeBrainUpdate@Order@@",
+                "contained_bases": 2,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeSingleOrder@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeOrder@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf4c100",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x7559c0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7559c0",
+                      "end_rva": "0x7559fe",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "rva": "0x785b60",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x785b60",
+                      "end_rva": "0x785d72",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "rva": "0x788010",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "rva": "0x787ca0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x787ca0",
+                      "end_rva": "0x787d55",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 4,
+                    "rva": "0x787e20",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x787e20",
+                      "end_rva": "0x787e7d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 5,
+                    "rva": "0x755f30",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 6,
+                    "rva": "0x787ef0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x787ef0",
+                      "end_rva": "0x787f7d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 7,
+                    "rva": "0x785d80",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x785d80",
+                      "end_rva": "0x785d9d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 8,
+                    "rva": "0xa53a0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 9,
+                    "rva": "0xa53c0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 10,
+                    "rva": "0xa5470",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 11,
+                    "rva": "0x787f90",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x787f90",
+                      "end_rva": "0x787fe0",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 12,
+                    "rva": "0x787ff0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 13,
+                    "rva": "0xa54a0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 14,
+                    "rva": "0xa54b0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 15,
+                    "rva": "0x788090",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x788090",
+                      "end_rva": "0x7880b3",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 16,
+                    "rva": "0x756000",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x756000",
+                      "end_rva": "0x756049",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 17,
+                    "rva": "0x7880c0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7880c0",
+                      "end_rva": "0x788144",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 18,
+                    "rva": "0xa54d0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 19,
+                    "rva": "0x754ee0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Order::eMoveToCover": [
+      {
+        "type_descriptor_rva": "0x13752f0",
+        "locators": [
+          {
+            "rva": "0x10cad38",
+            "subobject_offset": 0,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AUeMoveToCover@Order@@",
+                "contained_bases": 2,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeSingleOrder@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeOrder@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf4bf98",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x755b70",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x755b70",
+                      "end_rva": "0x755bae",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "rva": "0x785b60",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x785b60",
+                      "end_rva": "0x785d72",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "rva": "0x788010",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "rva": "0x787ca0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x787ca0",
+                      "end_rva": "0x787d55",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 4,
+                    "rva": "0x787e20",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x787e20",
+                      "end_rva": "0x787e7d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 5,
+                    "rva": "0x755f90",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 6,
+                    "rva": "0x787ef0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x787ef0",
+                      "end_rva": "0x787f7d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 7,
+                    "rva": "0x785d80",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x785d80",
+                      "end_rva": "0x785d9d",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 8,
+                    "rva": "0xa53a0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 9,
+                    "rva": "0x755eb0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x755eb0",
+                      "end_rva": "0x755ef2",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 10,
+                    "rva": "0x7563a0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7563a0",
+                      "end_rva": "0x7563d9",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 11,
+                    "rva": "0x787f90",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x787f90",
+                      "end_rva": "0x787fe0",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 12,
+                    "rva": "0x787ff0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 13,
+                    "rva": "0xa54a0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 14,
+                    "rva": "0xa54b0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 15,
+                    "rva": "0x788090",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x788090",
+                      "end_rva": "0x7880b3",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 16,
+                    "rva": "0x7561e0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7561e0",
+                      "end_rva": "0x756229",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 17,
+                    "rva": "0x7880c0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x7880c0",
+                      "end_rva": "0x788144",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 18,
+                    "rva": "0xa54d0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 19,
+                    "rva": "0x754780",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x754780",
+                      "end_rva": "0x754939",
+                      "offset_into_range": 0
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Helper::eCmd_actor_to_cover": [
+      {
+        "type_descriptor_rva": "0x134c060",
+        "locators": [
+          {
+            "rva": "0x106fac0",
+            "subobject_offset": 0,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AUeCmd_actor_to_cover@Helper@@",
+                "contained_bases": 4,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeActorCommand@Helper@@",
+                "contained_bases": 3,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeGameEntityCommand@Helper@@",
+                "contained_bases": 2,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeCommand@Helper@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xe96f28",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x121320",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x121320",
+                      "end_rva": "0x12144a",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "rva": "0x120750",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "rva": "0x1207a0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x1207a0",
+                      "end_rva": "0x1209e0",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "rva": "0x826d20",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x826d20",
+                      "end_rva": "0x826dc8",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 4,
+                    "rva": "0x120740",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 5,
+                    "rva": "0x123bc0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 6,
+                    "rva": "0x121450",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 7,
+                    "rva": "0x1209e0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x1209e0",
+                      "end_rva": "0x120c28",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 8,
+                    "rva": "0x123bf0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 9,
+                    "rva": "0x120760",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x120760",
+                      "end_rva": "0x120798",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 10,
+                    "rva": "0x83afd0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x83afd0",
+                      "end_rva": "0x83affb",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 11,
+                    "rva": "0x123c20",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 12,
+                    "rva": "0x83b010",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 13,
+                    "rva": "0x123c40",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 14,
+                    "rva": "0x826fc0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x826fc0",
+                      "end_rva": "0x826ff3",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 15,
+                    "rva": "0x827000",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x827000",
+                      "end_rva": "0x827043",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 16,
+                    "rva": "0x120c30",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x120c30",
+                      "end_rva": "0x121318",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 17,
+                    "rva": "0x121460",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Helper::eCmd_actor_state": [
+      {
+        "type_descriptor_rva": "0x1377610",
+        "locators": [
+          {
+            "rva": "0x10d1910",
+            "subobject_offset": 0,
+            "constructor_displacement": 0,
+            "bases": [
+              {
+                "mangled_name": ".?AUeCmd_actor_state@Helper@@",
+                "contained_bases": 4,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeActorCommand@Helper@@",
+                "contained_bases": 3,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeGameEntityCommand@Helper@@",
+                "contained_bases": 2,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeCommand@Helper@@",
+                "contained_bases": 1,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              },
+              {
+                "mangled_name": ".?AVeServer@DDA@@",
+                "contained_bases": 0,
+                "pmd": {
+                  "member_displacement": 0,
+                  "vbtable_pointer_displacement": -1,
+                  "vbtable_entry_displacement": 0
+                },
+                "attributes": "0x40"
+              }
+            ],
+            "vtables": [
+              {
+                "rva": "0xf59790",
+                "methods": [
+                  {
+                    "slot": 0,
+                    "rva": "0x829a80",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x829a80",
+                      "end_rva": "0x829ab4",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "rva": "0x827e50",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "rva": "0x828940",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x828940",
+                      "end_rva": "0x82894f",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "rva": "0x826d20",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x826d20",
+                      "end_rva": "0x826dc8",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 4,
+                    "rva": "0x827e40",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 5,
+                    "rva": "0x123bc0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 6,
+                    "rva": "0x121450",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 7,
+                    "rva": "0x83ae00",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x83ae00",
+                      "end_rva": "0x83af80",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 8,
+                    "rva": "0x123bf0",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 9,
+                    "rva": "0x827e60",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x827e60",
+                      "end_rva": "0x82893c",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 10,
+                    "rva": "0x83afd0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x83afd0",
+                      "end_rva": "0x83affb",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 11,
+                    "rva": "0x123c20",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 12,
+                    "rva": "0x83b010",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 13,
+                    "rva": "0x123c40",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  },
+                  {
+                    "slot": 14,
+                    "rva": "0x826fc0",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x826fc0",
+                      "end_rva": "0x826ff3",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 15,
+                    "rva": "0x827000",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x827000",
+                      "end_rva": "0x827043",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 16,
+                    "rva": "0x829320",
+                    "unwind": {
+                      "status": "unwind_start",
+                      "start_rva": "0x829320",
+                      "end_rva": "0x829a72",
+                      "offset_into_range": 0
+                    }
+                  },
+                  {
+                    "slot": 17,
+                    "rva": "0x121460",
+                    "unwind": {
+                      "status": "no_unwind_range"
+                    }
+                  }
+                ],
+                "scan_limit_reached": false
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "string_anchors": {
+    "actor_to_cover": [
+      "0xe96fb8"
+    ],
+    "actor_state": [
+      "0xf59820"
+    ],
+    "advance_ratio": [
+      "0xf52388"
+    ],
+    "retreat_ratio": [
+      "0xf52398"
+    ],
+    "move_mode": [
+      "0xf4fe90"
+    ],
+    "fire_mode": [
+      "0xf4fe80"
+    ],
+    "BotApi": [],
+    "CaptureFlag": [],
+    "SeekAndDestroy": [],
+    "QueryScene": [],
+    "GetVar": [],
+    "SetVar": [],
+    "scene:quant:actor:bup": [
+      "0xf41cf0"
+    ],
+    "scene:quant:actor:buq": [
+      "0xf41d08"
+    ]
+  },
+  "lua_version_strings": [
+    "Lua 5.2",
+    "Lua 5.2.3  Copyright (C) 1994-2013 Lua.org, PUC-Rio $$LuaAuthors: R. Ierusalimschy, L. "
+  ],
+  "upstream_addresses": [
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 28,
+      "upstream_name": "AI_UPDATE",
+      "rva": "0x02419f0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x241820",
+        "end_rva": "0x241b73",
+        "offset_into_range": 464
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 29,
+      "upstream_name": "AI_UPDATE_2",
+      "rva": "0x07ae500",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x7ae440",
+        "end_rva": "0x7ae58e",
+        "offset_into_range": 192
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 30,
+      "upstream_name": "AI_UPDATE_3",
+      "rva": "0x09452c0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x945020",
+        "end_rva": "0x945491",
+        "offset_into_range": 672
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 33,
+      "upstream_name": "AI_STATE_MACHINE",
+      "rva": "0x00a7830",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xa77a0",
+        "end_rva": "0xa784d",
+        "offset_into_range": 144
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 34,
+      "upstream_name": "AI_FSM",
+      "rva": "0x037b20",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x37b10",
+        "end_rva": "0x37b84",
+        "offset_into_range": 16
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 35,
+      "upstream_name": "AI_FSM_2",
+      "rva": "0x0780650",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x780630",
+        "end_rva": "0x78065d",
+        "offset_into_range": 32
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 36,
+      "upstream_name": "AI_FSM_3",
+      "rva": "0x07f27a0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x7f2570",
+        "end_rva": "0x7f2a14",
+        "offset_into_range": 560
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 39,
+      "upstream_name": "AI_PATHFINDING",
+      "rva": "0x07e81b0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x7e8100",
+        "end_rva": "0x7e8242",
+        "offset_into_range": 176
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 40,
+      "upstream_name": "AI_PATHFINDING_2",
+      "rva": "0x0831b60",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x831b40",
+        "end_rva": "0x831c58",
+        "offset_into_range": 32
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 41,
+      "upstream_name": "AI_PATHFINDING_3",
+      "rva": "0x08a3210",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x8a2fb0",
+        "end_rva": "0x8a432e",
+        "offset_into_range": 608
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 42,
+      "upstream_name": "AI_NAVIGATION",
+      "rva": "0x07dd70",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x7dd60",
+        "end_rva": "0x7de01",
+        "offset_into_range": 16
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 43,
+      "upstream_name": "AI_WAYPOINT_SYSTEM",
+      "rva": "0x0b7fdb0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xb7fda0",
+        "end_rva": "0xb7fdd4",
+        "offset_into_range": 16
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 46,
+      "upstream_name": "AI_MOVEMENT_CONTROLLER",
+      "rva": "0x0195d70",
+      "unwind": {
+        "status": "unwind_start",
+        "start_rva": "0x195d70",
+        "end_rva": "0x195d95",
+        "offset_into_range": 0
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 47,
+      "upstream_name": "AI_MOVEMENT_SYSTEM",
+      "rva": "0x09bd710",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x9bd630",
+        "end_rva": "0x9bd93e",
+        "offset_into_range": 224
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 48,
+      "upstream_name": "AI_DRIVER_SYSTEM",
+      "rva": "0x004f3b0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x4f390",
+        "end_rva": "0x4f43e",
+        "offset_into_range": 32
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 51,
+      "upstream_name": "AI_COMBAT_SYSTEM",
+      "rva": "0x00a0b90",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xa0b80",
+        "end_rva": "0xa0cea",
+        "offset_into_range": 16
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 52,
+      "upstream_name": "AI_ATTACK_BEHAVIOR",
+      "rva": "0x0b5fa50",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xb5fa4c",
+        "end_rva": "0xb5fb22",
+        "offset_into_range": 4
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 53,
+      "upstream_name": "AI_DEFENSE_BEHAVIOR",
+      "rva": "0x00d5c90",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd59b0",
+        "end_rva": "0xd5fa3",
+        "offset_into_range": 736
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 54,
+      "upstream_name": "AI_TARGET_SELECTION",
+      "rva": "0x0afbbc0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xafbb00",
+        "end_rva": "0xafc081",
+        "offset_into_range": 192
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 55,
+      "upstream_name": "AI_COVER_SYSTEM",
+      "rva": "0x0194200",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x1941f0",
+        "end_rva": "0x19432b",
+        "offset_into_range": 16
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 56,
+      "upstream_name": "AI_THREAT_ASSESSMENT",
+      "rva": "0x0383e20",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x383b30",
+        "end_rva": "0x384069",
+        "offset_into_range": 752
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 59,
+      "upstream_name": "AI_SQUAD_BEHAVIOR",
+      "rva": "0x00101d0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x10150",
+        "end_rva": "0x1024b",
+        "offset_into_range": 128
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 60,
+      "upstream_name": "AI_TEAM_COORDINATION",
+      "rva": "0x0216b60",
+      "unwind": {
+        "status": "unwind_start",
+        "start_rva": "0x216b60",
+        "end_rva": "0x216c1b",
+        "offset_into_range": 0
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 61,
+      "upstream_name": "AI_FORMATION_SYSTEM",
+      "rva": "0x00e4ef0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xe4db0",
+        "end_rva": "0xe5866",
+        "offset_into_range": 320
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 62,
+      "upstream_name": "AI_GROUP_BEHAVIOR",
+      "rva": "0x09ccbb0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x9cca40",
+        "end_rva": "0x9ccce0",
+        "offset_into_range": 368
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 65,
+      "upstream_name": "AI_MORALE_BREAK",
+      "rva": "0x0d752e0",
+      "unwind": {
+        "status": "unwind_start",
+        "start_rva": "0xd752e0",
+        "end_rva": "0xd753d2",
+        "offset_into_range": 0
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 66,
+      "upstream_name": "AI_MORALE_ROUT",
+      "rva": "0x0d7d000",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd7ceb0",
+        "end_rva": "0xd7d278",
+        "offset_into_range": 336
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 67,
+      "upstream_name": "AI_RETREAT_LOGIC",
+      "rva": "0x0caa990",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xcaa915",
+        "end_rva": "0xcaa9ce",
+        "offset_into_range": 123
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 70,
+      "upstream_name": "AI_SENSING",
+      "rva": "0x0afbbc0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xafbb00",
+        "end_rva": "0xafc081",
+        "offset_into_range": 192
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 71,
+      "upstream_name": "AI_DETECTION_SYSTEM",
+      "rva": "0x00483c0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x483b0",
+        "end_rva": "0x48412",
+        "offset_into_range": 16
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 72,
+      "upstream_name": "AI_SPOTTING_SYSTEM",
+      "rva": "0x055b810",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x55b740",
+        "end_rva": "0x55b906",
+        "offset_into_range": 208
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 73,
+      "upstream_name": "AI_ENEMY_TRACKING",
+      "rva": "0x00ef1f0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xef180",
+        "end_rva": "0xef1fb",
+        "offset_into_range": 112
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 76,
+      "upstream_name": "AI_VEHICLE_CONTROLLER",
+      "rva": "0x022fba0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x22f480",
+        "end_rva": "0x230276",
+        "offset_into_range": 1824
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 77,
+      "upstream_name": "AI_VEHICLE_DRIVER",
+      "rva": "0x004f3b0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x4f390",
+        "end_rva": "0x4f43e",
+        "offset_into_range": 32
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 80,
+      "upstream_name": "AI_COMMAND_SYSTEM",
+      "rva": "0x01975b0",
+      "unwind": {
+        "status": "unwind_start",
+        "start_rva": "0x1975b0",
+        "end_rva": "0x1975df",
+        "offset_into_range": 0
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 81,
+      "upstream_name": "AI_ORDER_PROCESSING",
+      "rva": "0x0037ea0",
+      "unwind": {
+        "status": "no_unwind_range"
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 82,
+      "upstream_name": "AI_TASK_SYSTEM",
+      "rva": "0x01c9720",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x1c9510",
+        "end_rva": "0x1c9899",
+        "offset_into_range": 528
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 83,
+      "upstream_name": "AI_OBJECTIVE_HANDLER",
+      "rva": "0x01dd220",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x1dc740",
+        "end_rva": "0x1dd53f",
+        "offset_into_range": 2784
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 86,
+      "upstream_name": "AI_PLANNING_SYSTEM",
+      "rva": "0x00ae650",
+      "unwind": {
+        "status": "unwind_start",
+        "start_rva": "0xae650",
+        "end_rva": "0xae69c",
+        "offset_into_range": 0
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 87,
+      "upstream_name": "AI_MANAGER_BRAIN",
+      "rva": "0x0cfac80",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xcfac10",
+        "end_rva": "0xcfb711",
+        "offset_into_range": 112
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 90,
+      "upstream_name": "PARSE_DAMAGE_STATS",
+      "rva": "0x07ddd90",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x7dcf50",
+        "end_rva": "0x7ddeb5",
+        "offset_into_range": 3648
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 91,
+      "upstream_name": "PARSE_DAMAGE_STATS_2",
+      "rva": "0x07dd640",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x7dcf50",
+        "end_rva": "0x7ddeb5",
+        "offset_into_range": 1776
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 92,
+      "upstream_name": "PARSE_ARMOR_PENETRATION",
+      "rva": "0x03ec700",
+      "unwind": {
+        "status": "unwind_start",
+        "start_rva": "0x3ec700",
+        "end_rva": "0x3ec7b5",
+        "offset_into_range": 0
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 93,
+      "upstream_name": "PARSE_ARMOR_VALUES",
+      "rva": "0x03e90c0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x3e8610",
+        "end_rva": "0x3e950e",
+        "offset_into_range": 2736
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 96,
+      "upstream_name": "PARSE_WEAPON_ACCURACY",
+      "rva": "0x0afbbc0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xafbb00",
+        "end_rva": "0xafc081",
+        "offset_into_range": 192
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 97,
+      "upstream_name": "PARSE_WEAPON_RANGE",
+      "rva": "0x07bd2c0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x7bd229",
+        "end_rva": "0x7bd368",
+        "offset_into_range": 151
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 98,
+      "upstream_name": "PARSE_WEAPON_RECOIL",
+      "rva": "0x095c860",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x95c813",
+        "end_rva": "0x95c957",
+        "offset_into_range": 77
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 99,
+      "upstream_name": "PARSE_RELOAD_TIME",
+      "rva": "0x0239b50",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x2398f0",
+        "end_rva": "0x239c60",
+        "offset_into_range": 608
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 100,
+      "upstream_name": "PARSE_FIRE_MODE",
+      "rva": "0x091f3f0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x91f160",
+        "end_rva": "0x91f4ea",
+        "offset_into_range": 656
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 101,
+      "upstream_name": "PARSE_EXPLOSIVE_STATS",
+      "rva": "0x073b7d0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x73a990",
+        "end_rva": "0x73b7e4",
+        "offset_into_range": 3648
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 104,
+      "upstream_name": "PARSE_VEHICLE_SPEED",
+      "rva": "0x098e800",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x98e6a0",
+        "end_rva": "0x98f261",
+        "offset_into_range": 352
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 105,
+      "upstream_name": "PARSE_FUEL_SYSTEM",
+      "rva": "0x047a730",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x47a540",
+        "end_rva": "0x47a756",
+        "offset_into_range": 496
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 106,
+      "upstream_name": "PARSE_PHYSICS_MASS",
+      "rva": "0x07202c0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x720290",
+        "end_rva": "0x7202c2",
+        "offset_into_range": 48
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 107,
+      "upstream_name": "PARSE_TURRET_SYSTEM",
+      "rva": "0x048d80",
+      "unwind": {
+        "status": "no_unwind_range"
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 110,
+      "upstream_name": "PARSE_UNIT_HEALTH",
+      "rva": "0x0a4a5c0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xa4a390",
+        "end_rva": "0xa4a70a",
+        "offset_into_range": 560
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 111,
+      "upstream_name": "PARSE_UNIT_STAMINA",
+      "rva": "0x0358f10",
+      "unwind": {
+        "status": "no_unwind_range"
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 112,
+      "upstream_name": "PARSE_UNIT_VETERANCY",
+      "rva": "0x03b9dd0",
+      "unwind": {
+        "status": "no_unwind_range"
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 113,
+      "upstream_name": "PARSE_SUPPRESSION",
+      "rva": "0x0b5f980",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xb5f974",
+        "end_rva": "0xb5fa4a",
+        "offset_into_range": 12
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 114,
+      "upstream_name": "PARSE_PANIC_SYSTEM",
+      "rva": "0x0971500",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x971430",
+        "end_rva": "0x97156b",
+        "offset_into_range": 208
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 117,
+      "upstream_name": "PARSE_INVENTORY_BASE",
+      "rva": "0x0087cc0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x87cb0",
+        "end_rva": "0x87d51",
+        "offset_into_range": 16
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 118,
+      "upstream_name": "PARSE_AMMO_SYSTEM",
+      "rva": "0x0191020",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x190ec0",
+        "end_rva": "0x191375",
+        "offset_into_range": 352
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 121,
+      "upstream_name": "ANIM_ACTION",
+      "rva": "0x0011a00",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x119e0",
+        "end_rva": "0x11ae6",
+        "offset_into_range": 32
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 122,
+      "upstream_name": "ANIM_SKELETON",
+      "rva": "0x002f350",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x2f2c0",
+        "end_rva": "0x2f36e",
+        "offset_into_range": 144
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 123,
+      "upstream_name": "ANIM_BONE",
+      "rva": "0x00369f0",
+      "unwind": {
+        "status": "no_unwind_range"
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 126,
+      "upstream_name": "SCRIPT_EVENT",
+      "rva": "0x0010c50",
+      "unwind": {
+        "status": "unwind_start",
+        "start_rva": "0x10c50",
+        "end_rva": "0x10d5d",
+        "offset_into_range": 0
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 127,
+      "upstream_name": "SCRIPT_TRIGGER",
+      "rva": "0x0038260",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x381f0",
+        "end_rva": "0x3829e",
+        "offset_into_range": 112
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 128,
+      "upstream_name": "SCRIPT_MESSAGE",
+      "rva": "0x002bd70",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x2bcd0",
+        "end_rva": "0x2bd7b",
+        "offset_into_range": 160
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 129,
+      "upstream_name": "SCRIPT_SIGNAL",
+      "rva": "0x0038120",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x38080",
+        "end_rva": "0x3812e",
+        "offset_into_range": 160
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 132,
+      "upstream_name": "GAME_DIFFICULTY_NORMAL",
+      "rva": "0x000ff90",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xfed0",
+        "end_rva": "0xffda",
+        "offset_into_range": 192
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_hooks.h",
+      "line": 133,
+      "upstream_name": "GAME_DIFFICULTY_MODIFIER",
+      "rva": "0x00279a0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x27980",
+        "end_rva": "0x27a2e",
+        "offset_into_range": 32
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 601,
+      "upstream_name": "LUA_START_HANDLER_OFFSET",
+      "rva": "0x004ba470",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0x4ba430",
+        "end_rva": "0x4ba552",
+        "offset_into_range": 64
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 605,
+      "upstream_name": "LUA_NEWSTATE_OFFSET",
+      "rva": "0x00d6cfa0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6cee4",
+        "end_rva": "0xd6d0b1",
+        "offset_into_range": 188
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 609,
+      "upstream_name": "LUA_STATE_GLOBAL_OFFSET",
+      "rva": "0x01139b48",
+      "unwind": {
+        "status": "no_unwind_range"
+      },
+      "executable_section": false,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 616,
+      "upstream_name": "LUA_SETTOP_OFFSET",
+      "rva": "0x00d6b9b0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b8d0",
+        "end_rva": "0xd6b9ce",
+        "offset_into_range": 224
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 617,
+      "upstream_name": "LUA_TYPE_OFFSET",
+      "rva": "0x00d6f630",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6f5c0",
+        "end_rva": "0xd6f6aa",
+        "offset_into_range": 112
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 620,
+      "upstream_name": "LUA_PUSHSTRING_OFFSET",
+      "rva": "0x00d7ac60",
+      "unwind": {
+        "status": "unwind_start",
+        "start_rva": "0xd7ac60",
+        "end_rva": "0xd7ac7b",
+        "offset_into_range": 0
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 621,
+      "upstream_name": "LUA_PUSHCCLOSURE_OFFSET",
+      "rva": "0x00d6ab20",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 152
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 623,
+      "upstream_name": "LUA_PUSHFSTRING_OFFSET",
+      "rva": "0x00d6d0c0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6d0b4",
+        "end_rva": "0xd6d290",
+        "offset_into_range": 12
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 628,
+      "upstream_name": "LUA_CREATETABLE_OFFSET",
+      "rva": "0x00d69d40",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd69b3c",
+        "end_rva": "0xd69dfa",
+        "offset_into_range": 516
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 631,
+      "upstream_name": "LUA_SETFIELD_OFFSET",
+      "rva": "0x00d6b670",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b494",
+        "end_rva": "0xd6b8cd",
+        "offset_into_range": 476
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 634,
+      "upstream_name": "LUA_PCALL_OFFSET",
+      "rva": "0x00d712a0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd71280",
+        "end_rva": "0xd712dd",
+        "offset_into_range": 32
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 635,
+      "upstream_name": "LUA_ERROR_OFFSET",
+      "rva": "0x00d715c0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd714d4",
+        "end_rva": "0xd716ea",
+        "offset_into_range": 236
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 650,
+      "upstream_name": "LUA_SETGLOBAL_OFFSET",
+      "rva": "0x00d6de90",
+      "unwind": {
+        "status": "no_unwind_range"
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 655,
+      "upstream_name": "LUA_PUSHINTEGER_OFFSET",
+      "rva": "0x00d7a440",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd7a3d8",
+        "end_rva": "0xd7a512",
+        "offset_into_range": 104
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 656,
+      "upstream_name": "LUA_PUSHNUMBER_OFFSET",
+      "rva": "0x00d7a470",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd7a3d8",
+        "end_rva": "0xd7a512",
+        "offset_into_range": 152
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 660,
+      "upstream_name": "LUA_PUSHBOOLEAN_OFFSET",
+      "rva": "0x00d7a4b0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd7a3d8",
+        "end_rva": "0xd7a512",
+        "offset_into_range": 216
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 663,
+      "upstream_name": "LUA_GETTOP_OFFSET",
+      "rva": "0x00d6fd10",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6fcc4",
+        "end_rva": "0xd6fd39",
+        "offset_into_range": 76
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 666,
+      "upstream_name": "LUA_TOBOOLEAN_OFFSET",
+      "rva": "0x00d6f550",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6f504",
+        "end_rva": "0xd6f5bd",
+        "offset_into_range": 76
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 667,
+      "upstream_name": "LUA_TONUMBERX_OFFSET",
+      "rva": "0x00d6f3d0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6f348",
+        "end_rva": "0xd6f40d",
+        "offset_into_range": 136
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 668,
+      "upstream_name": "LUA_TOLSTRING_OFFSET",
+      "rva": "0x00d7a290",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd7a17c",
+        "end_rva": "0xd7a297",
+        "offset_into_range": 276
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_lua_bridge.cpp",
+      "line": 672,
+      "upstream_name": "LUA_RAWGETI_OFFSET",
+      "rva": "0x00d6b0b0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 1576
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 82,
+      "upstream_name": "LUA_OFFSET_gettop",
+      "rva": "0x00d6fd10",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6fcc4",
+        "end_rva": "0xd6fd39",
+        "offset_into_range": 76
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 83,
+      "upstream_name": "LUA_OFFSET_settop",
+      "rva": "0x00d6b9b0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b8d0",
+        "end_rva": "0xd6b9ce",
+        "offset_into_range": 224
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 84,
+      "upstream_name": "LUA_OFFSET_pushvalue",
+      "rva": "0x00d6af40",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 1208
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 85,
+      "upstream_name": "LUA_OFFSET_remove",
+      "rva": "0x00d6b180",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 1784
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 86,
+      "upstream_name": "LUA_OFFSET_type",
+      "rva": "0x00d6bbc0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b9d0",
+        "end_rva": "0xd6c2fa",
+        "offset_into_range": 496
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 87,
+      "upstream_name": "LUA_OFFSET_pushnil",
+      "rva": "0x00d6adf0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 872
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 88,
+      "upstream_name": "LUA_OFFSET_pushnumber",
+      "rva": "0x00d6aea0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 1048
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 89,
+      "upstream_name": "LUA_OFFSET_pushinteger",
+      "rva": "0x00d6ae60",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 984
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 90,
+      "upstream_name": "LUA_OFFSET_pushstring",
+      "rva": "0x00d6aed0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 1096
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 91,
+      "upstream_name": "LUA_OFFSET_pushboolean",
+      "rva": "0x00d6ada0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 792
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 92,
+      "upstream_name": "LUA_OFFSET_pushcclosure",
+      "rva": "0x00d6ab20",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 152
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 93,
+      "upstream_name": "LUA_OFFSET_pushlightuserdata",
+      "rva": "0x00d6ae20",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 920
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 94,
+      "upstream_name": "LUA_OFFSET_tonumber",
+      "rva": "0x00d6bae0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b9d0",
+        "end_rva": "0xd6c2fa",
+        "offset_into_range": 272
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 95,
+      "upstream_name": "LUA_OFFSET_tointeger",
+      "rva": "0x00d6ba50",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b9d0",
+        "end_rva": "0xd6c2fa",
+        "offset_into_range": 128
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 96,
+      "upstream_name": "LUA_OFFSET_tostring",
+      "rva": "0x00d6bb70",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b9d0",
+        "end_rva": "0xd6c2fa",
+        "offset_into_range": 416
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 97,
+      "upstream_name": "LUA_OFFSET_toboolean",
+      "rva": "0x00d6b9f0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b9d0",
+        "end_rva": "0xd6c2fa",
+        "offset_into_range": 32
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 98,
+      "upstream_name": "LUA_OFFSET_touserdata",
+      "rva": "0x00d6bc20",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b9d0",
+        "end_rva": "0xd6c2fa",
+        "offset_into_range": 592
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 99,
+      "upstream_name": "LUA_OFFSET_createtable",
+      "rva": "0x00d69d40",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd69b3c",
+        "end_rva": "0xd69dfa",
+        "offset_into_range": 516
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 100,
+      "upstream_name": "LUA_OFFSET_settable",
+      "rva": "0x00d6b920",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b8d0",
+        "end_rva": "0xd6b9ce",
+        "offset_into_range": 80
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 101,
+      "upstream_name": "LUA_OFFSET_gettable",
+      "rva": "0x00d6a510",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6a4c8",
+        "end_rva": "0xd6a556",
+        "offset_into_range": 72
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 102,
+      "upstream_name": "LUA_OFFSET_setfield",
+      "rva": "0x00d6b670",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6b494",
+        "end_rva": "0xd6b8cd",
+        "offset_into_range": 476
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 103,
+      "upstream_name": "LUA_OFFSET_getfield",
+      "rva": "0x00d6a180",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6a158",
+        "end_rva": "0xd6a1d1",
+        "offset_into_range": 40
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 104,
+      "upstream_name": "LUA_OFFSET_rawgeti",
+      "rva": "0x00d6b0b0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 1576
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 105,
+      "upstream_name": "LUA_OFFSET_rawseti",
+      "rva": "0x00d6b130",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6aa88",
+        "end_rva": "0xd6b394",
+        "offset_into_range": 1704
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 106,
+      "upstream_name": "LUA_OFFSET_pcall",
+      "rva": "0x00d6a900",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd6a558",
+        "end_rva": "0xd6a986",
+        "offset_into_range": 936
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 107,
+      "upstream_name": "LUA_OFFSET_error",
+      "rva": "0x00d69fd0",
+      "unwind": {
+        "status": "inside_unwind_range",
+        "start_rva": "0xd69dfc",
+        "end_rva": "0xd6a0bd",
+        "offset_into_range": 468
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    },
+    {
+      "source": "sdk/coa_plugin_api.cpp",
+      "line": 108,
+      "upstream_name": "LUA_OFFSET_luaL_error",
+      "rva": "0x00d6e020",
+      "unwind": {
+        "status": "no_unwind_range"
+      },
+      "executable_section": true,
+      "function_identity_verified": false
+    }
+  ]
+}

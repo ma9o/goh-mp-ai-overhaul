@@ -1,242 +1,95 @@
-# Call to Arms: Gates of Hell - Script Extender
+# Gates of Hell AI research
 
-A modding framework for Call to Arms: Gates of Hell - Ostfront that allows deep game modifications through function hooking.
+Static analysis of **Call to Arms: Gates of Hell — Ostfront**, starting from
+[NorthHead-Digital's script extender](https://github.com/NorthHead-Digital/coa_script_extender)
+at `d994e1750de1c015ed2557250ab461ece73cd721`.
 
-## Features
+The goal is to recover enough of the native actor/brain/order interfaces to build
+our own tactical decision system: cover, attack/retreat, target selection, and
+weapon behavior. The upstream loader and SDK are retained as reference material.
+**This is a research fork, not an updated or working extender release.**
 
-- **2,100+ discovered functions** mapped from the game binary
-- **Hook any game function** using MinHook
-- **Full SDK** with typed structures for units, vehicles, weapons, etc.
-- **Mod loader** that automatically loads DLLs from a `mods` folder
-- **Example mod** demonstrating damage, accuracy, and AI modifications
+## Start here
 
-## Requirements
+- [Upstream audit](research/notes/upstream-audit.md): what is implemented, missing,
+  or unverified in the inherited SDK.
+- [Current build findings](research/notes/build-25492057.md): evidence from the
+  installed game and GEM editor, with addresses separated by executable.
+- [Build artifacts](research/artifacts/build-25492057): fingerprints, RTTI,
+  vtables, string anchors, and candidate methods.
+- [Original upstream README](README.upstream.md): historical build and loader
+  instructions. Its compatibility and verification claims have not been
+  reproduced here.
 
-### Windows (Native Build)
-- Windows 10/11 (64-bit)
-- Visual Studio 2019 or 2022 with C++ workload
-- CMake 3.20+
+## Reproduce the structural scan
 
-### Ubuntu (Cross-Compile)
-- Ubuntu 20.04+ or similar
-- MinGW-w64 cross-compiler
-- CMake 3.20+
-- Git
+Python 3.10+; no third-party Python dependencies. Point `GOH_BINARIES` at your
+own installed game's `binaries/x64` directory. Use the Steam build ID from your
+local `appmanifest_400750.acf`.
 
-```bash
-sudo apt update
-sudo apt install mingw-w64 cmake build-essential git
+```sh
+export GOH_BINARIES='/path/to/Call to Arms - Gates of Hell/binaries/x64'
+python3 research/scripts/scan_pe.py --binary "$GOH_BINARIES/call_to_arms.exe" --build-id 25492057 --output-dir research/artifacts/build-25492057
+python3 research/scripts/scan_pe.py --binary "$GOH_BINARIES/call_to_arms_ed.exe" --build-id 25492057 --output-dir research/artifacts/build-25492057
+python3 -m unittest discover -s research/tests -v
 ```
 
-## Building
+The scanner reads files without executing them. It checks PE section boundaries,
+x64 unwind ranges, relative MSVC RTTI locators and their self-references, class
+hierarchies, and vtable code pointers. A structural match is a lead, not proof of
+a function's behavior or calling convention.
 
-### Ubuntu (Cross-Compile) - Recommended
+## Ghidra workflow
 
-```bash
-# Install dependencies if not already installed
-sudo apt install mingw-w64 cmake build-essential git
+Test environment: Ghidra 12.1.4, OpenJDK 21, macOS arm64. The wrapper defaults to
+the local Homebrew installations; use `--ghidra-home` and `--java-home`, or
+`GHIDRA_HOME` and `JAVA_HOME`, on another machine.
 
-# Build
-./build.sh
-
-# Or for a clean build
-./build.sh --clean
-
-# Debug build
-./build.sh --debug
+```sh
+python3 research/scripts/run_headless.py --build-id 25492057 import --binary "$GOH_BINARIES/call_to_arms_ed.exe" --binary "$GOH_BINARIES/call_to_arms.exe"
+python3 research/scripts/run_headless.py --build-id 25492057 export --program call_to_arms_ed.exe
+python3 research/scripts/run_headless.py --build-id 25492057 export --program call_to_arms.exe
 ```
 
-Output will be in `build/coa_extender.dll` and `build/mods/example_mod.dll`
+Imports create `local-work/ghidra/GoH_25492057.gpr`. Open this project in Ghidra
+after headless work finishes. Ghidra rejects project paths containing hidden
+directory elements, so the project is deliberately outside `.work/`.
 
-### Windows (Native)
+Exports check the imported executable's SHA-256 against the survey, require
+exact function entries for candidate RVAs, and collect references, calls,
+assembly, and decompilation. They do not rename functions or apply guessed
+types. Additional RVAs can be supplied in a two-column TSV (`RVA`, `label`) via
+`export --candidates path.tsv --output local-work/exports/followup`.
 
-```bash
-# Create build directory
-mkdir build
-cd build
+The checked-in `call_to_arms.followup.tsv` and `call_to_arms_ed.followup.tsv`
+add the flag-clearing wrapper and actor dispatch path identified during the
+first review. For example:
 
-# Generate Visual Studio solution
-cmake .. -G "Visual Studio 17 2022" -A x64
-
-# Build
-cmake --build . --config Release
+```sh
+python3 research/scripts/run_headless.py --build-id 25492057 export --program call_to_arms.exe --candidates research/artifacts/build-25492057/call_to_arms.followup.tsv --output local-work/exports/build-25492057/game-followup
 ```
 
-## Installation
+Game binaries, Ghidra databases, logs, and decompiled bodies stay untracked in
+`local-work/`. Commit tools, small address/evidence manifests, and analyst notes.
+The importer does not overwrite existing programs; use a new build ID after a
+game update and regenerate the survey before comparing it.
 
-1. Copy `coa_extender.dll` to your game folder (next to the game .exe)
-2. Create a `mods` folder in the same location
-3. Copy mod DLLs to the `mods` folder
-4. Inject `coa_extender.dll` into the game process (see Injection below)
+## Evidence rules
 
-## Injection Methods
+1. **Structural:** RTTI, references, vtables, or unwind records identify an
+   address relationship. This does not identify the method's purpose.
+2. **Static behavior reviewed:** disassembly/decompilation and callers support
+   a proposed role. State the evidence and unresolved ABI/lifetime details.
+3. **Runtime verified:** observations on the exact fingerprinted executable
+   confirm the call, object, thread, and lifetime assumptions. Nothing in this
+   initial research pass has this status.
 
-### Method 1: DLL Hijacker
-Rename `coa_extender.dll` to a DLL the game loads (e.g., `version.dll`, `winmm.dll`) and place a proxy that loads both.
+All addresses in new reports are **RVAs** unless explicitly labeled otherwise.
+Add the executable's module base to obtain a virtual address. Game and editor
+addresses must be mapped independently; a matching vtable slot is a comparison
+anchor, not a compatibility guarantee. Do not transfer research candidates into
+the loader's hook table before their signatures and lifecycle are established.
 
-### Method 2: Manual Injection
-Use a DLL injector like:
-- [Extreme Injector](https://github.com/master131/ExtremeInjector)
-- [Process Hacker](https://processhacker.sourceforge.io/)
-
-### Method 3: Loader Executable
-Create a launcher that starts the game suspended, injects the DLL, then resumes.
-
-## Creating Mods
-
-### Minimal Mod Template
-
-```cpp
-#include "coa_sdk.h"
-#include "coa_hooks.h"
-
-extern "C" {
-    __declspec(dllexport) bool ModInit() {
-        // Your initialization code here
-        return true;
-    }
-    
-    __declspec(dllexport) void ModShutdown() {
-        // Cleanup code here
-    }
-}
-```
-
-### Hooking Functions
-
-```cpp
-#include "coa_hooks.h"
-
-// Declare original function pointer
-static COA::Hooks::AIUpdate_t OriginalAIUpdate = nullptr;
-
-// Your hook function
-void MyAIUpdate(COA::AIController* ai, float deltaTime) {
-    // Custom logic before
-    
-    // Call original
-    OriginalAIUpdate(ai, deltaTime);
-    
-    // Custom logic after
-}
-
-bool ModInit() {
-    // Install the hook
-    COA::Hooks::Install(
-        COA::Hooks::AI_UPDATE,
-        (void*)MyAIUpdate,
-        (void**)&OriginalAIUpdate
-    );
-    return true;
-}
-```
-
-### Accessing Game Data
-
-```cpp
-#include "coa_sdk.h"
-
-void MyFunction() {
-    // Get all units
-    COA::ForEachUnit([](COA::Unit* unit, void* data) {
-        if (unit->IsAlive()) {
-            // Do something with the unit
-            unit->health = unit->maxHealth; // Full heal
-        }
-    }, nullptr);
-    
-    // Get player team
-    COA::Team* player = COA::GetPlayerTeam();
-    if (player) {
-        player->manpower += 100;
-    }
-}
-```
-
-## SDK Reference
-
-### Structures
-
-| Structure | Description |
-|-----------|-------------|
-| `COA::Unit` | Infantry soldier |
-| `COA::Vehicle` | Tanks, trucks, etc. |
-| `COA::Weapon` | Guns, cannons |
-| `COA::Squad` | Group of units |
-| `COA::Team` | Player/AI faction |
-| `COA::AIController` | AI state machine |
-| `COA::GameWorld` | Global game state |
-
-### Key Offsets (from `coa_hooks.h`)
-
-| Function | Offset | Description |
-|----------|--------|-------------|
-| `AI_UPDATE` | 0x02419f0 | Main AI tick |
-| `AI_PATHFINDING` | 0x07e81b0 | Pathfinding system |
-| `AI_COMBAT_SYSTEM` | 0x00a0b90 | Combat decisions |
-| `AI_TARGET_SELECTION` | 0x0afbbc0 | Target picking |
-| `PARSE_DAMAGE_STATS` | 0x07ddd90 | Damage calculation |
-| `AI_MORALE_BREAK` | 0x0d752e0 | Morale failure |
-
-See `coa_ai_master_hooks.txt` for the complete list of 1,900+ hook points.
-
-## File Structure
-
-```
-coa_script_extender/
-├── sdk/
-│   ├── coa_sdk.h          # Main SDK header
-│   ├── coa_hooks.h        # Hook definitions
-│   └── coa_loader.cpp     # DLL loader
-├── mods/
-│   └── example_mod.cpp    # Example mod
-├── CMakeLists.txt         # Build configuration
-├── README.md              # This file
-│
-├── coa_ai_master_hooks.txt       # All discovered hooks
-├── coa_ai_master_functions.txt   # All discovered functions
-├── coa_structures.h              # Raw structure offsets
-└── *.txt                         # Analysis outputs
-```
-
-## Discovered Function Categories
-
-| Category | Count | Examples |
-|----------|-------|----------|
-| AI Controllers | 63 | AI_Controller, AI_FSM |
-| Pathfinding | 43 | AI_Pathfinding, AI_Waypoint |
-| Movement | 112 | AI_Movement, AI_Driver |
-| Combat | 56 | AI_Attack, AI_Defense |
-| Vehicle | 40 | AI_Vehicle_Controller |
-| Squad/Team | 93 | AI_Squad, AI_Team |
-| Morale | 20+ | AI_Morale, AI_Retreat |
-| Sensing | 25+ | AI_Detection, AI_Awareness |
-| Scripting | 50+ | Script_Event, Script_Trigger |
-| Damage | 15 | Parse_Damage_Stats |
-| Weapons | 30+ | Parse_Weapon_*, Parse_Fire |
-
-**Total: 2,100+ mapped functions**
-
-## Known Limitations
-
-1. **Structure offsets are approximate** - Field types may not be exactly correct
-2. **Some functions may crash** if called with wrong parameters
-3. **Game updates may break offsets** - Will need re-analysis after patches
-4. **Multiplayer may have anti-cheat** - Use at your own risk
-
-## Contributing
-
-1. Run more Ghidra analysis scripts to discover new functions
-2. Document function parameters and return values
-3. Create more example mods
-4. Improve structure definitions with correct types
-
-## License
-
-MIT License - Use freely for personal modding projects.
-
-## Credits
-
-- Ghidra scripts for function discovery
-- MinHook for function hooking
-- The Call to Arms modding community
+The upstream repository mentions MIT but contains no standalone license file;
+this fork preserves that state and does not assign a new license to upstream
+code or game-derived material.

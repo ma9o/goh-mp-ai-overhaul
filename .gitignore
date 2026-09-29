@@ -35,3 +35,12 @@ Makefile
 # OS
 .DS_Store
 Thumbs.db
+
+# Local analysis databases, decompilations, logs, and machine configuration
+.work/
+local-work/
+research/local.json
+__pycache__/
+*.pyc
+*.gpr
+*.rep/
