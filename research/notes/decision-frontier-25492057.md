@@ -7,8 +7,10 @@ hexadecimal. Everything here is static evidence, not runtime verification.
 
 ## Objective and scope rule
 
-Map the infantry brain's decision logic, its inputs to the depth of meaning,
-and its outputs to the depth of contract.
+Map the prototype-facing infantry-brain fields and interfaces listed in Q1z,
+their inputs to the depth of meaning and outputs to the depth of contract.
+The full native decision-read census is deferred; Q1/Q1a and partial Q1b work
+remain preserved evidence.
 
 An input is closed when these are known from static evidence:
 
@@ -36,7 +38,11 @@ it, a lead that fills none of the blanks above is parked as one line.
 
 - Re-read this file at the start of every item. It takes precedence over the
   old static frontier and over the README's game/editor pairing rule.
-- Take work only from the open lists below, one item per pass, in order.
+- Take work only from Open: next, one item per pass, in order. Open: later
+  remains deferred until a prototype stage explicitly needs an item.
+- Evidence rule: consolidation cites existing notes, manifests and instruction
+  RVAs in the catalog Markdown. Create a new manifest, validation file or
+  verifier only when a pass does new disassembly.
 - A new lead must name the catalog row and blank it fills (see Q1). If it names
   none, add one line under Parked and do not investigate it.
 - Map the game binary. Use the editor only when one of its assertions answers
@@ -49,8 +55,9 @@ it, a lead that fills none of the blanks above is parked as one line.
   narrower items at the top of "Open: next".
 - Keep all existing work. Earlier maps, manifests, TSVs, scripts and the old
   frontier stay as they are, parked or not; reuse them as evidence.
-- When no open items remain, add a completion summary: what is closed, which
-  blanks need runtime verification, and what is parked.
+- Current stop condition: after Q1z and Q2–Q5, add a status summary recording
+  closed items, blanks needing runtime verification and deferred items; commit
+  it and stop. Do not activate Q6–Q11 merely to empty Open: later.
 
 ## Closed
 
@@ -233,68 +240,49 @@ Evidence: [Q1b catalog checkpoint](decision-catalog-25492057.md#q1b-partial-chec
 No game/editor execution or modification. Remaining census deferred by the
 user's revised plan; Q1z will select prototype-facing blanks.
 
+### Q1z. Prototype-facing rows
+
+The active catalog covers only:
+
+- **Reads:** self position, stance, cover group and descriptor, health ratio,
+  morale, A/B estimates, behavior state/deadline, modes and flags, sensor subject
+  fields, relationship and clock.
+- **Writes/calls:** brain+0x52C/+0x530, direct goal0x902FB0, move-mode/speed
+  setters, fire-mode bits, no_advance/no_retreat and advance/retreat ratios;
+  preferred-subject query0x903050 is later-stage work.
+- **Shared-field contracts:** native readers and writers of those same fields,
+  to meaning/freshness/validity or output-contract depth only.
+
+Catalog rows I-STANCE, I-HEALTH-RATIO, I-SELECTED-TARGET(+0x3B8),
+I-PREFERRED-TARGET(+0x3D0), and any other missing rows in the set above fill
+the prototype read/access/meaning/freshness/validity blanks. Reuse existing
+rows and evidence; do not finish C-ROOT/C-IDLE/C-BATTLE/C-SEARCH/C-HELPERS/
+C-OUTPUTS as comprehensive native-read inventories. Q2–Q5 retain their named
+blanks. Q6–Q11 stay in Open: later until a prototype stage needs them.
+
+Done when this bounded row set exists and each blank is either filled, linked
+to Q2–Q5, explicitly deferred with its later prototype stage, or marked runtime
+only with a reason. After Q1z, work Q2–Q5, then append and commit a status
+summary (closed items, runtime blanks, deferred items) and stop.
+
+**Closed (bounded inventory/consolidation):** the additive
+[Q1z catalog overlay](decision-catalog-25492057.md#q1z--effective-prototype-catalog)
+selects the prototype-facing rows, adds stance/effective-health and separate
+selected/preferred/previous target references, and consolidates subject,
+relationship, cover-mutability, clock and setter contracts. It names exact
+Q2–Q5 blanks and later-stage static deferrals. Subject reference ownership is
+separate from actor/entity binding validity. No full native census is claimed.
+
+Existing notes/manifests/instruction RVAs are cited in the catalog. No new
+disassembly, manifest, validation file or verifier was required. Earlier Q1/Q1a
+and partial Q1b artifacts are retained. Q2 is the next active item.
+
 ## Open: next
 
-The Q1 splits below finish the catalog **inventory**. Each fills its named
-coverage row's read-site/access-path and issued-output inventory blank by adding
-individual variable/output rows with all five columns, using existing evidence
-first. Do not treat a coverage row as a substitute for those individual rows.
-Contract details not established by consolidation stay explicit and are triaged
-by Q1g; Q2–Q11 retain their scope and order afterwards.
-
-### Q1b remainder. Complete root census
-
-Catalog row **C-ROOT**, remaining blank: complete per-variable/call census beyond
-the retained partial Q1b policy checkpoint. The user has requested this remainder
-be deferred in the next scope revision.
-
-### Q1c. Idle, following, healing and medic policy catalog
-
-Catalog row **C-IDLE**, blank: per-variable inputs and issued outputs of idle
-Interrupt/Execute and their following/healing/medic/explicit-boarding policy
-helpers in the human-states manifest. Include task/mode/follow flags, timers,
-health queries and patient-selection interfaces. Reuse O-DIRECT-GOAL where
-appropriate; record factory contracts without tracing animation or health
-implementation internals.
-
-### Q1d. Battle, cover and tactical movement policy catalog
-
-Catalog row **C-BATTLE**, blank: per-variable inputs and issued outputs of
-outdoors/cover battle Interrupt/Execute and tactical movement/cover helpers in
-the human-states and tactics manifests. Include descriptor/mask fields and
-cover-scoring query interfaces, keeping current-value reads distinct from
-hypothetical queries and their side effects. Reuse I-BEHAVIOR and O-DIRECT-GOAL.
-
-### Q1e. Find-enemy and Recon interface catalog
-
-Catalog row **C-SEARCH**, blank: per-variable inputs and issued outputs of
-`0x94C410/750/8A0`, look-point policy `0x94DD50`, and their Recon query
-contracts. Include current/pending phases, zone handles, assignment, deadlines
-and results. Reuse I-SEARCHED; distinguish its bit from zone completion and
-do not reopen Recon implementation once its query contract fills the row.
-
-### Q1f. Target, stance and equipment policy helper catalog
-
-Catalog row **C-HELPERS**, blank: remaining per-variable inputs and issued
-outputs of target refresh/picking/ranking/eligibility, attack/stance and
-weapon/pickup policy helpers in the six Q1 manifests. Record hypothetical
-geometry/visibility query inputs, returns and side effects at their boundary.
-Reuse I-TERRAIN/I-LINKED/I-TARGETABLE/I-OPERATABLE, and create the precise
-variable/query rows needed by Q5–Q9. Do not map their producers past the first
-step that fills a meaning or freshness blank.
-
-### Q1g. Output contracts and catalog reconciliation
-
-Catalog row **C-OUTPUTS**, blank: complete issuing-call coverage and five-column
-output contracts for the setters, direct-goal path and factories used by the
-enumerated methods. Consolidate engagement-orders only to effect/result/
-ownership/cancellation/side-effect depth. Link Q2–Q11 to exact variable/output
-rows, reconcile the family inventories and assign row-specific follow-ups for
-remaining static meaning/freshness/validity blanks. Runtime-only blanks must
-say why. Done when the original Q1 completeness condition is checkable; no
-producer, physics or animation internals are reopened merely for completeness.
-
 ### Q2. Everything that can change the behavior state between decisions
+
+Catalog rows: I-BEHAVIOR/I-BEHAVIOR-DEADLINE (writer/phase), I-THIS/I-OWNER
+(concrete brain attachment/dispatch), I-A/I-B (which refresh implementation).
 
 Blank: freshness of `+0x52C` and its deadline `+0x530`; also which slot-35
 implementation single-player infantry run.
@@ -385,6 +373,8 @@ Needed when the prototype takes over target, cover, fire or stance choice.
   `0x902FB0`.
 
 ## Parked
+
+- Full census of native decision reads: deferred; Q1/Q1a work is retained; resume only if a prototype row needs it.
 
 Do not investigate unless an open item names the catalog blank it would fill.
 Parked areas that are already mapped stay in the repository unchanged and

@@ -517,3 +517,192 @@ scope decides which blanks are active. Non-prototype blanks are deferred.
 | O-RESTORE-TARGET; 0x956da5, 0x956db8, 0x956dc5, 0x956dce, 0x956e07, 0x956e34, 0x956e3e | Construct temporary eTarget, set saved look point via0x83E430, destroy after Rotate append. | No tactical result from ctor/dtor. | Caller owns temporary target and auxiliary handles. | Synchronous destruction after use. | Only factory-retained target validity remains O-ROTATE. |
 
 Game-only reproduction uses call_to_arms.decision-catalog-q1b-pass.tsv, focused export into call_to_arms-decision-catalog-q1b, and verify_fine_map.py with the Q1b manifest. Neither executable was launched or modified. No new verifier was added.
+
+## Q1z — effective prototype catalog
+
+This is the active scope overlay; all earlier records are retained. The remainder
+of C-ROOT and the full C-IDLE/C-BATTLE/C-SEARCH/C-HELPERS/C-OUTPUTS census are
+deferred. Older cells naming Q1g do not authorize reopening them. Only the
+prototype rows below and native accesses to those same fields are active.
+Q2–Q5 follow; Q6–Q11 require a later prototype stage. This pass consolidates
+existing evidence: no new disassembly, manifest, validation file or verifier.
+
+Existing rows retained in the bounded set: I-THIS/I-OWNER/I-CHASSIS/I-COVER/
+I-SENSOR; I-ACTOR-XY/I-ACTOR-Z; I-COVER-GROUP/I-COVER-DESCRIPTOR/I-COVER-RESIDENT;
+I-S/I-RECOVERY-DEADLINE/I-A/I-B; I-BEHAVIOR/I-BEHAVIOR-DEADLINE;
+I-CONTROL/I-MOVE-MODE/I-NO-ADVANCE/I-NO-RETREAT/I-ADVANCE-RATIO/I-RETREAT-RATIO;
+the individual brain flags; subject/relationship rows below; and
+I-NOW/I-DURATION-FACTOR/I-SPATIAL-SCALE. Native RNG rows remain evidence,
+not an obligation to reproduce every native random consumer.
+
+### Validity and freshness at the observation boundary
+
+**P-call:** borrow the brain and its owner/components during the reached native
+brain callback; copy scalar observations and reacquire components next time.
+The native contract requires a live actor with an attached brain and appropriate
+concrete components. Constructor-installed shared defaults alone do not establish
+that precondition. Q2 resolves concrete brain selection/attachment. A future
+runtime adapter must establish its callback/type/ABI and live-pointer admission
+conditions; these static RVAs are not a tested callable SDK.
+
+**P-subject:** the brain retains target references at subject+8, but a retained
+subject can lose its actor/entity binding. Detach0x87A4D0 unregisters listeners
+and nulls+0x18/+0x20; removal0x8754F0 marks/removes/releases. Position-only
+observations legitimately have no actor. Copy remembered position separately;
+check removal and null binding before dereferencing an actor/entity. Do not
+retain a vector iterator across a native reset/mutation call. This is not a
+thread-safety guarantee for an external worker.
+
+Evidence: [perception](perception-map-25492057.md#information-sharing-and-lifecycle),
+[ownership](ownership-map-25492057.md#what-reset-actually-clears) and
+[ownership manifest](../artifacts/build-25492057/ownership-map.json), evidence
+game_87a4d0/game_8754f0/game_946d40. Target refresh stores/retains at
+0x9435C1/0x9435CD and0x94365F/0x94366B; release at zero uses subject+0xC
+disposal flags. P-call/P-subject describe borrow/precondition limits, not
+ownership transferred to a prototype.
+
+F-sensor/F-score above remain authoritative. Sensor commit precedes reached
+brain dispatch; A/B refresh only on a due, unskipped job. A retained observation
+is not necessarily freshly visible. Actual callback cadence, mission resources,
+values and branch outcomes require runtime observation; the conditional static
+ordering is already established.
+
+### Missing rows and refinements
+
+| Row | Read site | Access path / type / width | Meaning / domain | Freshness / native writers | Validity |
+| --- | --- | --- | --- | --- | --- |
+| I-STANCE (same storage as I-MOVEMENT-TYPE) | 0x943076;0x956702 | brain→owner(+0x38)→chassis(+0xDE0)→+0x2C, int32 | Actual type:0 stand,1 crawl,2 squat,3 swim. Vision's crawl predicate groups1/3 and is a different domain. | Current actual type; native movement requests/Fsm application can change it during mission. Actual need not equal requested. | P-call; concrete chassis. |
+| I-REQUESTED-STANCE | MovementChange0x8F7330 comparisons | chassis+0x30, int32 | Requested type; factory argument-1 means unchanged, not a stored stance. | SetMovementType0x848710 writes request and may reject; actual+0x2C changes through transition. Complete output enums deferred Q8. | P-call. |
+| I-HEALTH-RATIO | chain0x951873/0x95187A; calls0x95188B/0x951896; divide0x9518A3 | owner→aggregate(+0x578)→vitality(+0x18); float32 result0x925010(v)/0x924F90(v) | Effective current/max health, not raw+0x12C/+0x128 division. Full health ordinarily≈1; no universal[0,1] clamp. Max accessor substitutes nonzero fallback below epsilon. | On demand via0x9291C0: actor parameters, Health ability, veterancy. Damage/heal setter0x925190 and update0x9263B0 change health; modifiers affect effective values. Stop at accessor contract. | Explicit owner/vitality null checks0x95186E/0x95187E; no ratio when absent. P-call. |
+| I-SELECTED-TARGET | 0x941D25;0x95270F | brain+0x3B8, subject*,8 bytes | Native selected subject; selection does not establish a fireable target. | Refresh0x943560 called0x941D19 before selection; picker result store0x94365F, retain0x94366B. Reset0x9424F0/0x944070 can clear it. | Brain-held reference, nullable; P-subject. |
+| I-PREFERRED-TARGET | 0x9437D4/0x943AA2 | brain+0x3D0, subject*,8 bytes | Preferred/explicit subject; distinct from selected+0x3B8. | Query0x903050 at0x943578; store0x9435C1/retain0x9435CD. Sources and query-return ownership deferred Q6. Reset does not necessarily clear it. | Brain-held reference; P-subject. |
+| I-PREVIOUS-TARGET | 0x941D1E/0x941D25 | brain+0x3B0, subject*,8 bytes | Temporary previous-selected snapshot for change detection. | Reference assignment0x943607; caller releases and clears0x941D7F. | Retained across refresh/change handling only; P-subject. |
+| I-MOVE-SPEED | 0x9031C0; fine/squad consumers | brain+0x398 bit14 | Named move_speed:fast0/slow1. | Setter store0x9031E3; actor_state call0x99FC03. Synchronous command/property update, mission-mutable. | Inline P-call. |
+| I-FIRE-MODE | outdoors interrupt0x949AA0; attack-control policy | brain+0x398 bits10..11 | Named open0/hold1/return2; pattern3 unnamed. | Property/actor_state writes, store0x99F9C0. Full consumer/side-effect closure deferred Q8 at fire-control stage. | Inline P-call; preserve other bits. |
+| I-SUBJECT-SET | 0x903BAC/0x903BB3; picker0x9437A0; score0x877170 | sensor+0x268+category·0x18, four begin/end/capacity triples of8-byte subject pointers | Category2 apparent allies;1 unknown/enemy;3 nonactor entities;0 remaining known actors. Collection interface, not reopened full native census. | Insert/recategorize0x8753C0, commit0x878AE0, reset/removal; F-sensor. | Borrow iteration, no iterator across mutations; P-subject. |
+| I-SUBJECT-ENTITY | insertion0x8753C0; target/sensor consumers | subject+0x20, entity*,8 bytes | Observed entity or null; actor+0x18 is a separate optional view. | Insertion/load binds; detach0x87A4D0 nulls both. | P-subject; subject retain does not preserve binding. |
+| I-SUBJECT-POSITION (refined) | 0x876F83;0x903D6B; target policy | subject+0x28..+0x30,float32 XYZ | Last-known position in engine spatial units; can exist without live entity. | Visible commit stores0x878F27/0x878F30, time0x878F39; signal/shared-info/load also write. | P-subject; copy value and heed known-position flag. |
+| I-SUBJECT-UNCERTAINTY | eviction0x878320; Recon/search consumers | subject+0x34,float32 | Position uncertainty/radius; not a probability. | Visible refresh writes0 at0x878F43; signal/share/load may change. | P-subject. |
+| I-SUBJECT-ATTACK-HUMAN | 0x877029 | subject+0x48,float32 | Human channel of AttackRate coefficient, not measured DPS. | Refresh0x878740, pair store0x8787CE or lookup0x8787D9; ally/self uses cached component-wise maxima. | Cached P-subject. |
+| I-SUBJECT-ATTACK-TANK | 0x877036 | subject+0x4C,float32 | Tank AttackRate channel; maximum may come from a different weapon. | Same pair refresh. | P-subject. |
+| I-SUBJECT-RANGE | 0x876F92 | subject+0x50,float32 | Remembered equipment range/scaled fallback; denominator of distance weight. No universal positive bound proved. | Refresh store0x8787AF. | P-subject. |
+| I-SUBJECT-HP-HUMAN | score0x877170; refresh0x8787E5 | subject+0x54,float32 | Human HitPoints comparison channel; human special case uses Health parameter. | Refresh0x878740→0x8136E0; mission-mutable cache. | P-subject. |
+| I-SUBJECT-HP-TANK | same pair consumers/refresh | subject+0x58,float32 | Tank HitPoints channel; human special case0. | Same refresh. | P-subject. |
+| I-SUBJECT-WEAPON | eligibility0x912AE0; term0x91A0B0 | subject+0x40, remembered equipment*,8 bytes | Optional observed weapon identity. | Equipment refresh, signals/shared-info/load. Item lifetime details deferred Q9 at target stage. | Nullable; do not retain/dereference raw item beyond native lifetime. |
+| I-SUBJECT-EQUIPMENT-TIME | eligibility0x912AE0(age<3) | subject+0x5C,uint32 | Equipment/combat observation counter. | Equipment refresh, selected signals, load. | Inline P-subject; simulation time. |
+| I-SUBJECT-VISIBILITY-TIME | 0x878FE8 | subject+0x60,uint32 | Last visibility transition counter. | Transition store0x878E50. | Inline P-subject. |
+| I-SUBJECT-OBSERVATION-TIME | 0x912AEF;0x876F60 | subject+0x64,uint32 | Last position/observation update; score weighting decays over60 units. | Visible store0x878F39; signals/share/load can replace. | Inline P-subject. |
+| I-SUBJECT-SIGNAL-TIME | 0x87921B | subject+0x68,uint32 | Threat/injury transient-flag timestamp. | Signal0x877D20; commit expires injury>0.4,attacking>1,threatening>2 while threatening set. | Inline P-subject. |
+| I-SUBJECT-ELIGIBILITY-DEADLINE | 0x912B2C/0x912B36 | subject+0x70,uint32 | Eligibility/recognition gate: nonzero and<=now. Exact name/writers deferred Q9 at target stage. | Cached recognition/signal deadline; unresolved static producer contract, not runtime-only. | Inline P-subject. |
+| I-SUBJECT-ACCUMULATOR | 0x87909E/0x8790D0 | subject+0x38,float32 | Threshold100 accumulator, contribution0x891C00, decay3·elapsed. Semantic name deferred Q9 perception stage. | Commit updates/decays. No prototype rule inferred from unknown meaning. | Inline P-subject. |
+| I-SUBJECT-RANK | ranker0x9136E0 | subject+0x11,uint8(overlaps observation bits8..15) | Descending rank byte for current candidate list, not global priority. | Mutated by each ranking query, including hypothetical ranking on the same subjects. | P-subject; ranking is not read-only. |
+| I-RELATIONSHIP | classifier0x878560→0xA467B0;0xA46830 | observer actor/player,target actor,ignoreMask→int | 0 neutral,1 enemy,2 ally. Same actual player→2; mask equality→2 unless ignored; missing/non-Operatable/invalid actual IDs→0; otherwise actual-player matrix. | Current Player/MaskPlayer/Operatable/diplomacy. Player0x7EEEC0, mask setter, pair0xA46B00/load0xA46ED0 can change in mission. Subject cache refreshes later. | Live borrowed actors, scalar result. Matrix values for a mission require runtime observation. |
+| I-APPARENT-ALLY | classifier0x878560;score0x877170 | subject+0x14 bit2 | Relationship with stored ignoreMask returns2; category2 input. | Relation refresh/events/load. | P-subject. |
+| I-ACTUAL-ALLY | classifier0x878560;inform0x879C50 | subject+0x14 bit3 | Relationship with ignoreMask=true returns2. | Refresh; ownership event can clear before reclassification. | P-subject. |
+| I-IGNORE-MASK | classifier0x878560 | subject+0x14 bit5 | Learned unmasking selector. | Recognition/shared information/load. | P-subject. |
+| I-KNOWN-COMBAT | eligibility0x912AE0;cover score0x8A0ED0 | subject+0x14 bit10 | Known combat evidence; unlike7/8/9, not expired by their timer branch. | Threat/injury0x877D20, shared information/load. | P-subject. |
+| I-SUBJECT-KNOWN-POSITION | 0x912BEC | subject+0x10 bit28 | Remembered position exists, independent of visible29. | Visible/position-only/signal/load writers. | P-subject. |
+| I-SUBJECT-REMOVED | removal0x8754F0 | subject+0x10 bit16 | Marked for removal; retained object can outlive binding. | Detach/removal before final reference disposal. | Retained storage is not eligibility. |
+| I-SUBJECT-CATEGORY | 0x8753C0;0x878AE0 | subject+0x10 bits21..22 | Category0..3, not rank byte. | Insert/recategorize/load. | P-subject; can change with vector membership. |
+| I-SUBJECT-RECON-REGISTERED | commit/search;handle0x95274A | subject+0x10 bit25 | Auxiliary Recon registration exists. | Register/unregister/detach/load. | P-subject; handle ends on unregister. |
+| I-SUBJECT-RECON-WAITING | 0x87918A;search0x94C8A0 | subject+0x10 bit26 | Hidden/stale waiting contribution; age path requires searched27 clear. Not zone completion byte. | Commit/search/load. | P-subject; full search interface deferred. |
+| I-TARGET-RADIUS | 0x913736;Advance0x8D1C50/0x8D2120 | brain+0x14C,float32 | Target-ranking/engagement radius; binding/writers Q5. | Current field; Q5. | P-call. |
+| I-ADVANCE-TIMESTAMP | 0x8D25FF/0x8D2682 | brain+0x18,uint32 | Age compared with5 units by Advance; name/writers Q5. Do not infer last-shot label. | Q5. | P-call. |
+
+Retain individual earlier rows for subject known0/enemy1/unusable4/
+threatening7/attacking8/injury9, inform-pending(+0x10 bit17), visible29,
+searched27, suppress+0x6C and Recon handle+0x78. Targetable, Operatable and
+linked dependencies retain J3/J8/J4; linked-type/environment gaps remain Q9.
+Previous/propagated visibility bits30/31 are not additional live-visible values.
+Full serializer/flag census is deferred.
+
+These rows cite [human-states](human-states-map-25492057.md#healing-and-readable-actor-state)
+and [manifest](../artifacts/build-25492057/human-states-map.json)
+(game_951860/game_924f90/game_925010/game_942fc0);
+[movement](movement-map-25492057.md#movement-orders-and-foot-chassis) and
+[manifest](../artifacts/build-25492057/movement-map.json);
+[fine target bookkeeping](fine-map-25492057.md#target-selection-and-engine-bookkeeping)
+and [manifest](../artifacts/build-25492057/fine-map.json)(target_refresh_game);
+[combat](combat-map-25492057.md#target-eligibility-and-ordering) and
+[manifest](../artifacts/build-25492057/combat-map.json);
+[perception](perception-map-25492057.md#persistent-subject-fields-and-memory) and
+[manifest](../artifacts/build-25492057/perception-map.json)(observation_commit);
+[tactics](tactics-map-25492057.md#the-score-pair-is-human--tank) and
+[manifest](../artifacts/build-25492057/tactics-map.json);
+[flow manifest](../artifacts/build-25492057/flow-map.json)(subject_weight);
+and the ownership evidence above. Instruction RVAs are from retained exports.
+
+### Existing-row closures for this prototype stage
+
+| Rows | Native contract / closure | Remaining blank |
+| --- | --- | --- |
+| I-ACTOR-XY/I-ACTOR-Z | Current owner+0x74/+0x7C, read0x903E07/0x9564F4/0x956501. Motion/teleport can change during mission; copy at callback time. | Actual values and adapter admission: runtime. No motion internals. |
+| I-COVER-GROUP/I-COVER-DESCRIPTOR/I-COVER-RESIDENT | Descriptor0x88 bytes at cover+0x20, group at descriptor+4. Enter0x898AD0 copies/claims and emits event0x21; exit0x898C50 releases/resets and emits0x21. MoveToCover success installs; cancellation releases temporary claim. Mission-mutable on native completion or synchronous invalidation. Group1 vertical,2 horizontal,3 bush,4 terrain; kind table0..12 in perception. | Descriptor+8/+0xC, direction masks and embedded-handle validity Q7 at cover stage. Until then observe an opaque copied descriptor, do not manufacture/edit one. |
+| I-S/I-RECOVERY-DEADLINE | Morale-associated float0..100; clamp/delta/recovery ordering known. | Events/deltas/recipient/phase Q4. |
+| I-A/I-B | Cached Human/Tank relative pressure/capacity; F-score conditional refresh. | Concrete implementation Q2; actual resource coefficients/values runtime. |
+| I-BEHAVIOR/I-BEHAVIOR-DEADLINE | Functional0..4; absolute counter deadline,0 off. | Competing writers/load/factory Q2. |
+| I-NO-ADVANCE/I-NO-RETREAT/I-ADVANCE-RATIO/I-RETREAT-RATIO | Constructor/property0x9426E0/actor_state0x99F940; stores0x99FE3B/0x99FE24/0x99FE72/0x99FEAB. Synchronous when property/command applies, reread at selection, mission-mutable. Ratios default2; Boolean nonzero; no full accepted numeric bounds established. | Scheduling relative to a particular external hook is runtime integration; Q2/Q5 cover competing native writers where required. |
+| I-NOW/I-DURATION-FACTOR/I-SPATIAL-SCALE | Simulation counter/conversion, ordinary1000 ticks/unit; pause/step/reset in clock map. Distances use L(file-initial20), not raw meters. | Actual resets/scales/mods/cadence runtime; no clock-internal expansion. |
+| I-SENSOR-INFORM-DISPATCH/O-SENSOR-INFORM | Q1a gap closed by perception: slot14=0x873CB0 changes mode+0x1A, reschedules skip tasks0x875580, argument0 sets now+convert3 at+0x358; expiry restores mode. Stores0x873CC1/0x873CF6/0x873D07. | Public mode name is deferred native-only metadata; prototype uses established freshness rule. |
+
+Cover mutability cites perception manifest cover_enter at0x898ADD/0x898AF1/
+0x898B0D and cover_exit at0x898C59/0x898C6A/0x898C88. These are the first
+producers sufficient to close "can it change", not an invitation to map cover
+execution internals.
+
+Brain flags for native coexistence remain individual rows. Earlier rows cover
+0..5/20(dispatch inhibitors),6(task),9(follow),13..18(aggregates),21(interrupt),
+22(label match). The following additions are all one bit of uint32 brain+0x39C,
+P-call, current mission-mutable flags. Functional labels remain inferred.
+
+| Row | Bit | Native site / meaning | Freshness blank |
+| --- | --- | --- | --- |
+| I-BFLAG-7 | 7 | Squad goal marker; direct-goal clears at0x902FB0, squad goal policy in squad map | Q3 lifecycle; Q5 writer/name reconciliation |
+| I-BFLAG-8 | 8 | New task marker, direct-goal0x902FB0 sets | Q3/Q5 |
+| I-BFLAG-10 | 10 | Following activation marker,0x902B20 sets | Q3/Q5 |
+| I-BFLAG-11 | 11 | Leave-idle/task policy,0x902F00 setter and direct-goal clear | Q3/Q5 |
+| I-BFLAG-25 | 25 | Reconsider request,0x903FBB and direct-goal/follow paths set | Q3/Q5 |
+| I-BFLAG-27 | 27 | Named follow_commander, actor_state0x99FED7 | Property/command mutable; Q5 existing writer consolidation |
+| I-BFLAG-28 | 28 | Squad/user task gate; ownership/squad reset clears | Q3/Q5 |
+| I-BFLAG-29 | 29 | Task-related marker, direct-goal clears | Q3/Q5 |
+
+Read sites and native writes are retained in Q1/Q1a/Q1b, the
+[squad map](squad-map-25492057.md), [squad manifest](../artifacts/build-25492057/squad-map.json)
+and fine command evidence. Q5 must finish exact writers/names for this bounded
+set. Other bits are preserved on writes; their complete census stays parked.
+
+### Prototype outputs
+
+O-BEHAVIOR/O-BEHAVIOR-DEADLINE remain Q2; O-DIRECT-GOAL remains Q3.
+
+| Row / boundary | Effect | Result codes | Ownership | Cancellation | Side effects / remaining blank |
+| --- | --- | --- | --- | --- | --- |
+| O-MOVE-MODE,0x903140;stores0x903170/0x903184 | Set bits12..13; zone2 copies ownerXY to+0x128; changed mode deactivates root child via0x912520 | No status; compares unmasked argument; named0..2,3 unnamed | Scalar/XY copies, attached state remains owned | Immediate mode change; events4/3 select parent. Direct-goal consequences Q3 | Use setter to reproduce transition effects |
+| O-MOVE-SPEED,0x9031C0;store0x9031E3 | Replace bit14 with masked value if extracted old differs from unmasked input | No status;fast0/slow1 | Inline scalar | Later write supersedes | Leaf has no calls; other bits preserved |
+| O-FIRE-MODE,store0x99F9C0 | Actor_state replaces bits10..11 unless command=-1 unchanged | No setter status;open0/hold1/return2 | Inline scalar | Running fire-order cancellation not proved by store | Mask/store branch has no call; complete write-equivalence/consumer semantics deferred Q8 |
+| O-NO-ADVANCE,0x99FE3B | Store+0x520 byte; normal nonzero-state selection gate | No status | Inline byte | Later property/command write supersedes | Does not block state0 timed branch or cancel existing movement |
+| O-NO-RETREAT,0x99FE24 | Store+0x521 byte; normal retreat override gate | No status | Inline byte | Later write supersedes | No immediate order cancellation/state0 recovery change |
+| O-ADVANCE-RATIO,0x99FE72 | Store float+0x524 for next threshold selection | No status/range check in store | Inline float | Later write supersedes | No immediate state/order transition |
+| O-RETREAT-RATIO,0x99FEAB | Store float+0x528 for retreat/state0 recovery comparison | No status/range check in store | Inline float | Later write supersedes | No immediate state/order transition |
+| O-PREFERRED-SUBJECT-QUERY,0x903050/call0x943578 | Obtain preferred subject for+0x3D0; later-stage interface | Pointer/null; source precedence Q6 | Refresh retains at0x9435CD; return ownership Q6 | Old reference released on change; reset need not clear slot | Raw target-slot assignment does not reproduce target-change/Recon bookkeeping |
+
+Bindings/stores cite fine manifest human_property_binding/command_human_fields/
+move_mode_setter, Q1 direct-goal evidence and Q1a deactivation evidence.
+The four policy byte/float stores are synchronous, with no asynchronous
+completion to poll.
+
+### Remaining work under the shortened plan
+
+| Status | Rows / blank |
+| --- | --- |
+| Q1z closed (bounded inventory/consolidation) | Stance, effective health, distinct target references, subject snapshot, relationship and cover mutability now explicit. No claim of complete native census. |
+| Q2 active | I-THIS/I-OWNER factory/attachment, slot23/35; I-A/I-B implementation; I-BEHAVIOR/I-BEHAVIOR-DEADLINE writers/load/phase. |
+| Q3 active | Direct-goal movement/arrival/failure/cancellation in idle/battle/cover, task flags and move-mode interaction. |
+| Q4 active | I-S/I-RECOVERY-DEADLINE/O-MORALE-DELTA events/deltas/recipients/phase. |
+| Q5 active | I-TARGET-RADIUS(+0x14C), I-ADVANCE-TIMESTAMP(+0x18), I-EQUIPMENT-DEADLINE(+0x3E0), listed brain flags: binding or explicit writers. |
+| Deferred target/perception stage | Q6 preferred sources/return ownership; Q9 linked type/environment factor, remembered equipment lifetime, eligibility-deadline/unnamed accumulator semantics. These remain static blanks. |
+| Deferred cover/fire/stance stage | Q7 descriptor roles/masks/handle validity; Q8 full fire-mode effects/movement-output enums. |
+| Deferred richer outputs | Q10 sequences/events/secondary orders; Q11 native go-to commands. |
+| Runtime integration | Callback/type/ABI/live-pointer admission; actual mission/mod values, cadence, executed branches and accepted movement outcomes. Not substitutes for active Q2–Q5 static work. |
+
+No physical, animation, pathfinder or unrelated producer computation was reopened.
