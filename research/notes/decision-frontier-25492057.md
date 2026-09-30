@@ -191,15 +191,6 @@ crosswalk to the preserved maps. The new catalog checker reuses
 `verify_fine_map.py` and additionally checks row links and the bounded access
 census. No game/editor execution; no editor analysis was needed.
 
-## Open: next
-
-The Q1 splits below finish the catalog **inventory**. Each fills its named
-coverage row's read-site/access-path and issued-output inventory blank by adding
-individual variable/output rows with all five columns, using existing evidence
-first. Do not treat a coverage row as a substitute for those individual rows.
-Contract details not established by consolidation stay explicit and are triaged
-by Q1g; Q2–Q11 retain their scope and order afterwards.
-
 ### Q1a. Base reconsideration and state dispatch catalog
 
 Catalog row **C-BASE**, blank: per-variable inputs and issued outputs of
@@ -208,6 +199,28 @@ Catalog row **C-BASE**, blank: per-variable inputs and issued outputs of
 Enumerate individual `+0x39C` bits, queue/state pointers, aggregate inputs,
 external query results and emitted events. Reuse I-THREATENING/I-ATTACKING.
 Stop at query/output contracts; do not expand state bodies assigned below.
+
+**Closed (inventory):** C-BASE is enumerated in the additive Q1a catalog
+section: 75 input records, 17 output records, three immutable float operands.
+All 252 memory-spelled/CALL sites in the eleven entries are linked or explicitly
+excluded as ABI/local/derived storage. Threat age, mandie publication gates,
+event8 payload(0,1), and alert-gate clearing are checked; semantic/phase/lifetime
+blanks remain explicit for Q1g/Q5/Q10, not declared runtime-only.
+
+Evidence: [catalog extension](decision-catalog-25492057.md#q1a-extension--c-base-enumerated),
+[manifest](../artifacts/build-25492057/decision-catalog-q1a-map.json),
+[validation](../artifacts/build-25492057/decision-catalog-q1a-validation.json).
+Game-only focused export; 15 entries, 703 instruction locations, three floats
+and event payload bytes validated. No game/editor execution or modification.
+
+## Open: next
+
+The Q1 splits below finish the catalog **inventory**. Each fills its named
+coverage row's read-site/access-path and issued-output inventory blank by adding
+individual variable/output rows with all five columns, using existing evidence
+first. Do not treat a coverage row as a substitute for those individual rows.
+Contract details not established by consolidation stay explicit and are triaged
+by Q1g; Q2–Q11 retain their scope and order afterwards.
 
 ### Q1b. Root, location and hazard policy catalog
 
@@ -386,6 +399,8 @@ remain usable evidence.
   binding, target sorter partition/heap branches, ground/volume target
   resolution, Recon completed-status consumers, Advance byte `+0x39`.
 - Other slot-35 blocks at `0x941F49`–`0x942253`, outside Q1's selection span: expand only if a catalog row identifies the read/output blank they fill.
+
+- Q1a temporary ancestor-vector allocation/growth and allocator metadata: no remaining catalog meaning/freshness/output-contract blank; implementation parked.
 
 ## Triage record
 

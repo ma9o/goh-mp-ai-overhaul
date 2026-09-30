@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "a260207864e87eaf61c356e9ee9eb2b8875372f0fe6487735adacdeae62f9cd0",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "54e17d203fd6e13191172447cbd4465ca39055c70373b9f665b9abb5c8a3bd57",
+      "exact_candidates": 15,
+      "exported_functions": 15,
+      "exported_basic_blocks": 141,
+      "checked_enums": 0,
+      "checked_constants": 3,
+      "checked_method_entries": 15,
+      "checked_instruction_locations": 703,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 0,
+      "checked_byte_sequences": 1
+    }
+  },
+  "status": "passed",
+  "decision_pass": {
+    "coverage_row": "C-BASE",
+    "input_rows": 75,
+    "output_rows": 17,
+    "scope_functions": 11,
+    "classified_sites": 252,
+    "excluded_sites": 90,
+    "source_hashes": 7,
+    "claim_limit": "All memory-spelled operands/CALLs in the eleven C-BASE entries are linked or explicitly excluded as ABI/local/derived storage. Semantic contract truth and transitive family bodies are not proved by this census."
+  }
+}

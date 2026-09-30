@@ -1,0 +1,4458 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "export_suffix": "-decision-catalog-q1a",
+  "status": "inventory-enumerated; semantic blanks explicit",
+  "runtime_verified": false,
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267"
+    }
+  },
+  "methods": [
+    {
+      "id": "0x912520",
+      "entry_rvas": {
+        "game": "0x912520"
+      }
+    },
+    {
+      "id": "0x9123d0",
+      "entry_rvas": {
+        "game": "0x9123d0"
+      }
+    },
+    {
+      "id": "0x9121c0",
+      "entry_rvas": {
+        "game": "0x9121c0"
+      }
+    },
+    {
+      "id": "0x9124d0",
+      "entry_rvas": {
+        "game": "0x9124d0"
+      }
+    },
+    {
+      "id": "0x912200",
+      "entry_rvas": {
+        "game": "0x912200"
+      }
+    },
+    {
+      "id": "0x912370",
+      "entry_rvas": {
+        "game": "0x912370"
+      }
+    },
+    {
+      "id": "0x908710",
+      "entry_rvas": {
+        "game": "0x908710"
+      }
+    },
+    {
+      "id": "0x912170",
+      "entry_rvas": {
+        "game": "0x912170"
+      }
+    },
+    {
+      "id": "0x903b10",
+      "entry_rvas": {
+        "game": "0x903b10"
+      }
+    },
+    {
+      "id": "0x912260",
+      "entry_rvas": {
+        "game": "0x912260"
+      }
+    },
+    {
+      "id": "0xa5ca90",
+      "entry_rvas": {
+        "game": "0xa5ca90"
+      }
+    },
+    {
+      "id": "0xa3bb20",
+      "entry_rvas": {
+        "game": "0xa3bb20"
+      }
+    },
+    {
+      "id": "0x878280",
+      "entry_rvas": {
+        "game": "0x878280"
+      }
+    },
+    {
+      "id": "0x912110",
+      "entry_rvas": {
+        "game": "0x912110"
+      }
+    },
+    {
+      "id": "0x912460",
+      "entry_rvas": {
+        "game": "0x912460"
+      }
+    }
+  ],
+  "fields": [
+    {
+      "id": "I-OWNER",
+      "sites": [
+        "0x903b24",
+        "0x903b6a",
+        "0x903b9b",
+        "0x903cc2",
+        "0x903daa",
+        "0x903e03"
+      ],
+      "contract": {
+        "read_site": "0x903b24 0x903b6a 0x903b9b 0x903cc2 0x903daa 0x903e03",
+        "access_path": "brain +0x38, actor*, 8 bytes",
+        "meaning": "Owner actor; extends Q1 read-site census.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SENSOR",
+      "sites": [
+        "0x903b6e",
+        "0x903ba5",
+        "0x903cc6",
+        "0x903db0"
+      ],
+      "contract": {
+        "read_site": "0x903b6e 0x903ba5 0x903cc6 0x903db0",
+        "access_path": "brain -> owner(+0x38) -> +0xDD0, sensor*, 8 bytes",
+        "meaning": "Owner sensor used for age, category vectors and slot14.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-OWNER-PLAYER",
+      "sites": [
+        "0x903b44"
+      ],
+      "contract": {
+        "read_site": "0x903b44",
+        "access_path": "brain -> owner(+0x38) -> +0xDA8, uint8",
+        "meaning": "Player/owner index. Corpse notification requires index <18, same candidate owner; shift uses index modulo32.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-CONTROL",
+      "sites": [
+        "0x903b54"
+      ],
+      "contract": {
+        "read_site": "0x903b54",
+        "access_path": "brain +0x398 bits0..1, 2-bit value in dword",
+        "meaning": "Property control: AI=0, user=1; here exactly0 permits corpse-discovery signal. Patterns2/3 fail this gate.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-CORPSE-SCENE-GATE",
+      "sites": [
+        "0x903b35",
+        "0x903b4b"
+      ],
+      "contract": {
+        "read_site": "0x903b35 0x903b4b",
+        "access_path": "0xA3BB20() -> AL Boolean; global scene getter 0xA6CF30 -> nonnull and byte+0x908 nonzero",
+        "meaning": "Scene predicate; no arguments consumed by its body despite caller RCX. OPEN Q1g: native meaning of scene+0x908.",
+        "freshness": "Current synchronous query; no writes in predicate. Scene state may change; phase/name OPEN Q1g.",
+        "validity": "Value return; no pointer retained. Query requires valid scene object if getter returns nonnull."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-THREAT-AGE",
+      "sites": [
+        "0x903b75"
+      ],
+      "contract": {
+        "read_site": "0x903b75",
+        "access_path": "owner sensor -> 0x878280(), float32 XMM0 result",
+        "meaning": "Age of sensor+0x2F0 threat timestamp in converted simulation units; timestamp0 yields read-only ~1e38 sentinel. Flag17 is age<10.",
+        "freshness": "On-demand now minus recorded timestamp; first binding writer 0x877D20 records a threat-producing signal (ownership map). Can change during mission.",
+        "validity": "Value return; no escaping pointer. Sensor lifetime is I-SENSOR."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-CAT1-BEGIN",
+      "sites": [
+        "0x903bac"
+      ],
+      "contract": {
+        "read_site": "0x903bac",
+        "access_path": "brain -> owner -> sensor +0x280, subject** iterator, 8 bytes",
+        "meaning": "Category vector 1 begin; 8-byte subject pointers. Read each bound once before this loop.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-CAT1-END",
+      "sites": [
+        "0x903bb3"
+      ],
+      "contract": {
+        "read_site": "0x903bb3",
+        "access_path": "brain -> owner -> sensor +0x288, subject** iterator, 8 bytes",
+        "meaning": "Category vector 1 end; 8-byte subject pointers. Read each bound once before this loop.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-CAT0-BEGIN",
+      "sites": [
+        "0x903ccd"
+      ],
+      "contract": {
+        "read_site": "0x903ccd",
+        "access_path": "brain -> owner -> sensor +0x268, subject** iterator, 8 bytes",
+        "meaning": "Category vector 0 begin; 8-byte subject pointers. Read each bound once before this loop.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-CAT0-END",
+      "sites": [
+        "0x903cd4"
+      ],
+      "contract": {
+        "read_site": "0x903cd4",
+        "access_path": "brain -> owner -> sensor +0x270, subject** iterator, 8 bytes",
+        "meaning": "Category vector 0 end; 8-byte subject pointers. Read each bound once before this loop.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-CAT1-SUBJECT",
+      "sites": [
+        "0x903bc3"
+      ],
+      "contract": {
+        "read_site": "0x903bc3",
+        "access_path": "I-CAT1-BEGIN..END -> [iterator], subject*, 8 bytes",
+        "meaning": "Current category1 subject; used only until next iteration.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-CAT0-SUBJECT",
+      "sites": [
+        "0x903ce4"
+      ],
+      "contract": {
+        "read_site": "0x903ce4",
+        "access_path": "I-CAT0-BEGIN..END -> [iterator], subject*, 8 bytes",
+        "meaning": "Current category0 subject; used until next iteration or first publication.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SUBJECT-SUPPRESS",
+      "sites": [
+        "0x903bc6"
+      ],
+      "contract": {
+        "read_site": "0x903bc6",
+        "access_path": "category1 subject +0x6C, byte",
+        "meaning": "Nonzero suppresses aggregate contribution. Threat event clears it; native name and other writers OPEN Q1g.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-ATTACKING",
+      "sites": [
+        "0x903bd3"
+      ],
+      "contract": {
+        "read_site": "0x903bd3",
+        "access_path": "category1 subject +0x14 bit8, dword bit",
+        "meaning": "J2 attacking; OR into brain flag14 when suppression byte is zero.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "V-subject; see category iterator lifetime dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-THREATENING",
+      "sites": [
+        "0x903bf3"
+      ],
+      "contract": {
+        "read_site": "0x903bf3",
+        "access_path": "category1 subject +0x14 bit7, dword bit",
+        "meaning": "J2 threatening; OR into brain flag16 when suppression byte is zero.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "V-subject; see category iterator lifetime dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-INJURY-OBSERVATION",
+      "sites": [
+        "0x903c11"
+      ],
+      "contract": {
+        "read_site": "0x903c11",
+        "access_path": "category1 subject +0x14 bit9, dword bit",
+        "meaning": "Injury observation; OR into brain flag15. 0x877D20 injury signal sets it; commit expires strictly above0.4 while threatening set (ownership map).",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-ENEMY",
+      "sites": [
+        "0x903c31"
+      ],
+      "contract": {
+        "read_site": "0x903c31",
+        "access_path": "category1 subject +0x14 bit1, dword bit",
+        "meaning": "Enemy AND targetable relationship result (J3); contributes flag13 only with unusable bit4 clear.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-UNUSABLE",
+      "sites": [
+        "0x903c31"
+      ],
+      "contract": {
+        "read_site": "0x903c31",
+        "access_path": "category1 subject +0x14 bit4, dword bit",
+        "meaning": "Unusable relationship marker (includes non-Operatable); flag13 requires clear.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-ALERT-MODE",
+      "sites": [
+        "0x903c5c"
+      ],
+      "contract": {
+        "read_site": "0x903c5c",
+        "access_path": "brain +0x1E0, int32",
+        "meaning": "Alert-like mode; this branch changes0 to1. Native enum name/domain beyond this branch OPEN Q1g.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-ALERT-INJURY-GATE",
+      "sites": [
+        "0x903c6b"
+      ],
+      "contract": {
+        "read_site": "0x903c6b",
+        "access_path": "brain +0x1E4 bit0, byte bit",
+        "meaning": "Enables mode0->1 when aggregate injury flag15 set; native binding OPEN Q1g.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-ALERT-ENEMY-GATE",
+      "sites": [
+        "0x903c7a"
+      ],
+      "contract": {
+        "read_site": "0x903c7a",
+        "access_path": "brain +0x1E4 bit1, byte bit",
+        "meaning": "Enables mode0->1 when aggregate eligible-enemy flag13 set; native binding OPEN Q1g.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SUBJECT-ACTOR",
+      "sites": [
+        "0x903ce7",
+        "0x903d86"
+      ],
+      "contract": {
+        "read_site": "0x903ce7 0x903d86",
+        "access_path": "category0 subject +0x18, actor*, 8 bytes",
+        "meaning": "Observed actor; explicitly checked nonnull before the corpse gate.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-INFORM-PENDING",
+      "sites": [
+        "0x903cf0"
+      ],
+      "contract": {
+        "read_site": "0x903cf0",
+        "access_path": "category0 subject +0x10 bit17, dword bit",
+        "meaning": "Pending information eligible for informing (perception map); corpse branch requires set.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-VISIBLE",
+      "sites": [
+        "0x903cf0"
+      ],
+      "contract": {
+        "read_site": "0x903cf0",
+        "access_path": "category0 subject +0x10 bit29, dword bit",
+        "meaning": "Current visibility; corpse branch requires set, independently of pending information.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SUBJECT-KNOWN",
+      "sites": [
+        "0x903d02"
+      ],
+      "contract": {
+        "read_site": "0x903d02",
+        "access_path": "category0 subject +0x14 bit0, byte bit",
+        "meaning": "Known classification (ownership map), required before corpse notification.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SUBJECT-PLAYER",
+      "sites": [
+        "0x903d0e"
+      ],
+      "contract": {
+        "read_site": "0x903d0e",
+        "access_path": "subject -> actor(+0x18) -> +0xDA8, uint8",
+        "meaning": "Observed actor player index; must equal owner player.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SUBJECT-COMPONENTS",
+      "sites": [
+        "0x903d17"
+      ],
+      "contract": {
+        "read_site": "0x903d17",
+        "access_path": "subject -> actor -> +0x578, component container*, 8 bytes",
+        "meaning": "Actor component aggregate; supplies vitality. Container itself not null-checked here.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SUBJECT-VITALITY",
+      "sites": [
+        "0x903d1e"
+      ],
+      "contract": {
+        "read_site": "0x903d1e",
+        "access_path": "subject -> actor -> components(+0x578) -> +0x18, vitality*, 8 bytes",
+        "meaning": "Vitality component; null explicitly skips corpse branch.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SUBJECT-DEAD",
+      "sites": [
+        "0x903d27"
+      ],
+      "contract": {
+        "read_site": "0x903d27",
+        "access_path": "subject -> actor -> components -> vitality -> +0x174 bit0, byte bit",
+        "meaning": "Final death/destruction, entity-health binding; not merely incapacitated.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SUBJECT-BRAIN",
+      "sites": [
+        "0x903d31"
+      ],
+      "contract": {
+        "read_site": "0x903d31",
+        "access_path": "subject -> actor -> +0xDC8, brain*, 8 bytes",
+        "meaning": "Observed actor brain holding per-player corpse notification mask. No local null check.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-CORPSE-NOTIFIED",
+      "sites": [
+        "0x903d43"
+      ],
+      "contract": {
+        "read_site": "0x903d43",
+        "access_path": "subject -> actor -> brain -> +0x11C, uint32 bitset",
+        "meaning": "Already notified players for corpse discovery; current owner-index bit blocks a repeat.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SUBJECT-POSITION",
+      "sites": [
+        "0x903d6b"
+      ],
+      "contract": {
+        "read_site": "0x903d6b",
+        "access_path": "category0 subject +0x28, float32 XYZ, 12 bytes passed by address",
+        "meaning": "Remembered subject position supplied to mandie publisher; uses observation position, not a new actor-position sample.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SPATIAL-SCALE",
+      "sites": [
+        "0x903d6f"
+      ],
+      "contract": {
+        "read_site": "0x903d6f",
+        "access_path": "global RVA0x14776C0, float32",
+        "meaning": "Writable engine distance scale L; file-initial20. Signal radius is20*L.",
+        "freshness": "Current read. Definition parsing/init establishes units (signals-damage); full later writer/phase reconciliation Q1g.",
+        "validity": "V-global."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SQUAD",
+      "sites": [
+        "0x903dc3"
+      ],
+      "contract": {
+        "read_site": "0x903dc3",
+        "access_path": "brain +0x100, squad*, 8 bytes",
+        "meaning": "Optional squad. If null, flag18 derives from own flag17.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SQUAD-FLAG1",
+      "sites": [
+        "0x903dcf"
+      ],
+      "contract": {
+        "read_site": "0x903dcf",
+        "access_path": "brain -> squad(+0x100) -> +0x10 bit1, dword bit",
+        "meaning": "Squad flag copied to brain flag18 instead of own recent-threat flag17. Native meaning/writers OPEN Q1g.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-ACTOR-XY",
+      "sites": [
+        "0x903e07"
+      ],
+      "contract": {
+        "read_site": "0x903e07",
+        "access_path": "brain -> owner -> +0x74, float32 XY, 8 bytes",
+        "meaning": "Current actor position copied to brain+0x128 when goal/follow flag6 or9 set.",
+        "freshness": "Current position at reached reconsideration; motion can change it. Only the query/copy boundary is scoped.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-ROOT-STATE",
+      "sites": [
+        "0x903c8f",
+        "0x903e29"
+      ],
+      "contract": {
+        "read_site": "0x903c8f 0x903e29",
+        "access_path": "brain +0xE0, state*, 8 bytes",
+        "meaning": "Optional root; checked before event8 traversal and before interrupt block.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-ACTIVE-STATE",
+      "sites": [
+        "0x903ee0",
+        "0x903fe5"
+      ],
+      "contract": {
+        "read_site": "0x903ee0 0x903fe5",
+        "access_path": "brain +0xE8, state*, 8 bytes",
+        "meaning": "Current active state, ancestor walk source and Execute(slot3) recipient. Execute path assumes nonnull after root gate.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-STATE-PARENT",
+      "sites": [
+        "0x903f3d",
+        "0x912564",
+        "0x91259d",
+        "0x9125a8"
+      ],
+      "contract": {
+        "read_site": "0x903f3d 0x912564 0x91259d 0x9125a8",
+        "access_path": "state +0x20, parent state*, 8 bytes",
+        "meaning": "Ancestor chain; null terminates base walk. Deactivation requires nonnull parent.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Attached state storage; deactivation preserves attachment. OPEN Q1g: consolidate callback lifetime."
+      },
+      "evidence_ids": [
+        "0x903b10",
+        "0x912520"
+      ]
+    },
+    {
+      "id": "I-STATE-CHILD",
+      "sites": [
+        "0x912186",
+        "0x91219c",
+        "0x912470",
+        "0x9124a1",
+        "0x9124d8",
+        "0x9124f9",
+        "0x912551"
+      ],
+      "contract": {
+        "read_site": "0x912186 0x91219c 0x912470 0x9124a1 0x9124d8 0x9124f9 0x912551",
+        "access_path": "state +0x28, active child*, 8 bytes",
+        "meaning": "Event propagation/deactivation follows active child; reenter assumes one exists.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Attached state storage; deactivation preserves attachment. OPEN Q1g: consolidate callback lifetime."
+      },
+      "evidence_ids": [
+        "0x912170",
+        "0x912460",
+        "0x9124d0",
+        "0x912520"
+      ]
+    },
+    {
+      "id": "I-STATE-BRAIN",
+      "sites": [
+        "0x9121c0",
+        "0x9121cb",
+        "0x9121e2",
+        "0x91220d",
+        "0x91221b",
+        "0x912231",
+        "0x912266",
+        "0x912277",
+        "0x91228d",
+        "0x91239b",
+        "0x9123df",
+        "0x912483",
+        "0x9124d4",
+        "0x91258b",
+        "0x912599"
+      ],
+      "contract": {
+        "read_site": "0x9121c0 0x9121cb 0x9121e2 0x91220d 0x91221b 0x912231 0x912266 0x912277 0x91228d 0x91239b 0x9123df 0x912483 0x9124d4 0x91258b 0x912599",
+        "access_path": "state +0x30, brain*, 8 bytes",
+        "meaning": "Set from parent at attach; borrowed backpointer.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Attached state storage; deactivation preserves attachment. OPEN Q1g: consolidate callback lifetime."
+      },
+      "evidence_ids": [
+        "0x9121c0",
+        "0x912200",
+        "0x912260",
+        "0x912370",
+        "0x9123d0",
+        "0x912460",
+        "0x9124d0",
+        "0x912520"
+      ]
+    },
+    {
+      "id": "I-CURRENT-ORDER",
+      "sites": [
+        "0x903fd2",
+        "0x91221f",
+        "0x91227b",
+        "0x91239f"
+      ],
+      "contract": {
+        "read_site": "0x903fd2 0x91221f 0x91227b 0x91239f",
+        "access_path": "brain +0xF0, order*, 8 bytes",
+        "meaning": "Current order blocks Execute; interrupt clears through slot13. Create-sequence replaces it if distinct.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10",
+        "0x912200",
+        "0x912260",
+        "0x912370"
+      ]
+    },
+    {
+      "id": "I-IMMEDIATE-QUEUE-COUNT",
+      "sites": [
+        "0x903fdc"
+      ],
+      "contract": {
+        "read_site": "0x903fdc",
+        "access_path": "brain +0x88, int32",
+        "meaning": "Positive immediate queue count blocks state Execute. Native queue binding/writers OPEN Q1g.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-ACTION-LABEL",
+      "sites": [
+        "0x9121cf"
+      ],
+      "contract": {
+        "read_site": "0x9121cf",
+        "access_path": "state -> brain -> +0x108, label pointer, 8 bytes",
+        "meaning": "Current action label; compared by pointer identity, not bytes. Matching candidate latches flag22.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Only compared, not dereferenced. Label storage identity/producer OPEN Q1g."
+      },
+      "evidence_ids": [
+        "0x9121c0"
+      ]
+    },
+    {
+      "id": "I-OWNED-CHILD-END",
+      "sites": [
+        "0x912410",
+        "0x912424"
+      ],
+      "contract": {
+        "read_site": "0x912410 0x912424",
+        "access_path": "state +0x10, child** end, 8 bytes",
+        "meaning": "Owned-child vector next slot; increment8 on append.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Attached state storage; deactivation preserves attachment. OPEN Q1g: consolidate callback lifetime."
+      },
+      "evidence_ids": [
+        "0x9123d0"
+      ]
+    },
+    {
+      "id": "I-OWNED-CHILD-CAPACITY",
+      "sites": [
+        "0x912418"
+      ],
+      "contract": {
+        "read_site": "0x912418",
+        "access_path": "state +0x18, child** capacity end, 8 bytes",
+        "meaning": "Compared with end before append/grow; address formed through state+8 vector.",
+        "freshness": "Read in reached base reconsideration after the sensor commit (F-sensor); mission-mutable. Full writer/phase reconciliation: Q1g.",
+        "validity": "Attached state storage; deactivation preserves attachment. OPEN Q1g: consolidate callback lifetime."
+      },
+      "evidence_ids": [
+        "0x9123d0"
+      ]
+    },
+    {
+      "id": "I-BFLAG-0",
+      "sites": [
+        "0x903dbd"
+      ],
+      "contract": {
+        "read_site": "0x903dbd",
+        "access_path": "brain +0x39C bit0, one bit of uint32",
+        "meaning": "dispatch inhibitor0; native name OPEN Q5",
+        "freshness": "Current policy flag. Complete named writer set OPEN Q5.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-1",
+      "sites": [
+        "0x903dbd"
+      ],
+      "contract": {
+        "read_site": "0x903dbd",
+        "access_path": "brain +0x39C bit1, one bit of uint32",
+        "meaning": "dispatch inhibitor1; native name OPEN Q5",
+        "freshness": "Current policy flag. Complete named writer set OPEN Q5.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-2",
+      "sites": [
+        "0x903dbd"
+      ],
+      "contract": {
+        "read_site": "0x903dbd",
+        "access_path": "brain +0x39C bit2, one bit of uint32",
+        "meaning": "dispatch inhibitor2; native name OPEN Q5",
+        "freshness": "Current policy flag. Complete named writer set OPEN Q5.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-3",
+      "sites": [
+        "0x903dbd"
+      ],
+      "contract": {
+        "read_site": "0x903dbd",
+        "access_path": "brain +0x39C bit3, one bit of uint32",
+        "meaning": "dispatch inhibitor3; native name OPEN Q5",
+        "freshness": "Current policy flag. Complete named writer set OPEN Q5.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-4",
+      "sites": [
+        "0x903dbd"
+      ],
+      "contract": {
+        "read_site": "0x903dbd",
+        "access_path": "brain +0x39C bit4, one bit of uint32",
+        "meaning": "dispatch inhibitor4; native name OPEN Q5",
+        "freshness": "Current policy flag. Complete named writer set OPEN Q5.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-5",
+      "sites": [
+        "0x903dbd"
+      ],
+      "contract": {
+        "read_site": "0x903dbd",
+        "access_path": "brain +0x39C bit5, one bit of uint32",
+        "meaning": "dispatch inhibitor5; native name OPEN Q5",
+        "freshness": "Current policy flag. Complete named writer set OPEN Q5.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-6",
+      "sites": [
+        "0x903dbd"
+      ],
+      "contract": {
+        "read_site": "0x903dbd",
+        "access_path": "brain +0x39C bit6, one bit of uint32",
+        "meaning": "direct goal/task active; O-DIRECT-GOAL sets, Q3 completes contract",
+        "freshness": "Current policy flag. Complete named writer set OPEN Q5.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-9",
+      "sites": [
+        "0x903dbd"
+      ],
+      "contract": {
+        "read_site": "0x903dbd",
+        "access_path": "brain +0x39C bit9, one bit of uint32",
+        "meaning": "following active; squad following producer 0x902B20 sets, fine-map predicate consumes",
+        "freshness": "Current policy flag. Complete named writer set OPEN Q5.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-13",
+      "sites": [
+        "0x903bcd",
+        "0x903c56",
+        "0x903d94"
+      ],
+      "contract": {
+        "read_site": "0x903bcd 0x903c56 0x903d94",
+        "access_path": "brain +0x39C bit13, one bit of uint32",
+        "meaning": "eligible enemy aggregate",
+        "freshness": "Rebuilt synchronously in 0x903B10 before interrupt traversal; mission-mutable.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-14",
+      "sites": [
+        "0x903bcd",
+        "0x903c56",
+        "0x903d94"
+      ],
+      "contract": {
+        "read_site": "0x903bcd 0x903c56 0x903d94",
+        "access_path": "brain +0x39C bit14, one bit of uint32",
+        "meaning": "attacking aggregate",
+        "freshness": "Rebuilt synchronously in 0x903B10 before interrupt traversal; mission-mutable.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-15",
+      "sites": [
+        "0x903bcd",
+        "0x903c56",
+        "0x903d94"
+      ],
+      "contract": {
+        "read_site": "0x903bcd 0x903c56 0x903d94",
+        "access_path": "brain +0x39C bit15, one bit of uint32",
+        "meaning": "injury aggregate",
+        "freshness": "Rebuilt synchronously in 0x903B10 before interrupt traversal; mission-mutable.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-16",
+      "sites": [
+        "0x903bcd",
+        "0x903c56",
+        "0x903d94"
+      ],
+      "contract": {
+        "read_site": "0x903bcd 0x903c56 0x903d94",
+        "access_path": "brain +0x39C bit16, one bit of uint32",
+        "meaning": "threatening aggregate",
+        "freshness": "Rebuilt synchronously in 0x903B10 before interrupt traversal; mission-mutable.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-17",
+      "sites": [
+        "0x903b8f",
+        "0x903d94"
+      ],
+      "contract": {
+        "read_site": "0x903b8f 0x903d94",
+        "access_path": "brain +0x39C bit17, one bit of uint32",
+        "meaning": "own recent threat: age<10",
+        "freshness": "Rebuilt synchronously in 0x903B10 before interrupt traversal; mission-mutable.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-18",
+      "sites": [
+        "0x903dbd"
+      ],
+      "contract": {
+        "read_site": "0x903dbd",
+        "access_path": "brain +0x39C bit18, one bit of uint32",
+        "meaning": "squad flag1 if attached, otherwise own flag17",
+        "freshness": "Rebuilt synchronously in 0x903B10 before interrupt traversal; mission-mutable.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-20",
+      "sites": [
+        "0x903dbd"
+      ],
+      "contract": {
+        "read_site": "0x903dbd",
+        "access_path": "brain +0x39C bit20, one bit of uint32",
+        "meaning": "dispatch inhibitor20; native name OPEN Q5",
+        "freshness": "Current policy flag. Complete named writer set OPEN Q5.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-21",
+      "sites": [
+        "0x903f5a",
+        "0x903f8e"
+      ],
+      "contract": {
+        "read_site": "0x903f5a 0x903f8e",
+        "access_path": "brain +0x39C bit21, one bit of uint32",
+        "meaning": "interrupt taken/state changed latch",
+        "freshness": "Cleared at interrupt-walk start; set by dispatch helpers during that walk.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-BFLAG-22",
+      "sites": [
+        "0x9121e6"
+      ],
+      "contract": {
+        "read_site": "0x9121e6",
+        "access_path": "brain +0x39C bit22, one bit of uint32",
+        "meaning": "candidate label matched current action latch",
+        "freshness": "Cleared at interrupt-walk start; set by dispatch helpers during that walk.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x9121c0"
+      ]
+    },
+    {
+      "id": "I-STATE-EVENT-DISPATCH",
+      "sites": [
+        "0x912114",
+        "0x91217a",
+        "0x912190",
+        "0x9123f4",
+        "0x9124af",
+        "0x912506",
+        "0x91252a",
+        "0x9125ac"
+      ],
+      "contract": {
+        "read_site": "0x912114 0x91217a 0x912190 0x9123f4 0x9124af 0x912506 0x91252a 0x9125ac",
+        "access_path": "state -> vptr -> +0x10 (slot2), 8-byte pointers",
+        "meaning": "Event receiver for concrete state; indirect call effects depend on event/state family (Q1b-Q1e,Q10).",
+        "freshness": "Read on each synchronous invocation.",
+        "validity": "Attached state storage; deactivation preserves attachment. OPEN Q1g: consolidate callback lifetime."
+      },
+      "evidence_ids": [
+        "0x912110",
+        "0x912170",
+        "0x9123d0",
+        "0x912460",
+        "0x9124d0",
+        "0x912520"
+      ]
+    },
+    {
+      "id": "I-STATE-INTERRUPT-DISPATCH",
+      "sites": [
+        "0x903f88"
+      ],
+      "contract": {
+        "read_site": "0x903f88",
+        "access_path": "state -> vptr -> +0x20 (slot4), 8-byte pointers",
+        "meaning": "Interrupt method; root first, stop on flag21. State bodies assigned other coverage rows.",
+        "freshness": "Read on each invocation; per-type vtable in read-only image.",
+        "validity": "Attached state storage; deactivation preserves attachment. OPEN Q1g: consolidate callback lifetime."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-STATE-EXECUTE-DISPATCH",
+      "sites": [
+        "0x903fec"
+      ],
+      "contract": {
+        "read_site": "0x903fec",
+        "access_path": "brain -> active state -> vptr -> +0x18 (slot3), 8-byte pointers",
+        "meaning": "Execute only after no interrupt/current order/immediate queued order.",
+        "freshness": "Read on invocation.",
+        "validity": "Attached state storage; deactivation preserves attachment. OPEN Q1g: consolidate callback lifetime."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-SENSOR-INFORM-DISPATCH",
+      "sites": [
+        "0x903db7"
+      ],
+      "contract": {
+        "read_site": "0x903db7",
+        "access_path": "owner sensor -> vptr -> +0x70(slot14), 8-byte pointers",
+        "meaning": "Called with argument0 when flag13 or16 is true. OPEN Q1g: concrete dispatch/effect consolidation.",
+        "freshness": "Read on invocation.",
+        "validity": "Borrowed path, no retain in this reader. OPEN Q1g: consolidate within-call validity/attachment guarantees and caller guards."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "I-ORDER-SET-DISPATCH",
+      "sites": [
+        "0x912229",
+        "0x912285",
+        "0x9123a8"
+      ],
+      "contract": {
+        "read_site": "0x912229 0x912285 0x9123a8",
+        "access_path": "brain -> vptr -> +0x68(slot13), 8-byte pointers",
+        "meaning": "Current-order setter/end boundary; null for interrupts, allocated complex sequence for 0x912370.",
+        "freshness": "Read on invocation.",
+        "validity": "Inline live-brain storage; V-brain remains an explicit Q1g validity dependency."
+      },
+      "evidence_ids": [
+        "0x912200",
+        "0x912260",
+        "0x912370"
+      ]
+    },
+    {
+      "id": "I-STATE-CONTEXT",
+      "sites": [
+        "0x912180",
+        "0x912206",
+        "0x91226a",
+        "0x91237a",
+        "0x9123ea",
+        "0x91246a",
+        "0x91252d"
+      ],
+      "contract": {
+        "read_site": "0x912180 0x912206 0x91226a 0x91237a 0x9123ea 0x91246a 0x91252d",
+        "access_path": "Incoming RCX, state*, 8 bytes",
+        "meaning": "Current state/parent context supplied by caller; live state is required.",
+        "freshness": "Per invocation, caller supplies the value; policy callers belong to their own coverage rows.",
+        "validity": "Borrowed call argument; no allocation by reader. Pointer arguments require live state/event; label is compared only. Handler retention and ownership reconciliation Q1g."
+      },
+      "evidence_ids": [
+        "0x912170",
+        "0x912200",
+        "0x912260",
+        "0x912370",
+        "0x9123d0",
+        "0x912460",
+        "0x912520"
+      ]
+    },
+    {
+      "id": "I-EVENT-CODE",
+      "sites": [
+        "0x91211a"
+      ],
+      "contract": {
+        "read_site": "0x91211a",
+        "access_path": "0x912110 EDX, int32",
+        "meaning": "Caller event number; dispatcher builds payload(0,0).",
+        "freshness": "Per invocation, caller supplies the value; policy callers belong to their own coverage rows.",
+        "validity": "Borrowed call argument; no allocation by reader. Pointer arguments require live state/event; label is compared only. Handler retention and ownership reconciliation Q1g."
+      },
+      "evidence_ids": [
+        "0x912110"
+      ]
+    },
+    {
+      "id": "I-EVENT-POINTER",
+      "sites": [
+        "0x91217d"
+      ],
+      "contract": {
+        "read_site": "0x91217d",
+        "access_path": "0x912170 RDX, event*, 8 bytes",
+        "meaning": "Caller event record, type int32+0 and two payload qwords+8/+0x10, borrowed for traversal.",
+        "freshness": "Per invocation, caller supplies the value; policy callers belong to their own coverage rows.",
+        "validity": "Borrowed call argument; no allocation by reader. Pointer arguments require live state/event; label is compared only. Handler retention and ownership reconciliation Q1g."
+      },
+      "evidence_ids": [
+        "0x912170"
+      ]
+    },
+    {
+      "id": "I-CANDIDATE-LABEL",
+      "sites": [
+        "0x9121c4"
+      ],
+      "contract": {
+        "read_site": "0x9121c4",
+        "access_path": "0x9121C0 RDX, label*, 8 bytes",
+        "meaning": "Pointer identity for named interrupt ordering; stored at brain+0x110.",
+        "freshness": "Per invocation, caller supplies the value; policy callers belong to their own coverage rows.",
+        "validity": "Borrowed call argument; no allocation by reader. Pointer arguments require live state/event; label is compared only. Handler retention and ownership reconciliation Q1g."
+      },
+      "evidence_ids": [
+        "0x9121c0"
+      ]
+    },
+    {
+      "id": "I-INTERRUPT-CONDITION",
+      "sites": [
+        "0x912209"
+      ],
+      "contract": {
+        "read_site": "0x912209",
+        "access_path": "0x912200 DL, byte Boolean",
+        "meaning": "Zero leaves state/order unchanged; nonzero takes interrupt.",
+        "freshness": "Per invocation, caller supplies the value; policy callers belong to their own coverage rows.",
+        "validity": "Borrowed call argument; no allocation by reader. Pointer arguments require live state/event; label is compared only. Handler retention and ownership reconciliation Q1g."
+      },
+      "evidence_ids": [
+        "0x912200"
+      ]
+    },
+    {
+      "id": "I-CHILD-ARGUMENT",
+      "sites": [
+        "0x9123e3",
+        "0x91246d"
+      ],
+      "contract": {
+        "read_site": "0x9123e3 0x91246d",
+        "access_path": "0x9123D0/0x912460 RDX, child state*, 8 bytes",
+        "meaning": "Valid child to attach/select. Attach copies parent/brain; selection assumes attached ownership.",
+        "freshness": "Per invocation, caller supplies the value; policy callers belong to their own coverage rows.",
+        "validity": "Borrowed call argument; no allocation by reader. Pointer arguments require live state/event; label is compared only. Handler retention and ownership reconciliation Q1g."
+      },
+      "evidence_ids": [
+        "0x9123d0",
+        "0x912460"
+      ]
+    },
+    {
+      "id": "I-DEACTIVATE-REASON",
+      "sites": [
+        "0x912530"
+      ],
+      "contract": {
+        "read_site": "0x912530",
+        "access_path": "0x912520 EDX, int32",
+        "meaning": "Sign-extended event payload; caller reasons0/1, recursive descendant reason2. Full event interpretation Q10.",
+        "freshness": "Per invocation, caller supplies the value; policy callers belong to their own coverage rows.",
+        "validity": "Borrowed call argument; no allocation by reader. Pointer arguments require live state/event; label is compared only. Handler retention and ownership reconciliation Q1g."
+      },
+      "evidence_ids": [
+        "0x912520"
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "id": "O-BASE-AGGREGATES",
+      "sites": [
+        "0x903b2b",
+        "0x903b9f",
+        "0x903bec",
+        "0x903c0b",
+        "0x903c2a",
+        "0x903c42",
+        "0x903dee"
+      ],
+      "contract": {
+        "effect": "Clear brain flags13..16 then OR eligible subject contributions; replace17 from threat age and18 from squad flag1/17.",
+        "result_codes": "No status.",
+        "ownership": "Brain-owned scalar.",
+        "cancellation": "Next base pass recomputes.",
+        "side_effects": "Other bits preserved. Individual input flags have separate I rows."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "O-ALERT-TRANSITION",
+      "sites": [
+        "0x903c8a",
+        "0x903c96"
+      ],
+      "contract": {
+        "effect": "0x908710 clears +0x1E0 to -1 and byte+0x1E4 to0; caller sets mode1.",
+        "result_codes": "No status.",
+        "ownership": "Inline brain.",
+        "cancellation": "Later mode/config writers supersede.",
+        "side_effects": "Clears BOTH automatic alert gate bits; then emits event8 if root exists."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "O-STATE-EVENT8",
+      "sites": [
+        "0x903ca5",
+        "0x903cbd"
+      ],
+      "contract": {
+        "effect": "Root then active descendants receive event8, payload qwords0 and1.",
+        "result_codes": "No status consumed.",
+        "ownership": "Stack event borrowed synchronously.",
+        "cancellation": "No pending event object in this dispatch.",
+        "side_effects": "Receiver-specific effects remain Q1b-Q1e/Q10."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "O-CORPSE-SIGNAL",
+      "sites": [
+        "0x903d64",
+        "0x903d8f"
+      ],
+      "contract": {
+        "effect": "Set corpse brain+0x11C owner bit; publish mandie6 radius20*L, corpse actor source, remembered XYZ, null payload; break after first qualifying corpse.",
+        "result_codes": "No success value consumed.",
+        "ownership": "Descriptor/position copied to publisher stack; no ownership transfer of actor.",
+        "cancellation": "Synchronous; mask prevents repeat for that observer player.",
+        "side_effects": "Publisher invokes qualifying recipient slot51 and scene signal-condition manager (signals-damage). Callback effects can persist."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "O-SENSOR-INFORM",
+      "sites": [
+        "0x903dba"
+      ],
+      "contract": {
+        "effect": "Call owner sensor slot14(0) when eligible enemy or threatening aggregate set. OPEN Q1g: concrete method/effect.",
+        "result_codes": "No return consumed.",
+        "ownership": "Borrowed sensor.",
+        "cancellation": "OPEN Q1g: any pending task scheduling.",
+        "side_effects": "OPEN Q1g: callback effects."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "O-ZONE-ORIGIN",
+      "sites": [
+        "0x903e0c"
+      ],
+      "contract": {
+        "effect": "Copy owner XY to brain+0x128 when flag6 or9 set.",
+        "result_codes": "No status.",
+        "ownership": "8-byte value copied.",
+        "cancellation": "Later writes replace origin.",
+        "side_effects": "Distinct from direct goal at+0x130."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "O-INTERRUPT-WALK",
+      "sites": [
+        "0x903f65",
+        "0x903f70",
+        "0x903f8b",
+        "0x903fac",
+        "0x903fbb",
+        "0x903fc1"
+      ],
+      "contract": {
+        "effect": "Clear flags21/22 and candidate+0x110; call ancestor Interrupt root-first until flag21; on interruption event5 to that state, set flag25; clear candidate afterward.",
+        "result_codes": "No boolean return from base consumed; flag21 is the stop/result channel.",
+        "ownership": "Temporary vector contains borrowed state pointers; freed at end.",
+        "cancellation": "Stops remaining interrupt calls once latch set.",
+        "side_effects": "State methods can replace current order; flag25 producer recorded for Q5."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "O-STATE-EXECUTE",
+      "sites": [
+        "0x903fef"
+      ],
+      "contract": {
+        "effect": "Invoke active-state Execute(slot3) when low6 flags/flag20 clear, root exists, no interrupt/order, queue count<=0.",
+        "result_codes": "No result consumed at boundary.",
+        "ownership": "Borrowed active state.",
+        "cancellation": "Not called when gate fails.",
+        "side_effects": "Policy-family outputs remain Q1b-Q1e."
+      },
+      "evidence_ids": [
+        "0x903b10"
+      ]
+    },
+    {
+      "id": "O-SEND-STATE-EVENT",
+      "sites": [
+        "0x912129",
+        "0x912183",
+        "0x912199"
+      ],
+      "contract": {
+        "effect": "0x912110 sends event EDX to one state with both payloads0; 0x912170 sends caller event to state then current active descendants.",
+        "result_codes": "No return consumed.",
+        "ownership": "Stack/caller event borrowed synchronously; no copying to owned queue here.",
+        "cancellation": "No async work at dispatcher boundary.",
+        "side_effects": "Traverses child pointer AFTER each callback; concrete handlers Q10."
+      },
+      "evidence_ids": [
+        "0x912110",
+        "0x912170"
+      ]
+    },
+    {
+      "id": "O-NAMED-GATE",
+      "sites": [
+        "0x9121c4",
+        "0x9121d8"
+      ],
+      "contract": {
+        "effect": "Store candidate label at brain+0x110; equal to+0x108 latches flag22.",
+        "result_codes": "AL = NOT flag22 (Boolean only).",
+        "ownership": "Borrowed label pointer, not copied string.",
+        "cancellation": "Flag22 reset on next interrupt walk; candidate cleared by base.",
+        "side_effects": "Earlier match prevents later candidates, even if later label differs."
+      },
+      "evidence_ids": [
+        "0x9121c0"
+      ]
+    },
+    {
+      "id": "O-PREPARE-INTERRUPT",
+      "sites": [
+        "0x912211",
+        "0x91222e",
+        "0x912235",
+        "0x91226d",
+        "0x91228a",
+        "0x912291",
+        "0x91229e"
+      ],
+      "contract": {
+        "effect": "Set flag21; if current order nonnull call brain slot13(null); select this state at+0xE8. Conditional wrapper does nothing for false DL.",
+        "result_codes": "0x912200 AL equals condition; 0x912260 no status.",
+        "ownership": "Borrowed state; order ownership via O-SET-ORDER.",
+        "cancellation": "Current order cleared through its normal setter.",
+        "side_effects": "Does not change parent active-child by itself."
+      },
+      "evidence_ids": [
+        "0x912200",
+        "0x912260"
+      ]
+    },
+    {
+      "id": "O-SET-ORDER",
+      "sites": [
+        "0x91222e",
+        "0x91228a",
+        "0x9123ae"
+      ],
+      "contract": {
+        "effect": "Brain slot13 installs supplied order/null; Q1g/Q10 complete end, ownership, cancellation and failure contract.",
+        "result_codes": "No result used by these callers.",
+        "ownership": "OPEN Q1g/Q10: accepted order ownership and rejected factory result.",
+        "cancellation": "Current order ends/replaced via setter, details Q10.",
+        "side_effects": "Native setter boundary only; no executor internals."
+      },
+      "evidence_ids": [
+        "0x912200",
+        "0x912260",
+        "0x912370"
+      ]
+    },
+    {
+      "id": "O-CREATE-SEQUENCE",
+      "sites": [
+        "0x912382",
+        "0x91238f",
+        "0x9123ae"
+      ],
+      "contract": {
+        "effect": "Allocate0x58 and construct complex-order sequence(0x8FFD50), install through slot13 if distinct from current.",
+        "result_codes": "Returns allocated pointer or null; null may replace current order on allocation failure.",
+        "ownership": "Installed pointer returned as borrowed sequence for appends; complete ownership Q1g/Q10.",
+        "cancellation": "Later replacement/cancel through order setter Q10.",
+        "side_effects": "Sequence execution/failure propagation Q10; allocator internals parked."
+      },
+      "evidence_ids": [
+        "0x912370"
+      ]
+    },
+    {
+      "id": "O-ATTACH-STATE",
+      "sites": [
+        "0x9123e6",
+        "0x9123ed",
+        "0x91240d",
+        "0x91241e",
+        "0x912424",
+        "0x912439"
+      ],
+      "contract": {
+        "effect": "Copy parent brain and parent pointer into child; send event1 then append child to owned vector.",
+        "result_codes": "Returns child pointer.",
+        "ownership": "Parent owns attached-child list; callback lifetime/destruction reconciliation Q1g.",
+        "cancellation": "Detach/destruction not part of this routine.",
+        "side_effects": "Event1 can initialize descendants; vector growth only when full."
+      },
+      "evidence_ids": [
+        "0x9123d0"
+      ]
+    },
+    {
+      "id": "O-SWITCH-STATE",
+      "sites": [
+        "0x91247e",
+        "0x91248c",
+        "0x912498",
+        "0x9124b2"
+      ],
+      "contract": {
+        "effect": "Deactivate old child reason1; install child in parent+0x28 and brain+0xE8; send event2 payload0.",
+        "result_codes": "No status.",
+        "ownership": "Attached child reused; no destruction.",
+        "cancellation": "Deactivation recurses and sends events3/4.",
+        "side_effects": "Event2 receiver effects are policy-family boundaries."
+      },
+      "evidence_ids": [
+        "0x912460"
+      ]
+    },
+    {
+      "id": "O-REENTER-STATE",
+      "sites": [
+        "0x9124ed",
+        "0x912509"
+      ],
+      "contract": {
+        "effect": "Select existing child at brain+0xE8; event2 with payload1, other payload0.",
+        "result_codes": "No status.",
+        "ownership": "Attached child, assumed nonnull.",
+        "cancellation": "Immediate selection.",
+        "side_effects": "Does not call Execute directly."
+      },
+      "evidence_ids": [
+        "0x9124d0"
+      ]
+    },
+    {
+      "id": "O-DEACTIVATE-STATE",
+      "sites": [
+        "0x91254e",
+        "0x91255f",
+        "0x912583",
+        "0x91258f",
+        "0x9125a1",
+        "0x9125af"
+      ],
+      "contract": {
+        "effect": "Event4(original reason); deactivate descendants reason2; clear parent child; flag21; select parent; parent event3(original reason).",
+        "result_codes": "No status.",
+        "ownership": "Retains attached state; does not free it.",
+        "cancellation": "Deactivates descendants but leaves owned vector intact.",
+        "side_effects": "Parent required. Event callbacks may mutate state; event-specific outputs Q10."
+      },
+      "evidence_ids": [
+        "0x912520"
+      ]
+    }
+  ],
+  "inline_regions": [],
+  "enums": [],
+  "float_constants": [
+    {
+      "id": "K-THREAT-AGE",
+      "binary": "game",
+      "rva": "0x1004044",
+      "value": 10.0,
+      "sites": [
+        "0x903b7a"
+      ],
+      "meaning": "strict recent threat threshold"
+    },
+    {
+      "id": "K-CORPSE-RADIUS",
+      "binary": "game",
+      "rva": "0x1010eb8",
+      "value": 20.0,
+      "sites": [
+        "0x903d7b"
+      ],
+      "meaning": "configured units multiplying spatial scale"
+    },
+    {
+      "id": "K-NO-THREAT",
+      "binary": "game",
+      "rva": "0x10004dc",
+      "value": 9.999999680285692e+37,
+      "sites": [
+        "0x8782af"
+      ],
+      "meaning": "zero timestamp sentinel"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "0x912520",
+      "binary": "game",
+      "function_rva": "0x912520",
+      "instruction_rvas": [
+        "0x912520",
+        "0x912525",
+        "0x912526",
+        "0x91252a",
+        "0x91252d",
+        "0x912530",
+        "0x912533",
+        "0x912538",
+        "0x912541",
+        "0x912549",
+        "0x91254e",
+        "0x912551",
+        "0x912555",
+        "0x912558",
+        "0x91255a",
+        "0x91255f",
+        "0x912564",
+        "0x912568",
+        "0x91256d",
+        "0x912576",
+        "0x91257e",
+        "0x912583",
+        "0x91258b",
+        "0x91258f",
+        "0x912599",
+        "0x91259d",
+        "0x9125a1",
+        "0x9125a8",
+        "0x9125ac",
+        "0x9125af",
+        "0x9125b2",
+        "0x9125b7",
+        "0x9125bb",
+        "0x9125bc"
+      ]
+    },
+    {
+      "id": "0x9123d0",
+      "binary": "game",
+      "function_rva": "0x9123d0",
+      "instruction_rvas": [
+        "0x9123d0",
+        "0x9123d5",
+        "0x9123da",
+        "0x9123db",
+        "0x9123df",
+        "0x9123e3",
+        "0x9123e6",
+        "0x9123ea",
+        "0x9123ed",
+        "0x9123f1",
+        "0x9123f4",
+        "0x9123f7",
+        "0x9123fa",
+        "0x9123ff",
+        "0x912407",
+        "0x91240d",
+        "0x912410",
+        "0x912414",
+        "0x912418",
+        "0x91241c",
+        "0x91241e",
+        "0x912421",
+        "0x912424",
+        "0x912429",
+        "0x91242e",
+        "0x912432",
+        "0x912433",
+        "0x912434",
+        "0x912439",
+        "0x91243e",
+        "0x912443",
+        "0x912446",
+        "0x91244a",
+        "0x91244b"
+      ]
+    },
+    {
+      "id": "0x9121c0",
+      "binary": "game",
+      "function_rva": "0x9121c0",
+      "instruction_rvas": [
+        "0x9121c0",
+        "0x9121c4",
+        "0x9121cb",
+        "0x9121cf",
+        "0x9121d6",
+        "0x9121d8",
+        "0x9121e2",
+        "0x9121e6",
+        "0x9121ec",
+        "0x9121ef",
+        "0x9121f1",
+        "0x9121f3"
+      ]
+    },
+    {
+      "id": "0x9124d0",
+      "binary": "game",
+      "function_rva": "0x9124d0",
+      "instruction_rvas": [
+        "0x9124d0",
+        "0x9124d4",
+        "0x9124d8",
+        "0x9124dc",
+        "0x9124e5",
+        "0x9124ed",
+        "0x9124f4",
+        "0x9124f9",
+        "0x9124fd",
+        "0x912506",
+        "0x912509",
+        "0x91250c",
+        "0x912510"
+      ]
+    },
+    {
+      "id": "0x912200",
+      "binary": "game",
+      "function_rva": "0x912200",
+      "instruction_rvas": [
+        "0x912200",
+        "0x912202",
+        "0x912206",
+        "0x912209",
+        "0x91220b",
+        "0x91220d",
+        "0x912211",
+        "0x91221b",
+        "0x91221f",
+        "0x912227",
+        "0x912229",
+        "0x91222c",
+        "0x91222e",
+        "0x912231",
+        "0x912235",
+        "0x91223c",
+        "0x91223e",
+        "0x912242",
+        "0x912243",
+        "0x912244",
+        "0x912246",
+        "0x91224a",
+        "0x91224b"
+      ]
+    },
+    {
+      "id": "0x912370",
+      "binary": "game",
+      "function_rva": "0x912370",
+      "instruction_rvas": [
+        "0x912370",
+        "0x912375",
+        "0x912376",
+        "0x91237a",
+        "0x91237d",
+        "0x912382",
+        "0x912387",
+        "0x91238a",
+        "0x91238c",
+        "0x91238f",
+        "0x912394",
+        "0x912397",
+        "0x912399",
+        "0x91239b",
+        "0x91239f",
+        "0x9123a6",
+        "0x9123a8",
+        "0x9123ab",
+        "0x9123ae",
+        "0x9123b1",
+        "0x9123b4",
+        "0x9123b9",
+        "0x9123bd",
+        "0x9123be"
+      ]
+    },
+    {
+      "id": "0x908710",
+      "binary": "game",
+      "function_rva": "0x908710",
+      "instruction_rvas": [
+        "0x908710",
+        "0x908716",
+        "0x90871a"
+      ]
+    },
+    {
+      "id": "0x912170",
+      "binary": "game",
+      "function_rva": "0x912170",
+      "instruction_rvas": [
+        "0x912170",
+        "0x912175",
+        "0x912176",
+        "0x91217a",
+        "0x91217d",
+        "0x912180",
+        "0x912183",
+        "0x912186",
+        "0x91218a",
+        "0x91218d",
+        "0x91218f",
+        "0x912190",
+        "0x912193",
+        "0x912196",
+        "0x912199",
+        "0x91219c",
+        "0x9121a0",
+        "0x9121a3",
+        "0x9121a5",
+        "0x9121aa",
+        "0x9121ae",
+        "0x9121af"
+      ]
+    },
+    {
+      "id": "0x903b10",
+      "binary": "game",
+      "function_rva": "0x903b10",
+      "instruction_rvas": [
+        "0x903b10",
+        "0x903b15",
+        "0x903b16",
+        "0x903b17",
+        "0x903b18",
+        "0x903b1d",
+        "0x903b24",
+        "0x903b28",
+        "0x903b2b",
+        "0x903b35",
+        "0x903b3c",
+        "0x903b44",
+        "0x903b4b",
+        "0x903b50",
+        "0x903b52",
+        "0x903b54",
+        "0x903b5b",
+        "0x903b5d",
+        "0x903b60",
+        "0x903b62",
+        "0x903b65",
+        "0x903b67",
+        "0x903b6a",
+        "0x903b6e",
+        "0x903b75",
+        "0x903b7a",
+        "0x903b82",
+        "0x903b84",
+        "0x903b89",
+        "0x903b8c",
+        "0x903b8f",
+        "0x903b95",
+        "0x903b99",
+        "0x903b9b",
+        "0x903b9f",
+        "0x903ba5",
+        "0x903bac",
+        "0x903bb3",
+        "0x903bba",
+        "0x903bbd",
+        "0x903bc3",
+        "0x903bc6",
+        "0x903bcb",
+        "0x903bcd",
+        "0x903bd3",
+        "0x903bd7",
+        "0x903bdb",
+        "0x903bde",
+        "0x903be2",
+        "0x903be9",
+        "0x903bec",
+        "0x903bf3",
+        "0x903bf7",
+        "0x903bfa",
+        "0x903bfd",
+        "0x903c02",
+        "0x903c08",
+        "0x903c0b",
+        "0x903c11",
+        "0x903c15",
+        "0x903c19",
+        "0x903c1c",
+        "0x903c20",
+        "0x903c27",
+        "0x903c2a",
+        "0x903c31",
+        "0x903c35",
+        "0x903c38",
+        "0x903c3b",
+        "0x903c3d",
+        "0x903c42",
+        "0x903c49",
+        "0x903c4d",
+        "0x903c50",
+        "0x903c56",
+        "0x903c5c",
+        "0x903c63",
+        "0x903c65",
+        "0x903c69",
+        "0x903c6b",
+        "0x903c72",
+        "0x903c74",
+        "0x903c78",
+        "0x903c7a",
+        "0x903c81",
+        "0x903c83",
+        "0x903c8a",
+        "0x903c8f",
+        "0x903c96",
+        "0x903ca0",
+        "0x903ca3",
+        "0x903ca5",
+        "0x903cad",
+        "0x903cb1",
+        "0x903cb6",
+        "0x903cbd",
+        "0x903cc2",
+        "0x903cc6",
+        "0x903ccd",
+        "0x903cd4",
+        "0x903cdb",
+        "0x903cde",
+        "0x903ce4",
+        "0x903ce7",
+        "0x903ceb",
+        "0x903cee",
+        "0x903cf0",
+        "0x903cf4",
+        "0x903cfa",
+        "0x903d00",
+        "0x903d02",
+        "0x903d07",
+        "0x903d09",
+        "0x903d0c",
+        "0x903d0e",
+        "0x903d15",
+        "0x903d17",
+        "0x903d1e",
+        "0x903d22",
+        "0x903d25",
+        "0x903d27",
+        "0x903d2f",
+        "0x903d31",
+        "0x903d38",
+        "0x903d3a",
+        "0x903d40",
+        "0x903d43",
+        "0x903d4a",
+        "0x903d4d",
+        "0x903d4f",
+        "0x903d53",
+        "0x903d56",
+        "0x903d58",
+        "0x903d5a",
+        "0x903d5d",
+        "0x903d64",
+        "0x903d6b",
+        "0x903d6f",
+        "0x903d77",
+        "0x903d7b",
+        "0x903d83",
+        "0x903d86",
+        "0x903d8a",
+        "0x903d8f",
+        "0x903d94",
+        "0x903d9a",
+        "0x903da2",
+        "0x903da8",
+        "0x903daa",
+        "0x903dae",
+        "0x903db0",
+        "0x903db7",
+        "0x903dba",
+        "0x903dbd",
+        "0x903dc3",
+        "0x903dca",
+        "0x903dcd",
+        "0x903dcf",
+        "0x903dd2",
+        "0x903dd5",
+        "0x903dd8",
+        "0x903dda",
+        "0x903ddc",
+        "0x903ddf",
+        "0x903de2",
+        "0x903de4",
+        "0x903dea",
+        "0x903dec",
+        "0x903dee",
+        "0x903df4",
+        "0x903df7",
+        "0x903df9",
+        "0x903dfc",
+        "0x903dfe",
+        "0x903e01",
+        "0x903e03",
+        "0x903e07",
+        "0x903e0c",
+        "0x903e14",
+        "0x903e17",
+        "0x903e1d",
+        "0x903e20",
+        "0x903e23",
+        "0x903e29",
+        "0x903e31",
+        "0x903e37",
+        "0x903e3b",
+        "0x903e3f",
+        "0x903e43",
+        "0x903e47",
+        "0x903e4b",
+        "0x903e53",
+        "0x903e56",
+        "0x903e5a",
+        "0x903e5e",
+        "0x903e63",
+        "0x903e6b",
+        "0x903e70",
+        "0x903e74",
+        "0x903e77",
+        "0x903e7b",
+        "0x903e7e",
+        "0x903e81",
+        "0x903e86",
+        "0x903e8a",
+        "0x903e8d",
+        "0x903e8f",
+        "0x903e93",
+        "0x903e97",
+        "0x903e9a",
+        "0x903e9e",
+        "0x903ea1",
+        "0x903ea3",
+        "0x903ea6",
+        "0x903ea8",
+        "0x903eac",
+        "0x903eae",
+        "0x903eb6",
+        "0x903eb9",
+        "0x903ec0",
+        "0x903ec2",
+        "0x903ec6",
+        "0x903eca",
+        "0x903ecd",
+        "0x903ed1",
+        "0x903ed5",
+        "0x903edb",
+        "0x903ee0",
+        "0x903ee7",
+        "0x903eeb",
+        "0x903eef",
+        "0x903ef2",
+        "0x903ef6",
+        "0x903efa",
+        "0x903efe",
+        "0x903f01",
+        "0x903f03",
+        "0x903f06",
+        "0x903f09",
+        "0x903f10",
+        "0x903f13",
+        "0x903f15",
+        "0x903f18",
+        "0x903f1c",
+        "0x903f20",
+        "0x903f24",
+        "0x903f26",
+        "0x903f2a",
+        "0x903f2d",
+        "0x903f31",
+        "0x903f36",
+        "0x903f3a",
+        "0x903f3d",
+        "0x903f41",
+        "0x903f45",
+        "0x903f48",
+        "0x903f4b",
+        "0x903f4e",
+        "0x903f50",
+        "0x903f54",
+        "0x903f56",
+        "0x903f5a",
+        "0x903f60",
+        "0x903f65",
+        "0x903f70",
+        "0x903f76",
+        "0x903f79",
+        "0x903f7b",
+        "0x903f7e",
+        "0x903f80",
+        "0x903f84",
+        "0x903f88",
+        "0x903f8b",
+        "0x903f8e",
+        "0x903f94",
+        "0x903f98",
+        "0x903f9a",
+        "0x903f9d",
+        "0x903fa0",
+        "0x903fa2",
+        "0x903fa4",
+        "0x903fa7",
+        "0x903fac",
+        "0x903fb1",
+        "0x903fb7",
+        "0x903fbb",
+        "0x903fc1",
+        "0x903fcc",
+        "0x903fd0",
+        "0x903fd2",
+        "0x903fda",
+        "0x903fdc",
+        "0x903fe3",
+        "0x903fe5",
+        "0x903fec",
+        "0x903fef",
+        "0x903ff2",
+        "0x903ff6",
+        "0x903ffb",
+        "0x904003",
+        "0x90400a",
+        "0x90400b",
+        "0x90400c",
+        "0x90400d",
+        "0x90400e"
+      ]
+    },
+    {
+      "id": "0x912260",
+      "binary": "game",
+      "function_rva": "0x912260",
+      "instruction_rvas": [
+        "0x912260",
+        "0x912262",
+        "0x912266",
+        "0x91226a",
+        "0x91226d",
+        "0x912277",
+        "0x91227b",
+        "0x912283",
+        "0x912285",
+        "0x912288",
+        "0x91228a",
+        "0x91228d",
+        "0x912291",
+        "0x912298",
+        "0x91229c",
+        "0x91229d",
+        "0x91229e",
+        "0x9122a5",
+        "0x9122a9",
+        "0x9122aa"
+      ]
+    },
+    {
+      "id": "0xa5ca90",
+      "binary": "game",
+      "function_rva": "0xa5ca90",
+      "instruction_rvas": [
+        "0xa5ca90",
+        "0xa5ca95",
+        "0xa5ca9a",
+        "0xa5ca9f",
+        "0xa5caa1",
+        "0xa5caa8",
+        "0xa5caab",
+        "0xa5caae",
+        "0xa5cab5",
+        "0xa5cab8",
+        "0xa5cabb",
+        "0xa5cabe",
+        "0xa5cac0",
+        "0xa5cac7",
+        "0xa5cac9",
+        "0xa5cacc",
+        "0xa5cacf",
+        "0xa5cad1",
+        "0xa5cad4",
+        "0xa5cad7",
+        "0xa5cadb",
+        "0xa5cae3",
+        "0xa5cae6",
+        "0xa5cae8",
+        "0xa5caeb",
+        "0xa5caef",
+        "0xa5caf3",
+        "0xa5caf9",
+        "0xa5cafc",
+        "0xa5caff",
+        "0xa5cb03",
+        "0xa5cb06",
+        "0xa5cb0a",
+        "0xa5cb0c",
+        "0xa5cb0f",
+        "0xa5cb13",
+        "0xa5cb1b",
+        "0xa5cb1e",
+        "0xa5cb20",
+        "0xa5cb24",
+        "0xa5cb28",
+        "0xa5cb2b",
+        "0xa5cb2e",
+        "0xa5cb31",
+        "0xa5cb34",
+        "0xa5cb37",
+        "0xa5cb39",
+        "0xa5cb3e",
+        "0xa5cb45",
+        "0xa5cb4a",
+        "0xa5cb4c",
+        "0xa5cb52",
+        "0xa5cb55",
+        "0xa5cb57",
+        "0xa5cb5b",
+        "0xa5cb61",
+        "0xa5cb67",
+        "0xa5cb6a",
+        "0xa5cb70",
+        "0xa5cb74",
+        "0xa5cb77",
+        "0xa5cb79",
+        "0xa5cb7d",
+        "0xa5cb7f",
+        "0xa5cb83",
+        "0xa5cb86",
+        "0xa5cb8c",
+        "0xa5cb91",
+        "0xa5cb95",
+        "0xa5cb9a",
+        "0xa5cba0",
+        "0xa5cba2",
+        "0xa5cba6",
+        "0xa5cba9",
+        "0xa5cbae",
+        "0xa5cbb3",
+        "0xa5cbb9",
+        "0xa5cbc2",
+        "0xa5cbc6",
+        "0xa5cbcc",
+        "0xa5cbd5",
+        "0xa5cbda",
+        "0xa5cbde",
+        "0xa5cbe1",
+        "0xa5cbe7",
+        "0xa5cbed",
+        "0xa5cbf4",
+        "0xa5cbfb",
+        "0xa5cbfd",
+        "0xa5cc04",
+        "0xa5cc0a",
+        "0xa5cc11",
+        "0xa5cc15",
+        "0xa5cc1a",
+        "0xa5cc1f",
+        "0xa5cc26",
+        "0xa5cc29",
+        "0xa5cc31",
+        "0xa5cc34",
+        "0xa5cc38",
+        "0xa5cc3e",
+        "0xa5cc44",
+        "0xa5cc4c",
+        "0xa5cc51",
+        "0xa5cc54",
+        "0xa5cc5b",
+        "0xa5cc63",
+        "0xa5cc68",
+        "0xa5cc6f",
+        "0xa5cc76",
+        "0xa5cc79",
+        "0xa5cc7b",
+        "0xa5cc80",
+        "0xa5cc83",
+        "0xa5cc8a",
+        "0xa5cc8d",
+        "0xa5cc8f",
+        "0xa5cc95",
+        "0xa5cc98",
+        "0xa5cc9a",
+        "0xa5cc9c",
+        "0xa5cca0",
+        "0xa5cca2",
+        "0xa5cca9",
+        "0xa5ccaf",
+        "0xa5ccb6",
+        "0xa5ccb8",
+        "0xa5ccbb",
+        "0xa5ccc0",
+        "0xa5ccc6",
+        "0xa5ccca",
+        "0xa5cccd",
+        "0xa5cccf",
+        "0xa5ccd4",
+        "0xa5ccdb",
+        "0xa5cce0",
+        "0xa5cce8",
+        "0xa5cced",
+        "0xa5ccf5",
+        "0xa5ccf9",
+        "0xa5ccfd",
+        "0xa5cd01",
+        "0xa5cd04",
+        "0xa5cd06",
+        "0xa5cd07",
+        "0xa5cd0e",
+        "0xa5cd13",
+        "0xa5cd1a",
+        "0xa5cd20",
+        "0xa5cd27",
+        "0xa5cd2c",
+        "0xa5cd33",
+        "0xa5cd38"
+      ]
+    },
+    {
+      "id": "0xa3bb20",
+      "binary": "game",
+      "function_rva": "0xa3bb20",
+      "instruction_rvas": [
+        "0xa3bb20",
+        "0xa3bb24",
+        "0xa3bb29",
+        "0xa3bb2c",
+        "0xa3bb2e",
+        "0xa3bb35",
+        "0xa3bb37",
+        "0xa3bb39",
+        "0xa3bb3d",
+        "0xa3bb3e",
+        "0xa3bb40",
+        "0xa3bb44"
+      ]
+    },
+    {
+      "id": "0x878280",
+      "binary": "game",
+      "function_rva": "0x878280",
+      "instruction_rvas": [
+        "0x878280",
+        "0x878284",
+        "0x87828b",
+        "0x87828d",
+        "0x878292",
+        "0x878298",
+        "0x87829d",
+        "0x87829f",
+        "0x8782a1",
+        "0x8782a6",
+        "0x8782aa",
+        "0x8782af",
+        "0x8782b7",
+        "0x8782bb"
+      ]
+    },
+    {
+      "id": "0x912110",
+      "binary": "game",
+      "function_rva": "0x912110",
+      "instruction_rvas": [
+        "0x912110",
+        "0x912114",
+        "0x912117",
+        "0x91211a",
+        "0x91211e",
+        "0x912123",
+        "0x912129",
+        "0x91212c",
+        "0x912130"
+      ]
+    },
+    {
+      "id": "0x912460",
+      "binary": "game",
+      "function_rva": "0x912460",
+      "instruction_rvas": [
+        "0x912460",
+        "0x912465",
+        "0x912466",
+        "0x91246a",
+        "0x91246d",
+        "0x912470",
+        "0x912474",
+        "0x912477",
+        "0x912479",
+        "0x91247e",
+        "0x912483",
+        "0x912487",
+        "0x91248c",
+        "0x912490",
+        "0x912498",
+        "0x91249f",
+        "0x9124a1",
+        "0x9124a5",
+        "0x9124aa",
+        "0x9124af",
+        "0x9124b2",
+        "0x9124b5",
+        "0x9124ba",
+        "0x9124be",
+        "0x9124bf"
+      ]
+    }
+  ],
+  "byte_sequences": [
+    {
+      "binary": "game",
+      "rva": "0x1004260",
+      "hex": "00000000000000000100000000000000"
+    }
+  ],
+  "coverage_row": "C-BASE",
+  "scope_functions": [
+    "0x903b10",
+    "0x912110",
+    "0x912170",
+    "0x9121c0",
+    "0x912200",
+    "0x912260",
+    "0x912370",
+    "0x9123d0",
+    "0x912460",
+    "0x9124d0",
+    "0x912520"
+  ],
+  "source_maps": {
+    "movement": "e9be0ad828f2a8c4cc442db4a835c4401dbeee6bebfdda1bcc19fef9c3ffd32e",
+    "perception": "64b2b625456b0a9aff740f28f1932de5cebb33b9ce181e70b6c21952e11c1ab8",
+    "ownership": "03793df9882bf0a00d7e3570b8aa9a10db910ee6120ea4e7d565cc4a469885b0",
+    "signals-damage": "b924cbe8bbc29fb973c663ccbfa8a64bd5e490b62b5912701e87da640c4bd840",
+    "entity-health": "92cfdc1457bc86bfdbee2675bc163a20cce7ef961ccf817eba0f56a77170d404",
+    "fine": "5575378bfb05f75523ad8ca448a794fbda507e43c55a5050f5908ea1ba90616b",
+    "decision-catalog-q1": "c2feccaf154d2ed9d4e962992f6bf05c253cc60c34adc83c9f1ae7129ab1543e"
+  },
+  "access_audit": [
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b10",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b18",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b24",
+      "row_ids": [
+        "I-OWNER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b2b",
+      "row_ids": [
+        "O-BASE-AGGREGATES"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b35",
+      "row_ids": [
+        "I-CORPSE-SCENE-GATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b3c",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b44",
+      "row_ids": [
+        "I-OWNER-PLAYER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b4b",
+      "row_ids": [
+        "I-CORPSE-SCENE-GATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b54",
+      "row_ids": [
+        "I-CONTROL"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b6a",
+      "row_ids": [
+        "I-OWNER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b6e",
+      "row_ids": [
+        "I-SENSOR"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b75",
+      "row_ids": [
+        "I-THREAT-AGE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b7a",
+      "row_ids": [
+        "K-THREAT-AGE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b8f",
+      "row_ids": [
+        "I-BFLAG-17"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b9b",
+      "row_ids": [
+        "I-OWNER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903b9f",
+      "row_ids": [
+        "O-BASE-AGGREGATES"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ba5",
+      "row_ids": [
+        "I-SENSOR"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903bac",
+      "row_ids": [
+        "I-CAT1-BEGIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903bb3",
+      "row_ids": [
+        "I-CAT1-END"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903bc3",
+      "row_ids": [
+        "I-CAT1-SUBJECT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903bc6",
+      "row_ids": [
+        "I-SUBJECT-SUPPRESS"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903bcd",
+      "row_ids": [
+        "I-BFLAG-13",
+        "I-BFLAG-14",
+        "I-BFLAG-15",
+        "I-BFLAG-16"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903bd3",
+      "row_ids": [
+        "I-ATTACKING"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903bec",
+      "row_ids": [
+        "O-BASE-AGGREGATES"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903bf3",
+      "row_ids": [
+        "I-THREATENING"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c0b",
+      "row_ids": [
+        "O-BASE-AGGREGATES"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c11",
+      "row_ids": [
+        "I-INJURY-OBSERVATION"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c2a",
+      "row_ids": [
+        "O-BASE-AGGREGATES"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c31",
+      "row_ids": [
+        "I-ENEMY",
+        "I-UNUSABLE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c42",
+      "row_ids": [
+        "O-BASE-AGGREGATES"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c56",
+      "row_ids": [
+        "I-BFLAG-13",
+        "I-BFLAG-14",
+        "I-BFLAG-15",
+        "I-BFLAG-16"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c5c",
+      "row_ids": [
+        "I-ALERT-MODE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c6b",
+      "row_ids": [
+        "I-ALERT-INJURY-GATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c7a",
+      "row_ids": [
+        "I-ALERT-ENEMY-GATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c83",
+      "row_ids": [],
+      "exclusion": "address arithmetic, not a stored-value read"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c8a",
+      "row_ids": [
+        "O-ALERT-TRANSITION"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c8f",
+      "row_ids": [
+        "I-ROOT-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903c96",
+      "row_ids": [
+        "O-ALERT-TRANSITION"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ca5",
+      "row_ids": [
+        "O-STATE-EVENT8"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903cad",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903cb1",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903cb6",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903cbd",
+      "row_ids": [
+        "O-STATE-EVENT8"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903cc2",
+      "row_ids": [
+        "I-OWNER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903cc6",
+      "row_ids": [
+        "I-SENSOR"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ccd",
+      "row_ids": [
+        "I-CAT0-BEGIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903cd4",
+      "row_ids": [
+        "I-CAT0-END"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ce4",
+      "row_ids": [
+        "I-CAT0-SUBJECT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ce7",
+      "row_ids": [
+        "I-SUBJECT-ACTOR"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903cf0",
+      "row_ids": [
+        "I-INFORM-PENDING",
+        "I-VISIBLE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d02",
+      "row_ids": [
+        "I-SUBJECT-KNOWN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d0e",
+      "row_ids": [
+        "I-SUBJECT-PLAYER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d17",
+      "row_ids": [
+        "I-SUBJECT-COMPONENTS"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d1e",
+      "row_ids": [
+        "I-SUBJECT-VITALITY"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d27",
+      "row_ids": [
+        "I-SUBJECT-DEAD"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d31",
+      "row_ids": [
+        "I-SUBJECT-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d43",
+      "row_ids": [
+        "I-CORPSE-NOTIFIED"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d5d",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d64",
+      "row_ids": [
+        "O-CORPSE-SIGNAL"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d6b",
+      "row_ids": [
+        "I-SUBJECT-POSITION"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d6f",
+      "row_ids": [
+        "I-SPATIAL-SCALE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d77",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d7b",
+      "row_ids": [
+        "K-CORPSE-RADIUS"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d86",
+      "row_ids": [
+        "I-SUBJECT-ACTOR"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d8a",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d8f",
+      "row_ids": [
+        "O-CORPSE-SIGNAL"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d94",
+      "row_ids": [
+        "I-BFLAG-13",
+        "I-BFLAG-14",
+        "I-BFLAG-15",
+        "I-BFLAG-16",
+        "I-BFLAG-17"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903d9a",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903daa",
+      "row_ids": [
+        "I-OWNER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903db0",
+      "row_ids": [
+        "I-SENSOR"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903db7",
+      "row_ids": [
+        "I-SENSOR-INFORM-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903dba",
+      "row_ids": [
+        "O-SENSOR-INFORM"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903dbd",
+      "row_ids": [
+        "I-BFLAG-0",
+        "I-BFLAG-1",
+        "I-BFLAG-2",
+        "I-BFLAG-3",
+        "I-BFLAG-4",
+        "I-BFLAG-5",
+        "I-BFLAG-6",
+        "I-BFLAG-9",
+        "I-BFLAG-18",
+        "I-BFLAG-20"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903dc3",
+      "row_ids": [
+        "I-SQUAD"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903dcf",
+      "row_ids": [
+        "I-SQUAD-FLAG1"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903dee",
+      "row_ids": [
+        "O-BASE-AGGREGATES"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e03",
+      "row_ids": [
+        "I-OWNER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e07",
+      "row_ids": [
+        "I-ACTOR-XY"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e0c",
+      "row_ids": [
+        "O-ZONE-ORIGIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e29",
+      "row_ids": [
+        "I-ROOT-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e37",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e3b",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e3f",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e43",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e47",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e4b",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e56",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e5a",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e5e",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e63",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e6b",
+      "row_ids": [],
+      "exclusion": "temporary ancestor-vector allocator"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e70",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e77",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e81",
+      "row_ids": [],
+      "exclusion": "temporary ancestor-vector byte copy"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e86",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e8f",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903e93",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ea8",
+      "row_ids": [],
+      "exclusion": "temporary inline-buffer availability flag"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903eae",
+      "row_ids": [],
+      "exclusion": "address arithmetic, not a stored-value read"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ec2",
+      "row_ids": [],
+      "exclusion": "temporary allocation header before free"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903edb",
+      "row_ids": [],
+      "exclusion": "temporary allocation free"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ee0",
+      "row_ids": [
+        "I-ACTIVE-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ee7",
+      "row_ids": [],
+      "exclusion": "address arithmetic, not a stored-value read"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903eeb",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ef2",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ef6",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903efa",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f09",
+      "row_ids": [],
+      "exclusion": "NOP address spelling, no dereference"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f15",
+      "row_ids": [],
+      "exclusion": "temporary ancestor-vector element append"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f18",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f20",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f26",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f2d",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f31",
+      "row_ids": [],
+      "exclusion": "temporary ancestor-vector growth"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f36",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f3d",
+      "row_ids": [
+        "I-STATE-PARENT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f41",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f50",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f56",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f5a",
+      "row_ids": [
+        "I-BFLAG-21"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f65",
+      "row_ids": [
+        "O-INTERRUPT-WALK"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f70",
+      "row_ids": [
+        "O-INTERRUPT-WALK"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f80",
+      "row_ids": [],
+      "exclusion": "temporary ancestor-vector reverse iterator"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f88",
+      "row_ids": [
+        "I-STATE-INTERRUPT-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f8b",
+      "row_ids": [
+        "O-INTERRUPT-WALK"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903f8e",
+      "row_ids": [
+        "I-BFLAG-21"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903fa4",
+      "row_ids": [],
+      "exclusion": "temporary ancestor-vector interrupted state"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903fac",
+      "row_ids": [
+        "O-INTERRUPT-WALK"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903fb1",
+      "row_ids": [],
+      "exclusion": "read-modify-write preserves prior bits before setting flag25; no test of preserved bits"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903fbb",
+      "row_ids": [
+        "O-INTERRUPT-WALK"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903fc1",
+      "row_ids": [
+        "O-INTERRUPT-WALK"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903fd2",
+      "row_ids": [
+        "I-CURRENT-ORDER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903fdc",
+      "row_ids": [
+        "I-IMMEDIATE-QUEUE-COUNT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903fe5",
+      "row_ids": [
+        "I-ACTIVE-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903fec",
+      "row_ids": [
+        "I-STATE-EXECUTE-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903fef",
+      "row_ids": [
+        "O-STATE-EXECUTE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ff2",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ff6",
+      "row_ids": [],
+      "exclusion": "temporary ancestor-vector destruction"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x903ffb",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x903b10",
+      "instruction_rva": "0x90400e",
+      "row_ids": [],
+      "exclusion": "invalid temporary allocator metadata abort"
+    },
+    {
+      "function_rva": "0x912110",
+      "instruction_rva": "0x912114",
+      "row_ids": [
+        "I-STATE-EVENT-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912110",
+      "instruction_rva": "0x91211a",
+      "row_ids": [
+        "I-EVENT-CODE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912110",
+      "instruction_rva": "0x91211e",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912110",
+      "instruction_rva": "0x912123",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912110",
+      "instruction_rva": "0x912129",
+      "row_ids": [
+        "O-SEND-STATE-EVENT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912170",
+      "instruction_rva": "0x912170",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912170",
+      "instruction_rva": "0x91217a",
+      "row_ids": [
+        "I-STATE-EVENT-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912170",
+      "instruction_rva": "0x912183",
+      "row_ids": [
+        "O-SEND-STATE-EVENT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912170",
+      "instruction_rva": "0x912186",
+      "row_ids": [
+        "I-STATE-CHILD"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912170",
+      "instruction_rva": "0x912190",
+      "row_ids": [
+        "I-STATE-EVENT-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912170",
+      "instruction_rva": "0x912199",
+      "row_ids": [
+        "O-SEND-STATE-EVENT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912170",
+      "instruction_rva": "0x91219c",
+      "row_ids": [
+        "I-STATE-CHILD"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912170",
+      "instruction_rva": "0x9121a5",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9121c0",
+      "instruction_rva": "0x9121c0",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9121c0",
+      "instruction_rva": "0x9121c4",
+      "row_ids": [
+        "I-CANDIDATE-LABEL",
+        "O-NAMED-GATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9121c0",
+      "instruction_rva": "0x9121cb",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9121c0",
+      "instruction_rva": "0x9121cf",
+      "row_ids": [
+        "I-ACTION-LABEL"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9121c0",
+      "instruction_rva": "0x9121d8",
+      "row_ids": [
+        "O-NAMED-GATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9121c0",
+      "instruction_rva": "0x9121e2",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9121c0",
+      "instruction_rva": "0x9121e6",
+      "row_ids": [
+        "I-BFLAG-22"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912200",
+      "instruction_rva": "0x91220d",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912200",
+      "instruction_rva": "0x912211",
+      "row_ids": [
+        "O-PREPARE-INTERRUPT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912200",
+      "instruction_rva": "0x91221b",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912200",
+      "instruction_rva": "0x91221f",
+      "row_ids": [
+        "I-CURRENT-ORDER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912200",
+      "instruction_rva": "0x912229",
+      "row_ids": [
+        "I-ORDER-SET-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912200",
+      "instruction_rva": "0x91222e",
+      "row_ids": [
+        "O-PREPARE-INTERRUPT",
+        "O-SET-ORDER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912200",
+      "instruction_rva": "0x912231",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912200",
+      "instruction_rva": "0x912235",
+      "row_ids": [
+        "O-PREPARE-INTERRUPT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912260",
+      "instruction_rva": "0x912266",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912260",
+      "instruction_rva": "0x91226d",
+      "row_ids": [
+        "O-PREPARE-INTERRUPT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912260",
+      "instruction_rva": "0x912277",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912260",
+      "instruction_rva": "0x91227b",
+      "row_ids": [
+        "I-CURRENT-ORDER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912260",
+      "instruction_rva": "0x912285",
+      "row_ids": [
+        "I-ORDER-SET-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912260",
+      "instruction_rva": "0x91228a",
+      "row_ids": [
+        "O-PREPARE-INTERRUPT",
+        "O-SET-ORDER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912260",
+      "instruction_rva": "0x91228d",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912260",
+      "instruction_rva": "0x912291",
+      "row_ids": [
+        "O-PREPARE-INTERRUPT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912260",
+      "instruction_rva": "0x91229e",
+      "row_ids": [
+        "O-PREPARE-INTERRUPT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912370",
+      "instruction_rva": "0x912370",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912370",
+      "instruction_rva": "0x912382",
+      "row_ids": [
+        "O-CREATE-SEQUENCE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912370",
+      "instruction_rva": "0x91238f",
+      "row_ids": [
+        "O-CREATE-SEQUENCE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912370",
+      "instruction_rva": "0x91239b",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912370",
+      "instruction_rva": "0x91239f",
+      "row_ids": [
+        "I-CURRENT-ORDER"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912370",
+      "instruction_rva": "0x9123a8",
+      "row_ids": [
+        "I-ORDER-SET-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912370",
+      "instruction_rva": "0x9123ae",
+      "row_ids": [
+        "O-SET-ORDER",
+        "O-CREATE-SEQUENCE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912370",
+      "instruction_rva": "0x9123b4",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x9123d0",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x9123d5",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x9123df",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x9123e6",
+      "row_ids": [
+        "O-ATTACH-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x9123ed",
+      "row_ids": [
+        "O-ATTACH-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x9123f4",
+      "row_ids": [
+        "I-STATE-EVENT-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x9123fa",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x9123ff",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x912407",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x91240d",
+      "row_ids": [
+        "O-ATTACH-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x912410",
+      "row_ids": [
+        "I-OWNED-CHILD-END"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x912414",
+      "row_ids": [],
+      "exclusion": "address arithmetic, not a stored-value read"
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x912418",
+      "row_ids": [
+        "I-OWNED-CHILD-CAPACITY"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x91241e",
+      "row_ids": [
+        "O-ATTACH-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x912424",
+      "row_ids": [
+        "I-OWNED-CHILD-END",
+        "O-ATTACH-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x912429",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x912434",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x912439",
+      "row_ids": [
+        "O-ATTACH-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9123d0",
+      "instruction_rva": "0x91243e",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x912460",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x912470",
+      "row_ids": [
+        "I-STATE-CHILD"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x91247e",
+      "row_ids": [
+        "O-SWITCH-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x912483",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x912487",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x91248c",
+      "row_ids": [
+        "O-SWITCH-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x912490",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x912498",
+      "row_ids": [
+        "O-SWITCH-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x9124a1",
+      "row_ids": [
+        "I-STATE-CHILD"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x9124a5",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x9124aa",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x9124af",
+      "row_ids": [
+        "I-STATE-EVENT-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x9124b2",
+      "row_ids": [
+        "O-SWITCH-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912460",
+      "instruction_rva": "0x9124b5",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9124d0",
+      "instruction_rva": "0x9124d4",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9124d0",
+      "instruction_rva": "0x9124d8",
+      "row_ids": [
+        "I-STATE-CHILD"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9124d0",
+      "instruction_rva": "0x9124dc",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9124d0",
+      "instruction_rva": "0x9124e5",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9124d0",
+      "instruction_rva": "0x9124ed",
+      "row_ids": [
+        "O-REENTER-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9124d0",
+      "instruction_rva": "0x9124f4",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9124d0",
+      "instruction_rva": "0x9124f9",
+      "row_ids": [
+        "I-STATE-CHILD"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9124d0",
+      "instruction_rva": "0x9124fd",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x9124d0",
+      "instruction_rva": "0x912506",
+      "row_ids": [
+        "I-STATE-EVENT-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x9124d0",
+      "instruction_rva": "0x912509",
+      "row_ids": [
+        "O-REENTER-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912520",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x91252a",
+      "row_ids": [
+        "I-STATE-EVENT-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912533",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912538",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912541",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912549",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x91254e",
+      "row_ids": [
+        "O-DEACTIVATE-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912551",
+      "row_ids": [
+        "I-STATE-CHILD"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x91255f",
+      "row_ids": [
+        "O-DEACTIVATE-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912564",
+      "row_ids": [
+        "I-STATE-PARENT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912568",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x91256d",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912576",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x91257e",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912583",
+      "row_ids": [
+        "O-DEACTIVATE-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x91258b",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x91258f",
+      "row_ids": [
+        "O-DEACTIVATE-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x912599",
+      "row_ids": [
+        "I-STATE-BRAIN"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x91259d",
+      "row_ids": [
+        "I-STATE-PARENT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x9125a1",
+      "row_ids": [
+        "O-DEACTIVATE-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x9125a8",
+      "row_ids": [
+        "I-STATE-PARENT"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x9125ac",
+      "row_ids": [
+        "I-STATE-EVENT-DISPATCH"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x9125af",
+      "row_ids": [
+        "O-DEACTIVATE-STATE"
+      ],
+      "exclusion": ""
+    },
+    {
+      "function_rva": "0x912520",
+      "instruction_rva": "0x9125b2",
+      "row_ids": [],
+      "exclusion": "ABI save/restore or local event/vector/argument scratch; derived, not an independent input"
+    }
+  ],
+  "claim_limit": "All memory-spelled operands/CALLs in the eleven C-BASE entries are linked or explicitly excluded as ABI/local/derived storage. Semantic contract truth and transitive family bodies are not proved by this census."
+}
