@@ -1,0 +1,607 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "binary": {
+    "name": "call_to_arms.exe",
+    "steam_build_id": "25492057",
+    "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+    "file_size": 23592448,
+    "image_base": "0x140000000",
+    "image_size": 24145920,
+    "coff_timestamp": 1790172359
+  },
+  "warning": "Literal-displacement leads only. Unrelated objects/stack slots can match; aliased pointers, bulk accesses, adjusted this pointers, and undisassembled code can be missed.",
+  "source_scan_sha256": "6b7f89fe36cb6819532ca88efa8e9f81fa828e960730abd6006e91626ad0a301",
+  "instructions_visited": 3851164,
+  "literal_lead_count": 1861,
+  "direct_memory_dispatch_count": 51,
+  "dispatches": [
+    {
+      "at_rva": "0xe772a",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xe76c0",
+      "ghidra_name": "FUN_1400e76c0",
+      "receiver_review": "Foreign chassis: actor+DE0 receiver, not actor+DC8"
+    },
+    {
+      "at_rva": "0x21be89",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [R8 + 0xe8]",
+      "function_rva": "0x21be40",
+      "ghidra_name": "FUN_14021be40",
+      "receiver_review": "Foreign GUI GameBar team table0x102bfa8 slot72"
+    },
+    {
+      "at_rva": "0x26f3a1",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x26f300",
+      "ghidra_name": "FUN_14026f300",
+      "receiver_review": "Foreign GUI SceneLauncher Singleplayer/Save tables0x103b250/0x103b388 slot25"
+    },
+    {
+      "at_rva": "0x27e280",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x27df30",
+      "ghidra_name": "FUN_14027df30",
+      "receiver_review": "Foreign GUI PageInventoryItem/StoreItem description/control path"
+    },
+    {
+      "at_rva": "0x34a9c0",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RBX + 0xe8]",
+      "function_rva": "0x34a850",
+      "ghidra_name": "FUN_14034a850",
+      "receiver_review": "Foreign GUI MenuWithButtons constructor/child control"
+    },
+    {
+      "at_rva": "0x435afc",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x435af0",
+      "ghidra_name": "FUN_140435af0",
+      "receiver_review": "Foreign Multiplayer GamePlay EvacuationGame table0x10714e8 slot28"
+    },
+    {
+      "at_rva": "0x44028c",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x440250",
+      "ghidra_name": "FUN_140440250",
+      "receiver_review": "Foreign Steam interface returned by SteamInternal_ContextInit"
+    },
+    {
+      "at_rva": "0x4ae5a5",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RBX + 0xe8]",
+      "function_rva": "0x4ae2d0",
+      "ghidra_name": "FUN_1404ae2d0",
+      "receiver_review": "Foreign GameControl ButtonActor table0x107ecd0 slot42"
+    },
+    {
+      "at_rva": "0x4bdd04",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x4bdc70",
+      "ghidra_name": "FUN_1404bdc70",
+      "receiver_review": "Foreign Render LayeredMaterial table0x107fb90 slot29"
+    },
+    {
+      "at_rva": "0x4e8fe9",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x4e8f90",
+      "ghidra_name": "FUN_1404e8f90",
+      "receiver_review": "Foreign Steam interface returned by SteamInternal_ContextInit"
+    },
+    {
+      "at_rva": "0x50064e",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x500630",
+      "ghidra_name": "FUN_140500630",
+      "receiver_review": "Foreign DX11 context+10: caller0x504ff0 casts HwDeviceContext to Dx11DeviceContext"
+    },
+    {
+      "at_rva": "0x501ccd",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x501b30",
+      "ghidra_name": "FUN_140501b30",
+      "receiver_review": "Foreign render context state flush: caller0x500a00; integer binding index and resource arguments"
+    },
+    {
+      "at_rva": "0x502e67",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "INDIRECTION",
+      "instruction": "JMP qword ptr [RAX + 0xe8]",
+      "receiver_review": "Foreign Render Dx11DeviceContext table0x1084d88 slot32=0x4ff3e0 takes callback0x502e64; E8 tailcall0x502e67"
+    },
+    {
+      "at_rva": "0x505c4c",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x505c00",
+      "ghidra_name": "FUN_140505c00",
+      "receiver_review": "Foreign Render Dx11Device table0x1084540 slots19/20/21/23/22; Dx11ConstantBuffer cast"
+    },
+    {
+      "at_rva": "0x505cfc",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x505cb0",
+      "ghidra_name": "FUN_140505cb0",
+      "receiver_review": "Foreign Render Dx11Device table0x1084540 slots19/20/21/23/22; Dx11ConstantBuffer cast"
+    },
+    {
+      "at_rva": "0x505dac",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x505d60",
+      "ghidra_name": "FUN_140505d60",
+      "receiver_review": "Foreign Render Dx11Device table0x1084540 slots19/20/21/23/22; Dx11ConstantBuffer cast"
+    },
+    {
+      "at_rva": "0x505e5c",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x505e10",
+      "ghidra_name": "FUN_140505e10",
+      "receiver_review": "Foreign Render Dx11Device table0x1084540 slots19/20/21/23/22; Dx11ConstantBuffer cast"
+    },
+    {
+      "at_rva": "0x505f2b",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x505ec0",
+      "ghidra_name": "FUN_140505ec0",
+      "receiver_review": "Foreign Render Dx11Device table0x1084540 slots19/20/21/23/22; Dx11ConstantBuffer cast"
+    },
+    {
+      "at_rva": "0x59e2bf",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x59e1d0",
+      "ghidra_name": "FUN_14059e1d0",
+      "receiver_review": "Foreign material factory0x6469f0 with literal layered; receiver stored at caller+8"
+    },
+    {
+      "at_rva": "0x5c58fd",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x5c5760",
+      "ghidra_name": "FUN_1405c5760",
+      "receiver_review": "Foreign geometry/pose hierarchy, transform pointer argument; human-geometry0x821490 -> pose nodes+0xC8/+0xD0"
+    },
+    {
+      "at_rva": "0x6b2d5c",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "INDIRECTION",
+      "instruction": "JMP qword ptr [RAX + 0xe8]",
+      "function_rva": "0x6b2cc0",
+      "ghidra_name": "FUN_1406b2cc0",
+      "receiver_review": "Foreign Steam interface returned by SteamInternal_ContextInit"
+    },
+    {
+      "at_rva": "0x6b2f0b",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "INDIRECTION",
+      "instruction": "JMP qword ptr [RAX + 0xe8]",
+      "function_rva": "0x6b2e80",
+      "ghidra_name": "FUN_1406b2e80",
+      "receiver_review": "Foreign Steam interface returned by SteamInternal_ContextInit"
+    },
+    {
+      "at_rva": "0x6b30f1",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "INDIRECTION",
+      "instruction": "JMP qword ptr [RAX + 0xe8]",
+      "function_rva": "0x6b3070",
+      "ghidra_name": "FUN_1406b3070",
+      "receiver_review": "Foreign Steam interface returned by SteamInternal_ContextInit"
+    },
+    {
+      "at_rva": "0x941e37",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00",
+      "receiver_review": "Human brain: recovery/behavior transition; fine/flow/Q2 maps"
+    },
+    {
+      "at_rva": "0x94229b",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00",
+      "receiver_review": "Human brain: recovery/behavior transition; fine/flow/Q2 maps"
+    },
+    {
+      "at_rva": "0x944ebe",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10",
+      "receiver_review": "Human brain: recovery/behavior transition; fine/flow/Q2 maps"
+    },
+    {
+      "at_rva": "0x94512b",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x9450b0",
+      "ghidra_name": "FUN_1409450b0",
+      "receiver_review": "Human brain: near-ally exchange; RTTI dynamic cast and self receiver"
+    },
+    {
+      "at_rva": "0x9451d2",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0x945150",
+      "ghidra_name": "FUN_140945150",
+      "receiver_review": "Human brain: effective-health cap; owner+38 -> components+578 -> vitality+18"
+    },
+    {
+      "at_rva": "0xa1c802",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xa1b320",
+      "ghidra_name": "FUN_140a1b320",
+      "receiver_review": "Foreign scene entity iteration: entity+38 lifecycle flags, entity slot29 (systems map), no actor+DC8 dereference"
+    },
+    {
+      "at_rva": "0xa5a4e7",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xa5a490",
+      "ghidra_name": "FUN_140a5a490",
+      "receiver_review": "Stats morale: event/subject actor+DC8 -> brain"
+    },
+    {
+      "at_rva": "0xa5a541",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xa5a490",
+      "ghidra_name": "FUN_140a5a490",
+      "receiver_review": "Stats morale: event/subject actor+DC8 -> brain"
+    },
+    {
+      "at_rva": "0xa5a5ad",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xa5a490",
+      "ghidra_name": "FUN_140a5a490",
+      "receiver_review": "Stats morale: event/subject actor+DC8 -> brain"
+    },
+    {
+      "at_rva": "0xa5a7e3",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xa5a5f0",
+      "ghidra_name": "FUN_140a5a5f0",
+      "receiver_review": "Stats morale: event/subject actor+DC8 -> brain"
+    },
+    {
+      "at_rva": "0xa9ea2c",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xa9ea00",
+      "ghidra_name": "FUN_140a9ea00",
+      "receiver_review": "Foreign eButton/eStateButton tables0x1004938/0x1004bf0 slot21"
+    },
+    {
+      "at_rva": "0xab5946",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RBX + 0xe8]",
+      "function_rva": "0xab55f0",
+      "ghidra_name": "FUN_140ab55f0",
+      "receiver_review": "Foreign eInputLine table0x1108450 slot39"
+    },
+    {
+      "at_rva": "0xab59e1",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RBX + 0xe8]",
+      "function_rva": "0xab55f0",
+      "ghidra_name": "FUN_140ab55f0",
+      "receiver_review": "Foreign eInputLine table0x1108450 slot39"
+    },
+    {
+      "at_rva": "0xb4554a",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RDX + 0xe8]",
+      "function_rva": "0xb45520",
+      "ghidra_name": "FUN_140b45520",
+      "receiver_review": "Foreign chassis: actor+DE0 receiver, not actor+DC8"
+    },
+    {
+      "at_rva": "0xb514c9",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xb512c0",
+      "ghidra_name": "FUN_140b512c0",
+      "receiver_review": "Foreign GameControl PanelSquads table0x111e2b8 slot29"
+    },
+    {
+      "at_rva": "0xb6636c",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xb65f50",
+      "ghidra_name": "FUN_140b65f50",
+      "receiver_review": "Foreign chassis: actor+DE0 receiver, not actor+DC8"
+    },
+    {
+      "at_rva": "0xb74379",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xb74330",
+      "ghidra_name": "FUN_140b74330",
+      "receiver_review": "Foreign Interface ActionSquad/Custom action slot26, this receiver"
+    },
+    {
+      "at_rva": "0xb7b5a3",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xb7b570",
+      "ghidra_name": "FUN_140b7b570",
+      "receiver_review": "Foreign chassis: actor+DE0 receiver, not actor+DC8"
+    },
+    {
+      "at_rva": "0xbdae49",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xbdae00",
+      "ghidra_name": "FUN_140bdae00",
+      "receiver_review": "Foreign DP Missions List table0x1130f30 slot29, child control receiver"
+    },
+    {
+      "at_rva": "0xc5e313",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xc5e2c0",
+      "ghidra_name": "FUN_140c5e2c0",
+      "receiver_review": "Foreign packet/config predicate: pointer argument, AL result, serialized packet0x34 via0xCECD10/0xC66480; not float-delta interface"
+    },
+    {
+      "at_rva": "0xc60694",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xc605b0",
+      "ghidra_name": "FUN_140c605b0",
+      "receiver_review": "Foreign Multiplayer ServerService/ReplayServerService tables0x113bf78/0x113c120 slot9"
+    },
+    {
+      "at_rva": "0xcbb624",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xcbb540",
+      "ghidra_name": "FUN_140cbb540",
+      "receiver_review": "Foreign Multiplayer Game receiver from0xD0F070"
+    },
+    {
+      "at_rva": "0xcbb7bc",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xcbb540",
+      "ghidra_name": "FUN_140cbb540",
+      "receiver_review": "Foreign Multiplayer Game receiver from0xD0F070"
+    },
+    {
+      "at_rva": "0xd1ebfa",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xd1e7c0",
+      "ghidra_name": "FUN_140d1e7c0",
+      "receiver_review": "Foreign Multiplayer GamePlay FrontlineGame table0x114a398 slots47/70"
+    },
+    {
+      "at_rva": "0xd1ec2a",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xd1e7c0",
+      "ghidra_name": "FUN_140d1e7c0",
+      "receiver_review": "Foreign Multiplayer GamePlay FrontlineGame table0x114a398 slots47/70"
+    },
+    {
+      "at_rva": "0xd20adc",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xd20ad0",
+      "ghidra_name": "FUN_140d20ad0",
+      "receiver_review": "Foreign Multiplayer GamePlay FrontlineGame table0x114a398 slots47/70"
+    },
+    {
+      "at_rva": "0xdae929",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xdae650",
+      "ghidra_name": "FUN_140dae650",
+      "receiver_review": "Foreign graphics COM format-support query: integer format and output pointer, HRESULT; texture/feature-level context"
+    },
+    {
+      "at_rva": "0xdaf441",
+      "displacement": "0xe8",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CALL qword ptr [RAX + 0xe8]",
+      "function_rva": "0xdaf390",
+      "ghidra_name": "FUN_140daf390",
+      "receiver_review": "Foreign graphics COM format-support query: integer format and output pointer, HRESULT; texture/feature-level context"
+    }
+  ],
+  "additional_register_dispatch": {
+    "at_rva": "0x945119",
+    "slot_load_rva": "0x945104",
+    "receiver": "human brain self; exchange",
+    "function_rva": "0x9450b0"
+  },
+  "export_reports": [
+    {
+      "local_path": "local-work/exports/build-25492057/call_to_arms-decision-q4-discovery/export.json",
+      "sha256": "e2bdbdab97d7622dbe08afcaf5c07b30a417f6ad86327c7b21b260b23fcd2aa5"
+    },
+    {
+      "local_path": "local-work/exports/build-25492057/call_to_arms-decision-q4-discovery2/export.json",
+      "sha256": "8e9446a561f8d78b933a3049926123ade23c99adf6a59ca4961c4113599a39f3"
+    },
+    {
+      "local_path": "local-work/exports/build-25492057/call_to_arms-decision-q4-slots/export.json",
+      "sha256": "d329078917eade9484857adedbb713b4f10ecc3601503eb2c028dfaac1e4556c"
+    },
+    {
+      "local_path": "local-work/exports/build-25492057/call_to_arms-decision-q4-bindings/export.json",
+      "sha256": "335113fcd575fe8481c7952351a76066c13bb94d60296305b5b118e21c8d3e21"
+    },
+    {
+      "local_path": "local-work/exports/build-25492057/call_to_arms-decision-q4/export.json",
+      "sha256": "787e97865b1c9f6145978c9739052e90ec685def9bb7c4eca6330016259665fa"
+    }
+  ]
+}

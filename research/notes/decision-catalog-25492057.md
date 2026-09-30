@@ -833,3 +833,83 @@ actual self position and the intended tolerance separately. A runtime scenario
 must confirm accepted orders, achieved distance and interruption timing; static
 code cannot report those outcomes for a mission. This closes the contract
 without entering pathfinding, animation or physical-movement internals.
+
+## Q4 — morale events and freshness
+
+This closes the Q4 blanks in **I-S**, **I-RECOVERY-DEADLINE** and
+**O-MORALE-DELTA**. Earlier entries remain as historical evidence.
+S is the human brain's morale-associated float at +0x474, initialized to100
+with deadline+0x478=0 (constructor0x94190B). It is not the sensor's threat or
+suppression accumulator. The named binding is
+Scene::Stats::eMoraleProcessor, RTTI table0x10FF320, slot4=0xA5A490.
+
+Human/client slot29=0x945010 takes the brain in RCX and float delta in XMM1.
+It writes clamp(S+delta,0,100) at0x945067. A strictly negative delta also writes
+now+convert(10) to+0x478 at0x94508F, even if S was already0. Positive/zero deltas
+do not shorten that hold. It has no completion/result handle, allocation,
+retention or cancellation; the write is immediate. P-call validity applies.
+
+| Trigger / name | Delta and recipients | Phase and exact evidence |
+|---|---|---|
+| Construction | Self S=100; recovery deadline0. | Human constructor before attachment; Q2 map0x94190B. Copy/save/load visitors reviewed in Q2 do not copy/serialize S or its deadline. |
+| Behavior0 recovery to2 | Self +30 when B·retreatRatio>=A. | During behavior selection, before state2 store.0x941E37; outlined duplicate0x944EBE (Q2: no executable caller established). Fine/flow/Q2 maps. |
+| Timed recovery | Self +0.5·100/120, then deadline=now+convert(0.5). | Slot35 after base reconsideration0x903B10. Zero or expired deadline permits one increment; future deadline skips.0x94225B..0x9422B2. This is one step per eligible invocation, not catch-up for elapsed time or guaranteed two updates per unit. |
+| Stats type5: health change | Affected actor's brain gets20·d, where d=(new raw health−old raw health)/raw maximum. | Vitality health setter0x925190 writes raw health first, then builds event5 via0x4E05D0 and synchronously publishes at0x925231, unless vitality+0x174 bit0 suppresses the event. Effective-to-raw factor0x9291C0 is the existing health boundary; damage internals stop there. |
+| Type5 with d<0: health cap | After20·d, affected human slot31=0x945150 lowers S, if needed, to max(0,100·effectiveCurrentHealth/effectiveMaxHealth) via a second slot29 delta. It never raises S. | Processor calls29 at0xA5A4E7 then31 at0xA5A4FB. Health getters0x925010/0x924F90; cap subtraction0x9451BF and call0x9451D2. Healing/zero delta takes0xA5A541 directly and skips both the cap and source reward. |
+| Type5 with d<0: enemy damage reward | Nonnull source actor gets−20·d only when relationship(affected,source,ignoreMask=false)==enemy1. No radius or ally distribution. |0xA5A501..0xA5A541, after affected actor delta/cap. Event source actor is the optional source snapshot at event+0x28; affected actor is+0x10 and d is float+0x128. |
+| Stats type3: destruction/casualty | Distribute a total−60 around affected actor through its cached apparent allies, radius20·L. The affected actor is not separately given−60. |0xA5A554..0xA5A578. Vitality Die0x924BA0 calls publisher0x926DD0 on dying/death branches (0x924D5B/0x924EE5). Publisher requires owner lifecycle+0x38 bit13, constructs event3 via0x4E0490/0x4E0540, delivers0x926E2C. |
+| Type3: enemy casualty reward | If source is nonnull and relationship(affected,source,false)==enemy1: source brain gets+10, followed by a separate total+10 distribution around source, radius20·L. |0xA5A57D..0xA5A5D7. No ally check on affected victim is needed for its penalty distribution. |
+| Other type3 publishers | Same processor rules, rather than a different morale formula. | Interaction::eKillCrew0x7432A0 and Interaction::eAction_StatNotify0x74E510 also call0x4E0490. RTTI tables0x10D2A10/0x10D45E8, slot9. StatNotify's configured event-kind3 branch emits it. Thus type3 is a stats notification, not proof that this call physically killed an actor. |
+| Newly near apparent ally | Human slot30=0x9450B0 casts the other actor's brain to eHumanBrain. Let d=(other.S−self.S)·0.25 from the pre-write values; call self29 with+d then other29 with−d. Both use ordinary clamp/negative-hold rules; the gap halves for finite in-range values. | Relationship refresh0x878560 sets subject+0x10 bit20 when apparent ally2 and XY distance<8·L, clears beyond16·L or when no longer ally/bound, and preserves the bit between thresholds (including equality). A0→1 edge with unusable4 clear calls observer brain30 at0x878723. Calls0x945119/0x94512B; no periodic exchange while bit remains set. |
+
+For casualty distributions, **0xA5A5F0** uses origin actor+0xDD0→sensor,
+category2 begin/end at+0x298/+0x2A0. It accepts subjects with relationship+0x14
+bit2 and nonnull actor+0x18. For each, using current actor XYZ, define
+w=1−clamp(distance/(20·L),0,1). When W=sum(w)>0 it calls each accepted actor's
+brain29 with total·w/W (0xA5A7E3). At/outside the radius the contribution is0;
+there is no effect if every weight is0. The total is distributed, not awarded
+individually to every ally; clamping can reduce the net change. This helper
+does not enumerate the whole scene or insert the origin into its own list.
+Cached category/relation controls membership, current XYZ controls weight.
+The default spatial L is20, not a claim that engine coordinates are meters.
+
+**Delivery and validity.** Collector initialization0xA57DD0 appends the morale
+processor unconditionally after per-player stats processors and the optional
+event logger (0xA57FE6/0xA57FF8; append0xA58230). Publication0xA588F0 iterates
+scene+0x1F0 collector's processor vector immediately, stopping if a prior
+processor returns false, then notifies listeners. Morale processor itself
+returns true and skips all changes under Q2's multiplayer-client predicate
+0xC0B630. Type3 publication can also return before local delivery under that
+predicate unless forced. Network routing beyond this gate is parked.
+
+Events therefore change S synchronously during health/death or authored stats
+publication, independently of the scheduled brain selector. Near-ally exchange
+occurs during relationship refresh (perception commit and other refresh
+callers); timed recovery occurs at the slot35 tail. Sensor membership can
+predate a stats event. There is no atomic multi-recipient snapshot or fixed
+cross-event ordering promised by these methods. Actor/brain/sensor and subject
+bindings must be live for the synchronous call; distribution neither retains
+subjects nor null-checks every brain. Event payload/source context is borrowed
+for delivery and cleaned up by publishers; do not keep its pointers. Actual
+mission type, callback ordering and changing cached membership remain runtime
+integration checks, not unknown event meanings.
+
+**Evidence and coverage.** New [Q4 map](../artifacts/build-25492057/decision-q4-map.json)
+and [validation](../artifacts/build-25492057/decision-q4-validation.json):
+18 game entries,1,168 instruction locations,eight floats,three RTTI tables.
+The [slot29 audit](../artifacts/build-25492057/decision-q4-slot29-audit.json)
+records51 literal memory CALL/JMP sites at+0xE8: nine typed brain sites and42
+foreign chassis/UI/render/Steam/entity/network sites, plus the separately
+recognized register-call0x945119. Receiver paths, first type/ABI bindings and
+discovery-export fingerprints are retained. A displacement scan is not an
+arbitrary-alias or undisassembled-code completeness proof.
+
+Consolidation sources: [flow](flow-map-25492057.md) and
+[manifest](../artifacts/build-25492057/flow-map.json) for native recovery;
+[perception](perception-map-25492057.md) and
+[manifest](../artifacts/build-25492057/perception-map.json) for0x878560
+(0x8786CA/0x8786DB radius constants,0x8786EC/0x8786F2 bit20,0x878723 notification);
+[ownership](ownership-map-25492057.md) and
+[manifest](../artifacts/build-25492057/ownership-map.json) for relationship and
+unusable bits; Q2 for shared human/client slots and client-mode gate. No new
+verifier, game/editor execution or editor analysis.

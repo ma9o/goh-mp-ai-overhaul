@@ -1,0 +1,19 @@
+# RVA	Q4 morale event contract
+0x4e0490	destroy event record
+0x4e0540	destroy event type
+0x4e05d0	health-change event record
+0x7432a0	Interaction KillCrew stats publisher
+0x74e510	Interaction StatNotify stats publisher
+0x924ba0	vitality death boundary
+0x925190	health assignment and stats publication
+0x926dd0	death stats publication
+0x945010	morale delta
+0x9450b0	near-ally morale exchange
+0x945150	health cap
+0xa55d30	event source snapshot
+0xa57dd0	stats processor registration
+0xa58230	stats collector add processor
+0xa588f0	synchronous stats delivery
+0xa5a490	morale processor
+0xa5a5f0	distance-weighted distribution
+0xa5a830	morale processor factory

@@ -339,8 +339,6 @@ preserved human-states, movement, flow and squad maps. Five new game entries,
 598 instruction locations, two floats and one RTTI table checked. Actual arrival
 and interruption timing need runtime verification. No game/editor execution.
 
-## Open: next
-
 ### Q4. Morale inputs (`brain+0x474`)
 
 Blank: meaning of S (what moves it).
@@ -354,6 +352,23 @@ offset `0xE8`).
 
 Done when each S-changing event has a name, delta, recipient rule (radius,
 relationship) and phase.
+
+**Closed:** catalog Q4 names health-change and casualty events, health-loss
+cap, enemy rewards, distance-weighted ally distribution, near-ally exchange,
+constructor/behavior/timed recovery and synchronous delivery/client gates.
+Distribution totals are shared across cached allies; health loss applies a
+separate health-percentage cap. Pointer/cache and event ordering limits are
+explicit runtime integration checks.
+
+Evidence: [catalog Q4](decision-catalog-25492057.md#q4--morale-events-and-freshness),
+[map](../artifacts/build-25492057/decision-q4-map.json),
+[validation](../artifacts/build-25492057/decision-q4-validation.json),
+[slot29 receiver audit](../artifacts/build-25492057/decision-q4-slot29-audit.json).
+18 game entries,1,168 instruction locations,eight floats and three RTTI tables
+checked. Existing perception/ownership/flow/Q2 evidence is cited for joins.
+No game/editor execution or modification.
+
+## Open: next
 
 ### Q5. Unnamed brain fields read by decision code
 
@@ -436,6 +451,8 @@ remain usable evidence.
 - Other slot-35 blocks at `0x941F49`–`0x942253`, outside Q1's selection span: expand only if a catalog row identifies the read/output blank they fill.
 
 - Q1a temporary ancestor-vector allocation/growth and allocator metadata: no remaining catalog meaning/freshness/output-contract blank; implementation parked.
+
+- Q4 downstream stats networking, damage attribution internals and foreign slot29 implementations: parked after event/receiver binding; they fill no remaining morale row blank.
 
 ## Triage record
 
