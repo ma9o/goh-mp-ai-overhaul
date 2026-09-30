@@ -76,10 +76,14 @@ separate parser positions; no general alternate syntax is inferred here.
 Wrappers `4CD9C0/4CDA10/4CD8C0` supply creation flags1/3/5 respectively, then
 `4D27A0` resolves a definition and calls `4D2810`. Signal publication requires:
 
-- Creation bit0 set and definition14 signal object nonnull.
+- Creation bit0 set and folder-definition14 signal **type** nonzero.
 - Channel40 bit0 clear.
 - Source entity nonnull, source30 bit0 set, source3A bit0 clear.
 
+Channel48 points to a48-byte asset row, whose first pointer points to the folder
+definition. Definition14/18 stores the inline type/radius descriptor; it is not
+a signal-object pointer. This layout is clarified by the later
+[sound-definition pass](sound-definitions-map-25492057.md).
 The publisher receives the signal, source and channel30 position. Alias play
 uses payload0; raw `start_sound` uses the interaction context. Loop bit1 and a
 positive definitionC period append an18-byte repeat record (handle0, raw
@@ -93,8 +97,10 @@ footsteps8, crawl1, walk5, run15, swim8. Walk/run declare period0.5.
 Infantry-animation sounds declare signal `sound`3. Thus a sound-only marker
 can still affect AI perception when publication gates and inherited definitions
 allow it. Gear macros have no direct signal declaration; that does **not** prove
-they are silent to AI because folder inheritance is not closed here.
-`4CF490` and `4D3BC0` are concrete inheritance/asset-selection leads.
+they are silent to AI. The subsequent sound-definition pass resolves inheritance:
+`human/move/gear_rattle/normal` and `fast` inherit movement8 from `human/move`.
+The differently ordered `human/move/normal/gear_rattle` and `fast/gear_rattle`
+inherit movement5 and15 respectively. These are base-archive results.
 
 ## Exact condition inputs and the GEM difference
 

@@ -1,0 +1,5 @@
+# RVA	Sound definition callers
+0x36f260	sound_definition_callers
+0x13b18e0	sound_manager_global
+0x12f0330	sound_audio_gate_writers	write
+0xee1bb0	sound_set_literal

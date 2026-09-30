@@ -83,8 +83,12 @@ SignalPeriod, MinDistance, MaxDistance, Loudness. When the caller requests defau
 the parser looks up `default` loudness through `0x4D3D70`; missing defaults assert.
 
 `0x4D2810` creates sound-channel records of stride `0x60` in manager `+78/+80`.
-Selected channel fields: signal position `+30`, state flags `+40`, definition
-pointer `+48`, full handle `+50`, creation flags `+58`. Publishing requires the
+Selected channel fields: signal position `+30`, state flags `+40`, asset-row
+pointer `+48`, full handle `+50`, creation flags `+58`. Asset-row `+0` points
+to the folder definition; its `+14/+18` is an inline type/radius descriptor.
+The later [sound-definition pass](sound-definitions-map-25492057.md) establishes
+that extra indirection, inheritance, selection and additional cleanup paths.
+Publishing requires the
 creation flag bit0, nonzero definition signal, channel state bit0 clear, and a
 nonnull source with entity type bit0 and entity `+38` bit16 clear.
 It calls `0xA5CA90(definition+14, source, channel+30, payload)`.

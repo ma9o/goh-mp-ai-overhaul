@@ -68,7 +68,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [scripted idle policy/native conditions/interaction list execution](idle-actions-map-25492057.md), and
 [binary animation timelines/bone tracks/resource and marker audit](animation-resources-map-25492057.md), and
 [human marker actions/condition inputs/sound perception bridge](marker-actions-map-25492057.md), and
-[deferred interactions/context/cleanup/extender dispatch](interaction-lifecycle-map-25492057.md). Their open questions
+[deferred interactions/context/cleanup/extender dispatch](interaction-lifecycle-map-25492057.md), and
+[sound-folder inheritance/asset RNG/channel lifetime/base sound audit](sound-definitions-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -86,9 +87,19 @@ are historical snapshots; this frontier tracks the continuing objective.
 - Signals: named type/action/sound parsers and scene condition now mapped.
   Sound wrappers/alias handle replacement, publication gates and explicit-stop
   repeat cancellation are mapped; destroy:ge event3 reaches handler clear7676B0,
-  stopping linked alias handles and their repeats. Base movement/anims declarations publish
-  movement/sound signals. Follow folder inheritance `0x4CF490`, asset selection
-  `0x4D3BC0`, source pointer ownership/cancellation in `0x4D2810/0x4D1D20`, area lookup
+  stopping linked alias handles and their repeats. Folder inheritance4CF490,
+  path/asset selection4D3BC0/4CF9F0 and channel retirement4D2E00 are now mapped.
+  Channel48 points to asset0 then the folder's inline14/18 type/radius, correcting
+  the earlier marker map.548 base folder declarations/551 hashed text resources
+  join20,883 WAV entries in2,943 immediate directories. Gear-first normal/fast
+  folders inherit movement8; playback volume does not scale AI signal radius.
+  Multi-asset directory choices consume the current RNG with a no-repeat cycle;
+  explicit files and one-asset directories skip that draw. Pause does not itself
+  erase repeats; retirement removes the matching repeat before handle reuse.
+  Follow all loop-owner cancellation/position updates, raw source lifetime,
+  event codes FB3/FB4/FD2/FD3/FD7/FE4 and clock/pause producers, default-loudness108
+  relocation, mounted folder/cache lifetime, positional marker-macro expansion,
+  area lookup
   `0x9D2020`, receiver threshold binding; remaining perception publishers and
   vehicle response `0x98B200` now mapped (mandie triggers exposed-gunner withdrawal and pending passenger exit). Human direct brain callback `0x903690` is empty.
 - Resistance/inventory: `0x975890/0x975CD0` named levels and first-applicable

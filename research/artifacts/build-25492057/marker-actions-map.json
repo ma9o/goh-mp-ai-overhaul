@@ -1118,11 +1118,11 @@
       ]
     },
     {
-      "id": "sound_channel_definition",
+      "id": "sound_channel_asset",
       "owner": "sound_channel",
       "offset": "0x48",
       "width": 8,
-      "role": "Definition14 owns signal object, C repeat period",
+      "role": "Points to48-byte asset row; row0 points to folder definition, whose14/18 are inline signal type/radius and C is repeat period",
       "evidence_ids": [
         "game_4d2810",
         "game_4d2770",
@@ -11873,9 +11873,9 @@
     "link": "Append88-byte alias; normalize/preload nonempty path; no marker registration side effect established.",
     "play": "First alias; stop old handle, then one-shot flags1 or loop flags3; source entity, payload0. Missing alias noop.",
     "start": "Raw path; ambient flags5/source0 or one-shot flags1/source entity/payload interaction context. Parsed integer50 not consumed by this executor.",
-    "publication_gate": "creation flags bit0; definition14 signal nonzero; channel40 bit0 clear; source nonzero/source30 bit0 set/source3A bit0 clear. A5CA90(signal,source,position,payload).",
+    "publication_gate": "creation flags bit0; asset0->folder14 signal TYPE nonzero; channel40 bit0 clear; source nonzero/source30 bit0 set/source3A bit0 clear. A5CA90(signal,source,position,payload).",
     "periodic": "Loop flag bit1 plus positive definitionC period appends raw-source repeat. Explicit stop removes first repeat record for fullhandle. Periodic publication payload0.",
-    "open": "Folder inheritance/asset selection, source lifetime beyond explicit stop, missing base marker bindings and mount overrides."
+    "open": "Folder inheritance/asset selection and additional retirement paths are mapped in sound-definitions-map.json. Full raw source lifetime, missing base marker bindings and mount overrides remain open."
   },
   "resource_members": [
     {
