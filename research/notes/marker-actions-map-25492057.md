@@ -31,6 +31,11 @@ rain branches and short `on_ground` view pulses. The leg handlers also gate
 foot-dust spawning on velocity, season, rain and terrain. Macro `%0` substitution
 and preprocessing are deliberately not emulated by this extraction.
 
+A later [marker sound-path join](marker-sound-paths-25492057.md) resolves the used
+positional path expressions, preserving branch guards and unused forwarded
+arguments. It joins147 potential sound rows to the base sound-folder audit and
+records four missing paths; native preprocessing remains a separate open lead.
+
 ## Duplicate frame100 has a static answer
 
 The base `board_plane_right` definition has nine marker rows, including

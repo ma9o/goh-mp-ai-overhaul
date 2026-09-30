@@ -69,7 +69,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [binary animation timelines/bone tracks/resource and marker audit](animation-resources-map-25492057.md), and
 [human marker actions/condition inputs/sound perception bridge](marker-actions-map-25492057.md), and
 [deferred interactions/context/cleanup/extender dispatch](interaction-lifecycle-map-25492057.md), and
-[sound-folder inheritance/asset RNG/channel lifetime/base sound audit](sound-definitions-map-25492057.md). Their open questions
+[sound-folder inheritance/asset RNG/channel lifetime/base sound audit](sound-definitions-map-25492057.md), and
+[human marker path expressions/branch guards/inherited signal join](marker-sound-paths-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -98,7 +99,12 @@ are historical snapshots; this frontier tracks the continuing objective.
   erase repeats; retirement removes the matching repeat before handle reuse.
   Follow all loop-owner cancellation/position updates, raw source lifetime,
   event codes FB3/FB4/FD2/FD3/FD7/FE4 and clock/pause producers, default-loudness108
-  relocation, mounted folder/cache lifetime, positional marker-macro expansion,
+  relocation and mounted folder/cache lifetime. The marker path-expression join
+  now resolves147 potential sound rows/64 normalized paths; all three speed/sand
+  paths plus gear_rattle/lying lack a base asset. Movement start_sound integer1
+  remains one-shot; only fast breath is explicitly looped, with no base AI signal.
+  Native handling of unused omitted macro arguments and wider alias bindings remain
+  open. Continue
   area lookup
   `0x9D2020`, receiver threshold binding; remaining perception publishers and
   vehicle response `0x98B200` now mapped (mandie triggers exposed-gunner withdrawal and pending passenger exit). Human direct brain callback `0x903690` is empty.
