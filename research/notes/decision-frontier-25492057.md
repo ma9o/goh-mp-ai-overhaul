@@ -488,3 +488,72 @@ native commands (Q11). The rest is parked.
 
 Q1, Q2, Q6 and most of Q5 were not in the old frontier. J1–J8 were answerable
 from existing notes; several were still recorded there as open.
+
+## Q5 stop-point status — 2026-09-30
+
+The required status summary is complete. This fulfills the instruction under
+Open: next; there are no active research items. Stop here. Q6–Q11 remain in
+Open: later until a prototype stage needs them. Earlier plans and intermediate
+status text are retained as historical evidence; the closures below and the
+catalog's later sections record the effective result.
+
+### Closed and retained work
+
+| Item | Status and result |
+| --- | --- |
+| Q1 / Q1a | Q1 seed and split retained; Q1a base reconsideration/state-dispatch inventory closed. These are evidence for the bounded catalog, not a claim of a complete native census. |
+| Q1b | Partial checkpoint committed: 83 input records and 28 output boundaries for root/location, hazards and restoration. The remaining census is parked. |
+| Q1z | Closed bounded prototype inventory: position, stance, cover, effective health, morale, A/B, behavior/deadline, modes/flags, subject fields, relationship and clock; selected/preferred/previous targets are distinct. The requested output interfaces and their native readers/writers are cataloged to the stated stage. |
+| Q2 | Closed static behavior/deadline writer, copy/load and concrete brain-factory contracts. Human and human_client share selection but differ in refresh; A/B freshness is conditional on the scheduled job running. |
+| Q3 | Closed direct-goal effect, order ownership/cancellation, idle/tactical/cover consumption and squad completion contracts. Clearing the task flag does not prove arrival. |
+| Q4 | Closed morale event meanings, deltas, recipient selection and delivery/recovery phases, including health caps, casualty distribution and near-ally exchange. |
+| Q5 | Closed field meanings and native writer sets: +0x14C is a scheduled weapon-range cache; +0x18 records native attack construction/issue; +0x3E0 is a deferred equipment-policy deadline; +0x39C low six bits form one inhibition counter. |
+
+The [Q1z catalog overlay](decision-catalog-25492057.md#q1z--effective-prototype-catalog)
+and appended [Q2](decision-catalog-25492057.md#q2--behavior-writers-and-concrete-brain-attachment),
+[Q3](decision-catalog-25492057.md#q3--direct-goal-output-contract),
+[Q4](decision-catalog-25492057.md#q4--morale-events-and-freshness) and
+[Q5](decision-catalog-25492057.md#q5--prototype-field-meanings-and-native-writers)
+sections are the effective contracts. Q5's checked shared constant makes the
+behavior-0-to-2 morale bonus **+5**, superseding the retained +30 text in Q2/Q4.
+No active prototype blank remains assigned to Q1z or Q2–Q5.
+
+### Blanks needing runtime verification
+
+- Establish the actual configured brain name/type, ABI, attached live objects
+  and admitted callback in a mission. Static factory and borrow contracts do
+  not establish an external adapter's entry conditions or thread safety.
+- Establish the adapter's read/write phase relative to native selection,
+  queued refresh, event delivery and order callbacks. Observe actual cadence,
+  intervening writers and branch outcomes; two external field stores are not
+  proved atomic by this map.
+- Observe mission/mod values, initialized caches, scales and clock behavior.
+  Sensor/target references can outlive actor bindings, and cached subject
+  membership need not match the latest actor positions; validate admission and
+  freshness at the chosen hook.
+- Observe movement arrival, failure and cancellation in concrete scenarios,
+  including state gates and interruptions. A goal request or cleared task bit
+  is not a success receipt. Event/cache ordering and suppression/recovery
+  behavior likewise require observation in the chosen integration.
+
+No runtime verification was attempted; the game and editor were neither
+launched nor modified.
+
+### Deferred static blanks
+
+- Q6 and Q9: preferred-query sources/return ownership; linked-target type and
+  environment factor; remembered equipment lifetime, subject eligibility
+  deadline and accumulator semantics.
+- Q7 and Q8: cover descriptor roles, masks and handle validity, healing cover,
+  full fire-mode consumer/side-effect contracts and movement-output enums.
+- Q10 and Q11: complex-order sequencing/failure, secondary state events and
+  outputs, and native actor/squad go-to commands.
+- The rest of Q1b and Q1c–Q1g remain the single full-census deferral under
+  Parked. Other parked producer internals remain parked. These are deferred
+  static questions, not questions reclassified as runtime-only.
+
+The focused game disassembly passes passed their recorded instruction, data
+and RTTI checks; evidence and validation files are linked in each closed item.
+Q1z and this summary consolidate existing evidence and add no disassembly,
+manifest, validation file or verifier. Existing notes and artifacts, the old
+frontier and the earlier compatibility work are retained. No push was made.
