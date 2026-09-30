@@ -83,7 +83,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [area lifetime/overlap events/worker queues](area-lifecycle-map-25492057.md), and
 [scene spatial state/automatic obstacles/contact dispatch](area-scene-map-25492057.md), and
 [collider profiles/entity contacts/trace volume queries](entity-contact-map-25492057.md), and
-[physical contact queues/batch reduction/geometry helpers](physical-response-map-25492057.md). Their open questions
+[physical contact queues/batch reduction/geometry helpers](physical-response-map-25492057.md), and
+[contact iteration/body inputs/convex support/GJK](contact-solver-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -486,3 +487,20 @@ are historical snapshots; this frontier tracks the continuing objective.
   distance branches are mapped. Continue5FC5E0 penetration,5FAA60/5F9240 simplex,
   DT support implementations, higher sphere levels if reachable, shape loaders,
   unit/config writers and bone revision/invalid-transform preconditions.
+- Contact-solver follow-up: queue move7369D0 swaps withlast, so initial unsigned
+  owner-ID/depth ordering doesnot remain intact. Grow7345E0 copiesvalues without
+  body retention; sortpivot734CB0 remains open.73B6B0 iterates atmost4*N closing
+  contacts, propagating requested linear/angular changes through shared bodies.
+  Mode2 biases normalvelocity bypenetration/control andskips positional loop;
+  it is the only located directcaller mode. Massdivisor88, inverseinertiaCC/DC/EC,
+  position28, orientation38, velocity48/angular58 andsetterchanged1B4 are mapped.
+  Angular setter rejectsnonfinitevalues but stillmarkschanged; propagation can
+  stilluse rejectedrequested angular delta. Continue producers/integration/sleep,
+  one-bodyfrictionB ordering andmode0 quaternionmath ifreachable. TraceVolume+50
+  issecondary DT support interface; primaryslot5 enumeratesvertices. Allfour
+  primitive support methods andDT wrappers nowmapped. Simplex edges/weights,
+  subsetselection/witnesses anddistance query5F7A40 mapped withexplicitnumeric
+  limits.5FC5E0 chooses42 directions then shiftsA andrefines withdistance query;
+  alwaysreturnsALtrue, lowerfloatignored. Continue shape constructors/loaders/rays,
+  exceptionalgeometrypreconditions, sharedtolerance/global scheduling andbody
+  simulator→entity placement/landing/contactcallback lifecycle.
