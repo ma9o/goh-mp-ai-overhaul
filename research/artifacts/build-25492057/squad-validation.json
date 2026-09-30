@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "50975520c7f3e6ebd1864e612efb1b467cb44c6e44e9b81ea31eec642e079c97",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "476065250b04cde6adec4fd7cb034ae316379c96f5fd78b823bc43645159d4a6",
+      "exact_candidates": 101,
+      "exported_functions": 101,
+      "exported_basic_blocks": 1946,
+      "checked_enums": 1,
+      "checked_constants": 21,
+      "checked_method_entries": 101,
+      "checked_instruction_locations": 10193,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 84,
+      "checked_byte_sequences": 57
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "371e166dba127dd6668bbcfa0cb8d3ae7e80135b57c8bacbe3e10501986693a3",
+      "exact_candidates": 101,
+      "exported_functions": 101,
+      "exported_basic_blocks": 1923,
+      "checked_enums": 1,
+      "checked_constants": 21,
+      "checked_method_entries": 101,
+      "checked_instruction_locations": 10233,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 84,
+      "checked_byte_sequences": 57
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/squads.set",
+      "size": 652,
+      "sha256": "2447ef151cd0248f8b8d1eb32dcad67cbf10e87a50ce178692adb0c629b4a26c"
+    }
+  ],
+  "status": "passed"
+}

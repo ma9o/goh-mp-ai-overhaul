@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "steam_build_id": "25492057",
-  "fine_map_sha256": "89fe21379e14c5d341472d066dd88f1fe843fc2b5e67585319409dd71a93c6f6",
+  "fine_map_sha256": "03793df9882bf0a00d7e3570b8aa9a10db910ee6120ea4e7d565cc4a469885b0",
   "runtime_verified": false,
   "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
   "binaries": {

@@ -101,8 +101,9 @@ transition.
 ### Operatable is also derived
 
 Actor slot67 (`7F1A30 / 673B10`) requires a brain, an operability source, and no
-vitality`174` low-two-bit state. The source is either a nonempty weaponry vector
-when weaponry`49` selects it, or actor`DB4` bit12 otherwise.
+vitality`174` low-two-bit state. The source is either a nonempty occupied-human-slot-ID vector in entity
+placer`568` when its `Crew` byte49 is set, or actor`DB4` bit12 otherwise.
+This placer is distinct from actor weaponry`DD8`.
 
 `7F0130 / 672230` reconciles this result with `DB4` bit8 and sends event1A when
 needed. It has a special blinding branch: it temporarily clears bit8 during the

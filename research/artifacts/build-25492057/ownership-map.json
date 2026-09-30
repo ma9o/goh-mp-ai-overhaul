@@ -202,7 +202,7 @@
         "game": "0x7f1a30",
         "editor": "0x673b10"
       },
-      "contract": "Slot67 returns AL true only with brain, an operability source, and no vitality174 low2 bits. Source is weaponry568 flag49 ? nonempty weapon vector10..18 : actorDB4 bit12. Upper return bits not meaningful.",
+      "contract": "Slot67 returns AL true only with brain, an operability source, and no vitality174 low2 bits. Source is entity placer568 Crew byte49 ? nonempty occupied HUMAN slot-ID vector10..18 : actorDB4 bit12. Placer is distinct from weaponryDD8. Upper return bits not meaningful.",
       "status": "static_contract_reviewed",
       "cross_binary_scope": "Compared stated field/control-flow contract; diagnostics and inlining differ. Unspecified branches/dependencies are not claimed equivalent."
     },
