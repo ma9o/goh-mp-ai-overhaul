@@ -1,0 +1,16 @@
+# RVA	Label	Filter	Limit
+0x10d1e80	base_body_vtable	all	2048
+0x10d2000	entity_body_vtable	all	2048
+0x10d1d78	base_simulator_vtable	all	2048
+0x73d0f0	body_mass_readers	all	2048
+0x73d130	body_inertia_readers	all	2048
+0x73c310	body_parameter_callers	all	2048
+0x73c3f0	body_integrate_callers	all	2048
+0x73f5b0	body_refresh_callers	all	2048
+0x7370c0	entity_body_parameters_callers	all	2048
+0x73c560	body_integrate_multistage_callers	all	2048
+0x7307b0	simulator_tick_callers	all	2048
+0x7308f0	simulator_environment_mode_callers	all	2048
+0x147f9d8	sleep_motion_threshold_writers	write	2048
+0x15715b0	sleep_elapsed_threshold_writers	write	2048
+0x1556de8	history_origin_initialization	write	2048

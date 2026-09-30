@@ -27,6 +27,7 @@ after their behavior and effect on the AI contract are established.
 | Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; RepairTime/RepairOrder, countdown/restoration and repair command59; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wound-list removal and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application; vehicle allocation/root/emergency/Hideout/SmartRepair dispatcher; Repair/KitExchange/Collect/TakeItem/OrderTake and transfer/equip operations | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; Board/Bind/Emit now mapped; Repair phase6 reachability and group variants; scripted blow effects and melee defence/counterattack |
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion; animation manager pending/active membership, scene phase and immediate request-side Quant; clock/delta producer, pause tokens, explicit stepping, slowdown stack, deadline codecs, default/selected/synced RNG context | Frame event-router/worker lifecycle, registered timer registration/unlink, slowdown guard and packet producers; manager bucket creation, entity lifetime through queued work; default/entity RNG disposal and scope completeness; full deferred mesh drain; skip setter now mapped |
+| Physical entity state | Contact queues/solver; mass and inertia inputs; contact-dependent integration; force reset and pending impulses; entity/body pose conversion and recovery; four-point motion histories and two-check settling; inventory plus authored Mass; lazy 16-point interior cache and its RNG consumption | Ground/water/landing callbacks; simulator owner binding and lifetime; shape-weight and material producers; cache invalidation; force/impulse API writers; invalid-input preconditions and remaining caller ordering |
 | Group/vehicle behavior | Type roots; cannon fire/move/trailing states, role-index transfers, seat Disable and obstacle enable writers; place readiness/assignment; crew groups, sealing, entrance balancing, Board/Bind/Emit phases, traversal graph/animation/inventory, walker sync/cancel/load and occupant perception effects; six concrete exit callbacks; abandoned/ally_crew/any_crew/select bindings; boarder command reception; vehicle root/multiweapon allocation, gunner withdrawal, repairer selection, emergency triggers and basic airborne/animal roots; cannon command5E reception | Full squad/leader coordination, aircraft/helicopter chassis and animal scanners; exit source-pointer lifetime; full reservation/queue lifetime and derived chassis permissions, remaining availability flag producers; cannon matrix correction |
 | Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
 | Cross-binary comparison | Selected game/editor contracts | Compare newly reviewed contracts; distinguish outlining/inlining and behavior differences |
@@ -84,10 +85,17 @@ Existing completed passes: [initial structure](build-25492057.md),
 [scene spatial state/automatic obstacles/contact dispatch](area-scene-map-25492057.md), and
 [collider profiles/entity contacts/trace volume queries](entity-contact-map-25492057.md), and
 [physical contact queues/batch reduction/geometry helpers](physical-response-map-25492057.md), and
-[contact iteration/body inputs/convex support/GJK](contact-solver-map-25492057.md). Their open questions
+[contact iteration/body inputs/convex support/GJK](contact-solver-map-25492057.md), and
+[body integration/settling/entity mass and random interior samples](body-state-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
+
+Latest body-state pass closes the mass/inertia/base-acceleration/dirty-state
+producers, integration and sleep questions repeated in the historical contact
+follow-ups below. It also closes pivot734CB0. EntityA2C is inventory load from
+the earlier game-only damage pass; paired entity token9C binds A30 to Mass.
+The current remaining physics leads are the final body-state bullet below.
 
 - Entity/health: armor helpers, holder `+770/+774` parsers and component health
   transitions now mapped; `+758/+760` corrected to volume tags, equipped item `+3D8`.
@@ -504,3 +512,21 @@ are historical snapshots; this frontier tracks the continuing objective.
   alwaysreturnsALtrue, lowerfloatignored. Continue shape constructors/loaders/rays,
   exceptionalgeometrypreconditions, sharedtolerance/global scheduling andbody
   simulator→entity placement/landing/contactcallback lifecycle.
+- Body-state follow-up: 737100 selects contact Euler versus four-stage integration;
+  68 is linear acceleration in both, while78 is angular acceleration in Euler but
+  angular velocity increment in the multistage path. Four motion histories track
+  centre and sampled extents; two qualifying checks after the elapsed gate stop
+  simulation. phys_rest_speed initializes .001*velocityUnit but is compared to
+  squared average velocity. 737770 is a guarded zero-delta refresh, not history
+  clearing. Affine inverse NaN fallthrough also limits the state guard; no global
+  invalid-input reachability claim. Mass sums inventoryA2C and authoredA30.
+  Moments use a lazy16-point random interior cache, consuming at least48 selected
+  RNG draws; centres use weighted volume origins. GEM asserts nonworker creation
+  and nondegenerate bounds. Continue shape28/definition400 producers, cache
+  invalidation, force/torque/impulse writers and unit/configuration paths.
+  Follow72FF00 ground samples,733320/7331B0 water/landing summaries,704400 normal,
+  A26730 placement correction, simulator308/body1B8 binding and raw owner lifetime.
+  Ground contacts use A only, closing B-only friction ambiguity for that path;
+  other caller ordering and secondarymode0 angle remain. Continue human
+  throw/landing93BDD0/93DCE0, chassis request29, material coefficient parsers and
+  sharedGJK tolerance scheduling. All remain productive static leads.
