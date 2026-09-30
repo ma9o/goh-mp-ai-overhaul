@@ -1,0 +1,11 @@
+# RVA	Interaction handler lifecycle callers
+0x5c4710	interaction_lifecycle_callers
+0x5e4720	interaction_lifecycle_callers
+0x5e4930	interaction_lifecycle_callers
+0x5e4a60	interaction_lifecycle_callers
+0x5e7940	interaction_lifecycle_callers
+0x5ec500	interaction_lifecycle_callers
+0xf395b8	entity_handler_vtable
+0x5e4d90	interaction_lifecycle_callers
+0x5e7ad0	interaction_lifecycle_callers
+0x5e5460	interaction_lifecycle_callers

@@ -67,7 +67,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [pose/walking/idle profiles and human animation declarations](human-animation-profiles-map-25492057.md), and
 [scripted idle policy/native conditions/interaction list execution](idle-actions-map-25492057.md), and
 [binary animation timelines/bone tracks/resource and marker audit](animation-resources-map-25492057.md), and
-[human marker actions/condition inputs/sound perception bridge](marker-actions-map-25492057.md). Their open questions
+[human marker actions/condition inputs/sound perception bridge](marker-actions-map-25492057.md), and
+[deferred interactions/context/cleanup/extender dispatch](interaction-lifecycle-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -84,7 +85,8 @@ are historical snapshots; this frontier tracks the continuing objective.
   throwoff trajectory `0x93BDD0`, motion `0x93DCE0`, and landing callbacks.
 - Signals: named type/action/sound parsers and scene condition now mapped.
   Sound wrappers/alias handle replacement, publication gates and explicit-stop
-  repeat cancellation are mapped; base movement/anims declarations publish
+  repeat cancellation are mapped; destroy:ge event3 reaches handler clear7676B0,
+  stopping linked alias handles and their repeats. Base movement/anims declarations publish
   movement/sound signals. Follow folder inheritance `0x4CF490`, asset selection
   `0x4D3BC0`, source pointer ownership/cancellation in `0x4D2810/0x4D1D20`, area lookup
   `0x9D2020`, receiver threshold binding; remaining perception publishers and
@@ -220,14 +222,26 @@ are historical snapshots; this frontier tracks the continuing objective.
   now have literal call/macro closure; most play sound, while jump reaches eject.
   Sound/tags/call/view/delay contracts and velocity/terrain/rain/season/altitude
   inputs are mapped. GEM season predicate is alwaysfalse, unlike game; terrain
-  height returnsXMM0 despite empty game decompilation. Continue captured-context
-  queue Quant766ED0, handler destruction769910, reentrant enqueue/cancel,
+  height returnsXMM0 despite empty game decompilation. Quant766FE0 now maps
+  effect-before-action batches; callbacks mutate live vectors, so cancellation
+  cannot find still-detached rows. Context copy owns tokens only; frozen bit16
+  does not retain entities. Thaw rebinds volume/component by name. Named cancel
+  does not release captures in its local path; full clear does. GEM handler
+  destruction requires calls.empty(). Dynamic receiver766ED0 uses4-byte ID/index
+  rows and extender slot8, with light/shield/cannon/structure registrations mapped.
+  Continue context serialization/raw references, global scratch recursion and
+  concurrency, receiver rebuild on extender replacement, full registry reload,
+  light79F5E0/79F870/79FE90, shield8A/8B/982A10, structure callbacks,
   spawn7538F0, physical throw/landing and handler bit0 consumption. Four base
   catalog markers lack handlers in human.inc; inherited layers remain open.
   Rotation uses bone-map ordinal as track index and a shared
   binaryED once gate; four base rotation declarations have matched ordinal0 or
   absent body, so no observed ordinal mismatch there. Continue mount precedence,
-  directory ordering and shared-resource lifetime.
+  directory ordering and shared-resource lifetime. Revolute binding50 now has
+  paired start/stop events: slot22 estimates steps as abs(228-200)/1F8 (equality
+  returns1556DE8), compared to threshold147D69C initial1. Activity transitions
+  generate extra forward/reverse token128 and paired IDs consumed by cannonC50.
+  Follow step/target/reference producers, sentinel, bone replacement and callbacks.
   Continue death animation feasibility/selection `0x938410/0x9648E0/0x9645D0`,
   aimset/blendspace parameter producers, remaining inherited marker action lists,
   root/bone transforms `0x5D3820/0x5D7410/0x5D8170/0x5D8250` and entity slot25,

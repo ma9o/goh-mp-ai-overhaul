@@ -148,8 +148,9 @@ mode through `982CC0`; entity3C bit1 adds a second target. The effect system
 inside that callee remains outside this pass.
 
 `Delay` has children28/30/38, name40, baseA0, spreadA4, `uniq`A8 and captureA9.
-`DelayEx` sets captureA9 and copies190 bytes of interaction context, retaining
-its contents through `76DEE0`. With abs(spread)<1e-5 it consumes no random draw;
+`DelayEx` sets captureA9 and copies190 bytes of interaction context, marking
+the copy through `76DEE0`; that helper does not retain entity references.
+With abs(spread)<1e-5 it consumes no random draw;
 otherwise delay is `base+(2*U-1)*spread`. The LCG uses multiplier7FF8A3ED,
 increment2AA01D31, increments its draw counter, and converts the top24 bits to
 U with mutable1571A74. The leaf initializer at4C440 stores1/16777216 there;
@@ -166,8 +167,9 @@ removes the first matching name from each queue, not every matching row.
 Capture release is explicit in `7688D0`; the row value destructor `768860`
 only destroys its token/string. Cancellation and queue compaction therefore
 need to be read together with Quant/destruction before making ownership claims.
-Immediate leads: `766ED0` (Quant), `769910` (handler destruction), captured
-context ownership and reentrant enqueue/cancel during child execution.
+Immediate leads: `766ED0` (dynamic receiver dispatch, not queue Quant), `769910`
+(handler destruction), the queue executor, captured context ownership and
+reentrant enqueue/cancel during child execution.
 
 ## Verification and continuation
 

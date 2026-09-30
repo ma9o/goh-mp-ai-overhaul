@@ -1,0 +1,966 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "binary": {
+    "filename": "call_to_arms_ed.exe",
+    "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976"
+  },
+  "types": [
+    {
+      "mangled_name": ".?AVeEntityHandler@Interaction@@",
+      "vtables": [
+        {
+          "rva": "0xf395b8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x5e7940",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x5e7940",
+                "end_rva": "0x5e7a90",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVeRevoluteBone@@",
+      "vtables": [
+        {
+          "rva": "0xf1de18",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x441b70",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x441b70",
+                "end_rva": "0x441bae",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x96070",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x96080",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4e90e0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x4e9100",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4e9100",
+                "end_rva": "0x4e9180",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x4e9190",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x4e9330",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x43da50",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43da50",
+                "end_rva": "0x43db1c",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x95ad0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x4428b0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4428b0",
+                "end_rva": "0x442908",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x4426a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4426a0",
+                "end_rva": "0x442732",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 11,
+              "rva": "0x436550",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x436550",
+                "end_rva": "0x436566",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 12,
+              "rva": "0x436640",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x436640",
+                "end_rva": "0x4366c1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 13,
+              "rva": "0x43e700",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43e700",
+                "end_rva": "0x43e828",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 14,
+              "rva": "0x442050",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x442050",
+                "end_rva": "0x4420c1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 15,
+              "rva": "0x43d980",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43d980",
+                "end_rva": "0x43d9a4",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 16,
+              "rva": "0x43da00",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43da00",
+                "end_rva": "0x43da43",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 17,
+              "rva": "0x43e830",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43e830",
+                "end_rva": "0x43e92b",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 18,
+              "rva": "0x442e10",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x442e10",
+                "end_rva": "0x442ea2",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 19,
+              "rva": "0x43e060",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 20,
+              "rva": "0x43e080",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 21,
+              "rva": "0x43d7b0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43d7b0",
+                "end_rva": "0x43d812",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 22,
+              "rva": "0x43d820",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43d820",
+                "end_rva": "0x43d88a",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 23,
+              "rva": "0x4422b0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 24,
+              "rva": "0x442320",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 25,
+              "rva": "0x442350",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 26,
+              "rva": "0x4421e0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4421e0",
+                "end_rva": "0x442220",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 27,
+              "rva": "0x4420d0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4420d0",
+                "end_rva": "0x442144",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 28,
+              "rva": "0x441c60",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x441c60",
+                "end_rva": "0x441c6f",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 29,
+              "rva": "0x441d30",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x441d30",
+                "end_rva": "0x441d6e",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 30,
+              "rva": "0x441c30",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 31,
+              "rva": "0x43dff0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 32,
+              "rva": "0x43e020",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 33,
+              "rva": "0x43e0a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43e0a0",
+                "end_rva": "0x43e0d2",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 34,
+              "rva": "0x43e2a0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43e2a0",
+                "end_rva": "0x43e2fa",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 35,
+              "rva": "0x43e300",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43e300",
+                "end_rva": "0x43e391",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 36,
+              "rva": "0x43d890",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x43d890",
+                "end_rva": "0x43d96f",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVeLightExtender@Entity@@",
+      "vtables": [
+        {
+          "rva": "0xf3bca0",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x620ae0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x620ae0",
+                "end_rva": "0x620c06",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x4f9ee0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x61e530",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x61e530",
+                "end_rva": "0x61e55a",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4f9f00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x619270",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0xaf8a0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0xaf8b0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x61e780",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x61e780",
+                "end_rva": "0x61eb4d",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x61eb60",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x61eb60",
+                "end_rva": "0x61ebbc",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0
+        },
+        {
+          "rva": "0xf3bcf0",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x620c08",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x96070",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x96080",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4e90e0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x61edf0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x61edf0",
+                "end_rva": "0x61f773",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x61f780",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x61f780",
+                "end_rva": "0x61f7fa",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x4e9330",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x4e9340",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4e9340",
+                "end_rva": "0x4e94a1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x95ad0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x620940",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x620940",
+                "end_rva": "0x620a59",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x620a60",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x620a60",
+                "end_rva": "0x620ade",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 8
+        },
+        {
+          "rva": "0xf3bd50",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x620c14",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x61fa30",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0xbcf30",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0xbcf20",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 136
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVeShieldExtender@Entity@@",
+      "vtables": [
+        {
+          "rva": "0xf50308",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x7a23f0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7a23f0",
+                "end_rva": "0x7a245b",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x4f9ee0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x7a1a20",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7a1a20",
+                "end_rva": "0x7a1b03",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4f9f00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x619270",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0xaf8a0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0xaf8b0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x7a1b10",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7a1b10",
+                "end_rva": "0x7a1c17",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x7a1c20",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0
+        },
+        {
+          "rva": "0xf50358",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x7a23dc",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x96070",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x96080",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4e90e0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x7a1c40",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7a1c40",
+                "end_rva": "0x7a1ecb",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x7a1ee0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7a1ee0",
+                "end_rva": "0x7a1f14",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x4e9330",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x4e9340",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4e9340",
+                "end_rva": "0x4e94a1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x95ad0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x7a24f0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7a24f0",
+                "end_rva": "0x7a2555",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x7a2460",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7a2460",
+                "end_rva": "0x7a24ec",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 8
+        }
+      ]
+    },
+    {
+      "mangled_name": ".?AVeCannonExtender@Entity@@",
+      "vtables": [
+        {
+          "rva": "0xf51060",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x7b5cc0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7b5cc0",
+                "end_rva": "0x7b5cc9",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x4f9ee0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x7b1a50",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7b1a50",
+                "end_rva": "0x7b26b6",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4f9f00",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x619270",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0xaf8a0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0xaf8b0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x7b26c0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7b26c0",
+                "end_rva": "0x7b2e40",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x7b2e50",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7b2e50",
+                "end_rva": "0x7b2f1f",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x7b0be0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7b0be0",
+                "end_rva": "0x7b0c29",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 0
+        },
+        {
+          "rva": "0xf510b8",
+          "methods": [
+            {
+              "slot": 0,
+              "rva": "0x7b5bd8",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 1,
+              "rva": "0x96070",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 2,
+              "rva": "0x96080",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 3,
+              "rva": "0x4e90e0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 4,
+              "rva": "0x619420",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 5,
+              "rva": "0x619450",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 6,
+              "rva": "0x4e9330",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 7,
+              "rva": "0x4e9340",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x4e9340",
+                "end_rva": "0x4e94a1",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 8,
+              "rva": "0x95ad0",
+              "unwind": {
+                "status": "no_unwind_range"
+              }
+            },
+            {
+              "slot": 9,
+              "rva": "0x7b6190",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7b6190",
+                "end_rva": "0x7b61cd",
+                "offset_into_range": 0
+              }
+            },
+            {
+              "slot": 10,
+              "rva": "0x7b60f0",
+              "unwind": {
+                "status": "unwind_start",
+                "start_rva": "0x7b60f0",
+                "end_rva": "0x7b616e",
+                "offset_into_range": 0
+              }
+            }
+          ],
+          "scan_limit_reached": false,
+          "subobject_offset": 8
+        }
+      ]
+    }
+  ]
+}
