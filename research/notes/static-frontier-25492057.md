@@ -66,7 +66,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [animation control/completion/frame markers/entity motion](animation-control-map-25492057.md), and
 [pose/walking/idle profiles and human animation declarations](human-animation-profiles-map-25492057.md), and
 [scripted idle policy/native conditions/interaction list execution](idle-actions-map-25492057.md), and
-[binary animation timelines/bone tracks/resource and marker audit](animation-resources-map-25492057.md). Their open questions
+[binary animation timelines/bone tracks/resource and marker audit](animation-resources-map-25492057.md), and
+[human marker actions/condition inputs/sound perception bridge](marker-actions-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -82,7 +83,10 @@ are historical snapshots; this frontier tracks the continuing objective.
   expiry `0x939EC0`/recovery `0x93ABE0` now traced; continue FSM `0x95FC00`,
   throwoff trajectory `0x93BDD0`, motion `0x93DCE0`, and landing callbacks.
 - Signals: named type/action/sound parsers and scene condition now mapped.
-  Follow source pointer ownership/cancellation in `0x4D2810/0x4D1D20`, area lookup
+  Sound wrappers/alias handle replacement, publication gates and explicit-stop
+  repeat cancellation are mapped; base movement/anims declarations publish
+  movement/sound signals. Follow folder inheritance `0x4CF490`, asset selection
+  `0x4D3BC0`, source pointer ownership/cancellation in `0x4D2810/0x4D1D20`, area lookup
   `0x9D2020`, receiver threshold binding; remaining perception publishers and
   vehicle response `0x98B200` now mapped (mandie triggers exposed-gunner withdrawal and pending passenger exit). Human direct brain callback `0x903690` is empty.
 - Resistance/inventory: `0x975890/0x975CD0` named levels and first-applicable
@@ -209,13 +213,23 @@ are historical snapshots; this frontier tracks the continuing objective.
   files update initially unbound tracks. The three anomalous files are not joined
   by these declarations.27 marker rows lack stored coordinates (26 out of bounds,
   one sparse pistol prone_to_stand); board_plane_right has two markers at100,
-  while dispatch chooses one sorted match. Follow concrete marker actions and
-  sorter tie behavior. Rotation uses bone-map ordinal as track index and a shared
+  while dispatch chooses one sorted match. Sorter5D5540/44C9C0 preserves equal
+  keys for arrays<=32, resolving this nine-row declaration to metal_footstep
+  before jump; the duplicate jump row is not dispatched through this path.
+  Larger sort branches remain open where relevant.31 base human marker handlers
+  now have literal call/macro closure; most play sound, while jump reaches eject.
+  Sound/tags/call/view/delay contracts and velocity/terrain/rain/season/altitude
+  inputs are mapped. GEM season predicate is alwaysfalse, unlike game; terrain
+  height returnsXMM0 despite empty game decompilation. Continue captured-context
+  queue Quant766ED0, handler destruction769910, reentrant enqueue/cancel,
+  spawn7538F0, physical throw/landing and handler bit0 consumption. Four base
+  catalog markers lack handlers in human.inc; inherited layers remain open.
+  Rotation uses bone-map ordinal as track index and a shared
   binaryED once gate; four base rotation declarations have matched ordinal0 or
   absent body, so no observed ordinal mismatch there. Continue mount precedence,
   directory ordering and shared-resource lifetime.
   Continue death animation feasibility/selection `0x938410/0x9648E0/0x9645D0`,
-  aimset/blendspace parameter producers, concrete marker action lists,
+  aimset/blendspace parameter producers, remaining inherited marker action lists,
   root/bone transforms `0x5D3820/0x5D7410/0x5D8170/0x5D8250` and entity slot25,
   actor1420 bit3/handler flags and cache invalidation, movement mode enum binding,
   counter34/scale27C writers, reference bone558 binding, mounted resource overrides,
