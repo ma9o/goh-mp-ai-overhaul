@@ -259,3 +259,10 @@ portal/smoothing helpers; packed slope producers; terrain ratio A0 speed
 consumers and Priority F4 ordering; obstacle registration and entity flags;
 profile/context reload lifetime; and the remaining PlayAnimation handoff.
 Static mapping opportunities are not exhausted.
+
+The [line/spatial follow-up](path-lines-map-25492057.md) now establishes that
+`8AC3F0` returns true for blocked, and maps the line query, portal helpers,
+spatial owner snapshots and enabled-mask refresh. It also identifies a game/GEM
+difference in the player boundary gate. The vault manifest now names the blocked
+predicate explicitly; the related acceptance-manifest hash and validation were
+refreshed after correcting that map's spatial query argument.

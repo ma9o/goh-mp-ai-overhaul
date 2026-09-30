@@ -9729,7 +9729,7 @@
     "trigger": "8F5E70(null) clearsMove1AD. Otherwise query getover_middle displacement through938410. Onfalse return with1AD unchanged. Select normal N=(axis.x,axis.y) when extentY>extentX, otherwise(-axis.y,axis.x). d=abs(dot(N,center-actorXY)/dot(N,actorForwardXY)); sample current segment end with vslot6(fraction1). Issue vault only if d<=.5*length3D(animation displacement) and d<XYdistance(actor,segment end). No local zero-denominator guard.",
     "issue": "Clear1AD, set1AF, create Order::ePlayAnimation(name getover_middle,scale1,flags80001,arg4=0,arg5=1), attach via901940. If feasibility passes but trigger does not, set1AD=1.",
     "animation_query": "938410 resolves named animation in actor animation system; if absent or its vslot4 does not provide the needed data, returns ALtrue without writing displacement. Otherwise invokes actor vslot25 transform and938520(start actor74,end transformed position,out displacement).",
-    "clearance_slice": "938520 writes output=end-start before testing. abs(deltaZ)<=g_humanAnimationDelta or Manual variant selected by chassis18!=0; both initialize85 native units. Build actor context for8AC3F0, then separate human_flying context, set E8mask2 (skip Damage), build line probe8AC950 and evaluate8ACA00. If first predicate true and returned object98 nonnull, dispatch disable(false), repeat cost probe, dispatch enable(true). Returncost<100000. No saved prior enable state. Full predicates/query semantics open.",
+    "clearance_slice": "938520 writes output=end-start before testing. abs(deltaZ)<=g_humanAnimationDelta or Manual variant selected by chassis18!=0; both initialize85 native units. Build actor context for8AC3F0, then separate human_flying context, set E8mask2 (skip Damage), build line probe8AC950 and evaluate8ACA00. If first predicate8AC3F0 returns true (blocked, resolved in path-lines follow-up) and returned object98 nonnull, dispatch disable(false), repeat cost probe, dispatch enable(true). Returncost<100000. No saved prior enable state. Line predicate/query details are resolved in the path-lines follow-up.",
     "enable_dispatch": "71FAE0 traverses entityA00/A08 pointer vector, selects entry38 mask40, invokes771880(entry+8,boolean). Lower registration lifecycle remains open."
   },
   "play_animation_contract": {
@@ -11727,7 +11727,7 @@
   "related_artifacts": [
     {
       "filename": "path-acceptance-map.json",
-      "sha256": "1e2392ae4658ee4d3f1ffabc753dd5ddbbc0f11d1735529a5dad68b4d7f96755"
+      "sha256": "9f8114e59a93d73ed401b29afa6ecb6a78e3e4da0f151a294f33dad2536c8f8e"
     },
     {
       "filename": "animation-control-map.json",

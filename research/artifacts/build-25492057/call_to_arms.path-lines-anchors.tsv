@@ -1,0 +1,7 @@
+# RVA	Callers of line geometry helpers
+0x8ac950	line_constructor_callers	all	2048
+0x8aca00	line_cost_callers	all	2048
+0x8ac3f0	clearance_callers	all	2048
+0x771880	obstacle_enable_callers	all	2048
+0x1482508	portal_adjust_config	all	2048
+0x1570a40	owner_actor_tag	all	2048

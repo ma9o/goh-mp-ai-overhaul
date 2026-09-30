@@ -280,3 +280,13 @@ construction, spatial-query object lifetimes and Move's special-object action.
 The wider frontier still includes actor enumeration/ID reuse, squad coordination,
 damage/material outcomes and remaining AI-readable properties. This pass closes
 specific dependencies; it does not exhaust static AI mapping.
+
+## Spatial argument correction
+
+The [line/spatial follow-up](path-lines-map-25492057.md) resolves a mislabeled
+argument in the segment-probe manifest. Integrator `+80` is embedded context
+`+78` (actor `+594`), forwarded through `771860` and unused by collector `7779D0`.
+The actual collection filter is query `+34`, initialized to `40`; category `+30`
+is `80`. The manifest and structural validation have been refreshed without
+changing the frozen exports. The follow-up also maps line costs, portal pruning,
+owner metadata, enable snapshots and raw-pointer collection boundaries.
