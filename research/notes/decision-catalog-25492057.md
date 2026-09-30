@@ -706,3 +706,70 @@ completion to poll.
 | Runtime integration | Callback/type/ABI/live-pointer admission; actual mission/mod values, cadence, executed branches and accepted movement outcomes. Not substitutes for active Q2–Q5 static work. |
 
 No physical, animation, pathfinder or unrelated producer computation was reopened.
+
+## Q2 — behavior writers and concrete brain attachment
+
+This closes the Q2 freshness/type blanks in the Q1z overlay. Evidence:
+[Q2 map](../artifacts/build-25492057/decision-q2-map.json),
+[validation](../artifacts/build-25492057/decision-q2-validation.json), and
+[literal-member leads](../artifacts/build-25492057/call_to_arms.decision-q2-member-leads.json).
+The pass does new game-only disassembly. The existing fine-map checker validates
+35 entries, 2,878 instruction locations, seven RTTI tables and five byte ranges;
+those checks establish locations/data, not completeness of arbitrary aliases.
+
+| Row / writer | Trigger and phase | Effect / instruction evidence |
+|---|---|---|
+| I-BEHAVIOR / I-BEHAVIOR-DEADLINE; constructor0x9417E0 | Creation through human or human_client factory, including clone construction | Qword store0x941958 sets int32 state2 and uint32 deadline0 together. Both begin before attachment/first decision. |
+| Same; inline selector0x941D00 | Actor slot35, after target snapshot/refresh and before base reconsideration | Nonzero deadline: unsigned now>=deadline clears both fields at0x941E07, then leaves selection; before expiry preserves both. A zero deadline enables the normal branches below. |
+| Same; zero-state recovery | Within the same decision, state0 and B·Rr>=A | Calls morale slot29 with30, then writes state2 at0x941E3D. Otherwise S>50 writes state3 at0x941EA9 and now+convert(1+sample) at0x941EB3. No disable-byte check in this branch. |
+| Same; ordinary selection | Same decision, prior state nonzero and deadline0 | State2 at0x941ECD; advance3/4 at0x941EFB; retreat override1 at0x941F36 or0 at0x941F42. Predicates/order remain the Q1/J6 and fine-map contract. These stores do not refresh the deadline. |
+| Same; outlined0x944E10 | Callable duplicate of selection, but no executable caller or AI vtable slot found | Corresponding stores0x944E8B,0x944EC4,0x944F43/49,0x944F66,0x944F9B,0x944FD5,0x944FEA. Keep as a possible entry; do not assert it runs between decisions. Its three Ghidra references are .pdata/chained-unwind data:0x1640428,0x13B1AB8,0x13B1AC8. |
+
+The displacement scan covered 3,851,164 existing instructions and returned202
+leads for0x52C/0x530 and adjusted-subobject offsets0x51C/0x520. Reviewed
+non-brain write/exposure classes are:
+
+- 0xCE4D8 writes eCampaignOptions (constructor0xCE2F0 installs RTTI-backed
+  vtable0x1004898); 0xB03229/33/59 belong to eManualControl
+  (constructor0xB03060, vtable0x1111560). The float4 at0xB03229 is not behavior4.
+- 0x27DD00 belongs to GUI2::eGUI_PageStoreItem;0x3C2D5A addresses storage in
+  GUI2::eSoldierLibrary (vtable0x1063C18 slot11).0xBC217F/0xBC469E belong to
+  eViewEntityDialog (vtable0x112DAB8, slot2 and constructor).
+- 0x847573 and the0x84A584/0x84EAE7/0x84EBBD family address chassis-foot
+  storage;0x96F42C follows an explicit eChassis→eChassisFoot cast. They do not
+  take a brain receiver.0x9564A9/0x957023 write the soldier-root restoration
+  snapshot, not root+0x30's brain (Q1b restoration evidence).
+- RSP-relative hits are stack storage.0x6685CD and0x95399F/0x953D1A/0x953D3C
+  are also stack storage: their prologues establish RBP from RSP/RAX, rather
+  than from the brain receiver (0x668188,0x9538B2). The tactical function's
+  actual behavior reads follow state+0x30.
+
+Copy and serialization are separate checks, not inferred from the literal scan.
+Human slot10 at0xA7430 calls base copy0x909150 and human policy copy0x9451F0;
+they copy configuration, including no_advance/no_retreat and ratios, but neither
+behavior nor deadline. Human/client slot9 constructs a new instance first.
+The shared slot7 load dispatcher0x9092A0→0x909380 and slot5 save
+0x909730→0x9097B0 use the secondary DDA visitor0x9426E0 (this=brain+0x10)
+and explicit base tokens. Neither those token cases nor the human property
+visitor includes behavior/deadline or A/B. A freshly loaded/cloned instance
+therefore starts with the constructor's transient state; a load into an existing
+instance has no reviewed token that overwrites those fields. There is no newly
+identified asynchronous writer to the pair.
+
+| Row | Concrete type / phase answer |
+|---|---|
+| I-THIS / I-OWNER | Actor load token0x5B at0x7F5B7B..0x7F5BA5 uses the requested brain name through0xC19A0 and stores actor+0xDC8. Registry lookup0x903400 is case-insensitive. Table0x1482D88 binds human→0x945D30→0x9417E0; table0x146E050 binds human_client→0xA7AC0, which then replaces both vptrs and selects root name state.client. Clone0x7F56B8..0x7F56E2 stores the new brain, writes brain+0x38=owner, and invokes owner-changed slot14. Component destruction/borrowed within-call validity remains the entity-health/Q1z contract. |
+| I-THIS / I-A / I-B |0xC19A0 tries name+_client only when0xC0B630 returns true, and falls back to the ordinary name if that lookup fails.0xC0B630 requires an active Multiplayer::eGameClient service from0xC65C20, multiplayer core0x15A4A80, mode2 (or mode4 with no -no_server command-line substring), and a false session slot25 result. Other modes, absent core/service, and a true slot25 select the ordinary factory.0xC0B190 names the core startup Multiplayer::Start(); this is a multiplayer gate, not a brain-score flag. |
+| I-A / I-B / I-MORALE-DISPATCH | RTTI tables human0x10EC7C8 and client0xFFFEE8 both resolve slot35→0x941D00 and slot29→0x945010. Human slot23→0x941BC0 queues0x943C70/0x943EA0 and, only when due/unskipped,0x944DE0 for A/B. Client slot23→0xA7720 is empty. Thus ordinary human instances use the conditional same-quant refresh from J7/Q1; the client must not be assigned that freshness promise. |
+
+**Static closure and runtime boundary:** for normal human-name construction
+without the eligible multiplayer-client gate, single-player infantry get the
+human implementation; the exact gate and both type outcomes are now mapped.
+The actual configured name, loaded vptr, scheduling flags and intervening calls
+in a particular mission require observation of that mission. No game was run.
+The scan is not a proof against arbitrary pointer arithmetic, unrecognized code,
+mods or an external writer. A prototype must check the live type/attachment and
+choose its write phase: a state-only write with deadline0 is recomputed by the
+next selector, while a nonzero deadline suppresses selection until expiry, when
+both fields are zeroed. Static analysis does not establish a safe concurrent
+injection point or make the two separate prototype stores atomic.

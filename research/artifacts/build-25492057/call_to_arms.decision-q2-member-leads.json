@@ -1,0 +1,2040 @@
+{
+  "schema_version": 1,
+  "binary": {
+    "name": "call_to_arms.exe",
+    "steam_build_id": "25492057",
+    "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+    "file_size": 23592448,
+    "image_base": "0x140000000",
+    "image_size": 24145920,
+    "coff_timestamp": 1790172359
+  },
+  "warning": "Literal-displacement leads only. Unrelated objects/stack slots can match; aliased pointers, bulk accesses, adjusted this pointers, and undisassembled code can be missed.",
+  "requested_offsets": [
+    "0x51c",
+    "0x520",
+    "0x52c",
+    "0x530"
+  ],
+  "instructions_visited": 3851164,
+  "matches": [
+    {
+      "at_rva": "0x287f4",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x530],RBX",
+      "function_rva": "0x27ec0",
+      "ghidra_name": "FUN_140027ec0"
+    },
+    {
+      "at_rva": "0x28809",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBP + 0x520]",
+      "function_rva": "0x27ec0",
+      "ghidra_name": "FUN_140027ec0"
+    },
+    {
+      "at_rva": "0x28810",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVUPS xmmword ptr [RBP + 0x520],XMM0",
+      "function_rva": "0x27ec0",
+      "ghidra_name": "FUN_140027ec0"
+    },
+    {
+      "at_rva": "0xce4ca",
+      "displacement": "0x51c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVUPS xmmword ptr [RBX + 0x51c],XMM0",
+      "function_rva": "0xce2f0",
+      "ghidra_name": "FUN_1400ce2f0"
+    },
+    {
+      "at_rva": "0xce4d8",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVUPS xmmword ptr [RBX + 0x52c],XMM1",
+      "function_rva": "0xce2f0",
+      "ghidra_name": "FUN_1400ce2f0"
+    },
+    {
+      "at_rva": "0xff230",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RSP + 0x520],RDI",
+      "function_rva": "0xff1c0",
+      "ghidra_name": "FUN_1400ff1c0"
+    },
+    {
+      "at_rva": "0xff660",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RDI,qword ptr [RSP + 0x520]",
+      "function_rva": "0xff1c0",
+      "ghidra_name": "FUN_1400ff1c0"
+    },
+    {
+      "at_rva": "0x1193f8",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBP + 0x530],R15D",
+      "function_rva": "0x118a80",
+      "ghidra_name": "FUN_140118a80"
+    },
+    {
+      "at_rva": "0x119404",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ_WRITE",
+      "instruction": "OR byte ptr [RBP + 0x530],0x1",
+      "function_rva": "0x118a80",
+      "ghidra_name": "FUN_140118a80"
+    },
+    {
+      "at_rva": "0x119760",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RDI,qword ptr [RBP + 0x520]",
+      "function_rva": "0x118a80",
+      "ghidra_name": "FUN_140118a80"
+    },
+    {
+      "at_rva": "0x16b5fa",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBX + 0x520]",
+      "function_rva": "0x16b550",
+      "ghidra_name": "FUN_14016b550"
+    },
+    {
+      "at_rva": "0x1b247a",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RSP + 0x530],RBX",
+      "function_rva": "0x1b2420",
+      "ghidra_name": "FUN_1401b2420"
+    },
+    {
+      "at_rva": "0x1b29dd",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RBX,qword ptr [RSP + 0x530]",
+      "function_rva": "0x1b2420",
+      "ghidra_name": "FUN_1401b2420"
+    },
+    {
+      "at_rva": "0x1bbeaf",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RSI,qword ptr [RSP + 0x520]",
+      "function_rva": "0x1ba680",
+      "ghidra_name": "FUN_1401ba680"
+    },
+    {
+      "at_rva": "0x212529",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBP + 0x530],ESI",
+      "function_rva": "0x212510",
+      "ghidra_name": "FUN_140212510"
+    },
+    {
+      "at_rva": "0x21273a",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x530],RDX",
+      "function_rva": "0x212510",
+      "ghidra_name": "FUN_140212510"
+    },
+    {
+      "at_rva": "0x212741",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x530]",
+      "function_rva": "0x212510",
+      "ghidra_name": "FUN_140212510"
+    },
+    {
+      "at_rva": "0x2127f0",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x530],RDX",
+      "function_rva": "0x212510",
+      "ghidra_name": "FUN_140212510"
+    },
+    {
+      "at_rva": "0x2127f7",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x530]",
+      "function_rva": "0x212510",
+      "ghidra_name": "FUN_140212510"
+    },
+    {
+      "at_rva": "0x2128a6",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x530],RDX",
+      "function_rva": "0x212510",
+      "ghidra_name": "FUN_140212510"
+    },
+    {
+      "at_rva": "0x2128ad",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x530]",
+      "function_rva": "0x212510",
+      "ghidra_name": "FUN_140212510"
+    },
+    {
+      "at_rva": "0x21295c",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x530],RDX",
+      "function_rva": "0x212510",
+      "ghidra_name": "FUN_140212510"
+    },
+    {
+      "at_rva": "0x212963",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x530]",
+      "function_rva": "0x212510",
+      "ghidra_name": "FUN_140212510"
+    },
+    {
+      "at_rva": "0x278c9d",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RSP + 0x530]",
+      "function_rva": "0x278c50",
+      "ghidra_name": "FUN_140278c50"
+    },
+    {
+      "at_rva": "0x278cd9",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RSP + 0x530]",
+      "function_rva": "0x278c50",
+      "ghidra_name": "FUN_140278c50"
+    },
+    {
+      "at_rva": "0x278d4d",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RSP + 0x530]",
+      "function_rva": "0x278c50",
+      "ghidra_name": "FUN_140278c50"
+    },
+    {
+      "at_rva": "0x279a9e",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RSP + 0x530]",
+      "function_rva": "0x279a50",
+      "ghidra_name": "FUN_140279a50"
+    },
+    {
+      "at_rva": "0x279ada",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RSP + 0x530]",
+      "function_rva": "0x279a50",
+      "ghidra_name": "FUN_140279a50"
+    },
+    {
+      "at_rva": "0x279b4d",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RCX,qword ptr [RSP + 0x530]",
+      "function_rva": "0x279a50",
+      "ghidra_name": "FUN_140279a50"
+    },
+    {
+      "at_rva": "0x279b9e",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVDQU xmmword ptr [RSP + 0x530],XMM0",
+      "function_rva": "0x279a50",
+      "ghidra_name": "FUN_140279a50"
+    },
+    {
+      "at_rva": "0x279c5d",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RSP + 0x530]",
+      "function_rva": "0x279c10",
+      "ghidra_name": "FUN_140279c10"
+    },
+    {
+      "at_rva": "0x279c99",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RSP + 0x530]",
+      "function_rva": "0x279c10",
+      "ghidra_name": "FUN_140279c10"
+    },
+    {
+      "at_rva": "0x279d0c",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RCX,qword ptr [RSP + 0x530]",
+      "function_rva": "0x279c10",
+      "ghidra_name": "FUN_140279c10"
+    },
+    {
+      "at_rva": "0x279d5d",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVDQU xmmword ptr [RSP + 0x530],XMM0",
+      "function_rva": "0x279c10",
+      "ghidra_name": "FUN_140279c10"
+    },
+    {
+      "at_rva": "0x27dd00",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBX + 0x530],0xf",
+      "function_rva": "0x27dbc0",
+      "ghidra_name": "FUN_14027dbc0"
+    },
+    {
+      "at_rva": "0x3113f6",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RSP + 0x530],R12",
+      "function_rva": "0x3113a0",
+      "ghidra_name": "FUN_1403113a0"
+    },
+    {
+      "at_rva": "0x3116f4",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVAPS xmmword ptr [RSP + 0x520],XMM6",
+      "function_rva": "0x3113a0",
+      "ghidra_name": "FUN_1403113a0"
+    },
+    {
+      "at_rva": "0x311925",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVAPS XMM6,xmmword ptr [RSP + 0x520]",
+      "function_rva": "0x3113a0",
+      "ghidra_name": "FUN_1403113a0"
+    },
+    {
+      "at_rva": "0x311d5a",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV R12,qword ptr [RSP + 0x530]",
+      "function_rva": "0x3113a0",
+      "ghidra_name": "FUN_1403113a0"
+    },
+    {
+      "at_rva": "0x361c50",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RSP + 0x530],R12",
+      "function_rva": "0x361bd0",
+      "ghidra_name": "FUN_140361bd0"
+    },
+    {
+      "at_rva": "0x361fe5",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV R12,qword ptr [RSP + 0x530]",
+      "function_rva": "0x361bd0",
+      "ghidra_name": "FUN_140361bd0"
+    },
+    {
+      "at_rva": "0x3c2d5a",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RBX,[R14 + 0x530]",
+      "function_rva": "0x3c2300",
+      "ghidra_name": "FUN_1403c2300"
+    },
+    {
+      "at_rva": "0x3f0eb7",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP qword ptr [RBX + 0x530],0x0",
+      "function_rva": "0x3f0e00",
+      "ghidra_name": "FUN_1403f0e00"
+    },
+    {
+      "at_rva": "0x3f19d3",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[R13 + 0x520]",
+      "function_rva": "0x3f1500",
+      "ghidra_name": "FUN_1403f1500"
+    },
+    {
+      "at_rva": "0x3f936d",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA R11,[RSP + 0x520]",
+      "function_rva": "0x3f8f30",
+      "ghidra_name": "FUN_1403f8f30"
+    },
+    {
+      "at_rva": "0x3f9d52",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RSI + 0x520]",
+      "function_rva": "0x3f9550",
+      "ghidra_name": "FUN_1403f9550"
+    },
+    {
+      "at_rva": "0x3fd62d",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RSP + 0x530],R15",
+      "function_rva": "0x3fd5b0",
+      "ghidra_name": "FUN_1403fd5b0"
+    },
+    {
+      "at_rva": "0x3fd878",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV R15,qword ptr [RSP + 0x530]",
+      "function_rva": "0x3fd5b0",
+      "ghidra_name": "FUN_1403fd5b0"
+    },
+    {
+      "at_rva": "0x4a5b67",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RSP + 0x530],R12",
+      "function_rva": "0x4a5710",
+      "ghidra_name": "FUN_1404a5710"
+    },
+    {
+      "at_rva": "0x4a6352",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV R12,qword ptr [RSP + 0x530]",
+      "function_rva": "0x4a5710",
+      "ghidra_name": "FUN_1404a5710"
+    },
+    {
+      "at_rva": "0x57a729",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVAPS xmmword ptr [RSP + 0x530],XMM6",
+      "function_rva": "0x57a680",
+      "ghidra_name": "FUN_14057a680"
+    },
+    {
+      "at_rva": "0x57a7aa",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVAPS XMM6,xmmword ptr [RSP + 0x530]",
+      "function_rva": "0x57a680",
+      "ghidra_name": "FUN_14057a680"
+    },
+    {
+      "at_rva": "0x6685cd",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBP + 0x530],EAX",
+      "function_rva": "0x668180",
+      "ghidra_name": "FUN_140668180"
+    },
+    {
+      "at_rva": "0x6685e8",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0x668180",
+      "ghidra_name": "FUN_140668180"
+    },
+    {
+      "at_rva": "0x6685f4",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x520],RCX",
+      "function_rva": "0x668180",
+      "ghidra_name": "FUN_140668180"
+    },
+    {
+      "at_rva": "0x668612",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0x668180",
+      "ghidra_name": "FUN_140668180"
+    },
+    {
+      "at_rva": "0x668621",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x520],RCX",
+      "function_rva": "0x668180",
+      "ghidra_name": "FUN_140668180"
+    },
+    {
+      "at_rva": "0x668630",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x530]",
+      "function_rva": "0x668180",
+      "ghidra_name": "FUN_140668180"
+    },
+    {
+      "at_rva": "0x72a751",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RBX,qword ptr [RDI + 0x530]",
+      "function_rva": "0x72a3e0",
+      "ghidra_name": "FUN_14072a3e0"
+    },
+    {
+      "at_rva": "0x800cd4",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RDI,qword ptr [RSP + 0x530]",
+      "function_rva": "0x7ff8b0",
+      "ghidra_name": "FUN_1407ff8b0"
+    },
+    {
+      "at_rva": "0x800ce4",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV R15,qword ptr [RSP + 0x520]",
+      "function_rva": "0x7ff8b0",
+      "ghidra_name": "FUN_1407ff8b0"
+    },
+    {
+      "at_rva": "0x847573",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBX + 0x530]",
+      "function_rva": "0x847550",
+      "ghidra_name": "FUN_140847550"
+    },
+    {
+      "at_rva": "0x84a08c",
+      "displacement": "0x51c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDI,[RCX + 0x51c]",
+      "function_rva": "0x849cd0",
+      "ghidra_name": "FUN_140849cd0"
+    },
+    {
+      "at_rva": "0x84a508",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVSS dword ptr [RBX + RSI*0x1 + 0x520],XMM0",
+      "function_rva": "0x84a3c0",
+      "ghidra_name": "FUN_14084a3c0"
+    },
+    {
+      "at_rva": "0x84a516",
+      "displacement": "0x51c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVZX ECX,byte ptr [RBX + RSI*0x1 + 0x51c]",
+      "function_rva": "0x84a3c0",
+      "ghidra_name": "FUN_14084a3c0"
+    },
+    {
+      "at_rva": "0x84a527",
+      "displacement": "0x51c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV byte ptr [RBX + RSI*0x1 + 0x51c],AL",
+      "function_rva": "0x84a3c0",
+      "ghidra_name": "FUN_14084a3c0"
+    },
+    {
+      "at_rva": "0x84a533",
+      "displacement": "0x51c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ_WRITE",
+      "instruction": "AND byte ptr [RBX + RSI*0x1 + 0x51c],0xf",
+      "function_rva": "0x84a3c0",
+      "ghidra_name": "FUN_14084a3c0"
+    },
+    {
+      "at_rva": "0x84a541",
+      "displacement": "0x51c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ_WRITE",
+      "instruction": "OR byte ptr [RBX + RSI*0x1 + 0x51c],AL",
+      "function_rva": "0x84a3c0",
+      "ghidra_name": "FUN_14084a3c0"
+    },
+    {
+      "at_rva": "0x84a584",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RSI + 0x530]",
+      "function_rva": "0x84a3c0",
+      "ghidra_name": "FUN_14084a3c0"
+    },
+    {
+      "at_rva": "0x84bae2",
+      "displacement": "0x51c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA R9,[RDI + 0x51c]",
+      "function_rva": "0x84b880",
+      "ghidra_name": "FUN_14084b880"
+    },
+    {
+      "at_rva": "0x84eae7",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBX + 0x530]",
+      "function_rva": "0x84ea50",
+      "ghidra_name": "FUN_14084ea50"
+    },
+    {
+      "at_rva": "0x84ebbd",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RDI + 0x530]",
+      "function_rva": "0x84eb20",
+      "ghidra_name": "FUN_14084eb20"
+    },
+    {
+      "at_rva": "0x907b86",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RAX + 0x52c],0x1",
+      "function_rva": "0x907b30",
+      "ghidra_name": "FUN_140907b30"
+    },
+    {
+      "at_rva": "0x941936",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV word ptr [RDI + 0x520],SI",
+      "function_rva": "0x9417e0",
+      "ghidra_name": "FUN_1409417e0"
+    },
+    {
+      "at_rva": "0x941958",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RDI + 0x52c],0x2",
+      "function_rva": "0x9417e0",
+      "ghidra_name": "FUN_1409417e0"
+    },
+    {
+      "at_rva": "0x941d92",
+      "displacement": "0x51c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVSS XMM2,dword ptr [RSI + 0x51c]",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941deb",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RSI + 0x530],R15D",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941df4",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV EBX,dword ptr [RSI + 0x530]",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941e07",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RSI + 0x52c],R15",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941e13",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RSI + 0x52c],R15D",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941e3d",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RSI + 0x52c],0x2",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941ea9",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RSI + 0x52c],0x3",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941eb3",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RSI + 0x530],EAX",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941ecd",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RSI + 0x52c],0x2",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941ed9",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP byte ptr [RSI + 0x520],R15B",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941efb",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RSI + 0x52c],EAX",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941f36",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RSI + 0x52c],0x1",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x941f42",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RSI + 0x52c],R15D",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x942192",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RSI + 0x52c],0x2",
+      "function_rva": "0x941d00",
+      "ghidra_name": "FUN_140941d00"
+    },
+    {
+      "at_rva": "0x942ce1",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RCX + 0x52c],0x2",
+      "function_rva": "0x942cb0",
+      "ghidra_name": "FUN_140942cb0"
+    },
+    {
+      "at_rva": "0x943261",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV EBX,dword ptr [RDI + 0x52c]",
+      "function_rva": "0x943150",
+      "ghidra_name": "FUN_140943150"
+    },
+    {
+      "at_rva": "0x944de7",
+      "displacement": "0x51c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RCX + 0x51c]"
+    },
+    {
+      "at_rva": "0x944e25",
+      "displacement": "0x51c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVSS XMM2,dword ptr [RCX + 0x51c]",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944e68",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RCX + 0x530],0x0",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944e76",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV EBX,dword ptr [RCX + 0x530]",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944e8b",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RDI + 0x52c],RCX",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944e9d",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RCX + 0x52c],0x0",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944ec4",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RDI + 0x52c],0x2",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944f43",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RDI + 0x530],EAX",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944f49",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RDI + 0x52c],0x3",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944f66",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RCX + 0x52c],0x2",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944f7b",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP byte ptr [RDI + 0x520],CL",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944f9b",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RDI + 0x52c],EAX",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944fd5",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RDI + 0x52c],0x1",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x944fea",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RDI + 0x52c],ECX",
+      "function_rva": "0x944e10",
+      "ghidra_name": "FUN_140944e10"
+    },
+    {
+      "at_rva": "0x9451fd",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVZX EAX,byte ptr [RDX + 0x520]",
+      "function_rva": "0x9451f0",
+      "ghidra_name": "FUN_1409451f0"
+    },
+    {
+      "at_rva": "0x945204",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV byte ptr [RCX + 0x520],AL",
+      "function_rva": "0x9451f0",
+      "ghidra_name": "FUN_1409451f0"
+    },
+    {
+      "at_rva": "0x9489ed",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV R8D,dword ptr [RDX + 0x52c]",
+      "function_rva": "0x9489e0",
+      "ghidra_name": "FUN_1409489e0"
+    },
+    {
+      "at_rva": "0x94a92b",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RAX + 0x52c],0x2",
+      "function_rva": "0x94a790",
+      "ghidra_name": "FUN_14094a790"
+    },
+    {
+      "at_rva": "0x94b4f1",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV R8D,dword ptr [RDX + 0x52c]",
+      "function_rva": "0x94b4e0",
+      "ghidra_name": "FUN_14094b4e0"
+    },
+    {
+      "at_rva": "0x950a54",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RDX + 0x52c],0x0",
+      "function_rva": "0x950a50",
+      "ghidra_name": "FUN_140950a50"
+    },
+    {
+      "at_rva": "0x950abd",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RCX + 0x52c],0x2",
+      "function_rva": "0x950ab0",
+      "ghidra_name": "FUN_140950ab0"
+    },
+    {
+      "at_rva": "0x950b28",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "TEST dword ptr [RCX + 0x52c],0xfffffffb",
+      "function_rva": "0x950b20",
+      "ghidra_name": "FUN_140950b20"
+    },
+    {
+      "at_rva": "0x953984",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVSS dword ptr [RBP + 0x520],XMM0",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x95399f",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBP + 0x530],EAX",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953a42",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [RDX + 0x52c],0x2",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953b16",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVSS dword ptr [RBP + 0x520],XMM13",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953b90",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVSS XMM6,dword ptr [RBP + 0x520]",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953ba9",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV EAX,dword ptr [RCX + 0x52c]",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953bf8",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVSS XMM8,dword ptr [RBP + 0x530]",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953d1a",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVSS dword ptr [RBP + 0x530],XMM13",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953d3c",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVSS dword ptr [RBP + 0x530],XMM15",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953d58",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVSS dword ptr [RBP + 0x520],XMM2",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953ea3",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVSS XMM11,dword ptr [RBP + 0x530]",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953eb1",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVSS XMM6,dword ptr [RBP + 0x520]",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x953fba",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA R8,[RBP + 0x520]",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x954008",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVSD qword ptr [RBP + 0x520],XMM1",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x9540ad",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV EDX,dword ptr [RCX + 0x52c]",
+      "function_rva": "0x9538a0",
+      "ghidra_name": "FUN_1409538a0"
+    },
+    {
+      "at_rva": "0x9548dc",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV EDX,dword ptr [RCX + 0x52c]",
+      "function_rva": "0x9547b0",
+      "ghidra_name": "FUN_1409547b0"
+    },
+    {
+      "at_rva": "0x95649e",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVUPS xmmword ptr [RDI + 0x520],XMM0",
+      "function_rva": "0x955a90",
+      "ghidra_name": "FUN_140955a90"
+    },
+    {
+      "at_rva": "0x9564a9",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVUPS xmmword ptr [RDI + 0x530],XMM1",
+      "function_rva": "0x955a90",
+      "ghidra_name": "FUN_140955a90"
+    },
+    {
+      "at_rva": "0x957018",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVUPS xmmword ptr [RBX + 0x520],XMM0",
+      "function_rva": "0x956f20",
+      "ghidra_name": "FUN_140956f20"
+    },
+    {
+      "at_rva": "0x957023",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVUPS xmmword ptr [RBX + 0x530],XMM1",
+      "function_rva": "0x956f20",
+      "ghidra_name": "FUN_140956f20"
+    },
+    {
+      "at_rva": "0x95889f",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBX + 0x520],0xffffffff",
+      "function_rva": "0x9587c0",
+      "ghidra_name": "FUN_1409587c0"
+    },
+    {
+      "at_rva": "0x958b0c",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBX + 0x520],0xffffffff",
+      "function_rva": "0x958a50",
+      "ghidra_name": "FUN_140958a50"
+    },
+    {
+      "at_rva": "0x959f9e",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ",
+      "instruction": "CMP dword ptr [R12 + 0x520],0x0",
+      "function_rva": "0x9592d0",
+      "ghidra_name": "FUN_1409592d0"
+    },
+    {
+      "at_rva": "0x959fd3",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV EDX,dword ptr [R12 + 0x520]",
+      "function_rva": "0x9592d0",
+      "ghidra_name": "FUN_1409592d0"
+    },
+    {
+      "at_rva": "0x95a070",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [R12 + 0x520],0xffffffff",
+      "function_rva": "0x9592d0",
+      "ghidra_name": "FUN_1409592d0"
+    },
+    {
+      "at_rva": "0x95a55f",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [R12 + 0x520],EAX",
+      "function_rva": "0x9592d0",
+      "ghidra_name": "FUN_1409592d0"
+    },
+    {
+      "at_rva": "0x95cd60",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVSXD R8,dword ptr [RAX + 0x520]",
+      "function_rva": "0x95cad0",
+      "ghidra_name": "FUN_14095cad0"
+    },
+    {
+      "at_rva": "0x95cdc4",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVSXD RAX,dword ptr [RCX + 0x520]",
+      "function_rva": "0x95cad0",
+      "ghidra_name": "FUN_14095cad0"
+    },
+    {
+      "at_rva": "0x96f42c",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RBX,[RAX + 0x530]",
+      "function_rva": "0x96f1a0",
+      "ghidra_name": "FUN_14096f1a0"
+    },
+    {
+      "at_rva": "0x99fe3b",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV byte ptr [RBX + 0x520],AL",
+      "function_rva": "0x99f940",
+      "ghidra_name": "FUN_14099f940"
+    },
+    {
+      "at_rva": "0xa211f3",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RAX,qword ptr [RDI + 0x520]",
+      "function_rva": "0xa21070",
+      "ghidra_name": "FUN_140a21070"
+    },
+    {
+      "at_rva": "0xa21230",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RDI,qword ptr [RDI + 0x520]",
+      "function_rva": "0xa21070",
+      "ghidra_name": "FUN_140a21070"
+    },
+    {
+      "at_rva": "0xa67d51",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA R11,[RSP + 0x520]",
+      "function_rva": "0xa67810",
+      "ghidra_name": "FUN_140a67810"
+    },
+    {
+      "at_rva": "0xa7040b",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RSP + 0x520],R14",
+      "function_rva": "0xa70380",
+      "ghidra_name": "FUN_140a70380"
+    },
+    {
+      "at_rva": "0xa70f4b",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV R14,qword ptr [RSP + 0x520]",
+      "function_rva": "0xa70380",
+      "ghidra_name": "FUN_140a70380"
+    },
+    {
+      "at_rva": "0xb03229",
+      "displacement": "0x52c",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBX + 0x52c],0x40800000",
+      "function_rva": "0xb03060",
+      "ghidra_name": "FUN_140b03060"
+    },
+    {
+      "at_rva": "0xb03233",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBX + 0x530],RBP",
+      "function_rva": "0xb03060",
+      "ghidra_name": "FUN_140b03060"
+    },
+    {
+      "at_rva": "0xb03241",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBX + 0x520],EBP",
+      "function_rva": "0xb03060",
+      "ghidra_name": "FUN_140b03060"
+    },
+    {
+      "at_rva": "0xb03259",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBX + 0x530],RAX",
+      "function_rva": "0xb03060",
+      "ghidra_name": "FUN_140b03060"
+    },
+    {
+      "at_rva": "0xb03a48",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV R12,qword ptr [RSP + 0x530]",
+      "function_rva": "0xb03940",
+      "ghidra_name": "FUN_140b03940"
+    },
+    {
+      "at_rva": "0xb75a69",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVZX EAX,byte ptr [R15 + 0x520]",
+      "function_rva": "0xb75860",
+      "ghidra_name": "FUN_140b75860"
+    },
+    {
+      "at_rva": "0xb75a71",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV byte ptr [R14 + 0x520],AL",
+      "function_rva": "0xb75860",
+      "ghidra_name": "FUN_140b75860"
+    },
+    {
+      "at_rva": "0xbc217f",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "READ_WRITE",
+      "instruction": "INC dword ptr [RCX + 0x530]",
+      "function_rva": "0xbc2160",
+      "ghidra_name": "FUN_140bc2160"
+    },
+    {
+      "at_rva": "0xbc228d",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV R8D,dword ptr [R8 + 0x530]",
+      "function_rva": "0xbc2280",
+      "ghidra_name": "FUN_140bc2280"
+    },
+    {
+      "at_rva": "0xbc315a",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVSXD RAX,dword ptr [R12 + 0x520]",
+      "function_rva": "0xbc3020",
+      "ghidra_name": "FUN_140bc3020"
+    },
+    {
+      "at_rva": "0xbc469e",
+      "displacement": "0x530",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RDI + 0x530],EBP",
+      "function_rva": "0xbc4520",
+      "ghidra_name": "FUN_140bc4520"
+    },
+    {
+      "at_rva": "0xbd861a",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RBX,qword ptr [RSP + 0x520]",
+      "function_rva": "0xbd8220",
+      "ghidra_name": "FUN_140bd8220"
+    },
+    {
+      "at_rva": "0xbfe8a3",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RSI + 0x520]",
+      "function_rva": "0xbfe5d0",
+      "ghidra_name": "FUN_140bfe5d0"
+    },
+    {
+      "at_rva": "0xbfec45",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RAX,[RBX + 0x520]",
+      "function_rva": "0xbfeb80",
+      "ghidra_name": "FUN_140bfeb80"
+    },
+    {
+      "at_rva": "0xc27efd",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RAX,[RSI + 0x520]",
+      "function_rva": "0xc27b60",
+      "ghidra_name": "FUN_140c27b60"
+    },
+    {
+      "at_rva": "0xc2834e",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBX + 0x520]",
+      "function_rva": "0xc28310",
+      "ghidra_name": "FUN_140c28310"
+    },
+    {
+      "at_rva": "0xc2d670",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0xc2d4b0",
+      "ghidra_name": "FUN_140c2d4b0"
+    },
+    {
+      "at_rva": "0xc2d677",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RSI + 0x520]",
+      "function_rva": "0xc2d4b0",
+      "ghidra_name": "FUN_140c2d4b0"
+    },
+    {
+      "at_rva": "0xc2f039",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RDI + 0x520]",
+      "function_rva": "0xc2eeb0",
+      "ghidra_name": "FUN_140c2eeb0"
+    },
+    {
+      "at_rva": "0xc2f040",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBX + 0x520]",
+      "function_rva": "0xc2eeb0",
+      "ghidra_name": "FUN_140c2eeb0"
+    },
+    {
+      "at_rva": "0xc30a88",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBX + 0x520]",
+      "function_rva": "0xc30a20",
+      "ghidra_name": "FUN_140c30a20"
+    },
+    {
+      "at_rva": "0xc42a2a",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBX + 0x520]",
+      "function_rva": "0xc42a10",
+      "ghidra_name": "FUN_140c42a10"
+    },
+    {
+      "at_rva": "0xc42ab1",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBX + 0x520]",
+      "function_rva": "0xc42a70",
+      "ghidra_name": "FUN_140c42a70"
+    },
+    {
+      "at_rva": "0xc42b17",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RSI + 0x520]",
+      "function_rva": "0xc42a70",
+      "ghidra_name": "FUN_140c42a70"
+    },
+    {
+      "at_rva": "0xcc2a2a",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc2a3e",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "CMP EAX,dword ptr [RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc2a54",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBP + 0x520],0x140",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc2a68",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA R8,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc2cd7",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc2ce6",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x520],RCX",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc2de5",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBP + 0x520],EAX",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc2e16",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc2ee7",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV dword ptr [RBP + 0x520],EAX",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc2f18",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc30ab",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x520],RCX",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc30b2",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc3280",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x520],R14",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc331a",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc3330",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RBX,qword ptr [RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc343f",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVSS dword ptr [RBP + 0x520],XMM0",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc346b",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc358c",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA R8,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc3944",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc394b",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x520],RAX",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc395c",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RCX,qword ptr [RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc3bc3",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x520],RDI",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc3c28",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RCX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc3c3e",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOV RBX,qword ptr [RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc3e15",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOVSS dword ptr [RBP + 0x520],XMM0",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc3fd1",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc3feb",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[RBP + 0x520]",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc3ff8",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 0,
+      "operand_reference_type": "WRITE",
+      "instruction": "MOV qword ptr [RBP + 0x520],RCX",
+      "function_rva": "0xcc2920",
+      "ghidra_name": "FUN_140cc2920"
+    },
+    {
+      "at_rva": "0xcc4976",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "READ",
+      "instruction": "MOVSXD R8,dword ptr [RSI + 0x520]",
+      "function_rva": "0xcc44d0",
+      "ghidra_name": "FUN_140cc44d0"
+    },
+    {
+      "at_rva": "0xd2a858",
+      "displacement": "0x520",
+      "sign": "+",
+      "operand_index": 1,
+      "operand_reference_type": "DATA",
+      "instruction": "LEA RDX,[R13 + 0x520]",
+      "function_rva": "0xd2a7b0",
+      "ghidra_name": "FUN_140d2a7b0"
+    }
+  ]
+}

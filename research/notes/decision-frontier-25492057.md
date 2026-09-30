@@ -277,8 +277,6 @@ Existing notes/manifests/instruction RVAs are cited in the catalog. No new
 disassembly, manifest, validation file or verifier was required. Earlier Q1/Q1a
 and partial Q1b artifacts are retained. Q2 is the next active item.
 
-## Open: next
-
 ### Q2. Everything that can change the behavior state between decisions
 
 Catalog rows: I-BEHAVIOR/I-BEHAVIOR-DEADLINE (writer/phase), I-THIS/I-OWNER
@@ -297,6 +295,22 @@ differ in slot 23).
 
 Done when every path that writes these fields is listed with its trigger and
 phase, or excluded with object-type evidence.
+
+**Closed for static purposes:** catalog Q2 records the constructor, inline
+selection and uncalled outlined selection writer sets; excludes same-offset
+campaign/manual/UI/chassis/stack/root storage; checks copy and save/load;
+and maps human versus human_client factory selection and slot23/29/35.
+Normal human-name construction outside the eligible multiplayer-client gate
+uses the human refresh. The actual mission type and injection timing need
+runtime verification; no arbitrary-alias completeness claim is made.
+
+Evidence: [catalog Q2](decision-catalog-25492057.md#q2--behavior-writers-and-concrete-brain-attachment),
+[map](../artifacts/build-25492057/decision-q2-map.json),
+[validation](../artifacts/build-25492057/decision-q2-validation.json).
+35 game entries, 2,878 instruction locations, seven RTTI tables and five data
+ranges checked with the existing verifier. No game/editor execution.
+
+## Open: next
 
 ### Q3. Direct-goal contract (`0x902FB0`)
 
