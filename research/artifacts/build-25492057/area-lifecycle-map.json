@@ -12316,7 +12316,7 @@
   "scale_contract": {
     "get": "6FD580/576FB0 looks up scale bone in model entityB0 with create=false; returns bone+14 float, else1.",
     "bone": "70FFE0/58A560 examines first root in model158..160 for name ##scaleBone##. If absent and create=true, allocate1F0 new bone, name it, detach old roots and attach under new bone, install new root. Empty-root model returnsnull even with create=true. Other bone/model helpers bounded.",
-    "set": "6FD5C0/576FF0 does nothing for empty roots. Choose max(input,0.1) by comparison (NaN follows fallback), then cap to mutable147F3B0/editor12F6810. Cap file bytes0 are NOT runtime value; initialization is open. Lookup/create scale bone (DL=1 despite C pointer-looking argument), pass diagonal scale matrix to5C0F10/437E80. In scene1 and entity38 bit10 clear invoke entity slot35 with event7 thenB. GEM additionally asserts bone nonnull.",
+    "set": "6FD5C0/576FF0 does nothing for empty roots. For ordinary ordered input choose max(input,0.1); COMISS/CMOVBE selects input on unordered comparison, so NaN propagates if FP exceptions are masked, then cap to mutable147F3B0/editor12F6810. Cap file bytes0 are NOT runtime value; initialization is open. Lookup/create scale bone (DL=1 despite C pointer-looking argument), pass diagonal scale matrix to5C0F10/437E80. In scene1 and entity38 bit10 clear invoke entity slot35 with event7 thenB. GEM additionally asserts bone nonnull.",
     "limits": "Bone transform propagation, maximum-scale initialization and entity revision writers remain static leads; getter alone does not establish scaling of every shape kind."
   },
   "registration_contract": {
