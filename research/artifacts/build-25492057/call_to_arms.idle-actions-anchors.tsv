@@ -1,0 +1,28 @@
+# RVA	Idle interaction anchors
+0x10d3400	set_idle_animation_literal
+0x10d59c0	idle_low_health_literal
+0x10d59f8	hold_strap_literal
+0x107f19d	in_cover_literal
+0x10d5930	in_cover_literal
+0x10d5988	cover_type_literal
+0x10d5118	no_stuff_literal
+0x10d58c0	standing_literal
+0x10d58f8	squatting_literal
+0x10d5890	lying_literal
+0x10ec3af	lying_literal
+0x10d5858	swimming_literal
+0x10d33b0	eAction_SetIdleAnimation_vtable
+0x10d5eb8	eAction_If_vtable
+0x10d59a0	eCondition_IdleLowHealth_vtable
+0x10d59d8	eCondition_HoldStrap_vtable
+0x10d5910	eCondition_InCover_vtable
+0x10d5948	eCondition_CoverType_vtable
+0x10d5100	eCondition_NoStuff_vtable
+0x10d58a0	eCondition_Standing_vtable
+0x10d58d8	eCondition_Squatting_vtable
+0x10d5870	eCondition_Lying_vtable
+0x10d5828	eCondition_Swimming_vtable
+0x10d50b8	eCondition_Stuff_vtable
+0x10d5130	eCondition_Random_vtable
+0x104fc18	complex_action_vtable
+0x1571ac8	condition_random_float_scale	write

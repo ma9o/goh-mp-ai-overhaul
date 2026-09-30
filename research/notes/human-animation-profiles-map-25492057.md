@@ -229,7 +229,7 @@ counter production are not established by this pass.
 When3A0 expires, Quant clears it and runs `961DC0`. That function clears name340
 first. When global1483008 is clear it looks for actor interaction event
 `select_idle` in definition30..38. A found event bypasses native selection:
-context118 receives right-hand item from `7CCDE0`, context188 bit21 indicates
+context118 receives right-hand item definition from `7CCDE0`, context188 bit21 indicates
 nonnull, and `7705E0` dispatches the event. Its concrete action list is still open.
 Without the event, native selection only runs when chassis actual type2C is0.
 

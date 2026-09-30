@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "daa0c50922a0684a62b517adca997468fd0f1d8caf27dd284473cb6ff2658dc8",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "f92fd54a3e31088fe9d9ba36cf7dab7095505d51a88934fa34b31dfd0e5624a1",
+      "exact_candidates": 71,
+      "exported_functions": 79,
+      "exported_basic_blocks": 801,
+      "checked_enums": 0,
+      "checked_constants": 2,
+      "checked_method_entries": 39,
+      "checked_instruction_locations": 1525,
+      "checked_pointer_tables": 1,
+      "checked_rtti_tables": 14,
+      "checked_byte_sequences": 25
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "bf4f6f70a6bf22d74e8102c4934a13a55ba77b567dae5b50b5db9b91d65059d1",
+      "exact_candidates": 57,
+      "exported_functions": 65,
+      "exported_basic_blocks": 686,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 28,
+      "checked_instruction_locations": 1048,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 14,
+      "checked_byte_sequences": 24
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/entity.set",
+      "size": 1408,
+      "sha256": "20b0ce2bad5bc08e848333a2121d85b9506c54c1e6d64ec7d3afe3649626f429"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/human.inc",
+      "size": 37772,
+      "sha256": "c5e3d4e9fcc4e37eb671826e77d80a55149b4c7a03a06a2ce59243a474633441"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/human_idle.inc",
+      "size": 4910,
+      "sha256": "2020a3b8d8a7c19eb7fe121f7b6e14e9e4220fb44163190d1d6e9a47c2c9e2da"
+    }
+  ],
+  "status": "passed"
+}

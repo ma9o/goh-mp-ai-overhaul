@@ -64,7 +64,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [expanded base human FSM graph/subset reachability](human-fsm-graph-25492057.md), and
 [human FSM handler dispatch/action effects](human-fsm-actions-map-25492057.md), and
 [animation control/completion/frame markers/entity motion](animation-control-map-25492057.md), and
-[pose/walking/idle profiles and human animation declarations](human-animation-profiles-map-25492057.md). Their open questions
+[pose/walking/idle profiles and human animation declarations](human-animation-profiles-map-25492057.md), and
+[scripted idle policy/native conditions/interaction list execution](idle-actions-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -73,8 +74,10 @@ are historical snapshots; this frontier tracks the continuing objective.
   transitions now mapped; `+758/+760` corrected to volume tags, equipped item `+3D8`.
   Follow material `+E0` parser, wound `0x7EA860/0x7EB780`, component event IDs
   `+CC/+CE/+D0` producers, outer damage cover/distance `0xA5AA50`, blinding callers,
-  and limits-sort partition. Interaction list `0x761B50` calls slot2 of `+10`
-  subobject; resolve its concrete action/conditional implementations. Knockdown
+  and limits-sort partition. Interaction list `0x761B50` now resolves to embedded
+  eComplexAction+10; ordered children, first-match If/else, the concrete idle
+  conditions and SetIdleAnimation are mapped. Continue other concrete action and
+  condition implementations used by damage/marker events. Knockdown
   expiry `0x939EC0`/recovery `0x93ABE0` now traced; continue FSM `0x95FC00`,
   throwoff trajectory `0x93BDD0`, motion `0x93DCE0`, and landing callbacks.
 - Signals: named type/action/sound parsers and scene condition now mapped.
@@ -186,7 +189,16 @@ are historical snapshots; this frontier tracks the continuing objective.
   callback4's health-bit16 gate (not target bit14). The three base animation text
   resources yield1545 unique declarations/790 event rows;123 of125 selector names
   match. Resolve automatic registration/file lookup for unmatched `stand_idle_empty`
-  and `stand_idle_strap_4` before interpreting them as missing animations. Continue
+  and `stand_idle_strap_4` before interpreting them as missing animations.
+  Base human select_idle is now expanded (2 macros/8 invocations,70 conditions,
+  13 else branches,21 animation names); script uses numbered empty idles but
+  still names unmatched strap4. Every predicate/action in that script now has
+  native field/RNG evidence: low health tests idle mode, stuff tests right-hand
+  definition tags, even one-name choice consumes RNG. Continue global1483008
+  bypass writer, event-layer/dynamic receiver lifecycle, action registry1571B18
+  teardown and actor3A bit0/RNG context producers. Event execution selects native
+  contexts named synced_global/entity_local and restores the previous context.
+  Continue
   death animation feasibility/selection `0x938410/0x9648E0/0x9645D0`,
   binary animation timeline
   normalization, aimset/blendspace parameter producers, concrete marker action lists,
