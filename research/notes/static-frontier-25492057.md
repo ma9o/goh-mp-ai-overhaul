@@ -20,9 +20,9 @@ after their behavior and effect on the AI contract are established.
 | Sensor/perception | Candidate commit/categories, memory/eviction, ally sharing, grid rays, unmask rules; Recon registration/waiting counts, six searcher slots,60-sector rings and renewal; all eight signal names; sound/action definition parsers and repeat publishing; injury/corpse/hit/death-cry producers; mission signal condition/reset | Sound source cancellation/lifetime, area registration lifetime; residual Recon completed-status consumers; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine lifetimes |
 | Relationships | Neutral/enemy/ally values, 18-player defaults, symmetric setter, scene diplomacy and multiplayer setup | Ownership changes and other brain flag15 producers (placement TurnOff.Targetable now bound); downstream relationship consumers |
 | Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | Class/attacking/threating flag producers; all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
-| Human decision states | State hierarchy/dispatch/hazards; reviewed idle/battle/cover/search flow; stance thresholds, attack return codes, tactical movement, search coordination, healing and medic gating, following and weapon changes; detour pose/cover/point stages and budgets; temporary bone/pose trials; idle request gate; dropped-weapon memory, proficiency score and sort | Detour bound construction and pather route acceptance; animation state/tag producers and completion counter; full cover masks/healing validator; Veterancy property binding; full event producers; residual action-order helpers |
+| Human decision states | State hierarchy/dispatch/hazards; reviewed idle/battle/cover/search flow; stance thresholds, attack return codes, tactical movement, search coordination, healing and medic gating, following and weapon changes; detour pose/cover/point stages and budgets; circle-bound construction and RNG sampling, graph generation/processed-node reachability; temporary bone/pose trials; idle request gate; dropped-weapon memory, proficiency score and sort | Network construction, route smoothing/shortcut dependencies; animation state/tag producers and completion counter; full cover masks/healing validator; Veterancy property binding; full event producers; residual action-order helpers |
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle; discrete height probes, height/side-clearance kind selection, interval boundary bisection | Descriptor +8/+C consumer roles; full edge spacing and alternate offsets; geometry-query/grid construction |
-| Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set, grenade escape planning | Path request/acceptance, grid costs/probes, terrain/animation application, movement enum binding, ability/health speed modifiers; crush/obstacle order builders |
+| Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set/copy ownership, grenade AreaOutside solver dispatch; graph search/heap/node marks, bounds clamp/cost toggles, route reconstruction outputs and distance sampling, RNG-consuming cost probe, terrain/slope and obstacle policy inputs | Full grid search/goal callbacks; graph and edge-cost construction; shortcut/portal helpers; profile/type parsers and metadata producers; spatial-query lifetime; terrain/animation application, movement enum binding, ability/health speed modifiers; special-object/crush order builders |
 | Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy/zeroing; named aim modes and ballistic solvers; burst sampler and stateful preview; adaptive geometry trace; live projectile fields/pool/flight and contact-to-damage bridge; TargetAccessor result gates; occupied-slot readiness; named crew slot flags, Sealed exposure, priority assignment and reservations; gunner/charger/commander/driver requests and minWorkers; cannon animation completion counter | Place/profile/owner lifetime; bone limit solvers and sway/reload; charger and animation producers; weaponry86 state; full contact/material/ricochet outcomes, guided steering and synchronization; other shooter types |
 | Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; RepairTime/RepairOrder, countdown/restoration and repair command59; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wound-list removal and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application; vehicle allocation/root/emergency/Hideout/SmartRepair dispatcher; Repair/KitExchange/Collect/TakeItem/OrderTake and transfer/equip operations | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; Board/Bind/Emit now mapped; Repair phase6 reachability and group variants; scripted blow effects and melee defence/counterattack |
@@ -72,7 +72,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [sound-folder inheritance/asset RNG/channel lifetime/base sound audit](sound-definitions-map-25492057.md), and
 [human marker path expressions/branch guards/inherited signal join](marker-sound-paths-25492057.md), and
 [sound loop owners/alias movement/deferred FX queue/event names](sound-owners-map-25492057.md), and
-[clock/pause/slowdown/timer codecs/RNG context](clock-map-25492057.md). Their open questions
+[clock/pause/slowdown/timer codecs/RNG context](clock-map-25492057.md), and
+[detour bounds/network reachability/route and cost inputs](path-acceptance-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -125,9 +126,12 @@ are historical snapshots; this frontier tracks the continuing objective.
   `0x936C60/0x95D820/0xA75CD0`. Inventory handle mass `0x7E2420` includes
   filling contents; filling tags/unit/capacity and item/world ownership are now mapped.
 - Human states: detour stages `0x93ED30`, feasibility `0x940130`, pose helpers,
-  idle request `0x95FCC0` and pickup score/sort now mapped. Continue bound
-  intersection `0x6144E0`, network setup `0x8C6390/0x8C6400`, route refine sampler
-  `0x8C76B0`, equipment replacement/lifetime around callback `0x939C10`→`0x95FAD0`.
+  idle request `0x95FCC0` and pickup score/sort now mapped. Bound helper6144E0,
+  network setup8C6390/8C6400 and route sampler8C76B0 are now mapped: sampling
+  bound is not exact lens, point sampler uses two RNG draws, and detour requires
+  current-generation nodes with popped bit21. Continue reconstruction shortcut/
+  portal dependencies and equipment replacement/lifetime around callback
+  `0x939C10`→`0x95FAD0`.
   `0x938830` returns equipped-definition EC8 tags; `0x961710` updates finger
   animations; pose cache `0x96A4B0`, all pose class branches, walking `0x973010`,
   health/subject flag refresh, idle/repair RNG and deadlines are now mapped. Handler424/42C have13 class/six modifier tag bindings and
@@ -154,9 +158,17 @@ are historical snapshots; this frontier tracks the continuing objective.
   Melee loader/parser `0x95ED00/0x95D230`, variant lookup, damage/knockdown
   calculation and animation timing now connected; follow defence/counterattack,
   stroke-mask `0x977D90`, animation completion and blow event action lists.
-- Movement: path request `0x8C8F60`, route probe `0x8AE780`, moving-entity
-  registry `0x8AA360`; profile initialization/config; low-ratio speed modifier
-  reads `0x925010/0x924F90`, abilities `0x936580/0x9744E0`.
+- Movement:8C8F60 is AreaOutside task vslot2, choosing network/grid by profile
+  F0bit0; grenade uses it. Network search8B3F60, temporary bound-cost toggles,
+  route output XY+cost and reverse distance sampling are now mapped.8AE780
+  copies the cursor, draws RNG per sampled segment step and returns floatcost;
+  Move consumes kind/object results. Terrain cost reads cell terrain/slope classes;
+  object policy reads identity/masks/profile/type flags. Continue grid8AFA00 and
+  AvoidArea callbacks, edge8B9670/bound8BD570 producers, route shortcut
+  8AC950/8ACA00 and portal8C69E0/8C6B00/8C6C00; profileF8/type40 parsers,
+  spatialquery771310/771860, Move special-object8F5E70 and chassis68 lookahead.
+  Moving-entity registry8AA360, low-ratio speed modifier925010/924F90 and
+  abilities936580/9744E0 remain leads.
 - Clock/context: core65F440 increments48 by4C beforeFD2 even during explicit
   paused steps; normal583250 gates it with pausecount0/flags4. FD3 sits outside
   that gate. Mainframe57B750 derives/clamps delta1..100 after slowdown division,
@@ -167,7 +179,7 @@ are historical snapshots; this frontier tracks the continuing objective.
   guard15A4A80 writers, multiplayer frame packet producers, default RNG registry
   cleanup and all entity RNG scopes. Context push/pop switches selected stream
   only on changed boolean; default asset getter5549F0 bypasses selected554B50.
- 65E710 converts its argument, correcting the sniping cue's former clock label.
+  65E710 converts its argument, correcting the sniping cue's former clock label.
 - Target selection: class at actor +0xDE8; subject +0x14 bits7/8 writers;
   `0x913230/0x912EB0` ground/volume resolution; sorter partition/heap branches.
 - Weapons: aim modes `direct/curved/adaptive/nocurve`, solvers `0x5E8290/0x5E7E80`,

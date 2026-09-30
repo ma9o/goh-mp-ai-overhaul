@@ -268,8 +268,11 @@ set, filtering child record flags before cloning its bounding object. Point
 query `0x8AC2B0` first permits a profile-specific grid test under flags, then
 builds a line/query context and compares its cost against100000. The bounds
 predicate `0x8CA0A0` chooses context/world/player bounds according to actor,
-ignore-bounds and world-mode predicates. Precise grid costs, bounds edge
-inclusion and the cloned-object consumer remain open static work.
+ignore-bounds and world-mode predicates. The later
+[path-acceptance pass](path-acceptance-map-25492057.md) maps bounds clamping,
+terrain/slope and object cost policy, copied-context ownership and temporary
+network bound-cost toggles. Their construction/lifetime and the full grid solver
+remain open static work.
 
 ## Open work
 

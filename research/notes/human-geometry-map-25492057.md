@@ -65,7 +65,9 @@ range, builds bounds at context `+D8/+F0`, and intersects them with optional
 context `+C0` when its radius `+D0` is nonzero. The resulting sampling circle
 lives at `+A8` (center `+B0/+B4`, radius `+B8`). Empty intersections fail early.
 Native bounding-circle helper `0x6144E0` and exact caller-supplied bound meanings
-remain dependencies.
+were dependencies in this pass. The later
+[path-acceptance pass](path-acceptance-map-25492057.md) maps the circle formula,
+sampler, input bounds and graph reachability marks, plus route distance sampling.
 
 It snapshots human pose and the bone hierarchy, then tries alternatives in this
 order, subject to stance and eligibility bytes at context `+91..+94`:
