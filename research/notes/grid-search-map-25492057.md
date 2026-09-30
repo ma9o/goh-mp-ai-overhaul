@@ -241,7 +241,8 @@ distinct stack locations for them.
 
 Collection `8CCA00 / 752AE0` scans the query AABB's cache cells, filters enabled
 state and category against query `+34`, deduplicates raw pointers in first-seen
-order, then applies shape intersection. It appends to the supplied vector
+order, then applies native shape intersection. The [shape follow-up](spatial-shapes-map-25492057.md)
+shows that this is not universally exact geometric overlap. It appends to the supplied vector
 without clearing it; core search supplies a fresh empty vector per edge.
 Collection does not retain returned areas.
 

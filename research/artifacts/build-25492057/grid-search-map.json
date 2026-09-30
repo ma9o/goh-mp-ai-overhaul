@@ -10101,7 +10101,7 @@
   "spatial_cache_contract": {
     "construct": "eSpatialGrid size28: origin8, dimensions10/14,trunc((upper-origin)/cell)+1; cellsize18; owned array20 ofB0-byte cells. Each cell begins with16 raw pointer inline storage and vector bookkeeping at90..AF; allocation helper may spill. Solver supplies64, not16.",
     "insert": "8CC890 asks area shape slot1 forAABB3, converts distinct minXY/maxXY to clamped cache cells and appends raw area into each inclusive cell range. C decompiler loses the virtual output and incorrectly uses identical coordinates; assembly loads minima fromstack28/2C andmaxima34/38.",
-    "collect": "8CCA00 derives queryAABB range, scans cells inrow/columnorder, filtersenabled3C andquery34&area30, deduplicates by raw pointer into temporary vector with first-seen order, then exact shape intersection60EED0. Appends accepted raw areas to supplied output, without clearing it locally or retaining them. Solver supplies a fresh empty vector per edge.",
+    "collect": "8CCA00 derives queryAABB range, scans cells inrow/columnorder, filtersenabled3C andquery34&area30, deduplicates by raw pointer into temporary vector with first-seen order, then native shape intersection60EED0 (not universally exact geometric overlap; see spatial-shapes pass). Appends accepted raw areas to supplied output, without clearing it locally or retaining them. Solver supplies a fresh empty vector per edge.",
     "rebind": "771310 only overwrites manager0,shape8,category30,filter34,mask38=0,enabled3C=1,status3D/3E=0,ID44=-1,entity98=0. It is not fullconstruction: ownerinfo10..2F,obstacletype3F,shapeownership41 and other fields remain. Reviewed solver starts from fresh construction."
   },
   "decompiler_corrections": [
