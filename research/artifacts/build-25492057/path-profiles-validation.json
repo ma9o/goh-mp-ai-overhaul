@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "17bae928636dcfb7b1f0896db7878c589dcdba473561daa4f72d77021bb49a7b",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "7c664c1c5d8d6f258593967b4f4aa34421ba10fb6d843c7dceadcd8ae5843e51",
+      "exact_candidates": 21,
+      "exported_functions": 50,
+      "exported_basic_blocks": 1257,
+      "checked_enums": 0,
+      "checked_constants": 5,
+      "checked_method_entries": 33,
+      "checked_instruction_locations": 3819,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 2,
+      "checked_byte_sequences": 20
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "b48353cabc0ae93b832ca1f92693bb41c645e81699ea1911d239b01b7adfc777",
+      "exact_candidates": 17,
+      "exported_functions": 42,
+      "exported_basic_blocks": 851,
+      "checked_enums": 0,
+      "checked_constants": 3,
+      "checked_method_entries": 33,
+      "checked_instruction_locations": 4166,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 2,
+      "checked_byte_sequences": 20
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/PATHER.SET",
+      "size": 16890,
+      "sha256": "3e8b297926c0d79bcf512dbf0c407ee766f4e3e5d3f9bcd2aeafac480623c7a1"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/registry/obstacles.reg",
+      "size": 11886,
+      "sha256": "9e11b782a2d4b971267f87bde44a52da184801442faaa50b3327968673d1f76d"
+    }
+  ],
+  "status": "passed"
+}

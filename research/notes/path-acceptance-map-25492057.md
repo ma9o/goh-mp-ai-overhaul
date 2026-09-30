@@ -4,6 +4,11 @@ Build25492057; static evidence only. Addresses and offsets are hexadecimal,
 virtual slots decimal. This pass continues the movement and human-geometry maps.
 The game/editor executables and readonly Ghidra database remain unchanged.
 
+Follow-up: the [path profiles and vaulting pass](path-profiles-map-25492057.md)
+binds the profile/obstacle flag names and terrain IDs, establishes the15-entry
+Height authoring count, and maps edge8B9670, bound8BD570 and Move8F5E70.
+Open questions below are this pass's historical scope.
+
 Evidence: [manifest](../artifacts/build-25492057/path-acceptance-map.json),
 [validation](../artifacts/build-25492057/path-acceptance-validation.json), both
 `path-acceptance-pass.tsv`/`path-acceptance-anchors.tsv` pairs and frozen local

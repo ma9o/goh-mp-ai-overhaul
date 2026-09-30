@@ -1,0 +1,22 @@
+# RVA	Path profile and obstacle type leads
+0x8c9d50	profile_context_bind
+0x8ca360	obstacle_type_lookup
+0x8b9670	edge_cost_update
+0x8bd570	bound_inclusion
+0x8f5e70	move_special_object
+0x8ca430	profile_load
+0x8cab00	obstacle_load
+0x8ca220	obstacle_construct
+0x8c9b60	profile_name_lookup
+0x8ca2b0	obstacle_name_lookup
+0xa439b0	terrain_name_lookup
+0x66d590	terrain_optional_boolean
+0x8d2e80	animation_order_factory
+0xa46420	terrain_pp_registry_lookup
+0x66cb00	optional_token_probe
+0x938410	animation_displacement_query
+0x938520	animation_displacement_path_probe
+0x8d3070	animation_order_execute
+0x5e9da0	obb2_kind
+0x613fe0	obb2_aabb
+0x71fae0	temporary_obstacle_enable
