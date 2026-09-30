@@ -65,7 +65,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [human FSM handler dispatch/action effects](human-fsm-actions-map-25492057.md), and
 [animation control/completion/frame markers/entity motion](animation-control-map-25492057.md), and
 [pose/walking/idle profiles and human animation declarations](human-animation-profiles-map-25492057.md), and
-[scripted idle policy/native conditions/interaction list execution](idle-actions-map-25492057.md). Their open questions
+[scripted idle policy/native conditions/interaction list execution](idle-actions-map-25492057.md), and
+[binary animation timelines/bone tracks/resource and marker audit](animation-resources-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -188,8 +189,11 @@ are historical snapshots; this frontier tracks the continuing objective.
   counter side effects, AI/player/manual shoot_walking tags, health<0.3 and
   callback4's health-bit16 gate (not target bit14). The three base animation text
   resources yield1545 unique declarations/790 event rows;123 of125 selector names
-  match. Resolve automatic registration/file lookup for unmatched `stand_idle_empty`
-  and `stand_idle_strap_4` before interpreting them as missing animations.
+  match. Sequence file/directory lookup and explicit registration are now mapped;
+  request lookup does not automatically register missing files, and observed
+  explicit insertion is nested blendspace registration. `stand_idle_empty` and
+  `stand_idle_strap_4` remain unmatched in the base declarations/archive scope;
+  mounted overrides and upstream registration context remain open.
   Base human select_idle is now expanded (2 macros/8 invocations,70 conditions,
   13 else branches,21 animation names); script uses numbered empty idles but
   still names unmatched strap4. Every predicate/action in that script now has
@@ -198,10 +202,20 @@ are historical snapshots; this frontier tracks the continuing objective.
   bypass writer, event-layer/dynamic receiver lifecycle, action registry1571B18
   teardown and actor3A bit0/RNG context producers. Event execution selects native
   contexts named synced_global/entity_local and restores the previous context.
-  Continue
-  death animation feasibility/selection `0x938410/0x9648E0/0x9645D0`,
-  binary animation timeline
-  normalization, aimset/blendspace parameter producers, concrete marker action lists,
+  EANM headers/FRMN/FRM2, first-frame pose-track binding, sparse carry-forward,
+  visibility/mesh actions, placement binding and rate normalization50/14776C8 are
+  now mapped. All1545 declarations join1292 files under explicit base-prefix
+  assumption.1606 human ANM scanned:1605 parse,77 sparse, one empty; two smoke
+  files update initially unbound tracks. The three anomalous files are not joined
+  by these declarations.27 marker rows lack stored coordinates (26 out of bounds,
+  one sparse pistol prone_to_stand); board_plane_right has two markers at100,
+  while dispatch chooses one sorted match. Follow concrete marker actions and
+  sorter tie behavior. Rotation uses bone-map ordinal as track index and a shared
+  binaryED once gate; four base rotation declarations have matched ordinal0 or
+  absent body, so no observed ordinal mismatch there. Continue mount precedence,
+  directory ordering and shared-resource lifetime.
+  Continue death animation feasibility/selection `0x938410/0x9648E0/0x9645D0`,
+  aimset/blendspace parameter producers, concrete marker action lists,
   root/bone transforms `0x5D3820/0x5D7410/0x5D8170/0x5D8250` and entity slot25,
   actor1420 bit3/handler flags and cache invalidation, movement mode enum binding,
   counter34/scale27C writers, reference bone558 binding, mounted resource overrides,

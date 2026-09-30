@@ -1,0 +1,9 @@
+# RVA	Animation resource anchors
+0xf1ed08	.?AVeBinaryAnimation@@_vtable
+0xf1d788	.?AVeAnimationSystem@Bone@@_vtable
+0xf1e750	.?AVeStateAnimation@Bone@@_vtable
+0xf1e5d8	.?AVeBlendAnimation@Bone@@_vtable
+0xe87438	Invalid_animation_file
+0xf1e5a0	Animation_with_duplicate_name
+0xf538c8	stand_idle_empty
+0xf53928	stand_idle_strap_4

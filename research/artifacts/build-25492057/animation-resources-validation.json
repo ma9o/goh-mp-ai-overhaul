@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "ffde1ac0dff01a5e4543e435e75eb02dcd4034b1cd20199592f42bd486c41889",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "728164881bb3d41cfe19caa54641be635ad025ae9c425c7aa4cacf1bc4d8d0aa",
+      "exact_candidates": 56,
+      "exported_functions": 70,
+      "exported_basic_blocks": 1421,
+      "checked_enums": 0,
+      "checked_constants": 5,
+      "checked_method_entries": 26,
+      "checked_instruction_locations": 4711,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 4,
+      "checked_byte_sequences": 4
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "b169461032c7c74641954f61c9b47dfc29bb587f651a60a9135e97bda821e901",
+      "exact_candidates": 43,
+      "exported_functions": 59,
+      "exported_basic_blocks": 1162,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 16,
+      "checked_instruction_locations": 3779,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 4,
+      "checked_byte_sequences": 0
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/human_anm.ext",
+      "size": 110,
+      "sha256": "451c50bc6f23b5d65cd3b912c7b09d71bbaeb0e866aae35ca93f6af7b79fd578"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/_reg_human_movement.inc",
+      "size": 69194,
+      "sha256": "482073855c59e564b6f159bfd124abacdcc7799747c167f1177d5dd4ed9a124c"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/_reg_vehicle_crew.inc",
+      "size": 55604,
+      "sha256": "1d201c2112b54676453860afe87db629ffc45c997a5993e0fd3787dbcc2537c3"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/weapon/anim_crouch_to_lie_gun.anm",
+      "size": 24,
+      "sha256": "5b04758d45570a82692b3222e9109c0e32dd208b8199ae70f6eb771a1fa706ed"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/weapon/anim_pistol_stand_shoot_01_down.anm",
+      "size": 1012,
+      "sha256": "f009c9a1e60a7c1c0031f165a97e1b0d19625e25702eb161b190a50d246ac437"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/locomotion/anim_run_dc_down.anm",
+      "size": 6578,
+      "sha256": "aa5fedcb884de33d623d89a31e4b740ca5e75a1793f095a253fdfb8456f61cc9"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/locomotion/anim_run_empty_down.anm",
+      "size": 6986,
+      "sha256": "9a364a08adc70e4e7ac10714ececdf2a75f4f1cb832bc16e2ec4e59d651b23fa"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/board_lowtank_stand.anm",
+      "size": 29521,
+      "sha256": "827d7250d7a480cab6a8b04d7ce08abbe7651a66cd8f03c6db55c4bf5e0378a0"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/board_lowtank_stand_1.anm",
+      "size": 29746,
+      "sha256": "316df530aca1d85b3b5a09f9efe324a96062a63cdff507dd929ecfa119f5db5a"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/board_plane_right.anm",
+      "size": 46059,
+      "sha256": "91892799155f25155ae5c7cd59d4a49e86638d2e87b7ef0fc3b9c3d4958278be"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/idle_mission/idle_passive_stand_gun_strap_smoke.anm",
+      "size": 381863,
+      "sha256": "59a2e5d2deebd4b6fea53e9274eb0650e7aa36af60d93e2a196c6b63f7800791"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animation/human/stand_smoke_1-old.anm",
+      "size": 381863,
+      "sha256": "59a2e5d2deebd4b6fea53e9274eb0650e7aa36af60d93e2a196c6b63f7800791"
+    }
+  ],
+  "status": "passed"
+}
