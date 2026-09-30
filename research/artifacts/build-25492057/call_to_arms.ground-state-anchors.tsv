@@ -1,0 +1,13 @@
+# RVA	Label	Filter	Limit
+0x7309c0	simulator_parameters_callers	all	2048
+0x726e60	simulation_stop_callers	all	2048
+0x156f898	simulator_registry_writers	write	2048
+0xa439b0	terrain_event_lookup_callers	all	2048
+0x15876e0	throw_animation_tag_0	all	2048
+0x1587740	throw_animation_tag_1	all	2048
+0x15877a0	throw_animation_tag_2	all	2048
+0x1587800	throw_animation_tag_3	all	2048
+0x1587860	throw_animation_tag_4	all	2048
+0x15878c0	throw_animation_tag_5	all	2048
+0x1587920	throw_animation_tag_6	all	2048
+0x156fde0	throw_parent_tag	all	2048

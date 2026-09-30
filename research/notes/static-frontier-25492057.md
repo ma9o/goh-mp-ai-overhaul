@@ -27,7 +27,7 @@ after their behavior and effect on the AI contract are established.
 | Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; RepairTime/RepairOrder, countdown/restoration and repair command59; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wound-list removal and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application; vehicle allocation/root/emergency/Hideout/SmartRepair dispatcher; Repair/KitExchange/Collect/TakeItem/OrderTake and transfer/equip operations | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; Board/Bind/Emit now mapped; Repair phase6 reachability and group variants; scripted blow effects and melee defence/counterattack |
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion; animation manager pending/active membership, scene phase and immediate request-side Quant; clock/delta producer, pause tokens, explicit stepping, slowdown stack, deadline codecs, default/selected/synced RNG context | Frame event-router/worker lifecycle, registered timer registration/unlink, slowdown guard and packet producers; manager bucket creation, entity lifetime through queued work; default/entity RNG disposal and scope completeness; full deferred mesh drain; skip setter now mapped |
-| Physical entity state | Contact queues/solver; mass and inertia inputs; contact-dependent integration; force reset and pending impulses; entity/body pose conversion and recovery; four-point motion histories and two-check settling; inventory plus authored Mass; lazy 16-point interior cache and its RNG consumption | Ground/water/landing callbacks; simulator owner binding and lifetime; shape-weight and material producers; cache invalidation; force/impulse API writers; invalid-input preconditions and remaining caller ordering |
+| Physical entity state | Contact queues/solver; mass/inertia and integration; pose recovery; settling; inventory plus authored Mass; random interior samples; six named simulator factories and raw owner binding; ground/water flags and named events; grenade/pillar/airborne/water movement; force-at-point; human trajectory trials, flight/slide, animation selection and landing | Simulator/registry/shared-scratch lifetime; shape-weight/material/terrain producers; cache invalidation; remaining force/impulse writers; scene boundary/ray queries; water chassis inputs; command28 reception; support overrides and invalid-input preconditions |
 | Group/vehicle behavior | Type roots; cannon fire/move/trailing states, role-index transfers, seat Disable and obstacle enable writers; place readiness/assignment; crew groups, sealing, entrance balancing, Board/Bind/Emit phases, traversal graph/animation/inventory, walker sync/cancel/load and occupant perception effects; six concrete exit callbacks; abandoned/ally_crew/any_crew/select bindings; boarder command reception; vehicle root/multiweapon allocation, gunner withdrawal, repairer selection, emergency triggers and basic airborne/animal roots; cannon command5E reception | Full squad/leader coordination, aircraft/helicopter chassis and animal scanners; exit source-pointer lifetime; full reservation/queue lifetime and derived chassis permissions, remaining availability flag producers; cannon matrix correction |
 | Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
 | Cross-binary comparison | Selected game/editor contracts | Compare newly reviewed contracts; distinguish outlining/inlining and behavior differences |
@@ -86,10 +86,19 @@ Existing completed passes: [initial structure](build-25492057.md),
 [collider profiles/entity contacts/trace volume queries](entity-contact-map-25492057.md), and
 [physical contact queues/batch reduction/geometry helpers](physical-response-map-25492057.md), and
 [contact iteration/body inputs/convex support/GJK](contact-solver-map-25492057.md), and
-[body integration/settling/entity mass and random interior samples](body-state-map-25492057.md). Their open questions
+[body integration/settling/entity mass and random interior samples](body-state-map-25492057.md), and
+[ground/water flags, simulator selection and human throwing](ground-state-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
+
+Latest ground-state pass closes the previous ground/water summaries, surface
+selection, normal-query consumer, simulator owner binding and main human throw
+state/landing chain. It identifies ground_hit and grounded on/off by RTTI and
+literal bindings, confirms all six simulator names, and follows force-at-point
+into both force and torque. The historical physics bullets below are superseded
+for those contracts. Next priority: entity ID/actor registration A5DF80 and
+deferred disposal652A10, then remaining AI flag producers and group behavior.
 
 Latest body-state pass closes the mass/inertia/base-acceleration/dirty-state
 producers, integration and sleep questions repeated in the historical contact
@@ -530,3 +539,18 @@ The current remaining physics leads are the final body-state bullet below.
   other caller ordering and secondarymode0 angle remain. Continue human
   throw/landing93BDD0/93DCE0, chassis request29, material coefficient parsers and
   sharedGJK tolerance scheduling. All remain productive static leads.
+
+- Ground-state follow-up: 85paired contracts plus one game token initializer and
+  one editor-outlined landing function;49fields,26RTTI tables,10,877 independently
+  decoded instruction starts. Ground samples are surface vertices with bit6;
+  water forces use active bit12 volumes. Waterbit11 requires strictly>20% wet
+  samples and reaches simulator damping/gravity. C2 is ground_hit, C4/C6 grounded
+  on/off; ordinary impacts carry positive speed while human landing carries
+  negative speed. Six name/factory pairs and SimulatorId token/parser layout
+  are resolved. Human trials make up to20 attempts with4 RNG draws each, even
+  unperturbed attempt0; sign deadband is1e-5, animation selection has seven names.
+  Human flight/slide bypasses ordinary body integration. Continue terrain/material
+  producers, A26730 and A21E50-family geometry,938520 landing/death feasibility,
+  pose helper conventions, water chassis920 and root704470, support flag writers,
+  command28 reception, force/impulse writers and raw simulator/global-scratch
+  lifetime. These are explicit static leads, not assumed runtime boundaries.
