@@ -1,5 +1,9 @@
 # Static AI/entity investigation frontier
 
+> **Superseded for planning (2026-09-30)** by the
+> [decision frontier](decision-frontier-25492057.md). Retained unchanged below
+> as the index of completed and parked mapping. Do not take leads from it.
+
 User objective: exhaust productive static mapping of AI behavior and the entities
 and state it reads. This work remains **active**. This workflow uses file analysis;
 runtime experiments and game modifications remain separate from the static map.
