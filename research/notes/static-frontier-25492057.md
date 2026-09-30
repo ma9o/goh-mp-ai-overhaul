@@ -22,7 +22,7 @@ after their behavior and effect on the AI contract are established.
 | Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | Class/attacking/threating flag producers; all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
 | Human decision states | State hierarchy/dispatch/hazards; reviewed idle/battle/cover/search flow; stance thresholds, attack return codes, tactical movement, search coordination, healing and medic gating, following and weapon changes; detour pose/cover/point stages and budgets; circle-bound construction and RNG sampling, graph generation/processed-node reachability; temporary bone/pose trials; idle request gate; dropped-weapon memory, proficiency score and sort | Network construction, remaining geometry dependencies; animation state/tag producers and completion counter; full cover masks/healing validator; Veterancy property binding; full event producers; residual action-order helpers |
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle; discrete height probes, height/side-clearance kind selection, interval boundary bisection | Descriptor +8/+C consumer roles; full edge spacing and alternate offsets; geometry-query/grid construction |
-| Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set/copy ownership, grenade AreaOutside solver dispatch; graph search/heap/node marks, bounds clamp/cost toggles, edge cost formula, route reconstruction outputs and distance sampling; RNG-consuming cost probe; named profile/obstacle parsers, 12 native terrain IDs, 116 base profiles and21 obstacle types; vault geometry and PlayAnimation handoff; line/point costs and RNG, portal pruning, owner metadata snapshots, spatial enabled masks and collection; grid search, seven goal types, fallback rules, parent tracing, smoothing and shortcut settings; planar shape ABI/predicates, polygon features and compound ownership | Graph construction; packed slope and remaining obstacle metadata producers; spatial insertion/removal, 3D shape leaves and polygon degeneracies, queue drain and raw-pointer lifetime; terrain ratio/priority consumers, movement enum binding, ability/health speed modifiers; profile reload lifetime; remaining PlayAnimation handler/request/command and crush builders |
+| Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set/copy ownership, grenade AreaOutside solver dispatch; graph search/heap/node marks, bounds clamp/cost toggles, edge cost formula, route reconstruction outputs and distance sampling; RNG-consuming cost probe; named profile/obstacle parsers, 12 native terrain IDs, 116 base profiles and21 obstacle types; vault geometry and PlayAnimation handoff; line/point costs and RNG, portal pruning, owner metadata snapshots, spatial enabled masks and collection; grid search, seven goal types, fallback rules, parent tracing, smoothing and shortcut settings; planar/volume shape ABI and predicates, polygon features, compound ownership and closest-result state | Graph construction; packed slope and remaining obstacle metadata producers; spatial insertion/removal, shape producers and rectangle/polygon decision regions, queue drain and raw-pointer lifetime; terrain ratio/priority consumers, movement enum binding, ability/health speed modifiers; profile reload lifetime; remaining PlayAnimation handler/request/command and crush builders |
 | Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy/zeroing; named aim modes and ballistic solvers; burst sampler and stateful preview; adaptive geometry trace; live projectile fields/pool/flight and contact-to-damage bridge; TargetAccessor result gates; occupied-slot readiness; named crew slot flags, Sealed exposure, priority assignment and reservations; gunner/charger/commander/driver requests and minWorkers; cannon animation completion counter | Place/profile/owner lifetime; bone limit solvers and sway/reload; charger and animation producers; weaponry86 state; full contact/material/ricochet outcomes, guided steering and synchronization; other shooter types |
 | Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; RepairTime/RepairOrder, countdown/restoration and repair command59; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wound-list removal and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application; vehicle allocation/root/emergency/Hideout/SmartRepair dispatcher; Repair/KitExchange/Collect/TakeItem/OrderTake and transfer/equip operations | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; Board/Bind/Emit now mapped; Repair phase6 reachability and group variants; scripted blow effects and melee defence/counterattack |
@@ -77,7 +77,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [path profiles/obstacle names/terrain IDs/vault animation orders](path-profiles-map-25492057.md), and
 [line costs/portal pruning/spatial owner snapshots](path-lines-map-25492057.md), and
 [grid search/goal callbacks/route refinement](grid-search-map-25492057.md), and
-[planar shape predicates/polygon features/compound ownership](spatial-shapes-map-25492057.md). Their open questions
+[planar shape predicates/polygon features/compound ownership](spatial-shapes-map-25492057.md), and
+[volume predicates/closest-result state/compound traversal](spatial-volumes-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -187,7 +188,7 @@ are historical snapshots; this frontier tracks the continuing objective.
   Spatial owner snapshot records destroyed tag, ID/player/chassis flags, but
   retains raw link28; queued move clears entity98. Enable refreshes leaf category
   and enabled signbit. Query argument context78 is forwarded but ignored; actual
-  filter is query34=40. Continue volume shape612720, spatial775430/
+  filter is query34=40. Continue spatial775430/
   60CF30 insertion/removal, ID reuse and queue drain8BE7A0; player1E1/entity1C0
   mask18000 producers and raw-link lifetime remain leads.
   Grid8AFA00 now maps16-unit8-neighbor search, packed node flags and strict-g
@@ -207,8 +208,20 @@ are historical snapshots; this frontier tracks the continuing objective.
   leaves sourcecount intact after clearing vector pointers. Compound owns child
   pointers and caches conservative bounds; append uses radiusR1+R2+distance,
   with shared global scratch. Compound15/15 intersection is unsupported.
-  Continue3D shape leaves, full608380/608B20 clipping/degenerate table, shape
-  producer/count invariants, scratch serialization and compound cache invalidation;
+  Volume612720 now maps kinds20..24, slots1..9, fixed geometry/transform/bounds
+  and compound traversal. Box/capsule and box/lozenge pairs are unsupported;
+  compound24/24 is supported. Point predicates are strict, pair thresholds inclusive.
+  Rectangle-point609330 stores both parameters but uses the first on both axes;
+  lozenge sphere612340 uses max half-side rather than half diagonal. Static cases
+  show predicate disagreement and a core corner outside the returned sphere.
+  Shared result147CF30 has partially written parameters; box cases leave it stale.
+  Compound scans all children as(other,child), retaining minimum native scalar,
+  without checking the state byte; primitive/compound orientation can differ.
+  Compound clone resets stored position, while copying world geometry children.
+  Dynamic613CF0 snapshots through slot2 into shared fixed-shape scratch.
+  Continue loaders610050/610A10/610B00/610DF0/6111E0, dynamic wrappers/factories,
+  full6094F0/60A010 rectangle regions and608380/608B20 polygon clipping/degeneracy,
+  shape producer/count invariants, scratch aliases/serialization and cache invalidation;
   full AreaInside task8C8CB0 line/fallback,
   goal128 and output111 consumers, graph creation and worker/cache lifetime.
   Moving-entity registry8AA360, low-ratio speed modifier925010/924F90 and

@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "runtime_verified": false,
+  "scope": "Static arithmetic and call-order evaluation of reviewed branches; no native execution, reachability/frequency claim or exhaustive correctness proof. Distinct inputs, finite values, normalized orthogonal rectangle axes.",
+  "cases": [
+    {
+      "id": "rectangle_point_reconstruction_reuses_u",
+      "rectangle": {
+        "dimensions": [
+          2,
+          2
+        ],
+        "axis_u": [
+          1,
+          0,
+          0
+        ],
+        "axis_v": [
+          0,
+          1,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ],
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "rounding_radius": 0.25
+      },
+      "sphere": {
+        "center": [
+          1,
+          0,
+          0
+        ],
+        "radius": 0.25
+      },
+      "clamped_parameters": [
+        1,
+        0
+      ],
+      "native_rectangle_point": [
+        1,
+        1,
+        0
+      ],
+      "native_squared_distance": 1,
+      "sum_radii_squared": 0.25,
+      "native_pair_intersection": false,
+      "geometric_squared_clearance": 0,
+      "geometric_overlap": true,
+      "same_lozenge_point_slot6": true,
+      "evidence": {
+        "game": {
+          "function": "0x609330",
+          "save_u": "0x609407",
+          "save_v": "0x609427",
+          "u_used_for_both_x_axes": [
+            "0x60942b",
+            "0x609430"
+          ]
+        },
+        "editor": {
+          "function": "0x47b710",
+          "save_u": "0x47b7e7",
+          "save_v": "0x47b807",
+          "u_used_for_both_x_axes": [
+            "0x47b80b",
+            "0x47b810"
+          ]
+        }
+      },
+      "derivation": "The body stores clamp(V) at result14, but reconstructs origin+clamp(U)*axisU+clamp(U)*axisV for XYZ. Native point-membership slot6 uses both independent coordinates."
+    },
+    {
+      "id": "lozenge_bounding_sphere_excludes_core_corner",
+      "lozenge": {
+        "dimensions": [
+          2,
+          2
+        ],
+        "axis_u": [
+          1,
+          0,
+          0
+        ],
+        "axis_v": [
+          0,
+          1,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ],
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "rounding_radius": 0.25
+      },
+      "native_sphere_center": [
+        1,
+        1,
+        0
+      ],
+      "native_sphere_radius": 1.25,
+      "core_corner": [
+        2,
+        2,
+        0
+      ],
+      "corner_distance_squared": 2,
+      "native_radius_squared": 1.5625,
+      "contains_core_corner": false,
+      "evidence": {
+        "game": {
+          "function": "0x612340",
+          "half_extent_max_and_add": [
+            "0x6123c4",
+            "0x6123ca",
+            "0x6123d4",
+            "0x6123d8"
+          ]
+        },
+        "editor": {
+          "function": "0x484a80",
+          "half_extent_max_and_add": [
+            "0x484b04",
+            "0x484b0a",
+            "0x484b14",
+            "0x484b18"
+          ]
+        }
+      },
+      "derivation": "Radius is roundingR+max(Lu/2,Lv/2), not the half-diagonal. The supplied orthonormal rectangle core already has a corner outside this sphere."
+    },
+    {
+      "id": "compound_distance_result_argument_order",
+      "sphere_a": {
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2
+      },
+      "sphere_b": {
+        "center": [
+          3,
+          0,
+          0
+        ],
+        "radius": 2
+      },
+      "direct_a_b": {
+        "helper_order": [
+          "A",
+          "B"
+        ],
+        "result_vector": [
+          3,
+          0,
+          0
+        ],
+        "squared_distance": 9,
+        "intersects": true
+      },
+      "compound_a_containing_only_a_against_b": {
+        "helper_order": [
+          "B",
+          "A"
+        ],
+        "result_vector": [
+          -3,
+          0,
+          0
+        ],
+        "squared_distance": 9,
+        "intersects": true
+      },
+      "evidence": {
+        "game": [
+          "0x612720",
+          "0x613120",
+          "0x60c390"
+        ],
+        "editor": [
+          "0x484e60",
+          "0x485860",
+          "0x47e770"
+        ]
+      },
+      "derivation": "Compound-first dispatch enters compound helper without a later flip. Helper calls native dispatch(other,child). This changes endpoint order/vector sign from the direct primitive pair. No claim about an external consumer interpreting this vector."
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+# RVA	Label	Filter	Limit
+0x612720	volume_intersection_callers	all	2048
+0x10c1db8	compound_volume_vtable	all	2048
+0x147cf30	volume_distance_result	all	2048
+0x1555e08	volume_distance_valid	all	2048
