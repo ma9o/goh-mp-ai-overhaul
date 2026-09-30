@@ -902,7 +902,7 @@
         "game": "0x9e8bf0",
         "editor": "0x872a30"
       },
-      "contract": "Construct28-byte selector with type8=6, null pointers10/18, dword20zero and byte24one; concrete selection semantics remain separate.",
+      "contract": "Construct28-byte selector: allowed-source mask8=6, owned source object10null, configuration18/current source1C/default source20 allzero, ignore_captured_by_user24true. Meanings resolved by modifier follow-up.",
       "status": "static_branch_review",
       "cross_binary_scope": "Compared stated contract; allocator/stream helpers, diagnostics, inlining and outlining differ. Scope-only methods do not claim whole-function equivalence."
     },
@@ -2162,31 +2162,21 @@
       ]
     },
     {
-      "id": "selector_type",
+      "id": "selector_allowed_sources",
       "owner": "selector",
       "offset": "0x8",
       "width": 1,
-      "role": "Ctor sets6; concrete enum/selection semantics still being mapped",
+      "role": "Allowed-source mask, constructor6; semantic binding resolved in modifier follow-up.",
       "evidence_ids": [
         "game_9e8bf0"
       ]
     },
     {
-      "id": "selector_pointer_a",
+      "id": "selector_source_object",
       "owner": "selector",
       "offset": "0x10",
       "width": 8,
-      "role": "Ctor null; do not assume std::vector from this constructor",
-      "evidence_ids": [
-        "game_9e8bf0"
-      ]
-    },
-    {
-      "id": "selector_pointer_b",
-      "owner": "selector",
-      "offset": "0x18",
-      "width": 8,
-      "role": "Ctor null",
+      "role": "Owned source object, constructor null; standard/advanced kinds resolved in modifier follow-up.",
       "evidence_ids": [
         "game_9e8bf0"
       ]
@@ -2194,19 +2184,39 @@
     {
       "id": "selector_configuration",
       "owner": "selector",
-      "offset": "0x20",
+      "offset": "0x18",
       "width": 4,
-      "role": "Ctor zero",
+      "role": "Configuration integer18, constructorzero; upper half of zeroed qword is current source1C, not a pointer.",
       "evidence_ids": [
         "game_9e8bf0"
       ]
     },
     {
-      "id": "selector_enabled_default",
+      "id": "selector_source",
+      "owner": "selector",
+      "offset": "0x1c",
+      "width": 4,
+      "role": "Actual source enum1C, constructorzero; upper half of constructor qword store18.",
+      "evidence_ids": [
+        "game_9e8bf0"
+      ]
+    },
+    {
+      "id": "selector_default_source",
+      "owner": "selector",
+      "offset": "0x20",
+      "width": 4,
+      "role": "Default source enum20, constructorzero; modifier follow-up resolves meaning.",
+      "evidence_ids": [
+        "game_9e8bf0"
+      ]
+    },
+    {
+      "id": "selector_ignore_captured_by_user",
       "owner": "selector",
       "offset": "0x24",
       "width": 1,
-      "role": "Ctor one; precise selector flag semantics deferred to selector pass",
+      "role": "Constructortrue; concrete dispatch gate resolved in modifier follow-up.",
       "evidence_ids": [
         "game_9e8bf0"
       ]
@@ -22883,7 +22893,7 @@
     "Waypoint manager FB5 is SceneQuantInit and refresh rewrites waypoint Z from ground height, not only its model.",
     "Waypoint edge pruning is located in GEM deletion path, not game load.",
     "Block primary slot5 A05010 delegates child property flags; actual hook context flag setter is9C7CE0, with no local recursive propagation.",
-    "Selector constructor shows two null pointers and a dword, not enough evidence for a std::vector.",
+    "Selector10 is the sole owned source pointer. Constructor qword zero18 spans configuration18/current source1C;20 is default source and24 ignores captured actors, as resolved in modifier follow-up.",
     "9CBE00 frees vector storage only; child destruction occurs earlier via detached cleanup689D60 and primary slot8.",
     "Only duplicate trigger path warns in reviewed spawn code; matching waypoint exits search and appends without that warning."
   ],

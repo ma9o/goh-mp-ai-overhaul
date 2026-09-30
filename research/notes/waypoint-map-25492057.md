@@ -12,7 +12,7 @@ registrations, vtables and instruction evidence are in
 The structural check is
 [`waypoint-validation.json`](../artifacts/build-25492057/waypoint-validation.json).
 There are 106 paired function contracts and two additional GEM editing paths.
-Structural checks passed for all 214 entries, 85 fields, 74 RTTI tables,
+Structural checks passed for all 214 entries, 86 fields, 74 RTTI tables,
 20 property registrations and 22 read-only float constants. LLVM and Ghidra
 agree on 16,678 instruction starts after LOCK-prefix normalization; four raw
 RNG initializer regions also have independent LLVM decoding.
@@ -267,6 +267,12 @@ deletes old children through primary slot 8 and frees the detached storage.
 `9CBE00/855750` alone only frees vector memory; it is not the child-deletion
 routine. Statement destruction frees cached path storage. Neither local path
 invalidates raw hooks retained by a live executor.
+
+The modifier follow-up corrects the selector constructor interpretation: `10` is
+the owned source pointer; the qword zero at `18` initializes two integers,
+configuration `18` and current source `1C`. `8` is an allowed-source mask, `20`
+the default source and `24` the ignore-captured-by-user flag. The initial
+constructor-only map had incorrectly labeled `18` as another pointer.
 
 ## Normal scene cleanup and remaining leads
 

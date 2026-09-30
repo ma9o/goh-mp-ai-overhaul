@@ -1,0 +1,9 @@
+# RVA	Label	Filter	Limit
+0x1485d70	modifier_manager	all	4096
+0x15992f8	selection_current_output	all	4096
+0x15992c4	selection_rng_scale	all	4096
+0xa0da40	modifier_refresh_callers	all	4096
+0x1584a68	named_cover_rows	all	4096
+0x1584f28	cover_link_tolerance	all	4096
+0x1584f34	cover_match_threshold	all	4096
+0x1584a50	cover_property_tokens	all	4096

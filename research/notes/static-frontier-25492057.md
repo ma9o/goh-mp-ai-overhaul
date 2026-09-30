@@ -28,8 +28,8 @@ after their behavior and effect on the AI contract are established.
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application; vehicle allocation/root/emergency/Hideout/SmartRepair dispatcher; Repair/KitExchange/Collect/TakeItem/OrderTake and transfer/equip operations | Squad order-transfer predicate census and filtered serialization now mapped. Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; Board/Bind/Emit now mapped; Repair phase6 reachability and group variants; scripted blow effects and melee defence/counterattack |
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion; animation manager pending/active membership, scene phase and immediate request-side Quant; clock/delta producer, pause tokens, explicit stepping, slowdown stack, deadline codecs, default/selected/synced RNG context | Frame event-router/worker lifecycle, registered timer registration/unlink, slowdown guard and packet producers; manager bucket creation, entity lifetime through queued work; default/entity RNG disposal and scope completeness; full deferred mesh drain; skip setter now mapped |
 | Physical entity state | Contact queues/solver; mass/inertia and integration; pose recovery; settling; inventory plus authored Mass; random interior samples; six named simulator factories and raw owner binding; ground/water flags and named events; grenade/pillar/airborne/water movement; force-at-point; human trajectory trials, flight/slide, animation selection and landing | Simulator/registry/shared-scratch lifetime; shape-weight/material/terrain producers; cache invalidation; remaining force/impulse writers; scene boundary/ray queries; water chassis inputs; command28 reception; support overrides and invalid-input preconditions |
-| Group/vehicle behavior | Type roots; cannon fire/move/trailing states, role-index transfers, seat Disable and obstacle enable writers; place readiness/assignment; crew groups, sealing, entrance balancing, Board/Bind/Emit phases, traversal graph/animation/inventory, walker sync/cancel/load and occupant perception effects; six concrete exit callbacks; abandoned/ally_crew/any_crew/select bindings; boarder command reception; vehicle root/multiweapon allocation, gunner withdrawal, repairer selection, emergency triggers and basic airborne/animal roots; cannon command5E reception; squad membership/commander election/Quant, display representative, automatic and explicit formation, individual goals, order-transfer predicates and waypoint iterator | Waypoint object/edge/action lifetimes and downstream squad-goal consumers; aircraft/helicopter chassis and animal scanners; exit source-pointer lifetime; full reservation/queue lifetime and derived chassis permissions, remaining availability flag producers; cannon matrix correction |
-| Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
+| Group/vehicle behavior | Type roots; cannon fire/move/trailing states, role-index transfers, seat Disable and obstacle enable writers; place readiness/assignment; crew groups, sealing, entrance balancing, Board/Bind/Emit phases, traversal graph/animation/inventory, walker sync/cancel/load and occupant perception effects; six concrete exit callbacks; abandoned/ally_crew/any_crew/select bindings; boarder command reception; vehicle root/multiweapon allocation, gunner withdrawal, repairer selection, emergency triggers and basic airborne/animal roots; cannon command5E reception; squad membership/commander election/Quant, display representative, automatic and explicit formation, individual goals, order-transfer predicates and waypoint iterator | Waypoint object/edge/action ownership and normal scene teardown now mapped; arbitrary live graph replacement/rename and downstream squad-goal consumers; aircraft/helicopter chassis and animal scanners; exit source-pointer lifetime; full reservation/queue lifetime and derived chassis permissions, remaining availability flag producers; cannon matrix correction |
+| Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Modifiers/filters/standard and advanced selectors now mapped; concrete native commands/conditions, remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
 | Cross-binary comparison | Selected game/editor contracts | Compare newly reviewed contracts; distinguish outlining/inlining and behavior differences |
 
 ## Working method
@@ -91,10 +91,26 @@ Existing completed passes: [initial structure](build-25492057.md),
 [entity IDs, registries, reuse and deferred destruction](entity-id-map-25492057.md), and
 [ownership, diplomacy, observation flags and squad departure](ownership-map-25492057.md), and
 [squad coordination, formation assignment and waypoint inputs](squad-map-25492057.md), and
-[waypoint ownership, actor orders and native script execution](waypoint-map-25492057.md). Their open questions
+[waypoint ownership, actor orders and native script execution](waypoint-map-25492057.md), and
+[modifiers, filters, selectors and weapon profile ownership](modifier-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
+
+Latest modifier pass adds140 paired contracts and three game-only helpers,
+126 fields,146 RTTI tables and16 enum tables, with22,582 independently checked
+instruction starts. It closes the preceding concrete modifier/filter/selector
+lead: ordered armor/accuracy assignment versus selected-ammo range multiplication,
+private profile clone/release,16 filter terms, seven advanced gatherers, source
+priority, RNG cap/shuffle and full3D sorting. GEM team is always false; player
+control-group behavior differs from game. A zero/negative amount keeps all;
+with_item tests only its first match. Filter reference visitor scans exclusions
+twice, and nested advanced collectors share globals without restoring outer state.
+Named-cover matching/record ownership is mapped; reload caller/lifetime ordering
+remains. Selector18 is configuration and1C source, correcting the earlier
+constructor-only pointer interpretation. Current work: concrete effects/defaults
+of the70 native command registry entries, then condition implementations and
+remaining AI inputs/consumers. The registry is inventory, not semantic closure.
 
 Latest waypoint pass adds106 paired contracts and two GEM edit paths,85 fields,
 six builtin statement descriptors per binary, and16,678 independently checked
@@ -107,8 +123,8 @@ requires the resumed-child next callback, so an entirely immediate body returns
 completion. Parser/manager/block ownership and save/load are mapped; arbitrary
 live graph replacement and concrete native conditions/commands/selectors remain.
 GEM-only missing-destination pruning is not a demonstrated game-load validator.
-Current work: modifier preparationA0DCE0/8985D0, entity filter9E2D10/86CBD0,
-selector representation/dispatch and native command factory99D420/826B00.
+The modifier pass above now closes preparation/filter/selector contracts.
+Concrete command effects and condition implementations remain active.
 
 Latest squad pass adds101 paired contracts,89 fields and a79-type primary order
 predicate census per binary. CommanderA8 and display actorA0 are different;
