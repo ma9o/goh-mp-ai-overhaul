@@ -213,6 +213,26 @@ Evidence: [catalog extension](decision-catalog-25492057.md#q1a-extension--c-base
 Game-only focused export; 15 entries, 703 instruction locations, three floats
 and event payload bytes validated. No game/editor execution or modification.
 
+### Q1b. Root, location and hazard policy catalog
+
+Catalog row **C-ROOT**, blank: per-variable inputs and issued outputs of
+soldier/civilian root and location selection, root interrupt `0x955A90`, and
+hazard-scanner query interfaces in the movement manifest. Include saved-order
+and restoration fields; reuse I-COVER-GROUP. Order execution, physical escape
+and path internals are outside this census.
+
+**Partial checkpoint committed at user direction:** retained 83 input records
+and 28 output boundaries for root/location selection, hazards and restoration;
+no full C-ROOT census is claimed. The separate selector tail0x9526D0, snapshot
+R8B permission, and brain+0x3E0 deadline consumer are now explicit.
+
+Evidence: [Q1b catalog checkpoint](decision-catalog-25492057.md#q1b-partial-checkpoint--root-and-restoration-policy),
+[manifest](../artifacts/build-25492057/decision-catalog-q1b-map.json),
+[validation](../artifacts/build-25492057/decision-catalog-q1b-validation.json).
+33 game entries, 3,226 instruction locations and six constants checked.
+No game/editor execution or modification. Remaining census deferred by the
+user's revised plan; Q1z will select prototype-facing blanks.
+
 ## Open: next
 
 The Q1 splits below finish the catalog **inventory**. Each fills its named
@@ -222,13 +242,11 @@ first. Do not treat a coverage row as a substitute for those individual rows.
 Contract details not established by consolidation stay explicit and are triaged
 by Q1g; Q2–Q11 retain their scope and order afterwards.
 
-### Q1b. Root, location and hazard policy catalog
+### Q1b remainder. Complete root census
 
-Catalog row **C-ROOT**, blank: per-variable inputs and issued outputs of
-soldier/civilian root and location selection, root interrupt `0x955A90`, and
-hazard-scanner query interfaces in the movement manifest. Include saved-order
-and restoration fields; reuse I-COVER-GROUP. Order execution, physical escape
-and path internals are outside this census.
+Catalog row **C-ROOT**, remaining blank: complete per-variable/call census beyond
+the retained partial Q1b policy checkpoint. The user has requested this remainder
+be deferred in the next scope revision.
 
 ### Q1c. Idle, following, healing and medic policy catalog
 

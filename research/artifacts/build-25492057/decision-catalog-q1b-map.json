@@ -1,0 +1,5929 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "export_suffix": "-decision-catalog-q1b",
+  "status": "partial policy checkpoint; full C-ROOT census deferred by user",
+  "runtime_verified": false,
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267"
+    }
+  },
+  "methods": [
+    {
+      "id": "0x957680",
+      "entry_rvas": {
+        "game": "0x957680"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x9122c0",
+      "entry_rvas": {
+        "game": "0x9122c0"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x907b30",
+      "entry_rvas": {
+        "game": "0x907b30"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x902f00",
+      "entry_rvas": {
+        "game": "0x902f00"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x906ef0",
+      "entry_rvas": {
+        "game": "0x906ef0"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x907460",
+      "entry_rvas": {
+        "game": "0x907460"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x949f00",
+      "entry_rvas": {
+        "game": "0x949f00"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x942cb0",
+      "entry_rvas": {
+        "game": "0x942cb0"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x956b20",
+      "entry_rvas": {
+        "game": "0x956b20"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x907000",
+      "entry_rvas": {
+        "game": "0x907000"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x9577c0",
+      "entry_rvas": {
+        "game": "0x9577c0"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x957420",
+      "entry_rvas": {
+        "game": "0x957420"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x907a30",
+      "entry_rvas": {
+        "game": "0x907a30"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x907760",
+      "entry_rvas": {
+        "game": "0x907760"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x949180",
+      "entry_rvas": {
+        "game": "0x949180"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x949020",
+      "entry_rvas": {
+        "game": "0x949020"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x956f20",
+      "entry_rvas": {
+        "game": "0x956f20"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x957380",
+      "entry_rvas": {
+        "game": "0x957380"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x906f20",
+      "entry_rvas": {
+        "game": "0x906f20"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x950b60",
+      "entry_rvas": {
+        "game": "0x950b60"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x9526d0",
+      "entry_rvas": {
+        "game": "0x9526d0"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x9570f0",
+      "entry_rvas": {
+        "game": "0x9570f0"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x907740",
+      "entry_rvas": {
+        "game": "0x907740"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x949d40",
+      "entry_rvas": {
+        "game": "0x949d40"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x906a80",
+      "entry_rvas": {
+        "game": "0x906a80"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x8988c0",
+      "entry_rvas": {
+        "game": "0x8988c0"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x907150",
+      "entry_rvas": {
+        "game": "0x907150"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x907c00",
+      "entry_rvas": {
+        "game": "0x907c00"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x955a90",
+      "entry_rvas": {
+        "game": "0x955a90"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x9526b0",
+      "entry_rvas": {
+        "game": "0x9526b0"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x956b70",
+      "entry_rvas": {
+        "game": "0x956b70"
+      },
+      "status": "policy checkpoint"
+    },
+    {
+      "id": "0x949880",
+      "entry_rvas": {
+        "game": "0x949880"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    },
+    {
+      "id": "0x9440e0",
+      "entry_rvas": {
+        "game": "0x9440e0"
+      },
+      "status": "supporting boundary/initialization evidence; not whole-body census"
+    }
+  ],
+  "fields": [
+    {
+      "id": "I-STATE-BRAIN",
+      "sites": [
+        "0x957420",
+        "0x957680",
+        "0x9526ee",
+        "0x952702",
+        "0x949f00",
+        "0x9573ce",
+        "0x9573ea",
+        "0x9573f9",
+        "0x955ad7",
+        "0x955b56",
+        "0x955c5b",
+        "0x955cd3",
+        "0x955cee",
+        "0x956036",
+        "0x9562cf",
+        "0x9562f0",
+        "0x9563e1",
+        "0x9563fe",
+        "0x956409",
+        "0x95655d",
+        "0x956667",
+        "0x9566ea",
+        "0x956732",
+        "0x9567ab",
+        "0x9567fd",
+        "0x956908",
+        "0x956b44",
+        "0x956f4c",
+        "0x956f6d",
+        "0x956f85"
+      ],
+      "contract": {
+        "read_site": "0x957420, 0x957680, 0x9526ee, 0x952702, 0x949f00, 0x9573ce, 0x9573ea, 0x9573f9, 0x955ad7, 0x955b56, 0x955c5b, 0x955cd3, 0x955cee, 0x956036, 0x9562cf, 0x9562f0, 0x9563e1, 0x9563fe, 0x956409, 0x95655d, 0x956667, 0x9566ea, 0x956732, 0x9567ab, 0x9567fd, 0x956908, 0x956b44, 0x956f4c, 0x956f6d, 0x956f85",
+        "access_path": "root/location +0x30, brain*, 8 bytes",
+        "meaning": "Attached brain backpointer; extends Q1a.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x949f00",
+        "0x9526d0",
+        "0x955a90",
+        "0x956b20",
+        "0x956f20",
+        "0x957380",
+        "0x957420",
+        "0x957680"
+      ]
+    },
+    {
+      "id": "I-OWNER",
+      "sites": [
+        "0x957424",
+        "0x957684",
+        "0x949f04",
+        "0x955b6d",
+        "0x955c1e",
+        "0x955c80",
+        "0x955cde",
+        "0x955d08",
+        "0x955d19",
+        "0x95610b",
+        "0x9561af",
+        "0x956260",
+        "0x956372",
+        "0x95640d",
+        "0x956463",
+        "0x9564f0",
+        "0x95650a",
+        "0x956541",
+        "0x9565ee",
+        "0x9566f7",
+        "0x9567af",
+        "0x9568c3",
+        "0x95690c",
+        "0x956959",
+        "0x956bfc",
+        "0x956cce",
+        "0x956f89",
+        "0x956fdd",
+        "0x957073",
+        "0x95708d",
+        "0x9570c4"
+      ],
+      "contract": {
+        "read_site": "0x957424, 0x957684, 0x949f04, 0x955b6d, 0x955c1e, 0x955c80, 0x955cde, 0x955d08, 0x955d19, 0x95610b, 0x9561af, 0x956260, 0x956372, 0x95640d, 0x956463, 0x9564f0, 0x95650a, 0x956541, 0x9565ee, 0x9566f7, 0x9567af, 0x9568c3, 0x95690c, 0x956959, 0x956bfc, 0x956cce, 0x956f89, 0x956fdd, 0x957073, 0x95708d, 0x9570c4",
+        "access_path": "state -> brain -> +0x38, actor*, 8 bytes",
+        "meaning": "Owner actor; excludes stack slots and restore-target temporaries by operand form.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x949f00",
+        "0x955a90",
+        "0x956b70",
+        "0x956f20",
+        "0x957420",
+        "0x957680"
+      ]
+    },
+    {
+      "id": "I-COVER",
+      "sites": [
+        "0x957428",
+        "0x957688",
+        "0x949f08",
+        "0x956411",
+        "0x956467",
+        "0x9567b3",
+        "0x956916",
+        "0x956f8d",
+        "0x956fe1"
+      ],
+      "contract": {
+        "read_site": "0x957428, 0x957688, 0x949f08, 0x956411, 0x956467, 0x9567b3, 0x956916, 0x956f8d, 0x956fe1",
+        "access_path": "brain -> owner -> +0xDC0, cover*, 8 bytes",
+        "meaning": "Owner cover object. Root does not retain or replace it.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x949f00",
+        "0x955a90",
+        "0x956f20",
+        "0x957420",
+        "0x957680"
+      ]
+    },
+    {
+      "id": "I-COVER-GROUP",
+      "sites": [
+        "0x95742f",
+        "0x95768f",
+        "0x949f0f",
+        "0x956418",
+        "0x9567ba",
+        "0x95691d",
+        "0x956f94"
+      ],
+      "contract": {
+        "read_site": "0x95742f, 0x95768f, 0x949f0f, 0x956418, 0x9567ba, 0x95691d, 0x956f94",
+        "access_path": "brain -> owner -> cover -> +0x24, int32",
+        "meaning": "1 vertical,2 horizontal,0/3/4 outdoors; nonzero with resident byte enables cover restoration. Q7 owns complete native names.",
+        "freshness": "Read current value at selection/snapshot/expiry; snapshot root+0x4B8 tracks last selected group. Cover query 0x8988C0 can invalidate resident cover during this interrupt. Other producer phase OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x949f00",
+        "0x955a90",
+        "0x956f20",
+        "0x957420",
+        "0x957680"
+      ]
+    },
+    {
+      "id": "I-ROOT-LAST-GROUP",
+      "sites": [
+        "0x956910"
+      ],
+      "contract": {
+        "read_site": "0x956910",
+        "access_path": "root +0x4B8, int32",
+        "meaning": "Last selector cover group; mismatch invokes root slot5.",
+        "freshness": "Written by soldier/civilian selector each time it runs.",
+        "validity": "Inline root field; attached-state lifetime Q1g."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-ROOT-OUTDOORS",
+      "sites": [
+        "0x957450",
+        "0x957698"
+      ],
+      "contract": {
+        "read_site": "0x957450, 0x957698",
+        "access_path": "root +0x3D8, state*, 8 bytes",
+        "meaning": "Soldier named soldier_outdoors; civilian outdoors. Initialization/attachment evidence movement0x9570F0.",
+        "freshness": "Set during root event1 initialization.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x957420",
+        "0x957680"
+      ]
+    },
+    {
+      "id": "I-ROOT-VERTICAL",
+      "sites": [
+        "0x957469"
+      ],
+      "contract": {
+        "read_site": "0x957469",
+        "access_path": "soldier root +0x580, state*, 8 bytes",
+        "meaning": "Named soldier_cover_vertical; selected group1.",
+        "freshness": "Event1 initialization via0x9570F0; attached child.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x957420"
+      ]
+    },
+    {
+      "id": "I-ROOT-HORIZONTAL",
+      "sites": [
+        "0x95745d"
+      ],
+      "contract": {
+        "read_site": "0x95745d",
+        "access_path": "soldier root +0x588, state*, 8 bytes",
+        "meaning": "Named soldier_cover_horizontal; selected group2.",
+        "freshness": "Event1 initialization via0x9570F0; attached child.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x957420"
+      ]
+    },
+    {
+      "id": "I-STATE-CHILD",
+      "sites": [
+        "0x9526b0"
+      ],
+      "contract": {
+        "read_site": "0x9526b0",
+        "access_path": "location +0x28, state*, 8 bytes",
+        "meaning": "Non-null child bypasses location selection at entry0x9526B0.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x9526b0"
+      ]
+    },
+    {
+      "id": "I-LOCATION-IDLE",
+      "sites": [
+        "0x9526e5",
+        "0x952720",
+        "0x952750"
+      ],
+      "contract": {
+        "read_site": "0x9526e5, 0x952720, 0x952750",
+        "access_path": "location +0x3D8, state*, 8 bytes",
+        "meaning": "Idle child; default and non-alert mode choice.",
+        "freshness": "Initialized by location event1; retained through state attachment.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "I-LOCATION-BATTLE",
+      "sites": [
+        "0x952719"
+      ],
+      "contract": {
+        "read_site": "0x952719",
+        "access_path": "location +0x3E0, state*, 8 bytes",
+        "meaning": "Battle child; alert mode1 with selected target.",
+        "freshness": "Initialized by location event1.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "I-LOCATION-SEARCH",
+      "sites": [
+        "0x9526da",
+        "0x9526fb"
+      ],
+      "contract": {
+        "read_site": "0x9526da, 0x9526fb",
+        "access_path": "location +0x3E8, optional state*, 8 bytes",
+        "meaning": "Find-enemy candidate only when it exists and0x942CB0 returns true. Null checked.",
+        "freshness": "Initialized for outdoors location; absent families retain null.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "I-LOCATION-PREVIOUS",
+      "sites": [
+        "0x952727"
+      ],
+      "contract": {
+        "read_site": "0x952727",
+        "access_path": "location +0x3F0, state*, 8 bytes",
+        "meaning": "Previous selected child; leaving idle for a nonidle choice requests brain flag11.",
+        "freshness": "Written by selection0x95275A on every reached selection.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "I-ALERT-MODE",
+      "sites": [
+        "0x952706"
+      ],
+      "contract": {
+        "read_site": "0x952706",
+        "access_path": "brain +0x1E0, int32",
+        "meaning": "Exactly1 permits battle/search; otherwise select idle. Q1a owns alert transition, native name OPEN Q1g.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "I-SELECTED-TARGET",
+      "sites": [
+        "0x95270f"
+      ],
+      "contract": {
+        "read_site": "0x95270f",
+        "access_path": "brain +0x3B8, subject*, 8 bytes",
+        "meaning": "Current selected subject; nonnull selects battle in alert mode1. Target refresh C-HELPERS.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "I-REMEMBERED-SUBJECT",
+      "sites": [
+        "0x95273e"
+      ],
+      "contract": {
+        "read_site": "0x95273e",
+        "access_path": "brain +0x3C0, subject*, 8 bytes",
+        "meaning": "Remembered subject; null checked, then auxiliary handle must be nonnegative to keep nonidle selection.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "I-SUBJECT-RECON-HANDLE",
+      "sites": [
+        "0x95274a"
+      ],
+      "contract": {
+        "read_site": "0x95274a",
+        "access_path": "brain -> remembered subject -> +0x78, int32",
+        "meaning": "Auxiliary Recon registration handle; negative absent. Not the searched bit or zone completion.",
+        "freshness": "Sensor commit/register/load lifecycle (perception); exact freshness/validity reconciliation C-SEARCH/Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "I-ADVANCE-ELIGIBLE",
+      "sites": [
+        "0x9526f2"
+      ],
+      "contract": {
+        "read_site": "0x9526f2",
+        "access_path": "0x942CB0(brain) -> AL Boolean",
+        "meaning": "True requires AI control, movement neither hold nor zone, flag6 clear, behavior>2 and0x905BE0 false. Full per-field helper census C-HELPERS.",
+        "freshness": "On-demand, current brain fields; no write in wrapper.",
+        "validity": "Scalar result; borrowed brain."
+      },
+      "evidence_ids": [
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "I-SAVED-ORDER",
+      "sites": [
+        "0x955ab9",
+        "0x955b0a",
+        "0x955b1c",
+        "0x9562c2",
+        "0x9563d4",
+        "0x9566a4",
+        "0x9566b6",
+        "0x956f3e"
+      ],
+      "contract": {
+        "read_site": "0x955ab9, 0x955b0a, 0x955b1c, 0x9562c2, 0x9563d4, 0x9566a4, 0x9566b6, 0x956f3e",
+        "access_path": "root +0x568, order*, 8 bytes",
+        "meaning": "Detached current order saved for post-avoidance restoration; distinct from live brain+0xF0.",
+        "freshness": "Saved synchronously before replacement, cleared on restore or user-queue discard.",
+        "validity": "Root holds saved pointer after End; may be deleted on discard. Detailed order ownership Q1g/Q10."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-RESTORE-MODE",
+      "sites": [
+        "0x955acf",
+        "0x9562b6",
+        "0x9563c8",
+        "0x95665f",
+        "0x956b97",
+        "0x956f2a"
+      ],
+      "contract": {
+        "read_site": "0x955acf, 0x9562b6, 0x9563c8, 0x95665f, 0x956b97, 0x956f2a",
+        "access_path": "root +0x4C0, int32",
+        "meaning": "0 no positional restoration;1 saved position/direction/type;2 saved resident-cover descriptor.",
+        "freshness": "Set during first snapshot only while mode0 and no saved order; cancel/interface paths reset. Event0x10 completion Q10.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956b70",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-IMMEDIATE-QUEUE-COUNT",
+      "sites": [
+        "0x955adb",
+        "0x955b95",
+        "0x95666b",
+        "0x956801"
+      ],
+      "contract": {
+        "read_site": "0x955adb, 0x955b95, 0x95666b, 0x956801",
+        "access_path": "brain +0x88, int32",
+        "meaning": "Positive pending immediate orders block restore and allow interface interruption.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-USER-QUEUE-BEGIN",
+      "sites": [
+        "0x955aea",
+        "0x955ba5",
+        "0x95667a",
+        "0x956810"
+      ],
+      "contract": {
+        "read_site": "0x955aea, 0x955ba5, 0x95667a, 0x956810",
+        "access_path": "brain +0x98, order** begin, 8 bytes",
+        "meaning": "Compared with end to detect additional queued orders. Detailed queue ownership Q1g/Q10.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-USER-QUEUE-END",
+      "sites": [
+        "0x955ae3",
+        "0x955b9e",
+        "0x956673",
+        "0x956809"
+      ],
+      "contract": {
+        "read_site": "0x955ae3, 0x955b9e, 0x956673, 0x956809",
+        "access_path": "brain +0xA0, order** end, 8 bytes",
+        "meaning": "User-order queue end; unlike immediate count, checked by pointer inequality.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-CURRENT-ORDER",
+      "sites": [
+        "0x955af3",
+        "0x95603a",
+        "0x9562d3",
+        "0x9563e5",
+        "0x956561",
+        "0x956736",
+        "0x956b48",
+        "0x956f50"
+      ],
+      "contract": {
+        "read_site": "0x955af3, 0x95603a, 0x9562d3, 0x9563e5, 0x956561, 0x956736, 0x956b48, 0x956f50",
+        "access_path": "state -> brain -> +0xF0, order*, 8 bytes",
+        "meaning": "Current order; compared before replacement and detached into saved order.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956b20",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-CONTROL",
+      "sites": [
+        "0x955b88",
+        "0x95642b",
+        "0x9566ee",
+        "0x956fa6"
+      ],
+      "contract": {
+        "read_site": "0x955b88, 0x95642b, 0x9566ee, 0x956fa6",
+        "access_path": "brain +0x398 bits0..1, 2-bit value",
+        "meaning": "AI0/user1. User+queued orders suppress burning response; AI required to stand from shallow-water condition; user permits position snapshot.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-MOVE-MODE",
+      "sites": [
+        "0x95642b",
+        "0x956fa6"
+      ],
+      "contract": {
+        "read_site": "0x95642b, 0x956fa6",
+        "access_path": "brain +0x398 bits12..13, 2-bit value",
+        "meaning": "free0/hold1/zone2; hold permits restoration snapshot even without resident cover.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-BURNING-TAG-INDEX",
+      "sites": [
+        "0x955b50"
+      ],
+      "contract": {
+        "read_site": "0x955b50",
+        "access_path": "global0x1598D68, int32",
+        "meaning": "Index used to test owner tag bit in named burning branch. OPEN Q1g: initializer binding and valid index domain.",
+        "freshness": "Current mutable global read; initialization/later writers OPEN Q1g.",
+        "validity": "V-global; valid index precondition."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-ACTOR-BURNING-TAG",
+      "sites": [
+        "0x955b71"
+      ],
+      "contract": {
+        "read_site": "0x955b71",
+        "access_path": "brain -> owner -> byte[+0xDAD + index/8], selected bit",
+        "meaning": "Tag membership selected by I-BURNING-TAG-INDEX; gates burning policy. Native binding/producer OPEN Q1g.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-CHASSIS",
+      "sites": [
+        "0x955c9f",
+        "0x956545",
+        "0x9566fb",
+        "0x9570c8"
+      ],
+      "contract": {
+        "read_site": "0x955c9f, 0x956545, 0x9566fb, 0x9570c8",
+        "access_path": "brain -> owner -> +0xDE0, chassis*, 8 bytes",
+        "meaning": "Owner chassis; used for movement mode, actual type and snapshot.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-MOVEMENT-TYPE",
+      "sites": [
+        "0x95654c",
+        "0x956702",
+        "0x9570cf"
+      ],
+      "contract": {
+        "read_site": "0x95654c, 0x956702, 0x9570cf",
+        "access_path": "brain -> owner -> chassis -> +0x2C, int32",
+        "meaning": "Actual movement type;3 swim bound in movement diagnostic; saved for restoration. Remaining native enum names Q8.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-ACTOR-WATER-CLASS",
+      "sites": [
+        "0x956708"
+      ],
+      "contract": {
+        "read_site": "0x956708",
+        "access_path": "brain -> owner -> +0xA38, uint8",
+        "meaning": "Current byte must equal3 to leave swim under named stand_from_water. OPEN Q1g: distinguish exact producer/binding from on-demand I-TERRAIN.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-COVER-RESIDENT",
+      "sites": [
+        "0x95641d",
+        "0x956f9a"
+      ],
+      "contract": {
+        "read_site": "0x95641d, 0x956f9a",
+        "access_path": "brain -> owner -> cover -> +0x50, byte",
+        "meaning": "Resident-cover condition combined with nonzero group; permits descriptor restoration. Native field binding Q7.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-COVER-DESCRIPTOR",
+      "sites": [
+        "0x95646e",
+        "0x956479",
+        "0x956484",
+        "0x95648f",
+        "0x95649a",
+        "0x9564a5",
+        "0x9564b0",
+        "0x9564be",
+        "0x9564cc",
+        "0x956fe8",
+        "0x956ff3",
+        "0x956ffe",
+        "0x957009",
+        "0x957014",
+        "0x95701f",
+        "0x95702a",
+        "0x957038",
+        "0x957046"
+      ],
+      "contract": {
+        "read_site": "0x95646e, 0x956479, 0x956484, 0x95648f, 0x95649a, 0x9564a5, 0x9564b0, 0x9564be, 0x9564cc, 0x956fe8, 0x956ff3, 0x956ffe, 0x957009, 0x957014, 0x95701f, 0x95702a, 0x957038, 0x957046",
+        "access_path": "owner cover +0x20..+0xA7, opaque0x88-byte value",
+        "meaning": "Pass-through descriptor copied for later MoveToCover; interpreted descriptor subfields belong to Q7, not inferred from block copy.",
+        "freshness": "Copied synchronously on first eligible snapshot.",
+        "validity": "Value copy; any embedded borrowed identity/handle validity OPEN Q7/Q1g."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-ACTOR-XY",
+      "sites": [
+        "0x955d0c",
+        "0x9564f4",
+        "0x957077"
+      ],
+      "contract": {
+        "read_site": "0x955d0c, 0x9564f4, 0x957077",
+        "access_path": "brain -> owner -> +0x74, float32 XY",
+        "meaning": "Current XY for burning path start and restore snapshot.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-ACTOR-Z",
+      "sites": [
+        "0x956501",
+        "0x957084"
+      ],
+      "contract": {
+        "read_site": "0x956501, 0x957084",
+        "access_path": "brain -> owner -> +0x7C, float32",
+        "meaning": "Current Z for saved position.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-FACING-X",
+      "sites": [
+        "0x955d1d",
+        "0x95650e",
+        "0x957091"
+      ],
+      "contract": {
+        "read_site": "0x955d1d, 0x95650e, 0x957091",
+        "access_path": "brain -> owner -> +0x50, float32",
+        "meaning": "Facing vector X; snapshot multiplies by10, burning uses atan2(Y,X).",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-FACING-Y",
+      "sites": [
+        "0x955d22",
+        "0x956513",
+        "0x957096"
+      ],
+      "contract": {
+        "read_site": "0x955d22, 0x956513, 0x957096",
+        "access_path": "brain -> owner -> +0x54, float32",
+        "meaning": "Facing vector Y; snapshot multiplies by10, burning uses atan2(Y,X).",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-FACING-Z",
+      "sites": [
+        "0x956518",
+        "0x95709b"
+      ],
+      "contract": {
+        "read_site": "0x956518, 0x95709b",
+        "access_path": "brain -> owner -> +0x58, float32",
+        "meaning": "Facing vector Z; snapshot multiplies by10, burning uses atan2(Y,X).",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-SAVED-COVER",
+      "sites": [
+        "0x956c59",
+        "0x956c60"
+      ],
+      "contract": {
+        "read_site": "0x956c59, 0x956c60",
+        "access_path": "root +0x4E0..+0x567, opaque0x88-byte descriptor",
+        "meaning": "Saved descriptor passed to MoveToCover factory for mode2.",
+        "freshness": "Written on snapshot, consumed after avoidance.",
+        "validity": "Inline copy; embedded handle validity Q7/Q1g."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-SAVED-POSITION-X",
+      "sites": [
+        "0x956d35",
+        "0x956d6e"
+      ],
+      "contract": {
+        "read_site": "0x956d35, 0x956d6e",
+        "access_path": "root +0x4C4, float32",
+        "meaning": "Snapshot position X; Move destination and base of Rotate point.",
+        "freshness": "Written by eligible mode1 snapshot.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-SAVED-POSITION-Y",
+      "sites": [
+        "0x956d7e"
+      ],
+      "contract": {
+        "read_site": "0x956d7e",
+        "access_path": "root +0x4C8, float32",
+        "meaning": "Snapshot position Y; Move destination and base of Rotate point.",
+        "freshness": "Written by eligible mode1 snapshot.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-SAVED-POSITION-Z",
+      "sites": [
+        "0x956d76"
+      ],
+      "contract": {
+        "read_site": "0x956d76",
+        "access_path": "root +0x4CC, float32",
+        "meaning": "Snapshot position Z; Move destination and base of Rotate point.",
+        "freshness": "Written by eligible mode1 snapshot.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-SAVED-DIRECTION-X",
+      "sites": [
+        "0x956d86"
+      ],
+      "contract": {
+        "read_site": "0x956d86",
+        "access_path": "root +0x4D0, float32",
+        "meaning": "Saved facing X times10; added to saved position for Rotate target.",
+        "freshness": "Written by eligible mode1 snapshot.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-SAVED-DIRECTION-Y",
+      "sites": [
+        "0x956d61"
+      ],
+      "contract": {
+        "read_site": "0x956d61",
+        "access_path": "root +0x4D4, float32",
+        "meaning": "Saved facing Y times10; added to saved position for Rotate target.",
+        "freshness": "Written by eligible mode1 snapshot.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-SAVED-DIRECTION-Z",
+      "sites": [
+        "0x956d52"
+      ],
+      "contract": {
+        "read_site": "0x956d52",
+        "access_path": "root +0x4D8, float32",
+        "meaning": "Saved facing Z times10; added to saved position for Rotate target.",
+        "freshness": "Written by eligible mode1 snapshot.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-SAVED-MOVEMENT-TYPE",
+      "sites": [
+        "0x956e43"
+      ],
+      "contract": {
+        "read_site": "0x956e43",
+        "access_path": "root +0x4DC, int32",
+        "meaning": "Saved actual movement type; passed to MovementChange(type,-1,wait=true).",
+        "freshness": "Written by eligible mode1 snapshot.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-COVER-CHECK-DEADLINE",
+      "sites": [
+        "0x9567cf",
+        "0x9567dc"
+      ],
+      "contract": {
+        "read_site": "0x9567cf, 0x9567dc",
+        "access_path": "root +0x570, uint32",
+        "meaning": "Cover validity next-check deadline;0 initializes; when due, advance by converted1 from prior deadline, not always now.",
+        "freshness": "Root interrupt updates when cover group nonzero; can change each reached due check.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-COVER-VALIDATION",
+      "sites": [
+        "0x956837"
+      ],
+      "contract": {
+        "read_site": "0x956837",
+        "access_path": "0x8988C0(cover,diagnosticLabel) -> int32",
+        "meaning": "Cover Update result2 triggers Hide(5,false); returns2 if actor pointer+0xA8 absent or group0, else candidate validity result. Other result codes OPEN Q7.",
+        "freshness": "On-demand when deadline due. Mutating query: result2 from candidate check unregisters/releases current cover via0x898C50.",
+        "validity": "Borrowed cover; query temporary resources released before return."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-EQUIPMENT-DEADLINE",
+      "sites": [
+        "0x9573d2",
+        "0x9573db"
+      ],
+      "contract": {
+        "read_site": "0x9573d2, 0x9573db",
+        "access_path": "brain +0x3E0, uint32",
+        "meaning": "Nonzero due deadline triggers0x9440E0(brain,1); false clears deadline, true leaves it for later decisions. Q5 owns meaning/writers.",
+        "freshness": "Current synchronous policy read; mission-mutable. Exact writer/phase where not stated remains OPEN Q1g.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x957380"
+      ]
+    },
+    {
+      "id": "I-EQUIPMENT-POLICY-RESULT",
+      "sites": [
+        "0x9573f0"
+      ],
+      "contract": {
+        "read_site": "0x9573f0",
+        "access_path": "0x9440E0(brain,1) -> AL Boolean",
+        "meaning": "Equipment policy helper: false on0x7CCEB0 owner gate, otherwise checks carried item/tags and can submit UseItem. Boolean is not an order-success status. C-HELPERS enumerates its policy reads.",
+        "freshness": "Called after five scanner updates, before generic root arbitration; side effects may occur now.",
+        "validity": "Scalar return; helper temporary inventory handles released."
+      },
+      "evidence_ids": [
+        "0x957380"
+      ]
+    },
+    {
+      "id": "I-NOW",
+      "sites": [
+        "0x9573e1",
+        "0x9567d7",
+        "0x95681d"
+      ],
+      "contract": {
+        "read_site": "0x9573e1, 0x9567d7, 0x95681d",
+        "access_path": "0x65E700() -> uint32 simulation counter",
+        "meaning": "Same I-NOW clock as Q1; absolute unsigned deadline comparisons.",
+        "freshness": "On-demand during root interrupt.",
+        "validity": "V-global."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x957380"
+      ]
+    },
+    {
+      "id": "I-DURATION-FACTOR",
+      "sites": [
+        "0x9567c8"
+      ],
+      "contract": {
+        "read_site": "0x9567c8",
+        "access_path": "0x65E730(1.0) -> converted integer duration",
+        "meaning": "Clock conversion for cover-check cadence; ordinary1000 counter ticks per simulation unit.",
+        "freshness": "Current writable conversion factor; Q1 clock contract.",
+        "validity": "Value result."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-CRUSH-SCANNER",
+      "sites": [
+        "0x957394",
+        "0x957397"
+      ],
+      "contract": {
+        "read_site": "0x957394, 0x957397",
+        "access_path": "root embedded +0x3E0 -> vptr slot2(+0x10), pointer-width dispatch",
+        "meaning": "Movement RTTI scanner CRUSH; slot2 updates detection before root arbitration. Object+8 holds brain; no separate allocation at this call.",
+        "freshness": "Synchronous in soldier Interrupt, order crush/obstacle/grenade/burn/world.",
+        "validity": "Embedded root storage, initialized by0x9577C0; root lifetime applies."
+      },
+      "evidence_ids": [
+        "0x957380"
+      ]
+    },
+    {
+      "id": "I-CRUSH-ACTIVE",
+      "sites": [
+        "0x95620f"
+      ],
+      "contract": {
+        "read_site": "0x95620f",
+        "access_path": "root +0x3F0, byte (scanner+0x10)",
+        "meaning": "Most recent CRUSH detection result, nonzero selects named gate. Query inputs/results described in scanner interface paragraph.",
+        "freshness": "Written by scanner slot2 immediately before arbitration in soldier root; inherited generic/civilian call cadence not inferred.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-OBSTACLE-SCANNER",
+      "sites": [
+        "0x9573a1",
+        "0x9573a4"
+      ],
+      "contract": {
+        "read_site": "0x9573a1, 0x9573a4",
+        "access_path": "root embedded +0x418 -> vptr slot2(+0x10), pointer-width dispatch",
+        "meaning": "Movement RTTI scanner OBSTACLE; slot2 updates detection before root arbitration. Object+8 holds brain; no separate allocation at this call.",
+        "freshness": "Synchronous in soldier Interrupt, order crush/obstacle/grenade/burn/world.",
+        "validity": "Embedded root storage, initialized by0x9577C0; root lifetime applies."
+      },
+      "evidence_ids": [
+        "0x957380"
+      ]
+    },
+    {
+      "id": "I-OBSTACLE-ACTIVE",
+      "sites": [
+        "0x9560c0"
+      ],
+      "contract": {
+        "read_site": "0x9560c0",
+        "access_path": "root +0x428, byte (scanner+0x10)",
+        "meaning": "Most recent OBSTACLE detection result, nonzero selects named gate. Query inputs/results described in scanner interface paragraph.",
+        "freshness": "Written by scanner slot2 immediately before arbitration in soldier root; inherited generic/civilian call cadence not inferred.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-GRENADE-SCANNER",
+      "sites": [
+        "0x9573ae",
+        "0x9573b1"
+      ],
+      "contract": {
+        "read_site": "0x9573ae, 0x9573b1",
+        "access_path": "root embedded +0x468 -> vptr slot2(+0x10), pointer-width dispatch",
+        "meaning": "Movement RTTI scanner GRENADE; slot2 updates detection before root arbitration. Object+8 holds brain; no separate allocation at this call.",
+        "freshness": "Synchronous in soldier Interrupt, order crush/obstacle/grenade/burn/world.",
+        "validity": "Embedded root storage, initialized by0x9577C0; root lifetime applies."
+      },
+      "evidence_ids": [
+        "0x957380"
+      ]
+    },
+    {
+      "id": "I-GRENADE-ACTIVE",
+      "sites": [
+        "0x956317"
+      ],
+      "contract": {
+        "read_site": "0x956317",
+        "access_path": "root +0x478, byte (scanner+0x10)",
+        "meaning": "Most recent GRENADE detection result, nonzero selects named gate. Query inputs/results described in scanner interface paragraph.",
+        "freshness": "Written by scanner slot2 immediately before arbitration in soldier root; inherited generic/civilian call cadence not inferred.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-BURN-SCANNER",
+      "sites": [
+        "0x9573bb",
+        "0x9573be"
+      ],
+      "contract": {
+        "read_site": "0x9573bb, 0x9573be",
+        "access_path": "root embedded +0x438 -> vptr slot2(+0x10), pointer-width dispatch",
+        "meaning": "Movement RTTI scanner BURN; slot2 updates detection before root arbitration. Object+8 holds brain; no separate allocation at this call.",
+        "freshness": "Synchronous in soldier Interrupt, order crush/obstacle/grenade/burn/world.",
+        "validity": "Embedded root storage, initialized by0x9577C0; root lifetime applies."
+      },
+      "evidence_ids": [
+        "0x957380"
+      ]
+    },
+    {
+      "id": "I-BURN-ACTIVE",
+      "sites": [
+        "0x95616b"
+      ],
+      "contract": {
+        "read_site": "0x95616b",
+        "access_path": "root +0x448, byte (scanner+0x10)",
+        "meaning": "Most recent BURN detection result, nonzero selects named gate. Query inputs/results described in scanner interface paragraph.",
+        "freshness": "Written by scanner slot2 immediately before arbitration in soldier root; inherited generic/civilian call cadence not inferred.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-WORLD-SCANNER",
+      "sites": [
+        "0x9573c8",
+        "0x9573cb"
+      ],
+      "contract": {
+        "read_site": "0x9573c8, 0x9573cb",
+        "access_path": "root embedded +0x498 -> vptr slot2(+0x10), pointer-width dispatch",
+        "meaning": "Movement RTTI scanner WORLD; slot2 updates detection before root arbitration. Object+8 holds brain; no separate allocation at this call.",
+        "freshness": "Synchronous in soldier Interrupt, order crush/obstacle/grenade/burn/world.",
+        "validity": "Embedded root storage, initialized by0x9577C0; root lifetime applies."
+      },
+      "evidence_ids": [
+        "0x957380"
+      ]
+    },
+    {
+      "id": "I-WORLD-ACTIVE",
+      "sites": [
+        "0x956593"
+      ],
+      "contract": {
+        "read_site": "0x956593",
+        "access_path": "root +0x4A8, byte (scanner+0x10)",
+        "meaning": "Most recent WORLD detection result, nonzero selects named gate. Query inputs/results described in scanner interface paragraph.",
+        "freshness": "Written by scanner slot2 immediately before arbitration in soldier root; inherited generic/civilian call cadence not inferred.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-HAZARD-ORDER-RESULT",
+      "sites": [
+        "0x9562a7",
+        "0x9563b9",
+        "0x956635"
+      ],
+      "contract": {
+        "read_site": "0x9562a7, 0x9563b9, 0x956635",
+        "access_path": "scanner slot1(+8) -> order* or null, 8 bytes",
+        "meaning": "Build escape/action from current scanner state. Null obstacle/burn/crush/grenade result returns without replacement. World scanner requests entity deletion and returns null.",
+        "freshness": "Queried only after active byte and named gate allow. Can have side effects even if null.",
+        "validity": "Non-null result installed/transferred to current order; detailed ownership Q1g/Q10."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-SPATIAL-SCALE",
+      "sites": [
+        "0x955cf2"
+      ],
+      "contract": {
+        "read_site": "0x955cf2",
+        "access_path": "global0x14776C0, float32",
+        "meaning": "L: burning candidate radius interpolates L..5L; writable units scale.",
+        "freshness": "Read per burning decision.",
+        "validity": "V-global."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-RNG",
+      "sites": [
+        "0x955e41",
+        "0x955e70",
+        "0x955e7a",
+        "0x955ea7",
+        "0x955eb9",
+        "0x955ee6"
+      ],
+      "contract": {
+        "read_site": "0x955e41, 0x955e70, 0x955e7a, 0x955ea7, 0x955eb9, 0x955ee6",
+        "access_path": "0x554B50() -> selected RNG*, 8 bytes",
+        "meaning": "RNG context for three draws per burning candidate; up to10 attempts.",
+        "freshness": "On-demand context getter; stream shared with other users.",
+        "validity": "V-rng unresolved custom-context lifetime retained from Q1."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-RNG-STATE",
+      "sites": [
+        "0x955e4a",
+        "0x955e82",
+        "0x955ec1"
+      ],
+      "contract": {
+        "read_site": "0x955e4a, 0x955e82, 0x955ec1",
+        "access_path": "selected RNG +8, uint32",
+        "meaning": "Same LCG as Q1; state updated three times per attempted burning candidate.",
+        "freshness": "Read/write during decision.",
+        "validity": "V-rng."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-RNG-COUNT",
+      "sites": [
+        "0x955e51",
+        "0x955e89",
+        "0x955ec8"
+      ],
+      "contract": {
+        "read_site": "0x955e51, 0x955e89, 0x955ec8",
+        "access_path": "selected RNG +0xC, uint32",
+        "meaning": "Increment per draw; not a tactical threshold.",
+        "freshness": "Read-modify-write per draw.",
+        "validity": "V-rng."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-BURN-RNG-SCALE",
+      "sites": [
+        "0x955e67",
+        "0x955e9f",
+        "0x955ede"
+      ],
+      "contract": {
+        "read_site": "0x955e67, 0x955e9f, 0x955ede",
+        "access_path": "global0x1587D5C, float32",
+        "meaning": "Multiplier for upper24 LCG bits in burning policy. Distinct from Q1 global0x1587C54. OPEN Q1g: initialization/value.",
+        "freshness": "Writable non-file-backed global; writer/domain OPEN Q1g.",
+        "validity": "V-global."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-BURN-LINE-COST",
+      "sites": [
+        "0x955f56",
+        "0x955f62"
+      ],
+      "contract": {
+        "read_site": "0x955f56, 0x955f62",
+        "access_path": "0x8AC950(out line,actor context,startXY,candidateXY);0x8ACA00(line,0) -> float32 cost",
+        "meaning": "Hypothetical candidate feasibility; accept strictly below100000 then0x8AD130 materializes route. Query interface only (path-acceptance/path-lines evidence).",
+        "freshness": "Evaluated anew for up to10 candidates. Mutates temporary context/cache; no movement issued by cost query.",
+        "validity": "Caller owns temporary line/route/context and releases them; no result pointer retained."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-BURN-ROUTE-VALID",
+      "sites": [
+        "0x955f9f"
+      ],
+      "contract": {
+        "read_site": "0x955f9f",
+        "access_path": "stack route +0x110 at RBP+0x160, byte",
+        "meaning": "Route validity returned by materialization; must be nonzero. Independent query result, not excluded as ABI scratch.",
+        "freshness": "Written by reached materialization after accepted cost.",
+        "validity": "Stack-owned route for this call."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-BURN-ROUTE-BEGIN",
+      "sites": [
+        "0x95600e"
+      ],
+      "contract": {
+        "read_site": "0x95600e",
+        "access_path": "stack route +0 at RBP+0x50, point* (8 bytes)",
+        "meaning": "Route point vector begin; count=(end-begin)/12 must be>=2.",
+        "freshness": "Query materialization current result.",
+        "validity": "Owned route; factory transfer/copy details Q1g."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-BURN-ROUTE-END",
+      "sites": [
+        "0x956000"
+      ],
+      "contract": {
+        "read_site": "0x956000",
+        "access_path": "stack route +8 at RBP+0x58, point* (8 bytes)",
+        "meaning": "Route point vector end; used with begin.",
+        "freshness": "Query materialization current result.",
+        "validity": "Owned route."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-DEFAULT-TARGET-X",
+      "sites": [
+        "0x956dd3"
+      ],
+      "contract": {
+        "read_site": "0x956dd3",
+        "access_path": "global0x146E000, float32",
+        "meaning": "Default target coordinate X used during temporary Rotate target initialization before setting saved point.",
+        "freshness": "Writable file-backed defaults; producer/value domain OPEN Q1g.",
+        "validity": "V-global."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-DEFAULT-TARGET-Y",
+      "sites": [
+        "0x956de0"
+      ],
+      "contract": {
+        "read_site": "0x956de0",
+        "access_path": "global0x146E004, float32",
+        "meaning": "Default target coordinate Y used during temporary Rotate target initialization before setting saved point.",
+        "freshness": "Writable file-backed defaults; producer/value domain OPEN Q1g.",
+        "validity": "V-global."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-DEFAULT-TARGET-Z",
+      "sites": [
+        "0x956df3"
+      ],
+      "contract": {
+        "read_site": "0x956df3",
+        "access_path": "global0x146E008, float32",
+        "meaning": "Default target coordinate Z used during temporary Rotate target initialization before setting saved point.",
+        "freshness": "Writable file-backed defaults; producer/value domain OPEN Q1g.",
+        "validity": "V-global."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "I-SNAPSHOT-SAVE-REQUEST",
+      "sites": [
+        "0x956f5c"
+      ],
+      "contract": {
+        "read_site": "0x956f5c",
+        "access_path": "0x956F20 DL, byte Boolean",
+        "meaning": "Controls whether current order is detached and saved.",
+        "freshness": "Caller supplied;0x956B20 forces1.",
+        "validity": "Value argument."
+      },
+      "evidence_ids": [
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-SNAPSHOT-RESTORE-REQUEST",
+      "sites": [
+        "0x956f31",
+        "0x956f7c"
+      ],
+      "contract": {
+        "read_site": "0x956f31, 0x956f7c",
+        "access_path": "0x956F20 R8B, byte Boolean",
+        "meaning": "Controls cover/position snapshot independently from saving current order.0x956B20 forwards caller R8B.",
+        "freshness": "Caller supplied; root world branch passes1.",
+        "validity": "Value argument."
+      },
+      "evidence_ids": [
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-AVOIDANCE-ORDER-ARGUMENT",
+      "sites": [
+        "0x956b20",
+        "0x956b2f"
+      ],
+      "contract": {
+        "read_site": "0x956b20, 0x956b2f",
+        "access_path": "0x956B20 RDX, order*",
+        "meaning": "Null makes wrapper do nothing; nonnull triggers snapshot, interrupt preparation, setter.",
+        "freshness": "Caller scanner/action result.",
+        "validity": "Ownership transferred on install; null deletion-result can already have produced side effect."
+      },
+      "evidence_ids": [
+        "0x956b20"
+      ]
+    },
+    {
+      "id": "I-ROOT-SELECT-DISPATCH",
+      "sites": [
+        "0x956922",
+        "0x956928"
+      ],
+      "contract": {
+        "read_site": "0x956922, 0x956928",
+        "access_path": "root -> vptr -> +0x28(slot5), pointer-width",
+        "meaning": "Location selector called if cover group differs from root cached group.",
+        "freshness": "Current type dispatch.",
+        "validity": "Attached root."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-ORDER-END-DISPATCH",
+      "sites": [
+        "0x955b16",
+        "0x9562ea",
+        "0x9563f8",
+        "0x9566b0",
+        "0x956f67"
+      ],
+      "contract": {
+        "read_site": "0x955b16, 0x9562ea, 0x9563f8, 0x9566b0, 0x956f67",
+        "access_path": "current/saved order -> vptr slot4(+0x20), 8-byte pointers",
+        "meaning": "End called before detaching or deleting; complete contract Q1g/Q10.",
+        "freshness": "Synchronous when root replaces/discards.",
+        "validity": "Owned current/saved order."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "I-ORDER-DELETE-DISPATCH",
+      "sites": [
+        "0x955b28",
+        "0x9566c2"
+      ],
+      "contract": {
+        "read_site": "0x955b28, 0x9566c2",
+        "access_path": "saved order -> vptr slot0, 8-byte pointer",
+        "meaning": "Deleting destructor invoked with1 after End on queued-user-order discard.",
+        "freshness": "Synchronous on discard.",
+        "validity": "No use after clearing saved pointer."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "I-ORDER-SET-DISPATCH",
+      "sites": [
+        "0x955afc",
+        "0x956043",
+        "0x956046",
+        "0x95656e",
+        "0x95673f",
+        "0x956b51"
+      ],
+      "contract": {
+        "read_site": "0x955afc, 0x956043, 0x956046, 0x95656e, 0x95673f, 0x956b51",
+        "access_path": "brain -> vptr -> slot13(+0x68), 8-byte pointers",
+        "meaning": "Current-order setter; snapshot path first detaches old pointer to avoid deleting saved order.",
+        "freshness": "On root output issuance.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956b20"
+      ]
+    },
+    {
+      "id": "I-CHASSIS-MODE-DISPATCH",
+      "sites": [
+        "0x955cc1"
+      ],
+      "contract": {
+        "read_site": "0x955cc1",
+        "access_path": "owner chassis -> vptr slot44(+0x160), 8-byte pointers",
+        "meaning": "SetMovementMode boundary, arguments2,0 in burning branch.",
+        "freshness": "Immediate output call.",
+        "validity": "Borrowed state/brain/owner path; Q1g must consolidate within-call lifetime. No local retain by this read."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "id": "O-ROOT-SELECT",
+      "sites": [
+        "0x957432",
+        "0x957457",
+        "0x957464",
+        "0x957470",
+        "0x957692",
+        "0x95769f",
+        "0x956928"
+      ],
+      "contract": {
+        "effect": "Cache cover group; soldier selects outdoors for0/3/4,vertical1,horizontal2; civilian always outdoors.0x912460 handles switch. Unknown group leaves soldier child unchanged.",
+        "result_codes": "No status from selector.",
+        "ownership": "Attached child pointers reused.",
+        "cancellation": "Switch deactivates previous child reason1.",
+        "side_effects": "Group mismatch can trigger selector during root interrupt."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x957420",
+        "0x957680"
+      ]
+    },
+    {
+      "id": "O-LOCATION-SELECT",
+      "sites": [
+        "0x9526b5",
+        "0x95275a",
+        "0x95276e"
+      ],
+      "contract": {
+        "effect": "When no child, run separate0x9526D0 tail; choose idle/search/battle by catalog inputs, store previous child and switch.",
+        "result_codes": "No status.",
+        "ownership": "Attached children reused.",
+        "cancellation": "0x912460 deactivates previous child.",
+        "side_effects": "Body0x9526D0 is included independently because Ghidra assembly0x9526B0 contains only the gate."
+      },
+      "evidence_ids": [
+        "0x9526b0",
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "O-LOCATION-VALIDITY",
+      "sites": [
+        "0x949f1e",
+        "0x949f21",
+        "0x949180"
+      ],
+      "contract": {
+        "effect": "Outdoors AL true only group0/3/4; generic location always AL true.",
+        "result_codes": "Boolean AL, no broader RAX enum.",
+        "ownership": "Borrowed cover/path.",
+        "cancellation": "Synchronous predicate.",
+        "side_effects": "No mutation."
+      },
+      "evidence_ids": [
+        "0x949180",
+        "0x949f00"
+      ]
+    },
+    {
+      "id": "O-LEAVE-IDLE-FLAG",
+      "sites": [
+        "0x952737"
+      ],
+      "contract": {
+        "effect": "Call0x902F00(brain,1) when previous child idle and choice nonidle; sets flag11 unless user control.",
+        "result_codes": "No status.",
+        "ownership": "Inline brain flag.",
+        "cancellation": "Later flag writer can clear it.",
+        "side_effects": "Setter compares requested byte to flag11; native name/writers Q5."
+      },
+      "evidence_ids": [
+        "0x9526d0"
+      ]
+    },
+    {
+      "id": "O-HAZARD-DETECT",
+      "sites": [
+        "0x957397",
+        "0x9573a4",
+        "0x9573b1",
+        "0x9573be",
+        "0x9573cb"
+      ],
+      "contract": {
+        "effect": "Update five embedded scanner results before generic root arbitration. Interfaces below give input/result/side-effect bounds.",
+        "result_codes": "No return consumed; active bytes/state are result channel.",
+        "ownership": "Embedded scanners may retain detected entities; detailed retained handle contracts Q1g.",
+        "cancellation": "Next update replaces detection; per-type cleanup remains boundary contract.",
+        "side_effects": "Sequence crush,obstacle,grenade,burn,world."
+      },
+      "evidence_ids": [
+        "0x957380"
+      ]
+    },
+    {
+      "id": "O-EQUIPMENT-DEADLINE-POLICY",
+      "sites": [
+        "0x9573f0",
+        "0x9573fd"
+      ],
+      "contract": {
+        "effect": "When nonzero deadline due call0x9440E0(brain,1); clear deadline only on false. Helper can submit UseItem via0x7CC810.",
+        "result_codes": "AL indicates policy gate, not task completion.",
+        "ownership": "Temporary inventory query state released; UseItem boundary ownership C-HELPERS/Q1g.",
+        "cancellation": "True leaves deadline due, enabling retries on subsequent interrupts.",
+        "side_effects": "Per-variable helper census C-HELPERS; Q5 owns deadline producer meaning."
+      },
+      "evidence_ids": [
+        "0x957380"
+      ]
+    },
+    {
+      "id": "O-NAMED-GATE",
+      "sites": [
+        "0x955aac",
+        "0x955b43",
+        "0x9560b0",
+        "0x95615b",
+        "0x9561ff",
+        "0x956307",
+        "0x956583",
+        "0x956652",
+        "0x9566dd",
+        "0x95679e",
+        "0x9567f0"
+      ],
+      "contract": {
+        "effect": "Q1a named-gate ordering: restore_order,burning,avoid_obstacle,avoid_burn,avoid_crush,avoid_grenade,retreat_out_of_world,restore_after_avoid,stand_from_water,cover_expired,interface.",
+        "result_codes": "AL false ends remaining root checks.",
+        "ownership": "Borrowed image labels, pointer identity.",
+        "cancellation": "Flag22 resets next interrupt walk.",
+        "side_effects": "Priority is ordered, not independent Boolean voting."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "O-PREPARE-INTERRUPT",
+      "sites": [
+        "0x955bc7",
+        "0x956558",
+        "0x956688",
+        "0x95671a",
+        "0x956845",
+        "0x95686b",
+        "0x956b3f"
+      ],
+      "contract": {
+        "effect": "Use Q1a preparation contract: conditional/unconditional flag21, end current order through slot13 if present, select root.",
+        "result_codes": "Conditional wrapper AL; callers branch on it.",
+        "ownership": "Borrowed root/brain.",
+        "cancellation": "Can cancel live current order; saved order is detached first where required.",
+        "side_effects": "No order generation itself."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956b20"
+      ]
+    },
+    {
+      "id": "O-ACTION-LABEL",
+      "sites": [
+        "0x955c19",
+        "0x956106",
+        "0x9561aa",
+        "0x95625b",
+        "0x95636d",
+        "0x9565e9",
+        "0x956780",
+        "0x9568be",
+        "0x956954",
+        "0x956bf7",
+        "0x956cc9"
+      ],
+      "contract": {
+        "effect": "Copy action text to state+0x58; nonempty text with third argument nonzero publishes qualified name via0x911FA0/0x9032F0. Root labels include burning_move,obstacle,burn,crush,grenade,retreat,stand_from_water,interface; restoration uses restore_cover/restore_position.",
+        "result_codes": "No result consumed.",
+        "ownership": "Copies source string, caller releases temporary.",
+        "cancellation": "Empty label clears state label; does not notify through nonempty-only branch.",
+        "side_effects": "Detailed action notification contract OPEN Q1g."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "O-RESTORE-OR-DISCARD-ORDER",
+      "sites": [
+        "0x955aff",
+        "0x955b04",
+        "0x955b19",
+        "0x955b30",
+        "0x955b32",
+        "0x95669e",
+        "0x9566b3",
+        "0x9566ca",
+        "0x9566cc"
+      ],
+      "contract": {
+        "effect": "If saved order and mode0, restore when both queues empty; otherwise End then deleting destructor, clear saved/mode. Pending user orders also discard before restore-after-avoid.",
+        "result_codes": "No success consumed.",
+        "ownership": "Saved pointer transfers to current setter, or is deleted after End.",
+        "cancellation": "Queued user orders abandon saved restoration.",
+        "side_effects": "Setter avoided when saved already equals current."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "O-SAVE-ORDER",
+      "sites": [
+        "0x9562e3",
+        "0x9562ed",
+        "0x9562f4",
+        "0x9563f1",
+        "0x9563fb",
+        "0x956402",
+        "0x956f60",
+        "0x956f6a",
+        "0x956f71"
+      ],
+      "contract": {
+        "effect": "Only while restore-mode0 and saved null: copy current pointer to root+0x568, End(slot4), clear brain+0xF0 without destructor.0x956F20 additionally requires DL true.",
+        "result_codes": "No status.",
+        "ownership": "Transfers live pointer into saved slot; End is not destruction.",
+        "cancellation": "Later restore/discard paths consume saved slot.",
+        "side_effects": "Allows new order setter to avoid deleting saved order."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "O-SNAPSHOT-RESTORE",
+      "sites": [
+        "0x955b04",
+        "0x956459",
+        "0x956472",
+        "0x95647d",
+        "0x956488",
+        "0x956493",
+        "0x95649e",
+        "0x9564a9",
+        "0x9564b7",
+        "0x9564c5",
+        "0x9564d4",
+        "0x9564e6",
+        "0x9564f9",
+        "0x956504",
+        "0x956525",
+        "0x956531",
+        "0x956539",
+        "0x95654f",
+        "0x95669e",
+        "0x956fd3",
+        "0x956fec",
+        "0x956ff7",
+        "0x957002",
+        "0x95700d",
+        "0x957018",
+        "0x957023",
+        "0x957031",
+        "0x95703f",
+        "0x95704e",
+        "0x957069",
+        "0x95707c",
+        "0x957087",
+        "0x9570a8",
+        "0x9570b4",
+        "0x9570bc",
+        "0x9570d2"
+      ],
+      "contract": {
+        "effect": "Snapshot mode2 resident cover descriptor0x88 bytes, or mode1 positionXYZ/directionXYZ*10/actual type when hold or user;0x956F20 only if R8B true. Never overwrites existing mode/saved order.",
+        "result_codes": "No status.",
+        "ownership": "Value copy; descriptor embedded references need Q7 lifetime contract.",
+        "cancellation": "Mode reset by queue cancellation or later event handling Q10.",
+        "side_effects": "Opaque descriptor copied, no geometry internals expanded."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956f20"
+      ]
+    },
+    {
+      "id": "O-SET-ORDER",
+      "sites": [
+        "0x955aff",
+        "0x95604d",
+        "0x956574",
+        "0x956745",
+        "0x956b57"
+      ],
+      "contract": {
+        "effect": "Install restored, burning Move, hazard result, or stand-from-water MovementChange via brain slot13.",
+        "result_codes": "No setter result consumed.",
+        "ownership": "Incoming order transfer; detailed ownership/cancellation Q1g/Q10.",
+        "cancellation": "Prior current order handled by native setter; snapshot can detach it first.",
+        "side_effects": "Type-specific result propagation remains output contract work."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956b20"
+      ]
+    },
+    {
+      "id": "O-HAZARD-BUILD",
+      "sites": [
+        "0x9562a7",
+        "0x9563b9",
+        "0x956635",
+        "0x956641"
+      ],
+      "contract": {
+        "effect": "Invoke selected scanner slot1; nonnull obstacle/burn/crush/grenade orders are installed. World slot1 deletes actor and returns null, so wrapper then does nothing. Nearby-burn normal entry returns null (preserved movement static evidence).",
+        "result_codes": "Pointer/null, not order execution result.",
+        "ownership": "Non-null factory result consumed by setter; details Q1g.",
+        "cancellation": "Cancellation of installed escape order Q1g; no physical escape algorithm expanded.",
+        "side_effects": "Scanner may act before null result (world deletion); does not mean all null results are failures."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "O-BURN-MODE",
+      "sites": [
+        "0x955ccd"
+      ],
+      "contract": {
+        "effect": "Set chassis movement mode2 with second extra argument0 via slot44.",
+        "result_codes": "No return consumed; requested/resolved distinction Q8.",
+        "ownership": "Borrowed chassis.",
+        "cancellation": "Later mode request supersedes.",
+        "side_effects": "Foot setter recomputes movement; animation internals parked."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "O-BURN-RNG",
+      "sites": [
+        "0x955e51",
+        "0x955e5a",
+        "0x955e89",
+        "0x955e92",
+        "0x955ec8",
+        "0x955ed1"
+      ],
+      "contract": {
+        "effect": "Three LCG draws per attempt. Candidate radius=L+(5L-L)*u2; angle=atan2(Y,X)+u1\u00b2*pi*(2*u3-1); up to10 attempts.",
+        "result_codes": "Derived candidateXY; normalized u-domain OPEN until scale binding.",
+        "ownership": "Borrowed selected stream.",
+        "cancellation": "No rollback of failed candidate draws.",
+        "side_effects": "Consumes shared RNG state/count; sin/cos are pure numeric helpers."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "O-BURN-PATH-QUERY",
+      "sites": [
+        "0x955ce2",
+        "0x955dc7",
+        "0x955dd5",
+        "0x955f56",
+        "0x955f62",
+        "0x955f90"
+      ],
+      "contract": {
+        "effect": "Construct owner pather context with flag2, temporary line/route; cost query candidate; first cost<100000 materializes route.",
+        "result_codes": "Cost float, route validity byte and point vector; only valid>=2 points passes Move factory.",
+        "ownership": "Temporary context owns shared query handles; released on exit.",
+        "cancellation": "Temporary query state destroyed on all normal paths.",
+        "side_effects": "Hypothetical query can touch query caches; no actor movement until installed Move. Spatial/path internals parked."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "O-BURN-MOVE",
+      "sites": [
+        "0x956031"
+      ],
+      "contract": {
+        "effect": "0x8F34F0(route,1) builds Move only with route-valid byte and>=2 points.",
+        "result_codes": "Order pointer; subsequent Move returns running0/success1/failure2 per movement map.",
+        "ownership": "Route-copy/transfer exact factory contract Q1g.",
+        "cancellation": "Current order cancellation through setter Q10.",
+        "side_effects": "No candidate success after10 tries leaves no Move installed; movement type/mode request already occurred."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "O-COVER-CHECK",
+      "sites": [
+        "0x956831",
+        "0x956837"
+      ],
+      "contract": {
+        "effect": "Advance cover deadline by convert1; run mutating cover Update.",
+        "result_codes": "Result2 drives conditional interrupt and Hide; other codes Q7.",
+        "ownership": "Borrowed cover, temporary query objects released.",
+        "cancellation": "Next due check recomputes.",
+        "side_effects": "Invalid cover can be released before Hide."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "O-HIDE-POLICY",
+      "sites": [
+        "0x95685c"
+      ],
+      "contract": {
+        "effect": "0x950B60(root,5,false) after expired-cover result2; attempts cover movement within5*L, can release old cover and build order sequence.",
+        "result_codes": "AL policy success; root ignores result.",
+        "ownership": "Temporary candidates released; chosen output order owned through sequence.",
+        "cancellation": "Native sequence cancellation Q1g/Q10.",
+        "side_effects": "Decision helper per-field reads and scoring queries assigned C-BATTLE, not treated as an opaque physics producer."
+      },
+      "evidence_ids": [
+        "0x955a90"
+      ]
+    },
+    {
+      "id": "O-CREATE-SEQUENCE",
+      "sites": [
+        "0x956b8f"
+      ],
+      "contract": {
+        "effect": "Use Q1a0x912370 installed complex sequence for restore commands.",
+        "result_codes": "Sequence pointer or null; caller here does not test it.",
+        "ownership": "Installed sequence returned borrowed.",
+        "cancellation": "Replacement/cancel Q10.",
+        "side_effects": "Allocation failure behavior remains Q10."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "O-MOVEMENT-CHANGE",
+      "sites": [
+        "0x95672d",
+        "0x956c43",
+        "0x956d1d",
+        "0x956e51"
+      ],
+      "contract": {
+        "effect": "Factory0x8F3930(type,mode,wait): standing0/mode-1/wait1 for water;0/2/1 before restoration; savedType/-1/1 after Rotate.",
+        "result_codes": "Exec running0/success1/failure2; -1 argument means unchanged.",
+        "ownership": "Factory result transferred to setter/sequence.",
+        "cancellation": "Order cancellation contract Q1g/Q10.",
+        "side_effects": "Requested/actual type comparison; enums Q8."
+      },
+      "evidence_ids": [
+        "0x955a90",
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "O-MOVE-TO-COVER",
+      "sites": [
+        "0x956c60"
+      ],
+      "contract": {
+        "effect": "Factory0x8CD320(saved descriptor) appended after movement change.",
+        "result_codes": "Output order; result/acceptance contract Q1g.",
+        "ownership": "Saved descriptor lifetime/copy Q7; order owned by sequence.",
+        "cancellation": "Sequence cancellation Q10.",
+        "side_effects": "Physical traversal internals parked."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "O-MOVE-TO-POSITION",
+      "sites": [
+        "0x956d3c"
+      ],
+      "contract": {
+        "effect": "Factory0x8F3600(&savedXYZ,0) appended after movement change.",
+        "result_codes": "Output order; result propagation Q1g/Q10.",
+        "ownership": "Factory coordinate copying boundary Q1g; sequence owns order.",
+        "cancellation": "Sequence cancellation Q10.",
+        "side_effects": "Path internals parked."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "O-ROTATE",
+      "sites": [
+        "0x956e14"
+      ],
+      "contract": {
+        "effect": "Factory0x8F3880(temporary Target(savedPosition+savedDirection),0.0) appended.",
+        "result_codes": "Output order; completion/failure Q10.",
+        "ownership": "Temporary target destroyed after append; order target copy/retention Q10.",
+        "cancellation": "Sequence cancellation Q10.",
+        "side_effects": "Facing implementation parked."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "O-APPEND-SEQUENCE",
+      "sites": [
+        "0x956c54",
+        "0x956c71",
+        "0x956d2e",
+        "0x956d4d",
+        "0x956e25",
+        "0x956e62",
+        "0x956ea3"
+      ],
+      "contract": {
+        "effect": "0x900A60(sequence,child,0,1), including tail JMP for final event order.",
+        "result_codes": "No return consumed; sequencing/failure flags Q10.",
+        "ownership": "Child transfers to complex sequence; contract Q10.",
+        "cancellation": "Parent cancellation Q10.",
+        "side_effects": "Explicit order of movement change, restore movement/cover, optional Rotate/type, event0x10."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "O-STATE-EVENT16-ORDER",
+      "sites": [
+        "0x956e7a"
+      ],
+      "contract": {
+        "effect": "0x9125D0(root,0x10,1) factory appended at end of restoration.",
+        "result_codes": "Execution triggers state event0x10; result/cancellation contract Q10.",
+        "ownership": "Order keeps state reference; exact ownership Q10.",
+        "cancellation": "OPEN Q10: whether sequence cancellation/failure skips or still issues the terminal event.",
+        "side_effects": "Exact event0x10 handler effects remain Q10."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    },
+    {
+      "id": "O-RESTORE-TARGET",
+      "sites": [
+        "0x956da5",
+        "0x956db8",
+        "0x956dc5",
+        "0x956dce",
+        "0x956e07",
+        "0x956e34",
+        "0x956e3e"
+      ],
+      "contract": {
+        "effect": "Construct temporary eTarget, set saved look point via0x83E430, destroy after Rotate append.",
+        "result_codes": "No tactical result from ctor/dtor.",
+        "ownership": "Caller owns temporary target and auxiliary handles.",
+        "cancellation": "Synchronous destruction after use.",
+        "side_effects": "Only factory-retained target validity remains O-ROTATE."
+      },
+      "evidence_ids": [
+        "0x956b70"
+      ]
+    }
+  ],
+  "inline_regions": [],
+  "enums": [],
+  "float_constants": [
+    {
+      "id": "K-ROOT-10124b4",
+      "binary": "game",
+      "rva": "0x10124b4",
+      "value": 5.0,
+      "sites": [
+        "0x955cff",
+        "0x95684e"
+      ],
+      "meaning": "5 configured spatial units"
+    },
+    {
+      "id": "K-ROOT-10004d4",
+      "binary": "game",
+      "rva": "0x10004d4",
+      "value": 2.0,
+      "sites": [
+        "0x955e18"
+      ],
+      "meaning": "2 for symmetric angular sample"
+    },
+    {
+      "id": "K-ROOT-10004d0",
+      "binary": "game",
+      "rva": "0x10004d0",
+      "value": 1.0,
+      "sites": [
+        "0x955e26",
+        "0x9567c0"
+      ],
+      "meaning": "1 for angle offset and cover cadence"
+    },
+    {
+      "id": "K-ROOT-1003160",
+      "binary": "game",
+      "rva": "0x1003160",
+      "value": 3.1415927410125732,
+      "sites": [
+        "0x955e2f"
+      ],
+      "meaning": "pi angular spread"
+    },
+    {
+      "id": "K-ROOT-105ffc4",
+      "binary": "game",
+      "rva": "0x105ffc4",
+      "value": 100000.0,
+      "sites": [
+        "0x955e38"
+      ],
+      "meaning": "100000 rejected path cost"
+    },
+    {
+      "id": "K-ROOT-1004044",
+      "binary": "game",
+      "rva": "0x1004044",
+      "value": 10.0,
+      "sites": [
+        "0x9564de",
+        "0x957061"
+      ],
+      "meaning": "10 times facing vector"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "0x957680",
+      "binary": "game",
+      "function_rva": "0x957680",
+      "instruction_rvas": [
+        "0x957680",
+        "0x957684",
+        "0x957688",
+        "0x95768f",
+        "0x957692",
+        "0x957698",
+        "0x95769f"
+      ]
+    },
+    {
+      "id": "0x9122c0",
+      "binary": "game",
+      "function_rva": "0x9122c0",
+      "instruction_rvas": [
+        "0x9122c0",
+        "0x9122c5",
+        "0x9122ca",
+        "0x9122cb",
+        "0x9122cf",
+        "0x9122d2",
+        "0x9122d5",
+        "0x9122d9",
+        "0x9122dc",
+        "0x9122df",
+        "0x9122e1",
+        "0x9122e6",
+        "0x9122e8",
+        "0x9122eb",
+        "0x9122ef",
+        "0x9122f4",
+        "0x9122f6",
+        "0x9122f8",
+        "0x9122fd",
+        "0x9122ff",
+        "0x912303",
+        "0x912308",
+        "0x91230b",
+        "0x912310",
+        "0x912313",
+        "0x912316",
+        "0x91231b",
+        "0x912320",
+        "0x912324",
+        "0x912326",
+        "0x91232b",
+        "0x91232e",
+        "0x912331",
+        "0x912338",
+        "0x91233a",
+        "0x91233e",
+        "0x912342",
+        "0x912345",
+        "0x912349",
+        "0x91234d",
+        "0x91234f",
+        "0x912354",
+        "0x912359",
+        "0x91235e",
+        "0x912362",
+        "0x912363",
+        "0x912364"
+      ]
+    },
+    {
+      "id": "0x907b30",
+      "binary": "game",
+      "function_rva": "0x907b30",
+      "instruction_rvas": [
+        "0x907b30",
+        "0x907b32",
+        "0x907b36",
+        "0x907b39",
+        "0x907b40",
+        "0x907b45",
+        "0x907b47",
+        "0x907b4d",
+        "0x907b51",
+        "0x907b58",
+        "0x907b5f",
+        "0x907b67",
+        "0x907b69",
+        "0x907b6e",
+        "0x907b71",
+        "0x907b73",
+        "0x907b7a",
+        "0x907b7f",
+        "0x907b84",
+        "0x907b86",
+        "0x907b8d",
+        "0x907b8f",
+        "0x907b93",
+        "0x907b9a",
+        "0x907b9f",
+        "0x907ba3",
+        "0x907ba7",
+        "0x907bab",
+        "0x907bae",
+        "0x907bb2",
+        "0x907bb5",
+        "0x907bb7",
+        "0x907bb9",
+        "0x907bbe",
+        "0x907bc1",
+        "0x907bc9",
+        "0x907bce",
+        "0x907bd1",
+        "0x907bd3",
+        "0x907bd8",
+        "0x907bda",
+        "0x907bdf",
+        "0x907be1",
+        "0x907be6",
+        "0x907be8",
+        "0x907bec",
+        "0x907bf0",
+        "0x907bf1"
+      ]
+    },
+    {
+      "id": "0x902f00",
+      "binary": "game",
+      "function_rva": "0x902f00",
+      "instruction_rvas": [
+        "0x902f00",
+        "0x902f07",
+        "0x902f0a",
+        "0x902f0d",
+        "0x902f10",
+        "0x902f14",
+        "0x902f17",
+        "0x902f19",
+        "0x902f1b",
+        "0x902f1d",
+        "0x902f23",
+        "0x902f25",
+        "0x902f27",
+        "0x902f29",
+        "0x902f2d",
+        "0x902f32",
+        "0x902f35",
+        "0x902f3c"
+      ]
+    },
+    {
+      "id": "0x906ef0",
+      "binary": "game",
+      "function_rva": "0x906ef0",
+      "instruction_rvas": [
+        "0x906ef0",
+        "0x906ef4",
+        "0x906ef8",
+        "0x906efa",
+        "0x906efd",
+        "0x906f02",
+        "0x906f04",
+        "0x906f06",
+        "0x906f08",
+        "0x906f0c",
+        "0x906f0d",
+        "0x906f0f",
+        "0x906f13"
+      ]
+    },
+    {
+      "id": "0x907460",
+      "binary": "game",
+      "function_rva": "0x907460",
+      "instruction_rvas": [
+        "0x907460",
+        "0x907462",
+        "0x907463",
+        "0x907464",
+        "0x907465",
+        "0x907467",
+        "0x90746e",
+        "0x907472",
+        "0x907475",
+        "0x907479",
+        "0x90747d",
+        "0x907480",
+        "0x907482",
+        "0x907485",
+        "0x907487",
+        "0x90748a",
+        "0x90748c",
+        "0x907490",
+        "0x907493",
+        "0x907495",
+        "0x907499",
+        "0x90749d",
+        "0x9074a1",
+        "0x9074a9",
+        "0x9074b1",
+        "0x9074b6",
+        "0x9074ba",
+        "0x9074c1",
+        "0x9074c7",
+        "0x9074cb",
+        "0x9074d0",
+        "0x9074d5",
+        "0x9074d9",
+        "0x9074df",
+        "0x9074e6",
+        "0x9074ec",
+        "0x9074f0",
+        "0x9074f5",
+        "0x9074f9",
+        "0x907502",
+        "0x907508",
+        "0x90750e",
+        "0x907512",
+        "0x907518",
+        "0x90751c",
+        "0x907522",
+        "0x907525",
+        "0x90752b",
+        "0x907531",
+        "0x907537",
+        "0x90753b",
+        "0x907541",
+        "0x907547",
+        "0x90754b",
+        "0x907551",
+        "0x907557",
+        "0x90755e",
+        "0x907565",
+        "0x907567",
+        "0x90756e",
+        "0x907571",
+        "0x907579",
+        "0x90757e",
+        "0x907585",
+        "0x90758a",
+        "0x90758f",
+        "0x907593",
+        "0x90759a",
+        "0x90759f",
+        "0x9075a3",
+        "0x9075aa",
+        "0x9075af",
+        "0x9075b6",
+        "0x9075bd",
+        "0x9075c0",
+        "0x9075c6",
+        "0x9075ce",
+        "0x9075d5",
+        "0x9075dd",
+        "0x9075e0",
+        "0x9075e8",
+        "0x9075f0",
+        "0x9075f3",
+        "0x9075fa",
+        "0x907601",
+        "0x907606",
+        "0x907608",
+        "0x90760c",
+        "0x907611",
+        "0x907615",
+        "0x907618",
+        "0x90761d",
+        "0x907621",
+        "0x907625",
+        "0x907629",
+        "0x907630",
+        "0x907634",
+        "0x907639",
+        "0x90763c",
+        "0x90763e",
+        "0x907642",
+        "0x907646",
+        "0x90764c",
+        "0x907652",
+        "0x907658",
+        "0x90765e",
+        "0x907664",
+        "0x90766a",
+        "0x90766f",
+        "0x907673",
+        "0x907675",
+        "0x90767a",
+        "0x90767f",
+        "0x907684",
+        "0x907687",
+        "0x90768c",
+        "0x90768e",
+        "0x907693",
+        "0x907697",
+        "0x90769c",
+        "0x9076a0",
+        "0x9076a8",
+        "0x9076ad",
+        "0x9076b2",
+        "0x9076b6",
+        "0x9076b9",
+        "0x9076bf",
+        "0x9076c7",
+        "0x9076cf",
+        "0x9076d7",
+        "0x9076df",
+        "0x9076e4",
+        "0x9076e9",
+        "0x9076f0",
+        "0x9076f2",
+        "0x9076f3",
+        "0x9076f4",
+        "0x9076f5",
+        "0x9076f6",
+        "0x9076f7",
+        "0x9076fe",
+        "0x907703",
+        "0x90770a",
+        "0x907710",
+        "0x907717",
+        "0x90771c",
+        "0x907723",
+        "0x907728"
+      ]
+    },
+    {
+      "id": "0x949f00",
+      "binary": "game",
+      "function_rva": "0x949f00",
+      "instruction_rvas": [
+        "0x949f00",
+        "0x949f04",
+        "0x949f08",
+        "0x949f0f",
+        "0x949f12",
+        "0x949f15",
+        "0x949f18",
+        "0x949f1a",
+        "0x949f1c",
+        "0x949f1e",
+        "0x949f20",
+        "0x949f21",
+        "0x949f23"
+      ]
+    },
+    {
+      "id": "0x942cb0",
+      "binary": "game",
+      "function_rva": "0x942cb0",
+      "instruction_rvas": [
+        "0x942cb0",
+        "0x942cb4",
+        "0x942cba",
+        "0x942cbc",
+        "0x942cc1",
+        "0x942cc6",
+        "0x942cc8",
+        "0x942ccb",
+        "0x942ccd",
+        "0x942cd2",
+        "0x942cd4",
+        "0x942cda",
+        "0x942cdd",
+        "0x942cdf",
+        "0x942ce1",
+        "0x942ce8",
+        "0x942cea",
+        "0x942cef",
+        "0x942cf1",
+        "0x942cf3",
+        "0x942cf5",
+        "0x942cf9",
+        "0x942cfa",
+        "0x942cfc",
+        "0x942d00"
+      ]
+    },
+    {
+      "id": "0x956b20",
+      "binary": "game",
+      "function_rva": "0x956b20",
+      "instruction_rvas": [
+        "0x956b20",
+        "0x956b23",
+        "0x956b25",
+        "0x956b2a",
+        "0x956b2b",
+        "0x956b2f",
+        "0x956b32",
+        "0x956b35",
+        "0x956b37",
+        "0x956b3c",
+        "0x956b3f",
+        "0x956b44",
+        "0x956b48",
+        "0x956b4f",
+        "0x956b51",
+        "0x956b54",
+        "0x956b57",
+        "0x956b5a",
+        "0x956b5f",
+        "0x956b63",
+        "0x956b64"
+      ]
+    },
+    {
+      "id": "0x907000",
+      "binary": "game",
+      "function_rva": "0x907000",
+      "instruction_rvas": [
+        "0x907000",
+        "0x907002",
+        "0x907009",
+        "0x90700d",
+        "0x907010",
+        "0x907014",
+        "0x90701a",
+        "0x90701f",
+        "0x907022",
+        "0x907028",
+        "0x90702f",
+        "0x907033",
+        "0x907039",
+        "0x907041",
+        "0x907046",
+        "0x90704a",
+        "0x90704f",
+        "0x907056",
+        "0x90705e",
+        "0x907061",
+        "0x907068",
+        "0x90706f",
+        "0x907071",
+        "0x907074",
+        "0x90707b",
+        "0x90707e",
+        "0x907083",
+        "0x907086",
+        "0x90708b",
+        "0x90708e",
+        "0x907096",
+        "0x907099",
+        "0x90709b",
+        "0x9070a0",
+        "0x9070a2",
+        "0x9070a7",
+        "0x9070aa",
+        "0x9070ac",
+        "0x9070af",
+        "0x9070b2",
+        "0x9070b4",
+        "0x9070b9",
+        "0x9070bc",
+        "0x9070be",
+        "0x9070c1",
+        "0x9070c4",
+        "0x9070c7",
+        "0x9070cc",
+        "0x9070d1",
+        "0x9070d9",
+        "0x9070e0",
+        "0x9070e1",
+        "0x9070e2",
+        "0x9070e9",
+        "0x9070ed",
+        "0x9070f4",
+        "0x9070f5"
+      ]
+    },
+    {
+      "id": "0x9577c0",
+      "binary": "game",
+      "function_rva": "0x9577c0",
+      "instruction_rvas": [
+        "0x9577c0",
+        "0x9577c5",
+        "0x9577c6",
+        "0x9577ca",
+        "0x9577cd",
+        "0x9577d2",
+        "0x9577d4",
+        "0x9577db",
+        "0x9577e2",
+        "0x9577e5",
+        "0x9577ec",
+        "0x9577f3",
+        "0x9577fa",
+        "0x957801",
+        "0x957808",
+        "0x95780f",
+        "0x957816",
+        "0x95781d",
+        "0x957824",
+        "0x95782b",
+        "0x957832",
+        "0x957839",
+        "0x957840",
+        "0x957847",
+        "0x95784e",
+        "0x957855",
+        "0x95785c",
+        "0x957863",
+        "0x957869",
+        "0x957870",
+        "0x957877",
+        "0x95787e",
+        "0x957885",
+        "0x95788c",
+        "0x957893",
+        "0x95789a",
+        "0x9578a1",
+        "0x9578a8",
+        "0x9578ae",
+        "0x9578b4",
+        "0x9578bb",
+        "0x9578c3",
+        "0x9578c8",
+        "0x9578d0",
+        "0x9578d5",
+        "0x9578da",
+        "0x9578e1",
+        "0x9578e4",
+        "0x9578ea",
+        "0x9578f1",
+        "0x9578f6",
+        "0x9578fa",
+        "0x9578fb"
+      ]
+    },
+    {
+      "id": "0x957420",
+      "binary": "game",
+      "function_rva": "0x957420",
+      "instruction_rvas": [
+        "0x957420",
+        "0x957424",
+        "0x957428",
+        "0x95742f",
+        "0x957432",
+        "0x957438",
+        "0x95743a",
+        "0x95743c",
+        "0x95743f",
+        "0x957441",
+        "0x957444",
+        "0x957446",
+        "0x957449",
+        "0x95744b",
+        "0x95744e",
+        "0x957450",
+        "0x957457",
+        "0x95745c",
+        "0x95745d",
+        "0x957464",
+        "0x957469",
+        "0x957470"
+      ]
+    },
+    {
+      "id": "0x907a30",
+      "binary": "game",
+      "function_rva": "0x907a30",
+      "instruction_rvas": [
+        "0x907a30",
+        "0x907a32",
+        "0x907a39",
+        "0x907a3d",
+        "0x907a40",
+        "0x907a47",
+        "0x907a4c",
+        "0x907a51",
+        "0x907a59",
+        "0x907a5e",
+        "0x907a62",
+        "0x907a67",
+        "0x907a6c",
+        "0x907a71",
+        "0x907a76",
+        "0x907a7d",
+        "0x907a82",
+        "0x907a87",
+        "0x907a8f",
+        "0x907a94",
+        "0x907a98",
+        "0x907a9d",
+        "0x907aa2",
+        "0x907aa7",
+        "0x907aac",
+        "0x907ab3",
+        "0x907ab8",
+        "0x907abd",
+        "0x907ac5",
+        "0x907aca",
+        "0x907ace",
+        "0x907ad3",
+        "0x907ad8",
+        "0x907add",
+        "0x907ae2",
+        "0x907ae9",
+        "0x907aea"
+      ]
+    },
+    {
+      "id": "0x907760",
+      "binary": "game",
+      "function_rva": "0x907760",
+      "instruction_rvas": [
+        "0x907760",
+        "0x907762",
+        "0x907769",
+        "0x90776c",
+        "0x907770",
+        "0x907774",
+        "0x907779",
+        "0x90777b",
+        "0x907781",
+        "0x907789",
+        "0x907791",
+        "0x907799",
+        "0x9077a1",
+        "0x9077a9",
+        "0x9077ae",
+        "0x9077b1",
+        "0x9077b6",
+        "0x9077b9",
+        "0x9077be",
+        "0x9077c3",
+        "0x9077c9",
+        "0x9077d2",
+        "0x9077d6",
+        "0x9077da",
+        "0x9077de",
+        "0x9077e5",
+        "0x9077ed",
+        "0x9077f5",
+        "0x9077f8",
+        "0x9077fe",
+        "0x907800",
+        "0x907803",
+        "0x907807",
+        "0x90780a",
+        "0x907810",
+        "0x907814",
+        "0x907818",
+        "0x90781d",
+        "0x907822",
+        "0x907827",
+        "0x90782d",
+        "0x907833",
+        "0x907839",
+        "0x90783d",
+        "0x907841",
+        "0x907845",
+        "0x907849",
+        "0x90784d",
+        "0x907851",
+        "0x907857",
+        "0x90785e",
+        "0x907860",
+        "0x907868",
+        "0x90786e",
+        "0x907872",
+        "0x907875",
+        "0x90787b",
+        "0x907882",
+        "0x907885",
+        "0x907887",
+        "0x90788d",
+        "0x907894",
+        "0x90789b",
+        "0x9078a2",
+        "0x9078a7",
+        "0x9078a9",
+        "0x9078ad",
+        "0x9078b2",
+        "0x9078b5",
+        "0x9078b7",
+        "0x9078be",
+        "0x9078c0",
+        "0x9078c3",
+        "0x9078c5",
+        "0x9078cc",
+        "0x9078ce",
+        "0x9078d5",
+        "0x9078d9",
+        "0x9078e0",
+        "0x9078e7",
+        "0x9078ea",
+        "0x9078ec",
+        "0x9078f0",
+        "0x9078f7",
+        "0x9078fa",
+        "0x9078ff",
+        "0x907901",
+        "0x907903",
+        "0x907907",
+        "0x90790a",
+        "0x90790c",
+        "0x90790e",
+        "0x907915",
+        "0x907918",
+        "0x90791a",
+        "0x90791c",
+        "0x90791f",
+        "0x907926",
+        "0x907928",
+        "0x907930",
+        "0x907936",
+        "0x90793a",
+        "0x90793d",
+        "0x90793f",
+        "0x907941",
+        "0x907943",
+        "0x90794b",
+        "0x907950",
+        "0x907953",
+        "0x907958",
+        "0x90795d",
+        "0x907961",
+        "0x907966",
+        "0x90796a",
+        "0x90796f",
+        "0x907973",
+        "0x907977",
+        "0x90797b",
+        "0x90797f",
+        "0x907983",
+        "0x907986",
+        "0x907988",
+        "0x90798a",
+        "0x90798c",
+        "0x90798e",
+        "0x907990",
+        "0x907992",
+        "0x907994",
+        "0x907996",
+        "0x90799e",
+        "0x9079a4",
+        "0x9079a8",
+        "0x9079ab",
+        "0x9079ad",
+        "0x9079b1",
+        "0x9079b4",
+        "0x9079ba",
+        "0x9079bc",
+        "0x9079c1",
+        "0x9079c5",
+        "0x9079c8",
+        "0x9079cc",
+        "0x9079d2",
+        "0x9079d8",
+        "0x9079dd",
+        "0x9079e2",
+        "0x9079e7",
+        "0x9079ec",
+        "0x9079f4",
+        "0x9079fc",
+        "0x907a04",
+        "0x907a0c",
+        "0x907a14",
+        "0x907a1b",
+        "0x907a1d"
+      ]
+    },
+    {
+      "id": "0x949180",
+      "binary": "game",
+      "function_rva": "0x949180",
+      "instruction_rvas": [
+        "0x949180",
+        "0x949182"
+      ]
+    },
+    {
+      "id": "0x949020",
+      "binary": "game",
+      "function_rva": "0x949020",
+      "instruction_rvas": [
+        "0x949020",
+        "0x949025",
+        "0x949026",
+        "0x94902a",
+        "0x94902d",
+        "0x949030",
+        "0x949035",
+        "0x949038",
+        "0x94903e",
+        "0x949042",
+        "0x949048",
+        "0x94904f",
+        "0x949054",
+        "0x949059",
+        "0x94905e",
+        "0x949061",
+        "0x949063",
+        "0x949066",
+        "0x94906b",
+        "0x94906e",
+        "0x949075",
+        "0x949078",
+        "0x94907d",
+        "0x949082",
+        "0x949087",
+        "0x94908a",
+        "0x94908d",
+        "0x94908f",
+        "0x949092",
+        "0x949097",
+        "0x94909e",
+        "0x9490a9",
+        "0x9490ac",
+        "0x9490ae",
+        "0x9490b0",
+        "0x9490b3",
+        "0x9490ba",
+        "0x9490bd",
+        "0x9490c2",
+        "0x9490c7",
+        "0x9490cb",
+        "0x9490cc"
+      ]
+    },
+    {
+      "id": "0x956f20",
+      "binary": "game",
+      "function_rva": "0x956f20",
+      "instruction_rvas": [
+        "0x956f20",
+        "0x956f25",
+        "0x956f26",
+        "0x956f2a",
+        "0x956f31",
+        "0x956f35",
+        "0x956f38",
+        "0x956f3e",
+        "0x956f46",
+        "0x956f4c",
+        "0x956f50",
+        "0x956f57",
+        "0x956f5a",
+        "0x956f5c",
+        "0x956f5e",
+        "0x956f60",
+        "0x956f67",
+        "0x956f6a",
+        "0x956f6d",
+        "0x956f71",
+        "0x956f7c",
+        "0x956f7f",
+        "0x956f85",
+        "0x956f89",
+        "0x956f8d",
+        "0x956f94",
+        "0x956f98",
+        "0x956f9a",
+        "0x956f9e",
+        "0x956fa0",
+        "0x956fa2",
+        "0x956fa4",
+        "0x956fa6",
+        "0x956fad",
+        "0x956faf",
+        "0x956fb4",
+        "0x956fb9",
+        "0x956fbb",
+        "0x956fbe",
+        "0x956fc1",
+        "0x956fc3",
+        "0x956fc5",
+        "0x956fcb",
+        "0x956fcd",
+        "0x956fd3",
+        "0x956fdd",
+        "0x956fe1",
+        "0x956fe8",
+        "0x956fec",
+        "0x956ff3",
+        "0x956ff7",
+        "0x956ffe",
+        "0x957002",
+        "0x957009",
+        "0x95700d",
+        "0x957014",
+        "0x957018",
+        "0x95701f",
+        "0x957023",
+        "0x95702a",
+        "0x957031",
+        "0x957038",
+        "0x95703f",
+        "0x957046",
+        "0x95704e",
+        "0x957056",
+        "0x95705b",
+        "0x95705f",
+        "0x957060",
+        "0x957061",
+        "0x957069",
+        "0x957073",
+        "0x957077",
+        "0x95707c",
+        "0x957084",
+        "0x957087",
+        "0x95708d",
+        "0x957091",
+        "0x957096",
+        "0x95709b",
+        "0x9570a0",
+        "0x9570a4",
+        "0x9570a8",
+        "0x9570b0",
+        "0x9570b4",
+        "0x9570bc",
+        "0x9570c4",
+        "0x9570c8",
+        "0x9570cf",
+        "0x9570d2",
+        "0x9570d8",
+        "0x9570dd",
+        "0x9570e1",
+        "0x9570e2"
+      ]
+    },
+    {
+      "id": "0x957380",
+      "binary": "game",
+      "function_rva": "0x957380",
+      "instruction_rvas": [
+        "0x957380",
+        "0x957385",
+        "0x957386",
+        "0x95738a",
+        "0x95738d",
+        "0x957394",
+        "0x957397",
+        "0x95739a",
+        "0x9573a1",
+        "0x9573a4",
+        "0x9573a7",
+        "0x9573ae",
+        "0x9573b1",
+        "0x9573b4",
+        "0x9573bb",
+        "0x9573be",
+        "0x9573c1",
+        "0x9573c8",
+        "0x9573cb",
+        "0x9573ce",
+        "0x9573d2",
+        "0x9573d9",
+        "0x9573db",
+        "0x9573e1",
+        "0x9573e6",
+        "0x9573e8",
+        "0x9573ea",
+        "0x9573ee",
+        "0x9573f0",
+        "0x9573f5",
+        "0x9573f7",
+        "0x9573f9",
+        "0x9573fd",
+        "0x957407",
+        "0x95740a",
+        "0x95740f",
+        "0x957413",
+        "0x957414"
+      ]
+    },
+    {
+      "id": "0x906f20",
+      "binary": "game",
+      "function_rva": "0x906f20",
+      "instruction_rvas": [
+        "0x906f20",
+        "0x906f25",
+        "0x906f26",
+        "0x906f2d",
+        "0x906f31",
+        "0x906f34",
+        "0x906f39",
+        "0x906f3d",
+        "0x906f42",
+        "0x906f49",
+        "0x906f51",
+        "0x906f54",
+        "0x906f5b",
+        "0x906f62",
+        "0x906f64",
+        "0x906f67",
+        "0x906f6e",
+        "0x906f71",
+        "0x906f76",
+        "0x906f79",
+        "0x906f7c",
+        "0x906f81",
+        "0x906f89",
+        "0x906f8c",
+        "0x906f8f",
+        "0x906f91",
+        "0x906f99",
+        "0x906f9e",
+        "0x906fa0",
+        "0x906fa5",
+        "0x906fa8",
+        "0x906faa",
+        "0x906fad",
+        "0x906fb0",
+        "0x906fb2",
+        "0x906fb7",
+        "0x906fba",
+        "0x906fbc",
+        "0x906fbf",
+        "0x906fc2",
+        "0x906fc5",
+        "0x906fcd",
+        "0x906fd2",
+        "0x906fd7",
+        "0x906fdf",
+        "0x906fe2",
+        "0x906fe9",
+        "0x906fea"
+      ]
+    },
+    {
+      "id": "0x950b60",
+      "binary": "game",
+      "function_rva": "0x950b60",
+      "instruction_rvas": [
+        "0x950b60",
+        "0x950b63",
+        "0x950b67",
+        "0x950b68",
+        "0x950b69",
+        "0x950b6a",
+        "0x950b6c",
+        "0x950b6e",
+        "0x950b75",
+        "0x950b7c",
+        "0x950b83",
+        "0x950b87",
+        "0x950b8b",
+        "0x950b8f",
+        "0x950b93",
+        "0x950b96",
+        "0x950b99",
+        "0x950b9b",
+        "0x950ba3",
+        "0x950ba6",
+        "0x950baa",
+        "0x950baf",
+        "0x950bb2",
+        "0x950bb7",
+        "0x950bbf",
+        "0x950bc2",
+        "0x950bc6",
+        "0x950bc9",
+        "0x950bcb",
+        "0x950bd4",
+        "0x950bd9",
+        "0x950bdc",
+        "0x950be1",
+        "0x950be4",
+        "0x950be8",
+        "0x950beb",
+        "0x950bed",
+        "0x950bf6",
+        "0x950bfb",
+        "0x950bfe",
+        "0x950c03",
+        "0x950c06",
+        "0x950c0a",
+        "0x950c0d",
+        "0x950c0f",
+        "0x950c12",
+        "0x950c1a",
+        "0x950c1e",
+        "0x950c23",
+        "0x950c2c",
+        "0x950c2f",
+        "0x950c36",
+        "0x950c39",
+        "0x950c3b",
+        "0x950c40",
+        "0x950c43",
+        "0x950c4a",
+        "0x950c4d",
+        "0x950c53",
+        "0x950c56",
+        "0x950c59",
+        "0x950c5b",
+        "0x950c60",
+        "0x950c68",
+        "0x950c6d",
+        "0x950c74",
+        "0x950c76",
+        "0x950c78",
+        "0x950c7d",
+        "0x950c80",
+        "0x950c87",
+        "0x950c8f",
+        "0x950c97",
+        "0x950ca0",
+        "0x950ca4",
+        "0x950cad",
+        "0x950cb4",
+        "0x950cb7",
+        "0x950cbc",
+        "0x950cbf",
+        "0x950cc4",
+        "0x950cc7",
+        "0x950cca",
+        "0x950cd2",
+        "0x950cd6",
+        "0x950cdb",
+        "0x950cde",
+        "0x950ce2",
+        "0x950ce7",
+        "0x950cea",
+        "0x950cf1",
+        "0x950cf6",
+        "0x950cfd",
+        "0x950d02",
+        "0x950d04",
+        "0x950d0a",
+        "0x950d0c",
+        "0x950d0e",
+        "0x950d16",
+        "0x950d1d",
+        "0x950d22",
+        "0x950d27",
+        "0x950d2a",
+        "0x950d2c",
+        "0x950d31",
+        "0x950d34",
+        "0x950d3a",
+        "0x950d3c",
+        "0x950d44",
+        "0x950d4b",
+        "0x950d4e",
+        "0x950d55",
+        "0x950d5c",
+        "0x950d60",
+        "0x950d63",
+        "0x950d68",
+        "0x950d6d",
+        "0x950d72",
+        "0x950d75",
+        "0x950d79",
+        "0x950d7b",
+        "0x950d80",
+        "0x950d85",
+        "0x950d8b",
+        "0x950d90",
+        "0x950d93",
+        "0x950d98",
+        "0x950d9d",
+        "0x950da1",
+        "0x950da3",
+        "0x950da8",
+        "0x950dab",
+        "0x950dae",
+        "0x950db5",
+        "0x950db7",
+        "0x950dbb",
+        "0x950dbf",
+        "0x950dc2",
+        "0x950dc6",
+        "0x950dca",
+        "0x950dd0",
+        "0x950dd5",
+        "0x950dd8",
+        "0x950ddd",
+        "0x950de2",
+        "0x950de7",
+        "0x950dea",
+        "0x950ded",
+        "0x950df0",
+        "0x950df3",
+        "0x950df8",
+        "0x950dfb",
+        "0x950dfe",
+        "0x950e03",
+        "0x950e06",
+        "0x950e09",
+        "0x950e0c",
+        "0x950e0f",
+        "0x950e14",
+        "0x950e17",
+        "0x950e1c",
+        "0x950e1f",
+        "0x950e22",
+        "0x950e27",
+        "0x950e2a",
+        "0x950e2d",
+        "0x950e30",
+        "0x950e33",
+        "0x950e38",
+        "0x950e3a",
+        "0x950e3f",
+        "0x950e43",
+        "0x950e46",
+        "0x950e4c",
+        "0x950e4f",
+        "0x950e53",
+        "0x950e5a",
+        "0x950e61",
+        "0x950e68",
+        "0x950e6e",
+        "0x950e71",
+        "0x950e79",
+        "0x950e7e",
+        "0x950e84",
+        "0x950e8c",
+        "0x950e91",
+        "0x950e96",
+        "0x950e99",
+        "0x950ea2",
+        "0x950eab",
+        "0x950eb0",
+        "0x950eb5",
+        "0x950eb9",
+        "0x950ebb",
+        "0x950ec0",
+        "0x950ec3",
+        "0x950ec6",
+        "0x950ecd",
+        "0x950ecf",
+        "0x950ed3",
+        "0x950ed7",
+        "0x950eda",
+        "0x950ede",
+        "0x950ee2",
+        "0x950ee8",
+        "0x950eec",
+        "0x950ef1",
+        "0x950ef4",
+        "0x950ef9",
+        "0x950efb",
+        "0x950f00",
+        "0x950f03",
+        "0x950f06",
+        "0x950f09",
+        "0x950f0c",
+        "0x950f11",
+        "0x950f14",
+        "0x950f17",
+        "0x950f1b",
+        "0x950f22",
+        "0x950f29",
+        "0x950f30",
+        "0x950f36",
+        "0x950f3d",
+        "0x950f40",
+        "0x950f46",
+        "0x950f4d",
+        "0x950f54",
+        "0x950f58",
+        "0x950f60",
+        "0x950f63",
+        "0x950f66",
+        "0x950f69",
+        "0x950f6e",
+        "0x950f70",
+        "0x950f72",
+        "0x950f75",
+        "0x950f77",
+        "0x950f7c",
+        "0x950f7f",
+        "0x950f85",
+        "0x950f8c",
+        "0x950f90",
+        "0x950f94",
+        "0x950f96",
+        "0x950f9c",
+        "0x950fa2",
+        "0x950fa5",
+        "0x950fa9",
+        "0x950fac",
+        "0x950fae",
+        "0x950fb1",
+        "0x950fb7",
+        "0x950fbf",
+        "0x950fc4",
+        "0x950fc7",
+        "0x950fd0",
+        "0x950fd4",
+        "0x950fd9",
+        "0x950fdc",
+        "0x950fe3",
+        "0x950fe6",
+        "0x950fec",
+        "0x950fef",
+        "0x950ff2",
+        "0x950ff4",
+        "0x950ff9",
+        "0x951001",
+        "0x951006",
+        "0x95100e",
+        "0x951013",
+        "0x95101b",
+        "0x951020",
+        "0x951024",
+        "0x951029",
+        "0x95102d",
+        "0x951031",
+        "0x951035",
+        "0x95103e",
+        "0x951043",
+        "0x951048",
+        "0x95104d",
+        "0x951052",
+        "0x951057",
+        "0x95105a",
+        "0x95105f",
+        "0x951062",
+        "0x951069",
+        "0x95106c",
+        "0x951072",
+        "0x951075",
+        "0x951078",
+        "0x95107a",
+        "0x95107f",
+        "0x951087",
+        "0x95108c",
+        "0x951094",
+        "0x951098",
+        "0x9510a0",
+        "0x9510a8",
+        "0x9510b0",
+        "0x9510b4",
+        "0x9510b8",
+        "0x9510bc",
+        "0x9510bf",
+        "0x9510c4",
+        "0x9510cc",
+        "0x9510cf",
+        "0x9510d4",
+        "0x9510d9",
+        "0x9510e0",
+        "0x9510e2",
+        "0x9510e7",
+        "0x9510ef",
+        "0x9510f7",
+        "0x9510fc",
+        "0x951101",
+        "0x951109",
+        "0x95110e",
+        "0x951111",
+        "0x951114",
+        "0x951117",
+        "0x95111a",
+        "0x95111f",
+        "0x951128",
+        "0x95112a",
+        "0x95112c",
+        "0x95112e",
+        "0x951135",
+        "0x95113a",
+        "0x951141",
+        "0x951146",
+        "0x95114b",
+        "0x95114e",
+        "0x951150",
+        "0x951155",
+        "0x95115f",
+        "0x951162",
+        "0x951165",
+        "0x951169",
+        "0x95116c",
+        "0x951170",
+        "0x951173",
+        "0x951176",
+        "0x95117d",
+        "0x951184",
+        "0x951186",
+        "0x95118a",
+        "0x95118e",
+        "0x951191",
+        "0x951195",
+        "0x951199",
+        "0x95119b",
+        "0x95119e",
+        "0x9511a3",
+        "0x9511ac",
+        "0x9511af",
+        "0x9511b7",
+        "0x9511bf",
+        "0x9511c8",
+        "0x9511d0",
+        "0x9511d4",
+        "0x9511d9",
+        "0x9511de",
+        "0x9511e1",
+        "0x9511e3",
+        "0x9511e5",
+        "0x9511e6",
+        "0x9511e7",
+        "0x9511e8",
+        "0x9511e9",
+        "0x9511ef",
+        "0x9511f5"
+      ]
+    },
+    {
+      "id": "0x9526d0",
+      "binary": "game",
+      "function_rva": "0x9526d0",
+      "instruction_rvas": [
+        "0x9526d0",
+        "0x9526d5",
+        "0x9526d6",
+        "0x9526da",
+        "0x9526e2",
+        "0x9526e5",
+        "0x9526ec",
+        "0x9526ee",
+        "0x9526f2",
+        "0x9526f7",
+        "0x9526f9",
+        "0x9526fb",
+        "0x952702",
+        "0x952706",
+        "0x95270d",
+        "0x95270f",
+        "0x952717",
+        "0x952719",
+        "0x952720",
+        "0x952727",
+        "0x95272e",
+        "0x952730",
+        "0x952733",
+        "0x952735",
+        "0x952737",
+        "0x95273c",
+        "0x95273e",
+        "0x952745",
+        "0x952748",
+        "0x95274a",
+        "0x95274e",
+        "0x952750",
+        "0x952757",
+        "0x95275a",
+        "0x952761",
+        "0x952764",
+        "0x952769",
+        "0x95276d",
+        "0x95276e"
+      ]
+    },
+    {
+      "id": "0x9570f0",
+      "binary": "game",
+      "function_rva": "0x9570f0",
+      "instruction_rvas": [
+        "0x9570f0",
+        "0x9570f5",
+        "0x9570f6",
+        "0x9570fa",
+        "0x9570fd",
+        "0x957100",
+        "0x957105",
+        "0x957107",
+        "0x95710a",
+        "0x95710c",
+        "0x95710f",
+        "0x957111",
+        "0x957114",
+        "0x95711a",
+        "0x95711f",
+        "0x957125",
+        "0x95712c",
+        "0x957130",
+        "0x957136",
+        "0x957139",
+        "0x95713e",
+        "0x957142",
+        "0x957143",
+        "0x957148",
+        "0x95714d",
+        "0x957153",
+        "0x95715a",
+        "0x95715e",
+        "0x957164",
+        "0x957167",
+        "0x95716c",
+        "0x957170",
+        "0x957171",
+        "0x957176",
+        "0x95717a",
+        "0x957180",
+        "0x957187",
+        "0x95718c",
+        "0x95718e",
+        "0x957193",
+        "0x957198",
+        "0x95719d",
+        "0x9571a4",
+        "0x9571a9",
+        "0x9571ae",
+        "0x9571b7",
+        "0x9571c0",
+        "0x9571c3",
+        "0x9571c7",
+        "0x9571cc",
+        "0x9571cf",
+        "0x9571d6",
+        "0x9571d9",
+        "0x9571de",
+        "0x9571e3",
+        "0x9571e7",
+        "0x9571e9",
+        "0x9571ee",
+        "0x9571f1",
+        "0x9571f4",
+        "0x9571fb",
+        "0x9571fd",
+        "0x957201",
+        "0x957205",
+        "0x957208",
+        "0x95720c",
+        "0x957210",
+        "0x957216",
+        "0x95721b",
+        "0x957220",
+        "0x957225",
+        "0x95722a",
+        "0x957231",
+        "0x957236",
+        "0x95723f",
+        "0x957248",
+        "0x95724b",
+        "0x957251",
+        "0x957254",
+        "0x95725b",
+        "0x95725f",
+        "0x957264",
+        "0x957268",
+        "0x95726d",
+        "0x957270",
+        "0x957277",
+        "0x95727a",
+        "0x95727f",
+        "0x957284",
+        "0x957288",
+        "0x95728a",
+        "0x95728f",
+        "0x957292",
+        "0x957295",
+        "0x95729c",
+        "0x95729e",
+        "0x9572a2",
+        "0x9572a6",
+        "0x9572a9",
+        "0x9572ad",
+        "0x9572b1",
+        "0x9572b7",
+        "0x9572bc",
+        "0x9572c1",
+        "0x9572c6",
+        "0x9572cb",
+        "0x9572d2",
+        "0x9572d7",
+        "0x9572dc",
+        "0x9572e5",
+        "0x9572ee",
+        "0x9572f1",
+        "0x9572f9",
+        "0x9572fe",
+        "0x957302",
+        "0x957307",
+        "0x95730a",
+        "0x957311",
+        "0x957314",
+        "0x957319",
+        "0x95731e",
+        "0x957322",
+        "0x957324",
+        "0x957329",
+        "0x95732c",
+        "0x95732f",
+        "0x957336",
+        "0x957338",
+        "0x95733c",
+        "0x957340",
+        "0x957343",
+        "0x957347",
+        "0x95734b",
+        "0x95734d",
+        "0x957352",
+        "0x957355",
+        "0x957358",
+        "0x95735b",
+        "0x957360",
+        "0x957364",
+        "0x957365",
+        "0x957366",
+        "0x95736c",
+        "0x957372"
+      ]
+    },
+    {
+      "id": "0x907740",
+      "binary": "game",
+      "function_rva": "0x907740",
+      "instruction_rvas": [
+        "0x907740",
+        "0x907745",
+        "0x907749"
+      ]
+    },
+    {
+      "id": "0x949d40",
+      "binary": "game",
+      "function_rva": "0x949d40",
+      "instruction_rvas": [
+        "0x949d40",
+        "0x949d45",
+        "0x949d46",
+        "0x949d4a",
+        "0x949d4d",
+        "0x949d50",
+        "0x949d55",
+        "0x949d57",
+        "0x949d5a",
+        "0x949d60",
+        "0x949d63",
+        "0x949d69",
+        "0x949d6c",
+        "0x949d72",
+        "0x949d75",
+        "0x949d7b",
+        "0x949d7e",
+        "0x949d87",
+        "0x949d8c",
+        "0x949d92",
+        "0x949d97",
+        "0x949d9c",
+        "0x949da5",
+        "0x949da8",
+        "0x949dad",
+        "0x949db2",
+        "0x949db6",
+        "0x949db8",
+        "0x949dbd",
+        "0x949dc0",
+        "0x949dc3",
+        "0x949dca",
+        "0x949dcc",
+        "0x949dd0",
+        "0x949dd4",
+        "0x949dd7",
+        "0x949ddb",
+        "0x949ddf",
+        "0x949de5",
+        "0x949dea",
+        "0x949ded",
+        "0x949df2",
+        "0x949df6",
+        "0x949df7",
+        "0x949dfc",
+        "0x949dff",
+        "0x949e02",
+        "0x949e05",
+        "0x949e07",
+        "0x949e0d",
+        "0x949e0f",
+        "0x949e12",
+        "0x949e17",
+        "0x949e1b",
+        "0x949e1c",
+        "0x949e21",
+        "0x949e26",
+        "0x949e28",
+        "0x949e2f",
+        "0x949e33",
+        "0x949e35",
+        "0x949e38",
+        "0x949e3d",
+        "0x949e41",
+        "0x949e42",
+        "0x949e47",
+        "0x949e4b",
+        "0x949e51",
+        "0x949e58",
+        "0x949e5d",
+        "0x949e62",
+        "0x949e65",
+        "0x949e6c",
+        "0x949e6f",
+        "0x949e74",
+        "0x949e79",
+        "0x949e7c",
+        "0x949e83",
+        "0x949e86",
+        "0x949e8b",
+        "0x949e90",
+        "0x949e93",
+        "0x949e9a",
+        "0x949e9d",
+        "0x949ea2",
+        "0x949ea7",
+        "0x949eab",
+        "0x949eac",
+        "0x949ead"
+      ]
+    },
+    {
+      "id": "0x906a80",
+      "binary": "game",
+      "function_rva": "0x906a80",
+      "instruction_rvas": [
+        "0x906a80",
+        "0x906a82",
+        "0x906a89",
+        "0x906a8d",
+        "0x906a90",
+        "0x906a98",
+        "0x906a9c",
+        "0x906a9e",
+        "0x906aa2",
+        "0x906aa6",
+        "0x906aaa",
+        "0x906ab0",
+        "0x906ab3",
+        "0x906ab6",
+        "0x906abc",
+        "0x906ac1",
+        "0x906ac3",
+        "0x906ac9",
+        "0x906acd",
+        "0x906ad1",
+        "0x906adb",
+        "0x906ae1",
+        "0x906ae6",
+        "0x906aeb",
+        "0x906af3",
+        "0x906afc",
+        "0x906b04",
+        "0x906b0a",
+        "0x906b0f",
+        "0x906b17",
+        "0x906b1f",
+        "0x906b25",
+        "0x906b2b",
+        "0x906b32",
+        "0x906b35",
+        "0x906b38",
+        "0x906b3e",
+        "0x906b46",
+        "0x906b4e",
+        "0x906b56",
+        "0x906b5e",
+        "0x906b67",
+        "0x906b6b",
+        "0x906b74",
+        "0x906b7b",
+        "0x906b84",
+        "0x906b8b",
+        "0x906b94",
+        "0x906b9d",
+        "0x906ba6",
+        "0x906baf",
+        "0x906bb0",
+        "0x906bb4",
+        "0x906bb7",
+        "0x906bbb",
+        "0x906bbf",
+        "0x906bc4",
+        "0x906bc7",
+        "0x906bc9",
+        "0x906bcd",
+        "0x906bcf",
+        "0x906bd7",
+        "0x906bdc",
+        "0x906bdf",
+        "0x906be2",
+        "0x906be6",
+        "0x906be9",
+        "0x906beb",
+        "0x906bf1",
+        "0x906bf6",
+        "0x906bfa",
+        "0x906bfe",
+        "0x906c02",
+        "0x906c06",
+        "0x906c0b",
+        "0x906c0e",
+        "0x906c13",
+        "0x906c17",
+        "0x906c1c",
+        "0x906c1f",
+        "0x906c24",
+        "0x906c28",
+        "0x906c2c",
+        "0x906c30",
+        "0x906c34",
+        "0x906c39",
+        "0x906c3d",
+        "0x906c41",
+        "0x906c44",
+        "0x906c49",
+        "0x906c4e",
+        "0x906c52",
+        "0x906c56",
+        "0x906c5b",
+        "0x906c5f",
+        "0x906c63",
+        "0x906c67",
+        "0x906c6a",
+        "0x906c70",
+        "0x906c74",
+        "0x906c76",
+        "0x906c7a",
+        "0x906c7d",
+        "0x906c81",
+        "0x906c85",
+        "0x906c8b",
+        "0x906c90",
+        "0x906c94",
+        "0x906c99",
+        "0x906ca0",
+        "0x906ca4",
+        "0x906ca7",
+        "0x906cab",
+        "0x906cb0",
+        "0x906cb5",
+        "0x906cba",
+        "0x906cbe",
+        "0x906cc3",
+        "0x906cc9",
+        "0x906cce",
+        "0x906cd4",
+        "0x906cd9",
+        "0x906cdc",
+        "0x906cdf",
+        "0x906ce3",
+        "0x906ce7",
+        "0x906ced",
+        "0x906cf3",
+        "0x906cf6",
+        "0x906cfb",
+        "0x906cff",
+        "0x906d03",
+        "0x906d07",
+        "0x906d0b",
+        "0x906d0f",
+        "0x906d15",
+        "0x906d19",
+        "0x906d1e",
+        "0x906d22",
+        "0x906d27",
+        "0x906d2b",
+        "0x906d2f",
+        "0x906d33",
+        "0x906d37",
+        "0x906d3b",
+        "0x906d3f",
+        "0x906d43",
+        "0x906d47",
+        "0x906d4b",
+        "0x906d4f",
+        "0x906d52",
+        "0x906d54",
+        "0x906d58",
+        "0x906d5a",
+        "0x906d5d",
+        "0x906d60",
+        "0x906d64",
+        "0x906d67",
+        "0x906d6b",
+        "0x906d6e",
+        "0x906d74",
+        "0x906d76",
+        "0x906d7a",
+        "0x906d7e",
+        "0x906d80",
+        "0x906d84",
+        "0x906d87",
+        "0x906d8c",
+        "0x906d8e",
+        "0x906d92",
+        "0x906d96",
+        "0x906d9b",
+        "0x906d9f",
+        "0x906da3",
+        "0x906da5",
+        "0x906da9",
+        "0x906dad",
+        "0x906daf",
+        "0x906db0",
+        "0x906db4",
+        "0x906db6",
+        "0x906db9",
+        "0x906dbd",
+        "0x906dc1",
+        "0x906dc3",
+        "0x906dc6",
+        "0x906dc8",
+        "0x906dcb",
+        "0x906dce",
+        "0x906dd2",
+        "0x906dd4",
+        "0x906dd8",
+        "0x906de0",
+        "0x906de3",
+        "0x906de6",
+        "0x906de9",
+        "0x906ded",
+        "0x906def",
+        "0x906df2",
+        "0x906df8",
+        "0x906e01",
+        "0x906e0a",
+        "0x906e13",
+        "0x906e1c",
+        "0x906e25",
+        "0x906e2d",
+        "0x906e35",
+        "0x906e3d",
+        "0x906e45",
+        "0x906e4d",
+        "0x906e56",
+        "0x906e59",
+        "0x906e5b",
+        "0x906e60",
+        "0x906e62",
+        "0x906e67",
+        "0x906e6a",
+        "0x906e6c",
+        "0x906e6f",
+        "0x906e72",
+        "0x906e74",
+        "0x906e79",
+        "0x906e7c",
+        "0x906e7e",
+        "0x906e81",
+        "0x906e84",
+        "0x906e87",
+        "0x906e8c",
+        "0x906e91",
+        "0x906e99",
+        "0x906ea1",
+        "0x906ea5",
+        "0x906ea9",
+        "0x906eb1",
+        "0x906eb4",
+        "0x906eb8",
+        "0x906eba",
+        "0x906ebe",
+        "0x906ec2",
+        "0x906ec9",
+        "0x906ed0",
+        "0x906ed7",
+        "0x906ed9"
+      ]
+    },
+    {
+      "id": "0x8988c0",
+      "binary": "game",
+      "function_rva": "0x8988c0",
+      "instruction_rvas": [
+        "0x8988c0",
+        "0x8988c3",
+        "0x8988c4",
+        "0x8988cb",
+        "0x8988d2",
+        "0x8988d5",
+        "0x8988d8",
+        "0x8988de",
+        "0x8988e2",
+        "0x8988e8",
+        "0x8988f0",
+        "0x8988f4",
+        "0x8988f8",
+        "0x8988fd",
+        "0x898901",
+        "0x898905",
+        "0x89890a",
+        "0x89890d",
+        "0x898915",
+        "0x89891a",
+        "0x89891e",
+        "0x898929",
+        "0x89892e",
+        "0x898933",
+        "0x898935",
+        "0x898938",
+        "0x89893a",
+        "0x89893e",
+        "0x898945",
+        "0x89894a",
+        "0x898951",
+        "0x898954",
+        "0x898959",
+        "0x898961",
+        "0x898968",
+        "0x898970",
+        "0x898973",
+        "0x898975",
+        "0x89897a",
+        "0x89897c",
+        "0x898981",
+        "0x898984",
+        "0x898986",
+        "0x898989",
+        "0x89898c",
+        "0x89898e",
+        "0x898993",
+        "0x898996",
+        "0x898998",
+        "0x89899b",
+        "0x89899e",
+        "0x8989a1",
+        "0x8989a9",
+        "0x8989ae",
+        "0x8989b6",
+        "0x8989be",
+        "0x8989c2",
+        "0x8989c4",
+        "0x8989cc",
+        "0x8989cf",
+        "0x8989d2",
+        "0x8989d9",
+        "0x8989db",
+        "0x8989df",
+        "0x8989e3",
+        "0x8989e6",
+        "0x8989ea",
+        "0x8989ee",
+        "0x8989f4",
+        "0x8989f9",
+        "0x8989fe",
+        "0x898a0a",
+        "0x898a16",
+        "0x898a1e",
+        "0x898a26",
+        "0x898a2b",
+        "0x898a30",
+        "0x898a35",
+        "0x898a38",
+        "0x898a3a",
+        "0x898a3f",
+        "0x898a49",
+        "0x898a4c",
+        "0x898a4f",
+        "0x898a53",
+        "0x898a56",
+        "0x898a5a",
+        "0x898a5d",
+        "0x898a60",
+        "0x898a67",
+        "0x898a6e",
+        "0x898a70",
+        "0x898a74",
+        "0x898a78",
+        "0x898a7b",
+        "0x898a7f",
+        "0x898a83",
+        "0x898a85",
+        "0x898a88",
+        "0x898a8d",
+        "0x898a95",
+        "0x898a97",
+        "0x898a9f",
+        "0x898aa6",
+        "0x898aa7",
+        "0x898aa8",
+        "0x898aad",
+        "0x898ab4",
+        "0x898ab5",
+        "0x898ab6"
+      ]
+    },
+    {
+      "id": "0x907150",
+      "binary": "game",
+      "function_rva": "0x907150",
+      "instruction_rvas": [
+        "0x907150",
+        "0x907153",
+        "0x907157",
+        "0x907158",
+        "0x907159",
+        "0x90715a",
+        "0x90715c",
+        "0x90715e",
+        "0x907165",
+        "0x90716c",
+        "0x907170",
+        "0x907173",
+        "0x907177",
+        "0x90717c",
+        "0x907180",
+        "0x907185",
+        "0x907189",
+        "0x90718e",
+        "0x907193",
+        "0x90719b",
+        "0x9071a3",
+        "0x9071ab",
+        "0x9071b3",
+        "0x9071bb",
+        "0x9071c0",
+        "0x9071c4",
+        "0x9071ca",
+        "0x9071ce",
+        "0x9071d1",
+        "0x9071da",
+        "0x9071e3",
+        "0x9071e7",
+        "0x9071f0",
+        "0x9071f4",
+        "0x9071fd",
+        "0x907206",
+        "0x90720b",
+        "0x907211",
+        "0x907218",
+        "0x90721f",
+        "0x907227",
+        "0x90722f",
+        "0x907230",
+        "0x907233",
+        "0x907237",
+        "0x90723d",
+        "0x907240",
+        "0x907243",
+        "0x907249",
+        "0x907250",
+        "0x907252",
+        "0x907255",
+        "0x90725b",
+        "0x90725e",
+        "0x907262",
+        "0x907266",
+        "0x90726b",
+        "0x907270",
+        "0x907275",
+        "0x907278",
+        "0x90727d",
+        "0x907280",
+        "0x907283",
+        "0x907288",
+        "0x90728c",
+        "0x907290",
+        "0x907293",
+        "0x907297",
+        "0x90729c",
+        "0x9072a1",
+        "0x9072a6",
+        "0x9072aa",
+        "0x9072af",
+        "0x9072b4",
+        "0x9072b9",
+        "0x9072c1",
+        "0x9072ca",
+        "0x9072ce",
+        "0x9072d0",
+        "0x9072d3",
+        "0x9072da",
+        "0x9072dd",
+        "0x9072e0",
+        "0x9072e2",
+        "0x9072e8",
+        "0x9072ec",
+        "0x9072f0",
+        "0x9072f2",
+        "0x9072f9",
+        "0x907300",
+        "0x907305",
+        "0x907309",
+        "0x90730e",
+        "0x907310",
+        "0x907314",
+        "0x907319",
+        "0x90731d",
+        "0x90731f",
+        "0x907327",
+        "0x90732b",
+        "0x907333",
+        "0x907337",
+        "0x90733c",
+        "0x907341",
+        "0x907345",
+        "0x90734b",
+        "0x90734d",
+        "0x907351",
+        "0x907353",
+        "0x90735a",
+        "0x907361",
+        "0x907366",
+        "0x90736a",
+        "0x90736f",
+        "0x907376",
+        "0x90737b",
+        "0x907382",
+        "0x907386",
+        "0x90738a",
+        "0x90738f",
+        "0x907394",
+        "0x90739b",
+        "0x9073a0",
+        "0x9073a7",
+        "0x9073aa",
+        "0x9073af",
+        "0x9073b6",
+        "0x9073bb",
+        "0x9073bf",
+        "0x9073c4",
+        "0x9073c6",
+        "0x9073c8",
+        "0x9073cc",
+        "0x9073cf",
+        "0x9073d1",
+        "0x9073d4",
+        "0x9073d9",
+        "0x9073dc",
+        "0x9073de",
+        "0x9073e1",
+        "0x9073e4",
+        "0x9073e6",
+        "0x9073ec",
+        "0x9073f0",
+        "0x9073f2",
+        "0x9073f5",
+        "0x9073f8",
+        "0x9073fb",
+        "0x907400",
+        "0x907405",
+        "0x90740d",
+        "0x907410",
+        "0x907414",
+        "0x907419",
+        "0x90741e",
+        "0x907423",
+        "0x907428",
+        "0x90742d",
+        "0x907432",
+        "0x907437",
+        "0x90743c",
+        "0x907444",
+        "0x90744c",
+        "0x90744f",
+        "0x907451",
+        "0x907453",
+        "0x907454",
+        "0x907455",
+        "0x907456"
+      ]
+    },
+    {
+      "id": "0x907c00",
+      "binary": "game",
+      "function_rva": "0x907c00",
+      "instruction_rvas": [
+        "0x907c00",
+        "0x907c04",
+        "0x907c08",
+        "0x907c0d",
+        "0x907c11",
+        "0x907c16",
+        "0x907c18",
+        "0x907c1c"
+      ]
+    },
+    {
+      "id": "0x955a90",
+      "binary": "game",
+      "function_rva": "0x955a90",
+      "instruction_rvas": [
+        "0x955a90",
+        "0x955a92",
+        "0x955a93",
+        "0x955a9b",
+        "0x955aa2",
+        "0x955aa9",
+        "0x955aac",
+        "0x955ab1",
+        "0x955ab3",
+        "0x955ab9",
+        "0x955ac0",
+        "0x955ac8",
+        "0x955aca",
+        "0x955acd",
+        "0x955acf",
+        "0x955ad5",
+        "0x955ad7",
+        "0x955adb",
+        "0x955ae1",
+        "0x955ae3",
+        "0x955aea",
+        "0x955af1",
+        "0x955af3",
+        "0x955afa",
+        "0x955afc",
+        "0x955aff",
+        "0x955b02",
+        "0x955b04",
+        "0x955b0a",
+        "0x955b11",
+        "0x955b14",
+        "0x955b16",
+        "0x955b19",
+        "0x955b1c",
+        "0x955b23",
+        "0x955b26",
+        "0x955b28",
+        "0x955b2b",
+        "0x955b30",
+        "0x955b32",
+        "0x955b39",
+        "0x955b40",
+        "0x955b43",
+        "0x955b48",
+        "0x955b4a",
+        "0x955b50",
+        "0x955b56",
+        "0x955b5a",
+        "0x955b5b",
+        "0x955b5e",
+        "0x955b60",
+        "0x955b62",
+        "0x955b65",
+        "0x955b67",
+        "0x955b6a",
+        "0x955b6d",
+        "0x955b71",
+        "0x955b7a",
+        "0x955b7c",
+        "0x955b81",
+        "0x955b83",
+        "0x955b86",
+        "0x955b88",
+        "0x955b8f",
+        "0x955b91",
+        "0x955b93",
+        "0x955b95",
+        "0x955b9c",
+        "0x955b9e",
+        "0x955ba5",
+        "0x955bac",
+        "0x955bae",
+        "0x955bb0",
+        "0x955bb2",
+        "0x955bb4",
+        "0x955bbc",
+        "0x955bbf",
+        "0x955bc7",
+        "0x955bcc",
+        "0x955bcf",
+        "0x955bd1",
+        "0x955bd7",
+        "0x955bdd",
+        "0x955be2",
+        "0x955be5",
+        "0x955bee",
+        "0x955bf3",
+        "0x955bf9",
+        "0x955c02",
+        "0x955c0a",
+        "0x955c10",
+        "0x955c14",
+        "0x955c19",
+        "0x955c1e",
+        "0x955c23",
+        "0x955c27",
+        "0x955c29",
+        "0x955c2e",
+        "0x955c31",
+        "0x955c34",
+        "0x955c3b",
+        "0x955c3d",
+        "0x955c41",
+        "0x955c45",
+        "0x955c48",
+        "0x955c4c",
+        "0x955c50",
+        "0x955c56",
+        "0x955c5b",
+        "0x955c5f",
+        "0x955c62",
+        "0x955c6a",
+        "0x955c6f",
+        "0x955c77",
+        "0x955c80",
+        "0x955c84",
+        "0x955c8d",
+        "0x955c96",
+        "0x955c9f",
+        "0x955ca6",
+        "0x955caf",
+        "0x955cb8",
+        "0x955cc1",
+        "0x955cc4",
+        "0x955ccd",
+        "0x955cd3",
+        "0x955cd7",
+        "0x955cde",
+        "0x955ce2",
+        "0x955ce7",
+        "0x955cee",
+        "0x955cf2",
+        "0x955cfb",
+        "0x955cff",
+        "0x955d08",
+        "0x955d0c",
+        "0x955d11",
+        "0x955d19",
+        "0x955d1d",
+        "0x955d22",
+        "0x955d27",
+        "0x955d2c",
+        "0x955d2f",
+        "0x955d33",
+        "0x955d37",
+        "0x955d3c",
+        "0x955d40",
+        "0x955d45",
+        "0x955d49",
+        "0x955d4d",
+        "0x955d4f",
+        "0x955d53",
+        "0x955d5a",
+        "0x955d61",
+        "0x955d64",
+        "0x955d67",
+        "0x955d6a",
+        "0x955d6f",
+        "0x955d73",
+        "0x955d75",
+        "0x955d79",
+        "0x955d7e",
+        "0x955d83",
+        "0x955d88",
+        "0x955d8e",
+        "0x955d93",
+        "0x955d98",
+        "0x955d9c",
+        "0x955da0",
+        "0x955da8",
+        "0x955dac",
+        "0x955db0",
+        "0x955db8",
+        "0x955dbd",
+        "0x955dc2",
+        "0x955dc7",
+        "0x955dcc",
+        "0x955dd1",
+        "0x955dd5",
+        "0x955dda",
+        "0x955dde",
+        "0x955de1",
+        "0x955de3",
+        "0x955de6",
+        "0x955deb",
+        "0x955dee",
+        "0x955df0",
+        "0x955df3",
+        "0x955df6",
+        "0x955df8",
+        "0x955dfb",
+        "0x955e00",
+        "0x955e03",
+        "0x955e05",
+        "0x955e08",
+        "0x955e0b",
+        "0x955e0e",
+        "0x955e13",
+        "0x955e18",
+        "0x955e21",
+        "0x955e26",
+        "0x955e2f",
+        "0x955e38",
+        "0x955e41",
+        "0x955e46",
+        "0x955e4a",
+        "0x955e51",
+        "0x955e54",
+        "0x955e5a",
+        "0x955e5d",
+        "0x955e60",
+        "0x955e62",
+        "0x955e67",
+        "0x955e70",
+        "0x955e75",
+        "0x955e7a",
+        "0x955e7f",
+        "0x955e82",
+        "0x955e89",
+        "0x955e8c",
+        "0x955e92",
+        "0x955e95",
+        "0x955e98",
+        "0x955e9a",
+        "0x955e9f",
+        "0x955ea7",
+        "0x955eac",
+        "0x955eb0",
+        "0x955eb4",
+        "0x955eb9",
+        "0x955ebe",
+        "0x955ec1",
+        "0x955ec8",
+        "0x955ecb",
+        "0x955ed1",
+        "0x955ed4",
+        "0x955ed7",
+        "0x955ed9",
+        "0x955ede",
+        "0x955ee6",
+        "0x955eeb",
+        "0x955ef0",
+        "0x955ef5",
+        "0x955efa",
+        "0x955eff",
+        "0x955f04",
+        "0x955f08",
+        "0x955f0d",
+        "0x955f10",
+        "0x955f14",
+        "0x955f19",
+        "0x955f1d",
+        "0x955f24",
+        "0x955f2b",
+        "0x955f2f",
+        "0x955f36",
+        "0x955f3b",
+        "0x955f43",
+        "0x955f4b",
+        "0x955f4e",
+        "0x955f56",
+        "0x955f5b",
+        "0x955f5d",
+        "0x955f62",
+        "0x955f67",
+        "0x955f6b",
+        "0x955f6d",
+        "0x955f72",
+        "0x955f77",
+        "0x955f79",
+        "0x955f7c",
+        "0x955f82",
+        "0x955f84",
+        "0x955f88",
+        "0x955f8b",
+        "0x955f90",
+        "0x955f95",
+        "0x955f9a",
+        "0x955f9f",
+        "0x955fa6",
+        "0x955faf",
+        "0x955fb8",
+        "0x955fc1",
+        "0x955fca",
+        "0x955fd3",
+        "0x955fdc",
+        "0x955fe5",
+        "0x955fee",
+        "0x955ff6",
+        "0x955ffe",
+        "0x956000",
+        "0x956004",
+        "0x95600e",
+        "0x956012",
+        "0x956015",
+        "0x956018",
+        "0x95601b",
+        "0x95601f",
+        "0x956022",
+        "0x956026",
+        "0x956028",
+        "0x95602d",
+        "0x956031",
+        "0x956036",
+        "0x95603a",
+        "0x956041",
+        "0x956043",
+        "0x956046",
+        "0x95604a",
+        "0x95604d",
+        "0x956050",
+        "0x956054",
+        "0x956059",
+        "0x95605d",
+        "0x956062",
+        "0x956069",
+        "0x95606c",
+        "0x95606e",
+        "0x956071",
+        "0x956076",
+        "0x956079",
+        "0x95607b",
+        "0x95607e",
+        "0x956081",
+        "0x956083",
+        "0x956089",
+        "0x95608d",
+        "0x95608f",
+        "0x956092",
+        "0x956095",
+        "0x956098",
+        "0x95609f",
+        "0x9560a4",
+        "0x9560a9",
+        "0x9560b0",
+        "0x9560b5",
+        "0x9560b7",
+        "0x9560bd",
+        "0x9560c0",
+        "0x9560c7",
+        "0x9560cd",
+        "0x9560d0",
+        "0x9560d9",
+        "0x9560de",
+        "0x9560e8",
+        "0x9560ed",
+        "0x9560f3",
+        "0x9560f8",
+        "0x9560fd",
+        "0x956106",
+        "0x95610b",
+        "0x956110",
+        "0x956114",
+        "0x956116",
+        "0x95611b",
+        "0x95611e",
+        "0x956121",
+        "0x956128",
+        "0x95612a",
+        "0x95612e",
+        "0x956132",
+        "0x956135",
+        "0x956139",
+        "0x95613d",
+        "0x956143",
+        "0x956148",
+        "0x95614f",
+        "0x956154",
+        "0x95615b",
+        "0x956160",
+        "0x956162",
+        "0x956168",
+        "0x95616b",
+        "0x956172",
+        "0x956178",
+        "0x95617b",
+        "0x956184",
+        "0x956189",
+        "0x95618f",
+        "0x956197",
+        "0x95619c",
+        "0x9561a1",
+        "0x9561aa",
+        "0x9561af",
+        "0x9561b4",
+        "0x9561b8",
+        "0x9561ba",
+        "0x9561bf",
+        "0x9561c2",
+        "0x9561c5",
+        "0x9561cc",
+        "0x9561ce",
+        "0x9561d2",
+        "0x9561d6",
+        "0x9561d9",
+        "0x9561dd",
+        "0x9561e1",
+        "0x9561e7",
+        "0x9561ec",
+        "0x9561f3",
+        "0x9561f8",
+        "0x9561ff",
+        "0x956204",
+        "0x956206",
+        "0x95620c",
+        "0x95620f",
+        "0x956216",
+        "0x95621c",
+        "0x956222",
+        "0x956227",
+        "0x95622a",
+        "0x956233",
+        "0x956238",
+        "0x95623c",
+        "0x956242",
+        "0x956249",
+        "0x95624d",
+        "0x956256",
+        "0x95625b",
+        "0x956260",
+        "0x956265",
+        "0x956269",
+        "0x95626b",
+        "0x956270",
+        "0x956273",
+        "0x956276",
+        "0x95627d",
+        "0x95627f",
+        "0x956283",
+        "0x956287",
+        "0x95628a",
+        "0x95628e",
+        "0x956292",
+        "0x956298",
+        "0x95629d",
+        "0x9562a4",
+        "0x9562a7",
+        "0x9562aa",
+        "0x9562ad",
+        "0x9562b0",
+        "0x9562b6",
+        "0x9562bc",
+        "0x9562c2",
+        "0x9562c9",
+        "0x9562cf",
+        "0x9562d3",
+        "0x9562da",
+        "0x9562dd",
+        "0x9562e3",
+        "0x9562ea",
+        "0x9562ed",
+        "0x9562f0",
+        "0x9562f4",
+        "0x9562fb",
+        "0x956300",
+        "0x956307",
+        "0x95630c",
+        "0x95630e",
+        "0x956314",
+        "0x956317",
+        "0x95631e",
+        "0x956324",
+        "0x95632b",
+        "0x956330",
+        "0x956334",
+        "0x95633a",
+        "0x956341",
+        "0x956346",
+        "0x95634d",
+        "0x956351",
+        "0x956356",
+        "0x95635f",
+        "0x956368",
+        "0x95636d",
+        "0x956372",
+        "0x956377",
+        "0x95637b",
+        "0x95637d",
+        "0x956382",
+        "0x956385",
+        "0x956388",
+        "0x95638f",
+        "0x956391",
+        "0x956395",
+        "0x956399",
+        "0x95639c",
+        "0x9563a0",
+        "0x9563a4",
+        "0x9563aa",
+        "0x9563af",
+        "0x9563b6",
+        "0x9563b9",
+        "0x9563bc",
+        "0x9563bf",
+        "0x9563c2",
+        "0x9563c8",
+        "0x9563ce",
+        "0x9563d4",
+        "0x9563db",
+        "0x9563e1",
+        "0x9563e5",
+        "0x9563ec",
+        "0x9563ef",
+        "0x9563f1",
+        "0x9563f8",
+        "0x9563fb",
+        "0x9563fe",
+        "0x956402",
+        "0x956409",
+        "0x95640d",
+        "0x956411",
+        "0x956418",
+        "0x95641b",
+        "0x95641d",
+        "0x956421",
+        "0x956423",
+        "0x956426",
+        "0x956428",
+        "0x95642b",
+        "0x956431",
+        "0x956433",
+        "0x956438",
+        "0x95643d",
+        "0x95643f",
+        "0x956442",
+        "0x956445",
+        "0x956447",
+        "0x95644a",
+        "0x956450",
+        "0x956453",
+        "0x956459",
+        "0x956463",
+        "0x956467",
+        "0x95646e",
+        "0x956472",
+        "0x956479",
+        "0x95647d",
+        "0x956484",
+        "0x956488",
+        "0x95648f",
+        "0x956493",
+        "0x95649a",
+        "0x95649e",
+        "0x9564a5",
+        "0x9564a9",
+        "0x9564b0",
+        "0x9564b7",
+        "0x9564be",
+        "0x9564c5",
+        "0x9564cc",
+        "0x9564d4",
+        "0x9564dc",
+        "0x9564de",
+        "0x9564e6",
+        "0x9564f0",
+        "0x9564f4",
+        "0x9564f9",
+        "0x956501",
+        "0x956504",
+        "0x95650a",
+        "0x95650e",
+        "0x956513",
+        "0x956518",
+        "0x95651d",
+        "0x956521",
+        "0x956525",
+        "0x95652d",
+        "0x956531",
+        "0x956539",
+        "0x956541",
+        "0x956545",
+        "0x95654c",
+        "0x95654f",
+        "0x956555",
+        "0x956558",
+        "0x95655d",
+        "0x956561",
+        "0x956568",
+        "0x95656e",
+        "0x956571",
+        "0x956574",
+        "0x956577",
+        "0x95657c",
+        "0x956583",
+        "0x956588",
+        "0x95658a",
+        "0x956590",
+        "0x956593",
+        "0x95659a",
+        "0x9565a0",
+        "0x9565a7",
+        "0x9565ac",
+        "0x9565b0",
+        "0x9565b6",
+        "0x9565bd",
+        "0x9565c2",
+        "0x9565c9",
+        "0x9565cd",
+        "0x9565d2",
+        "0x9565db",
+        "0x9565e4",
+        "0x9565e9",
+        "0x9565ee",
+        "0x9565f3",
+        "0x9565f7",
+        "0x9565f9",
+        "0x9565fe",
+        "0x956601",
+        "0x956604",
+        "0x95660b",
+        "0x95660d",
+        "0x956611",
+        "0x956615",
+        "0x956618",
+        "0x95661c",
+        "0x956620",
+        "0x956626",
+        "0x95662b",
+        "0x956632",
+        "0x956635",
+        "0x956638",
+        "0x95663b",
+        "0x95663e",
+        "0x956641",
+        "0x956646",
+        "0x95664b",
+        "0x956652",
+        "0x956657",
+        "0x956659",
+        "0x95665f",
+        "0x956665",
+        "0x956667",
+        "0x95666b",
+        "0x956671",
+        "0x956673",
+        "0x95667a",
+        "0x956681",
+        "0x956683",
+        "0x956685",
+        "0x956688",
+        "0x95668d",
+        "0x95668f",
+        "0x956691",
+        "0x956694",
+        "0x956699",
+        "0x95669e",
+        "0x9566a4",
+        "0x9566ab",
+        "0x9566ae",
+        "0x9566b0",
+        "0x9566b3",
+        "0x9566b6",
+        "0x9566bd",
+        "0x9566c0",
+        "0x9566c2",
+        "0x9566c5",
+        "0x9566ca",
+        "0x9566cc",
+        "0x9566d3",
+        "0x9566da",
+        "0x9566dd",
+        "0x9566e2",
+        "0x9566e4",
+        "0x9566ea",
+        "0x9566ee",
+        "0x9566f5",
+        "0x9566f7",
+        "0x9566fb",
+        "0x956702",
+        "0x956706",
+        "0x956708",
+        "0x95670f",
+        "0x956711",
+        "0x956713",
+        "0x956715",
+        "0x956717",
+        "0x95671a",
+        "0x95671f",
+        "0x956721",
+        "0x956723",
+        "0x956726",
+        "0x95672b",
+        "0x95672d",
+        "0x956732",
+        "0x956736",
+        "0x95673d",
+        "0x95673f",
+        "0x956742",
+        "0x956745",
+        "0x956749",
+        "0x95674c",
+        "0x956751",
+        "0x956757",
+        "0x95675c",
+        "0x956763",
+        "0x956768",
+        "0x95676d",
+        "0x956772",
+        "0x956778",
+        "0x95677d",
+        "0x956780",
+        "0x956785",
+        "0x95678a",
+        "0x95678f",
+        "0x956794",
+        "0x95679b",
+        "0x95679e",
+        "0x9567a3",
+        "0x9567a5",
+        "0x9567ab",
+        "0x9567af",
+        "0x9567b3",
+        "0x9567ba",
+        "0x9567be",
+        "0x9567c0",
+        "0x9567c8",
+        "0x9567cd",
+        "0x9567cf",
+        "0x9567d5",
+        "0x9567d7",
+        "0x9567dc",
+        "0x9567e2",
+        "0x9567e4",
+        "0x9567e6",
+        "0x9567ed",
+        "0x9567f0",
+        "0x9567f5",
+        "0x9567f7",
+        "0x9567fd",
+        "0x956801",
+        "0x956807",
+        "0x956809",
+        "0x956810",
+        "0x956817",
+        "0x956819",
+        "0x95681b",
+        "0x95681d",
+        "0x956822",
+        "0x956824",
+        "0x956827",
+        "0x95682a",
+        "0x956831",
+        "0x956837",
+        "0x95683c",
+        "0x95683f",
+        "0x956842",
+        "0x956845",
+        "0x95684a",
+        "0x95684c",
+        "0x95684e",
+        "0x956856",
+        "0x956859",
+        "0x95685c",
+        "0x956861",
+        "0x956866",
+        "0x956868",
+        "0x95686b",
+        "0x956870",
+        "0x956872",
+        "0x956878",
+        "0x95687f",
+        "0x956884",
+        "0x956887",
+        "0x956890",
+        "0x956895",
+        "0x95689b",
+        "0x95689e",
+        "0x9568a6",
+        "0x9568ac",
+        "0x9568b5",
+        "0x9568b9",
+        "0x9568be",
+        "0x9568c3",
+        "0x9568c8",
+        "0x9568cc",
+        "0x9568d2",
+        "0x9568d7",
+        "0x9568da",
+        "0x9568dd",
+        "0x9568e4",
+        "0x9568ea",
+        "0x9568ee",
+        "0x9568f2",
+        "0x9568f5",
+        "0x9568f9",
+        "0x9568fd",
+        "0x956903",
+        "0x956908",
+        "0x95690c",
+        "0x956910",
+        "0x956916",
+        "0x95691d",
+        "0x956920",
+        "0x956922",
+        "0x956925",
+        "0x956928",
+        "0x95692b",
+        "0x95692e",
+        "0x956933",
+        "0x956938",
+        "0x95693e",
+        "0x956943",
+        "0x956948",
+        "0x956951",
+        "0x956954",
+        "0x956959",
+        "0x95695e",
+        "0x956962",
+        "0x956964",
+        "0x956969",
+        "0x95696c",
+        "0x95696f",
+        "0x956976",
+        "0x956978",
+        "0x95697c",
+        "0x956980",
+        "0x956983",
+        "0x956987",
+        "0x95698b",
+        "0x95698d",
+        "0x956992",
+        "0x95699a",
+        "0x9569a2",
+        "0x9569aa",
+        "0x9569b1",
+        "0x9569b2",
+        "0x9569b3",
+        "0x9569b4",
+        "0x9569ba",
+        "0x9569c0",
+        "0x9569c6",
+        "0x9569cc",
+        "0x9569d2",
+        "0x9569d8",
+        "0x9569de"
+      ]
+    },
+    {
+      "id": "0x9526b0",
+      "binary": "game",
+      "function_rva": "0x9526b0",
+      "instruction_rvas": [
+        "0x9526b0",
+        "0x9526b5",
+        "0x9526bb"
+      ]
+    },
+    {
+      "id": "0x956b70",
+      "binary": "game",
+      "function_rva": "0x956b70",
+      "instruction_rvas": [
+        "0x956b70",
+        "0x956b75",
+        "0x956b7a",
+        "0x956b7f",
+        "0x956b80",
+        "0x956b85",
+        "0x956b8c",
+        "0x956b8f",
+        "0x956b94",
+        "0x956b97",
+        "0x956b9d",
+        "0x956ba0",
+        "0x956ba6",
+        "0x956bac",
+        "0x956bb1",
+        "0x956bb9",
+        "0x956bbc",
+        "0x956bc0",
+        "0x956bc6",
+        "0x956bcd",
+        "0x956bd0",
+        "0x956bd4",
+        "0x956bda",
+        "0x956be3",
+        "0x956bec",
+        "0x956bf2",
+        "0x956bf7",
+        "0x956bfc",
+        "0x956c01",
+        "0x956c05",
+        "0x956c07",
+        "0x956c0c",
+        "0x956c0f",
+        "0x956c12",
+        "0x956c19",
+        "0x956c1b",
+        "0x956c1f",
+        "0x956c23",
+        "0x956c26",
+        "0x956c2a",
+        "0x956c2e",
+        "0x956c34",
+        "0x956c39",
+        "0x956c3c",
+        "0x956c41",
+        "0x956c43",
+        "0x956c48",
+        "0x956c4b",
+        "0x956c4e",
+        "0x956c51",
+        "0x956c54",
+        "0x956c59",
+        "0x956c60",
+        "0x956c65",
+        "0x956c68",
+        "0x956c6b",
+        "0x956c6e",
+        "0x956c71",
+        "0x956c76",
+        "0x956c7b",
+        "0x956c7e",
+        "0x956c84",
+        "0x956c87",
+        "0x956c8c",
+        "0x956c91",
+        "0x956c96",
+        "0x956c9d",
+        "0x956ca2",
+        "0x956ca7",
+        "0x956cb0",
+        "0x956cb6",
+        "0x956cbf",
+        "0x956cc2",
+        "0x956cc5",
+        "0x956cc9",
+        "0x956cce",
+        "0x956cd3",
+        "0x956cd7",
+        "0x956cd9",
+        "0x956cde",
+        "0x956ce1",
+        "0x956ce4",
+        "0x956ceb",
+        "0x956ced",
+        "0x956cf1",
+        "0x956cf5",
+        "0x956cf8",
+        "0x956cfc",
+        "0x956d00",
+        "0x956d06",
+        "0x956d0b",
+        "0x956d0e",
+        "0x956d16",
+        "0x956d1b",
+        "0x956d1d",
+        "0x956d22",
+        "0x956d25",
+        "0x956d28",
+        "0x956d2b",
+        "0x956d2e",
+        "0x956d33",
+        "0x956d35",
+        "0x956d3c",
+        "0x956d41",
+        "0x956d44",
+        "0x956d47",
+        "0x956d4a",
+        "0x956d4d",
+        "0x956d52",
+        "0x956d5a",
+        "0x956d61",
+        "0x956d69",
+        "0x956d6e",
+        "0x956d76",
+        "0x956d7e",
+        "0x956d86",
+        "0x956d8e",
+        "0x956d93",
+        "0x956d99",
+        "0x956d9f",
+        "0x956da5",
+        "0x956daa",
+        "0x956dae",
+        "0x956db3",
+        "0x956db8",
+        "0x956dbd",
+        "0x956dc0",
+        "0x956dc5",
+        "0x956dca",
+        "0x956dce",
+        "0x956dd3",
+        "0x956ddb",
+        "0x956de0",
+        "0x956de8",
+        "0x956ded",
+        "0x956df3",
+        "0x956dfb",
+        "0x956e01",
+        "0x956e07",
+        "0x956e0c",
+        "0x956e0f",
+        "0x956e14",
+        "0x956e19",
+        "0x956e1c",
+        "0x956e1f",
+        "0x956e22",
+        "0x956e25",
+        "0x956e2a",
+        "0x956e2f",
+        "0x956e34",
+        "0x956e39",
+        "0x956e3e",
+        "0x956e43",
+        "0x956e49",
+        "0x956e4c",
+        "0x956e51",
+        "0x956e56",
+        "0x956e59",
+        "0x956e5c",
+        "0x956e5f",
+        "0x956e62",
+        "0x956e67",
+        "0x956e6f",
+        "0x956e72",
+        "0x956e77",
+        "0x956e7a",
+        "0x956e7f",
+        "0x956e82",
+        "0x956e85",
+        "0x956e88",
+        "0x956e8b",
+        "0x956e93",
+        "0x956e97",
+        "0x956e9b",
+        "0x956e9f",
+        "0x956ea2",
+        "0x956ea3",
+        "0x956ea8",
+        "0x956eae"
+      ]
+    },
+    {
+      "id": "0x949880",
+      "binary": "game",
+      "function_rva": "0x949880",
+      "instruction_rvas": [
+        "0x949880",
+        "0x949885",
+        "0x949886",
+        "0x94988a",
+        "0x94988d",
+        "0x949890",
+        "0x949895",
+        "0x949898",
+        "0x94989e",
+        "0x9498a2",
+        "0x9498a8",
+        "0x9498af",
+        "0x9498b4",
+        "0x9498b9",
+        "0x9498be",
+        "0x9498c1",
+        "0x9498c4",
+        "0x9498c6",
+        "0x9498c9",
+        "0x9498ce",
+        "0x9498d5",
+        "0x9498d8",
+        "0x9498da",
+        "0x9498dc",
+        "0x9498df",
+        "0x9498e6",
+        "0x9498e9",
+        "0x9498ee",
+        "0x9498f3",
+        "0x9498f8",
+        "0x9498fb",
+        "0x9498fe",
+        "0x949900",
+        "0x949903",
+        "0x949908",
+        "0x94990f",
+        "0x94991a",
+        "0x94991d",
+        "0x949924",
+        "0x949926",
+        "0x949928",
+        "0x94992b",
+        "0x949932",
+        "0x949935",
+        "0x94993a",
+        "0x94993f",
+        "0x949943",
+        "0x949944"
+      ]
+    },
+    {
+      "id": "0x9440e0",
+      "binary": "game",
+      "function_rva": "0x9440e0",
+      "instruction_rvas": [
+        "0x9440e0",
+        "0x9440e5",
+        "0x9440e6",
+        "0x9440ed",
+        "0x9440f0",
+        "0x9440f3",
+        "0x9440f7",
+        "0x9440fc",
+        "0x9440fe",
+        "0x944100",
+        "0x944102",
+        "0x94410a",
+        "0x944111",
+        "0x944112",
+        "0x944113",
+        "0x944117",
+        "0x94411f",
+        "0x944127",
+        "0x94412c",
+        "0x94412e",
+        "0x944134",
+        "0x944137",
+        "0x944139",
+        "0x944140",
+        "0x944147",
+        "0x94414e",
+        "0x944151",
+        "0x944153",
+        "0x944157",
+        "0x944160",
+        "0x944167",
+        "0x94416a",
+        "0x94416f",
+        "0x944171",
+        "0x944177",
+        "0x94417b",
+        "0x94417e",
+        "0x944180",
+        "0x944187",
+        "0x94418a",
+        "0x94418f",
+        "0x944191",
+        "0x944197",
+        "0x94419b",
+        "0x9441a0",
+        "0x9441a3",
+        "0x9441a8",
+        "0x9441ad",
+        "0x9441b2",
+        "0x9441b7",
+        "0x9441b9",
+        "0x9441be",
+        "0x9441c1",
+        "0x9441c9",
+        "0x9441d0",
+        "0x9441d3",
+        "0x9441d8",
+        "0x9441da",
+        "0x9441dc",
+        "0x9441e1",
+        "0x9441e6",
+        "0x9441eb",
+        "0x9441f3",
+        "0x9441f6",
+        "0x9441fd",
+        "0x944200",
+        "0x944205",
+        "0x944207",
+        "0x944209",
+        "0x944210",
+        "0x944218",
+        "0x94421d",
+        "0x944222",
+        "0x944225",
+        "0x94422a",
+        "0x944232",
+        "0x944237",
+        "0x94423c",
+        "0x944241",
+        "0x944243",
+        "0x944246",
+        "0x944248",
+        "0x94424c",
+        "0x944253",
+        "0x94425b",
+        "0x944260",
+        "0x944268",
+        "0x94426f",
+        "0x944274",
+        "0x94427c",
+        "0x94427e",
+        "0x944286",
+        "0x94428e",
+        "0x944295",
+        "0x944296"
+      ]
+    }
+  ],
+  "coverage_row": "C-ROOT",
+  "scope_functions": [
+    "0x957420",
+    "0x957680",
+    "0x9526b0",
+    "0x9526d0",
+    "0x949f00",
+    "0x949180",
+    "0x957380",
+    "0x955a90",
+    "0x956b20",
+    "0x956b70",
+    "0x956f20"
+  ],
+  "source_maps": {
+    "movement": "e9be0ad828f2a8c4cc442db4a835c4401dbeee6bebfdda1bcc19fef9c3ffd32e",
+    "human-states": "cad21849e18fecc4eba4af7fad64304b6e12c960625082befaaaeb09ff02d6de",
+    "fine": "5575378bfb05f75523ad8ca448a794fbda507e43c55a5050f5908ea1ba90616b",
+    "path-acceptance": "9f8114e59a93d73ed401b29afa6ecb6a78e3e4da0f151a294f33dad2536c8f8e",
+    "path-lines": "fcdbcd2093570cda49dd9bafe9b452ffc4e4746a943fae2c6a4e4c3eace565f4",
+    "decision-catalog-q1a": "a260207864e87eaf61c356e9ee9eb2b8875372f0fe6487735adacdeae62f9cd0"
+  },
+  "claim_limit": "Reviewed root/location/restoration policy inputs and issued boundaries, with explicit unresolved contracts. No complete per-instruction or scanner-body census is claimed. Existing evidence and new focused game export are retained.",
+  "deferred_scope": "Remaining Q1b complete census and non-prototype contract blanks are deferred. Q1z will select only prototype-facing rows without erasing this checkpoint."
+}
