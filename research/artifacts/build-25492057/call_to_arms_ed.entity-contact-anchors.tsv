@@ -1,0 +1,9 @@
+# RVA	Label	Filter	Limit
+0x13d6688	contact_property_registry	all	2048
+0x13d7da0	contact_post_tag	all	2048
+0x5a01c0	collider_mask_parse_callers	all	2048
+0x59f1c0	collider_profiles_load_callers	all	2048
+0x12f43a8	sphere_small_samples	all	2048
+0x12f43e0	sphere_large_samples	all	2048
+0x12f43a0	sphere_small_container	all	2048
+0x12f43d8	sphere_large_container	all	2048

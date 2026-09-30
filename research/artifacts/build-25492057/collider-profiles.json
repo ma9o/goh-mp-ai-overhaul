@@ -1,0 +1,2023 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "runtime_verified": false,
+  "scope": "One base gamelogic.pak member; sequential prior-parent inheritance, native defaults and additive masks. Category numbers are a model for an initially empty registry, not live observations. No include/mount/mod/attachment resolution. Native clear/-tag forms rejected because absent from this member.",
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/colliders.set",
+      "size": 9013,
+      "sha256": "13f3aa6ad42247a9f0a2dc7e8329ffa52bfc3250682078006b2709e2e13b139d"
+    }
+  ],
+  "profiles": [
+    {
+      "name": "nothing",
+      "line": 21,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": true,
+        "reject_collider_by_volume": false,
+        "colliderid": "nothing",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 0,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000000"
+      }
+    },
+    {
+      "name": "tree",
+      "line": 25,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "tree",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 1,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000000"
+      }
+    },
+    {
+      "name": "bush",
+      "line": 28,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "bush",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 2,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000000"
+      }
+    },
+    {
+      "name": "rock",
+      "line": 31,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "rock",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 3,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000000"
+      }
+    },
+    {
+      "name": "construction",
+      "line": 34,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "construction",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 4,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000000"
+      }
+    },
+    {
+      "name": "mine.ap",
+      "line": 37,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "mine.ap",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 5,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000000"
+      }
+    },
+    {
+      "name": "mine.at",
+      "line": 40,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "mine.at",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 6,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000000"
+      }
+    },
+    {
+      "name": "animal",
+      "line": 43,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": true,
+        "reject_collider_by_volume": false,
+        "colliderid": "human",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 7,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000000"
+      }
+    },
+    {
+      "name": "human",
+      "line": 47,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "bush",
+          "mine.ap",
+          "mine.ap.grenade"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": true,
+        "reject_collider_by_volume": false,
+        "colliderid": "human",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 7,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000124"
+      }
+    },
+    {
+      "name": "human_tpc",
+      "line": 52,
+      "parent": "human",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "bush",
+          "mine.ap",
+          "mine.ap.grenade"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": true,
+        "reject_collider_by_volume": false,
+        "colliderid": "human",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 7,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000124"
+      }
+    },
+    {
+      "name": "human.part",
+      "line": 57,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "bush"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "human",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 7,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000004"
+      }
+    },
+    {
+      "name": "chicken",
+      "line": 61,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "construction",
+          "rock",
+          "tree",
+          "human"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": true,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": true,
+        "colliderid": "stuff",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 9,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x0007fc9a"
+      }
+    },
+    {
+      "name": "sandbag",
+      "line": 68,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "sandbag",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 19,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000000"
+      }
+    },
+    {
+      "name": "tpc_camera",
+      "line": 71,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "construction",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "tpc_camera",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 20,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x000ffc10"
+      }
+    },
+    {
+      "name": "particle",
+      "line": 77,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "particle",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 21,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000000"
+      }
+    },
+    {
+      "name": "particle.small",
+      "line": 80,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "bush",
+          "human",
+          "vehicle",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "armored"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "particle",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 21,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x004f809c"
+      }
+    },
+    {
+      "name": "particle.big",
+      "line": 84,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [
+          "particle",
+          "human",
+          "bush",
+          "stuff"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "tree",
+          "bush",
+          "human",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "particle.big",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 23,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00200284",
+        "collidewith": "0x000ffc9e"
+      }
+    },
+    {
+      "name": "particle.construction",
+      "line": 89,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "human",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "construction",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 4,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x000ffc98"
+      }
+    },
+    {
+      "name": "particle.fire",
+      "line": 93,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "tree",
+          "human",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "particle.big"
+        ],
+        "pointcollider": true,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": true,
+        "colliderid": "flame",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 24,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x008ffc9a"
+      }
+    },
+    {
+      "name": "killzone",
+      "line": 99,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "human",
+          "cannon",
+          "cannon_small"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "killzone",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 25,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x00000c80"
+      }
+    },
+    {
+      "name": "stuff",
+      "line": 105,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "construction",
+          "rock",
+          "sandbag",
+          "tree"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "stuff",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 9,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x000ffc1a"
+      }
+    },
+    {
+      "name": "stuff.construction",
+      "line": 109,
+      "parent": "stuff",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "construction",
+          "rock",
+          "sandbag",
+          "tree"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "construction",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 4,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x000ffc1a"
+      }
+    },
+    {
+      "name": "grenade",
+      "line": 112,
+      "parent": "stuff",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "construction",
+          "rock",
+          "sandbag",
+          "tree",
+          "human",
+          "stuff",
+          "particle"
+        ],
+        "pointcollider": true,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": true,
+        "colliderid": "stuff",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 9,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x002ffe9a"
+      }
+    },
+    {
+      "name": "mine.ap.grenade",
+      "line": 117,
+      "parent": "grenade",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "construction",
+          "rock",
+          "sandbag",
+          "tree",
+          "human",
+          "stuff",
+          "particle"
+        ],
+        "pointcollider": true,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": true,
+        "colliderid": "mine.ap",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 5,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x002ffe9a"
+      }
+    },
+    {
+      "name": "ammo",
+      "line": 120,
+      "parent": "particle.big",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [
+          "particle",
+          "human",
+          "bush",
+          "stuff"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "tree",
+          "bush",
+          "human",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "stuff",
+          "particle",
+          "ammo"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": true,
+        "colliderid": "particle.big",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 23,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00200284",
+        "collidewith": "0x042ffe9e"
+      }
+    },
+    {
+      "name": "torpedo",
+      "line": 126,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "construction",
+          "rock",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "marine",
+          "marine.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": true,
+        "colliderid": "car",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 13,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x1827fc9e"
+      }
+    },
+    {
+      "name": "vehicle",
+      "line": 133,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "nothing",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 0,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affc9e"
+      }
+    },
+    {
+      "name": "moto",
+      "line": 144,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "moto",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 12,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "cannon",
+      "line": 148,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [
+          "cannon_small"
+        ],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame",
+          "tree"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "cannon",
+        "blocking": true,
+        "speed": 20.0,
+        "penetration": 0.30000001192092896
+      },
+      "category_index_if_initially_empty": 10,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000800",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e6",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "cannon_small",
+      "line": 158,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "cannon_small",
+        "blocking": true,
+        "speed": 20.0,
+        "penetration": 0.30000001192092896
+      },
+      "category_index_if_initially_empty": 11,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "car",
+      "line": 166,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "car",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 13,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "truck",
+      "line": 170,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [
+          "moto"
+        ],
+        "canpushbroken": [
+          "car",
+          "cannon",
+          "cannon_small"
+        ],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "truck",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 14,
+      "masks_if_initially_empty": {
+        "canpush": "0x00001000",
+        "canpushbroken": "0x00002c00",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "armored",
+      "line": 176,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [
+          "moto",
+          "car",
+          "cannon_small"
+        ],
+        "canpushbroken": [
+          "truck",
+          "cannon",
+          "cannon_small"
+        ],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame",
+          "vehicle"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "armored",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 15,
+      "masks_if_initially_empty": {
+        "canpush": "0x00003800",
+        "canpushbroken": "0x00004c00",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01e002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "tank.light",
+      "line": 183,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [
+          "moto",
+          "car",
+          "truck",
+          "cannon",
+          "cannon_small"
+        ],
+        "canpushbroken": [
+          "armored"
+        ],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "tank.light",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 16,
+      "masks_if_initially_empty": {
+        "canpush": "0x00007c00",
+        "canpushbroken": "0x00008000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "tank.medium",
+      "line": 189,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [
+          "moto",
+          "car",
+          "truck",
+          "cannon",
+          "cannon_small"
+        ],
+        "canpushbroken": [
+          "armored",
+          "tank.light"
+        ],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "tank.medium",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 17,
+      "masks_if_initially_empty": {
+        "canpush": "0x00007c00",
+        "canpushbroken": "0x00018000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "tank.heavy",
+      "line": 195,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [
+          "moto",
+          "car",
+          "truck",
+          "cannon",
+          "cannon_small",
+          "armored"
+        ],
+        "canpushbroken": [
+          "tank.light",
+          "tank.medium"
+        ],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "tank.heavy",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 18,
+      "masks_if_initially_empty": {
+        "canpush": "0x0000fc00",
+        "canpushbroken": "0x00030000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "train",
+      "line": 201,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "cannon",
+          "cannon_small"
+        ],
+        "canpushbroken": [],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "cannon",
+          "cannon_small"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "tank.heavy",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 18,
+      "masks_if_initially_empty": {
+        "canpush": "0x0003fc00",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a0fee4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "airborne",
+      "line": 207,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "tank.heavy",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 18,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "marine",
+      "line": 212,
+      "parent": "vehicle",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": true,
+        "colliderid": "armored",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 15,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "marine.heavy",
+      "line": 217,
+      "parent": "marine",
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy"
+        ],
+        "nocontactwith": [
+          "particle",
+          "particle.big",
+          "human",
+          "bush",
+          "stuff",
+          "mine.at",
+          "mine.ap",
+          "flame"
+        ],
+        "collidewith": [
+          "construction",
+          "rock",
+          "sandbag",
+          "cannon",
+          "cannon_small",
+          "moto",
+          "car",
+          "truck",
+          "armored",
+          "tank.light",
+          "tank.medium",
+          "tank.heavy",
+          "tree",
+          "bush",
+          "human",
+          "particle",
+          "particle.big",
+          "ammo",
+          "mine.at",
+          "mine.ap"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": true,
+        "reject_collider_by_volume": true,
+        "colliderid": "armored",
+        "blocking": true,
+        "speed": 10.0,
+        "penetration": 0.20000000298023224
+      },
+      "category_index_if_initially_empty": 15,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x0007fc00",
+        "nocontactwith": "0x01a002e4",
+        "collidewith": "0x04affcfe"
+      }
+    },
+    {
+      "name": "local",
+      "line": 221,
+      "parent": null,
+      "resolved": {
+        "canpush": [],
+        "canpushbroken": [],
+        "useramvolume": [],
+        "nocontactwith": [],
+        "collidewith": [
+          "local"
+        ],
+        "pointcollider": false,
+        "nocollideforstable": false,
+        "nocontactsatall": false,
+        "reject_collider_by_volume": false,
+        "colliderid": "local",
+        "blocking": false,
+        "speed": 0.0,
+        "penetration": 0.0
+      },
+      "category_index_if_initially_empty": 29,
+      "masks_if_initially_empty": {
+        "canpush": "0x00000000",
+        "canpushbroken": "0x00000000",
+        "useramvolume": "0x00000000",
+        "nocontactwith": "0x00000000",
+        "collidewith": "0x20000000"
+      }
+    }
+  ],
+  "category_insertion_order_if_initially_empty": [
+    "nothing",
+    "tree",
+    "bush",
+    "rock",
+    "construction",
+    "mine.ap",
+    "mine.at",
+    "human",
+    "mine.ap.grenade",
+    "stuff",
+    "cannon",
+    "cannon_small",
+    "moto",
+    "car",
+    "truck",
+    "armored",
+    "tank.light",
+    "tank.medium",
+    "tank.heavy",
+    "sandbag",
+    "tpc_camera",
+    "particle",
+    "vehicle",
+    "particle.big",
+    "flame",
+    "killzone",
+    "ammo",
+    "marine",
+    "marine.heavy",
+    "local"
+  ],
+  "native_default_profile": "nothing"
+}

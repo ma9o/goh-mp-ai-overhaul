@@ -81,7 +81,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [volume predicates/closest-result state/compound traversal](spatial-volumes-map-25492057.md), and
 [shape loading/entity updates/authored geometry](volume-producers-map-25492057.md), and
 [area lifetime/overlap events/worker queues](area-lifecycle-map-25492057.md), and
-[scene spatial state/automatic obstacles/contact dispatch](area-scene-map-25492057.md). Their open questions
+[scene spatial state/automatic obstacles/contact dispatch](area-scene-map-25492057.md), and
+[collider profiles/entity contacts/trace volume queries](entity-contact-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -430,19 +431,40 @@ are historical snapshots; this frontier tracks the continuing objective.
   handlersBEE460/BEE560 and complete join/destruction order remain open.
 - Scene spatial follow-up: A20 is current placement frame, A18 last area refresh
   (corrects prior field names). Slot33 incrementsA20; refresh-all always copies
-  it even when obstacle zones are skipped. Continue71F560 procedural refresh,
-  720070 patherC8 production,84FA80/8798D0/887760/A75CD0 revision consumers.
+  it even when obstacle zones are skipped. Contact pass maps71F560 procedural
+  refresh and720070 patherC8 production; continue captured callbacks/per-pather
+  storage and84FA80/8798D0/887760/A75CD0 revision consumers.
   Automatic720B40 fits combined/per-volume circle or sampledOBB clouds;
   CompoundObstacles bit25 and obstacle_ignore_height are bound, with bounded
-  authored declaration census. Follow795890 volume refresh, shape slot5,
-  terrain704380, pointappend723830 and mounted/inherited property resolution.
+  authored declaration census. Contact pass maps795890/795AF0 volume refresh,
+  TraceVolume slot4/5 and terrain704380/A3E8D0 sampling; follow underlying matrix,
+  sample-cache, face/support geometry and heightmap producers. Pointappend723830
+  is bounded as12-byte vector insertion. Mounted/inherited properties remain open.
   Seeds are50x50 radius5 spheres; worker storagecopy concatenates both banks
   and uses loop-index IDs. Follow second-bank preconditions and worker heightmap
   A3C2D0/modeA6D1D0, queued pather captures and8C2650/8C2BE0/8C2900 internals.
   Body overlap rows sort by cached ownerID and dispatch727520/727370 into stack
-  contact context727BD0. Follow actual727D60 resolver,727410 direction flags,
-  9843C0 exclusions,93BDD0 knockdown consumer and physical callbacks. Raw area,
+  contact context727BD0. Contact pass maps727D60 outer resolver,727410 direction
+  flags and9843C0 ancestry exclusions. Continue93BDD0 knockdown consumer and
+  physical callbacks below. Raw area,
   entity and link lifetimes need their owning-scene ordering established.
   Scene tickA1B320 prologue maps general-manager overlap tick after animation;
   full callees/later phases remain. Scale cap initializer45540 sets configurable
   g_maxEntityScale=10; full setter, bone updates and transform propagation open.
+- Entity contact follow-up: collider588 profile is88 bytes; native properties
+  CanPush/CanPushBroken/CollideWith/NoContactWith/UseRamVolume and Blocking are
+  bound. Basecolliders.set resolves41 profiles/30 categorytags; masks add through
+  inheritance and registry numbering depends on insertion history. Follow raw
+  profile lifetime/reload6964F0, default bindings, profile60 consumer and mounted
+  entity selection. Contact effects precede rechecking volume bit5/disabled flags;
+  729070/7295D0 passcontactdata to733690/733EC0 or chassis slot23. Map that solver,
+  batch733810/733880, material98/9C names/units, chassis3C0bit10 consumer and
+  slow_on_crush request29 reception; entityA2C/A30/A34 and ram flags producers.
+  TraceVolume interfaces are distinct from spatial eBoundingVolume: investigate
+  constructors/loaders, slot3 ray queries, support/solver5F81F0, face5F23E0,
+  spherecache5F4BE0/5F4060 (startup3A6E0/3A710), matrix/inverse helpers and revision
+  producers. Volume28bit6 displacement globals remain unnamed. TerrainA3E8D0 has
+  a full bilinear assembly implementation despite empty Ghidra C; investigate
+  signed16-bit cell construction/units and query bounds. Continue contact_effect,
+  in_hole and volume eventE4/E6 actions/reset/drain, simulation command28 reception,
+  SoftLinkableA68 coupling removal and owning-scene lifetime through callbacks.
