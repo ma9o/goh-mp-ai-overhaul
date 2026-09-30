@@ -368,8 +368,6 @@ Evidence: [catalog Q4](decision-catalog-25492057.md#q4--morale-events-and-freshn
 checked. Existing perception/ownership/flow/Q2 evidence is cited for joins.
 No game/editor execution or modification.
 
-## Open: next
-
 ### Q5. Unnamed brain fields read by decision code
 
 Blank: meaning, then freshness.
@@ -382,6 +380,25 @@ Blank: meaning, then freshness.
 - `+0x39C` bits read by decision code without a name (Q1 lists them).
 
 Done when each has a binding name or an explicit writer set.
+
+**Closed:** catalog Q5 identifies14C as a scheduled weapon-range cache,18 as
+the native attack-construction/issue timestamp,3E0 as a deferred equipment
+policy deadline, and39C low six bits as one inhibition counter. Remaining
+prototype flag rows have explicit writer sets and phase/ownership constraints.
+The constant check also corrects Q2/Q4's behavior-recovery bonus to+5;
+the earlier text is retained with an authoritative catalog correction.
+
+Evidence: [catalog Q5](decision-catalog-25492057.md#q5--prototype-field-meanings-and-native-writers),
+[map](../artifacts/build-25492057/decision-q5-map.json),
+[validation](../artifacts/build-25492057/decision-q5-validation.json).
+27 game entries,1,136 selected instruction locations,seven floats,three RTTI
+tables and two byte ranges checked. Existing notes/manifests supply the
+timestamp, deadline, aggregate and ownership joins. No full native census or
+runtime execution is claimed.
+
+## Open: next
+
+No active research items. Add the required status summary, commit it and stop.
 
 ## Open: later
 
@@ -453,6 +470,8 @@ remain usable evidence.
 - Q1a temporary ancestor-vector allocation/growth and allocator metadata: no remaining catalog meaning/freshness/output-contract blank; implementation parked.
 
 - Q4 downstream stats networking, damage attribution internals and foreign slot29 implementations: parked after event/receiver binding; they fill no remaining morale row blank.
+
+- Q5 inventory/ballistic range internals, UI control implementation and equipment-operation execution: parked at the first field/flag binding; resume only for a named prototype blank.
 
 ## Triage record
 

@@ -913,3 +913,157 @@ Consolidation sources: [flow](flow-map-25492057.md) and
 [manifest](../artifacts/build-25492057/ownership-map.json) for relationship and
 unusable bits; Q2 for shared human/client slots and client-mode gate. No new
 verifier, game/editor execution or editor analysis.
+
+## Q5 — prototype field meanings and native writers
+
+This additive section closes the Q5 blanks and corrects the provisional
+descriptions of +0x14C and flags0..5. All offsets below refer to the **brain**,
+unless another receiver is stated. P-call validity applies: copy these values
+during an admitted live brain callback; none grants ownership of its owner,
+inventory, squad, state or subject pointers.
+
+### Three fields
+
+| Row / access and reads | Meaning and domain | Native writers and freshness |
+|---|---|---|
+| I-TARGET-RADIUS; float32+0x14C; target ranking0x913736 and Advance0x8D1C50/0x8D2120 | **Cached weapon range**, rather than an independently configured radius. Binding: embedded task+0x150 is named weaponRangeQuantor (constructor0x902554, string0x10EA228). Worker0x904110 calls brain slot21 and stores its XMM0 result at0x90412A. Human/client slot21=0x9442E0 returns the maximum usable range found by its inventory weapon/missile query, starting at0; it is neither the chosen target's distance nor proof that the current weapon can fire. Range is in engine spatial units. | Constructor0x902678 writes0. Ordinary human slot23 first calls base0x9035E0: task+0x150 due check, reschedule bounds(1,1), positive skip count+0x1BC decremented, otherwise queue0x904110 through0xA19450 (lambda pointer0x10EA2B8). The scene's queued-work phase precedes decision dispatch, but this cache updates only when due/unskipped. Inventory/ammunition changes can make it stale until then. Q2 client slot23 is empty, so it does not inherit this scheduled freshness promise. |
+| I-ADVANCE-TIMESTAMP; uint32+0x18; Advance0x8D25FF/0x8D2682 | **Last successful native attack construction/issue time**, an inferred functional name supported by the diagnostic eHumanBrain::TryAttackEnemy. It is not a last-shot or last-hit receipt.0x9449E0 first constructs a firing target through0x912D60; only a nonempty result updates the counter. | Base constructor0x9024ED initializes0. Human0x944BCE writes now immediately after successful target construction; geometry rejection, cooldown and empty-result paths do not. Shared-field vehicle code0x989A80 writes now at0x98A09E after its accepted attack path. These writes occur during native attack policy, independently of Advance's subsequent reads. No special no-attack sentinel check is made by the reviewed age consumer. |
+| I-EQUIPMENT-DEADLINE; uint32+0x3E0; root0x9573D2/0x9573DB | **Deferred equipment/weapon preparation policy deadline**, functional name;0 is unarmed, otherwise an absolute simulation counter. It is not an equipment-ready result. | Human constructor0x941867 writes0.0x9442A0(brain,float duration in XMM1) arms now+convert(duration) only while field is0 (store0x9442CD); another arm request leaves an existing deadline unchanged. WeaponPrepare0x8D8310 arms0.1 at0x8D8388 in its delayed human branch. Attack crew-exit finish0x98EAE0 arms0.4+0.5·sample at0x98EB70. Soldier root's Interrupt, after scanner updates, checks nonzero/due, calls0x9440E0(brain,true), and clears at0x9573FD only when that helper returns false. |
+
+The human range query0x9442E0 visits inventory entries: weapon-tagged entries
+need resolved ammunition and a weapon-range query; missile-tagged entries use
+their available range record. It keeps the maximum and releases its temporary
+inventory view. The first meaningful producer is sufficient here; ammunition
+selection, inventory internals and ballistics remain parked. The old field ID
+I-TARGET-RADIUS is retained for cross-references.
+
+The exact Advance age comparisons refine the earlier single-threshold row:
+0x8D263C/0x8D26B2 use **10**;0x8D26FF uses **5** on its other branch. That
+branch first requires the separate order+0x58 age to exceed **3**
+(0x8D26F6). Order modes1/2 instead use the periodic engagement-query branch.
+All use the existing clock conversion0x65E710; there is no wall-clock promise.
+
+For +0x3E0,0x9440E0 first returns false when the actor's relevant inventory
+operation list is nonempty (0x7CCEB0). With restore=true, an existing right-hand
+weapon/missile is sufficient to return true; otherwise it can submit UseItem
+for a queried candidate, and still returns true if no candidate was found.
+Thus true leaves the deadline armed for later root interrupts, including when
+nothing was issued. The restore=false path can submit PutFromRight and is
+separate from the due root call. The producer and consumer are now joined;
+operation/FSM execution and general order completion remain deferred Q10.
+
+**Shared-constant correction to Q2/Q4:** file float0x10124B4 is **5.0**.
+Both0x941E2F→0x941E37 and0x944EB6→0x944EBE pass it to morale slot29.
+Consequently the behavior0→2 recovery bonus is **+5**, not the +30 written
+in the earlier Q2/Q4 tables. Those entries are retained; this correction is
+authoritative. Q5 validates the constant directly. This does not change the
+S<30 withdrawal threshold, casualty−60, damage multiplier20 or timed recovery.
+
+### Low bits are one counter
+
+Add **I-BRAIN-INHIBITION-COUNT**: uint32+0x39C bits0..5 form an unsigned
+six-bit count0..63. Base dispatch reads it as nonzero (0x903DBD and following
+mask); the individual I-BFLAG-0..5 rows are bit positions of this count, not
+six independent booleans.0x902A10(brain,DL) increments for nonzero and decrements
+for zero, replacing only the low six bits (0x902A3D). Its arithmetic wraps
+modulo64; it does not saturate or protect an unmatched release. On0→nonzero
+it also sets flag12 (0x902A5B).
+
+| Preserved row | Correct interpretation |
+|---|---|
+| I-BFLAG-0 | Count bit0, weight1. |
+| I-BFLAG-1 | Count bit1, weight2. |
+| I-BFLAG-2 | Count bit2, weight4. |
+| I-BFLAG-3 | Count bit3, weight8. |
+| I-BFLAG-4 | Count bit4, weight16. |
+| I-BFLAG-5 | Count bit5, weight32. |
+
+The constructor's0x08001000 at0x9026B4 initializes the count0, flag12 and
+follow_commander27. Brain slot15=0x902350 is the other count writer: it increments
+when flag19 is set, decrements when clear (0x90239B/0x9023B0), and sets12 on
+entry into inhibition (0x9023CF). Locking can also clear the owner's selected
+control bit and notify its slot59. The callback is invoked on flag19
+transitions, not once every decision.
+
+Its concrete causes are already in the preserved maps: incapacitation setter
+0x9259B0 mirrors vitality+0x174 bit1 into brain19 (0x925AC5) then calls15;
+human boarding/placement events0x1E/0x23 set19, and exit events0x1F/0x24
+clear it (0x93744F/0x93753B/0x93763E/0x93768D), with guarded callbacks.
+External control also balances0x902A10: inventory exchange gc.exam.begin
+0xAF84D0 adds, gc.exam.end0xAF8720 removes;0xAF96F0 forwards its Boolean;
+0xAF8310 removes on control teardown; manual-control change0xB7EDC0 removes
+from the previous brain and adds to the new one. These are synchronous native
+ownership/control transitions. Preserve the counter as a unit.
+
+### Other selected brain flags
+
+These rows name explicit native writer sets at the prototype boundary.
+Functional labels are inferences except the command binding follow_commander.
+All are mission-mutable and inline in the same live-brain uint32. Constructor
+initialization above applies to every row; masked stores preserve the others.
+
+| Row(s) | Meaning / read contract | Native writers and phase (instruction RVAs where newly joined) |
+|---|---|---|
+| I-BFLAG-6 | Direct-goal request active. |0x902FB0 sets;0x902F50 clears (Q3 policy callers and outcomes). Load token71 sets at0x909641. No arrival inference from a clear. |
+| I-BFLAG-7 | Squad task requests configured movement type/mode before moving. | Squad destination0x932970 first calls direct-goal, then replaces7 with(squad+0x1C8!=null) at0x932A2D/0x932D21. Direct-goal/clear reset7. |
+| I-BFLAG-8 | Fresh task / bypass first progress comparison. | Direct-goal sets8 at0x903020; idle event path sets0x94EEF8. Human task paths consume it by clearing0x94F04F/0x94F8AF; shared vehicle task0x9924EB does likewise. |
+| I-BFLAG-9 | Follow request active. |0x902B20 enables only when27 is set, simultaneously setting10/25; disable always clears9.0x902D80 clears on follow-completion/cover-user-task gates. Direct-goal/clear also clear9. |
+| I-BFLAG-10 | Fresh follow / bypass first progress comparison. |0x902B20 sets; consumed by human follow paths0x94B366/0x94F26F/0x94F9CF/0x951684 and shared vehicle0x992680. Clearing9 alone need not clear10. |
+| I-BFLAG-11 | Leave-idle policy latch, consumed by native state policy. | Setter0x902F00 replaces11 at0x902F35, rejecting an enable request under user control. Location selection0x952737 invokes it on leaving idle. Direct-goal/clear reset11. |
+| I-BFLAG-12 (added for count/order coexistence) | Default order stream enabled while no current overriding order; also set on inhibition entry. | Count callbacks above set12. Current-order setter0x9052F0 clears at0x905380 when installing an override, sets at0x9053BF for null; callback0x905710 checks it before default-stream execution. Native effect follows setter/counter transitions, not a periodic recomputation. |
+| I-BFLAG-13 | Eligible-enemy aggregate. | Base0x903B10 clears/rebuilds from subject list before interrupts;0x902DE0 also clears at0x902E61/0x902EA8 when marking/suppressing targets for Advance. |
+| I-BFLAG-14 | Attacking aggregate. | Base0x903B10, exact subject-derived stores in Q1a O-BASE-AGGREGATES. |
+| I-BFLAG-15 | Injury aggregate. | Same base clear/rebuild. |
+| I-BFLAG-16 | Threatening aggregate. | Same base clear/rebuild. |
+| I-BFLAG-17 | Own recent-threat age<10 aggregate. | Base0x903B9F/0x903DEE, sensor threat-age query; rebuilt per reached base pass. |
+| I-BFLAG-18 | Squad flag1 when attached, otherwise own17. | Base0x903DEE. Squad+0x10 is itself rebuilt by0x9309C0 from member metadata+0xB88; this is a cached squad summary, not a new live all-member query. |
+| I-BFLAG-19 (added as count producer input) | Incapacitation/boarding inhibition request; not synonymous with death. |0x925AC5 and four human event stores above, followed by15 only on a change. |
+| I-BFLAG-20 | Separate dispatch block; also forces current-order removal in0x905710. | Actor event0xD replaces20 from event+8!=0 at0x7F1D9F and notifies brain slot11. Final-death handler0x926B80 sets20 at0x926D97 and also notifies11. These synchronous event writers explain freshness without following their downstream chassis work. |
+| I-BFLAG-21 | Interrupt/state-change latch. | Base clears at0x903F70; state helpers0x912211/0x91226D/0x91258F set during the synchronous interrupt/deactivation walk. |
+| I-BFLAG-22 | Current candidate action label matched. | Base0x903F70 clears; label helper0x9121D8 sets when labels match. |
+| I-BFLAG-24 (added for output cancellation) | Inside current-order callback. |0x90578A sets immediately before the callback;0x90579D clears immediately after. Current-order setter uses it for deferred destruction (Q3), so externally replacing the whole flag word can break ownership. |
+| I-BFLAG-25 | Reconsider/update request. | Direct-goal0x902FB0, follow0x902B20, interrupt0x903FBB and explicit request0x903AC0 set;0x9035C3 clears before dispatching virtual35. Other retained event/action set sites:0x8CEDDE,0x8D173C,0x8D1BB6,0x94A6E2,0x94C469,0x94EE92/AB/DF,0x9529DD,0x980E2B,0x988D79,0x9891FD,0x98EF2A/6D. It can be set again during the same decision. |
+| I-BFLAG-27 | follow_commander command flag. | Default1; actor_state store0x99FED7 replaces. Squad creation/member/commander paths set0x92F33A/0x93015E/0x9302DE/0x9306EF; control follow path sets0xB669DD. Clear sites0x8CEB7D, load token76 at0x90957B,0xB66B58,0xB67784,0xB6C05E,0xB6DBDE. These command/formation changes are independent of per-decision follow9. |
+| I-BFLAG-28 | User/squad task marker which gates human movement under user control. | Control issue paths set0xB6DCA4/0xB6F23C; load token75 sets0x909566. Squad destination/reset clears0x9322CE/0x9329AE; ownership/control path clears0xB66589. No global task-completion meaning is assigned. |
+| I-BFLAG-29 | Explicit look-at point valid at+0x140..+0x148. | Setter0x903270 copies XYZ and sets29 at0x90327F. Clear0x9032A0 resets the point from globals and clears29 at0x9032D0. Direct-goal/clear do the same. Look/aim execution remains Q10. |
+
+The 39C offset alone is not sufficient typing:0x8E8D90 writes a
+FortifySequence retry count (RTTI0x10E8A38, slot19),0xB21C30 parses minimap
+configuration (eGC_MiniMap.cpp and /interface/scene/minimap/minimap.set), and
+0xB5E9E0 writes an InterfaceActionCustom volume-ability mask. These are excluded,
+as are same-offset state, chassis, GUI and stack storage. Remaining unrelated
+literal leads were not promoted into catalog work. The scan of39D/39E/39F
+finds only two byte reads, no extra literal byte writer.
+
+The copied brain configuration at0x909150 includes398, not39C; it does not
+clone the transient count/flags, cached range, attack time or equipment deadline.
+Reviewed load cases explicitly restore task6/user-task28/disabled-follow27 as
+listed, rather than deserialize this flag word wholesale (Q2 map). A
+prototype must preserve native flags it is not changing and treat runtime hook
+ordering separately from these static writer contracts. Alias/bulk-copy and
+unrecognized-code completeness is not asserted.
+
+### Evidence and closure
+
+New [Q5 map](../artifacts/build-25492057/decision-q5-map.json) and
+[validation](../artifacts/build-25492057/decision-q5-validation.json) check27 game
+entries,1,136 selected instruction locations,seven floats,three RTTI tables and
+two byte ranges. The selected sites validate boundaries and constants; this is
+not a new comprehensive instruction/read census. The existing verifier was used.
+
+Consolidation, with instruction RVAs given above:
+
+- [Systems note](systems-map-25492057.md) and [map](../artifacts/build-25492057/systems-map.json): scene phases and slot23 task scheduling.
+- [Combat note](combat-map-25492057.md), [map](../artifacts/build-25492057/combat-map.json), [human states](human-states-map-25492057.md) and [map](../artifacts/build-25492057/human-states-map.json): inventory/tag query boundaries, TryAttackEnemy and human task/follow consumers.
+- [Engagement orders](engagement-orders-map-25492057.md) and [map](../artifacts/build-25492057/engagement-orders-map.json): Advance read paths and age branches.
+- [Crew actions](crew-actions-map-25492057.md) and [map](../artifacts/build-25492057/crew-actions-map.json), Q1b map0x9440E0/0x957380: deadline arm/consume join. The AI type catalog binds0x8D8310 to Order::eWeaponPrepare.
+- [Entity health](entity-health-map-25492057.md) and [map](../artifacts/build-25492057/entity-health-map.json), [ownership](ownership-map-25492057.md) and [map](../artifacts/build-25492057/ownership-map.json): incapacitation, boarding and actor/death flags.
+- [Squad](squad-map-25492057.md) and [map](../artifacts/build-25492057/squad-map.json), [vehicle brain](vehicle-brain-map-25492057.md) and [map](../artifacts/build-25492057/vehicle-brain-map.json): shared flag/timestamp writers and squad metadata.
+- Q1a, Q2 and Q3 maps: aggregate/latch stores, constructor/copy/load and current-order ownership. [Fine map](../artifacts/build-25492057/fine-map.json): command bindings and the shared5.0 constant.
+
+Q1z and Q2–Q5 are now closed at their stated static depth. No active prototype
+row blank remains assigned to them. Q6–Q11 and the expressly deferred target/
+cover/fire/stance/output details remain static work for a later prototype
+stage; the full native-read census stays parked. Runtime still must establish
+the admitted concrete object/ABI/hook timing, actual values/cadence, and observed
+movement outcomes. No game/editor execution or modification was performed.
