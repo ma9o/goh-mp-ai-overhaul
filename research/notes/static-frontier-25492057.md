@@ -90,10 +90,25 @@ Existing completed passes: [initial structure](build-25492057.md),
 [ground/water flags, simulator selection and human throwing](ground-state-map-25492057.md), and
 [entity IDs, registries, reuse and deferred destruction](entity-id-map-25492057.md), and
 [ownership, diplomacy, observation flags and squad departure](ownership-map-25492057.md), and
-[squad coordination, formation assignment and waypoint inputs](squad-map-25492057.md). Their open questions
+[squad coordination, formation assignment and waypoint inputs](squad-map-25492057.md), and
+[waypoint ownership, actor orders and native script execution](waypoint-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
+
+Latest waypoint pass adds106 paired contracts and two GEM edit paths,85 fields,
+six builtin statement descriptors per binary, and16,678 independently checked
+instruction starts. Actor waypoint failure6 executes its action despite failing
+to reach the point; retries1..5 wait with1.5^n jittered backoff. Executor actor is
+an invalidating soft link, squad is resolved by ID, while waypoint/trigger/hooks
+are raw. Synchronous SceneDone clears executors before later SceneDestroy
+releases waypoints. If/While/Case share condition execution; While repetition
+requires the resumed-child next callback, so an entirely immediate body returns
+completion. Parser/manager/block ownership and save/load are mapped; arbitrary
+live graph replacement and concrete native conditions/commands/selectors remain.
+GEM-only missing-destination pruning is not a demonstrated game-load validator.
+Current work: modifier preparationA0DCE0/8985D0, entity filter9E2D10/86CBD0,
+selector representation/dispatch and native command factory99D420/826B00.
 
 Latest squad pass adds101 paired contracts,89 fields and a79-type primary order
 predicate census per binary. CommanderA8 and display actorA0 are different;

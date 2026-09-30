@@ -1,0 +1,5 @@
+# RVA	Label	Filter	Limit
+0x12fbc90	waypoint_name_registry	all	4096
+0x1400a38	waypoint_numeric_bank	all	4096
+0x12fccc8	thread_executor_vector	all	4096
+0x14010c0	builtin_statement_registry	all	4096
