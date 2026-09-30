@@ -18,8 +18,8 @@ after their behavior and effect on the AI contract are established.
 |---|---|---|
 | Entity/component structure | Constructor-backed Fsm/Cover/Brain/Sensor/Weaponry/Chassis pointers; direct component clone/load ownership; extender collection/cache/attach/clone/rebind; inventory queue, item/box/holder ownership, filling mass and stack limits; placer ownership/clone and physical link tree; deletion request→scene retirement→delivery callbacks→reference release→SoftLinkable invalidation; repair component policy; actor/entity ID banks, reuse/remap/rekey and raw lookup; deferred destructor queue/phase contracts; selected IDs/fields; 392/391 native RTTI roots plus dependencies | Component replacement/removal and factory completeness; remaining enumeration/lifecycle callers, rekey input constraints; deferred disposal outer worker/router invariants; raw owner/holder/box replacement; derived holder behavior |
 | Sensor/perception | Candidate commit/categories, memory/eviction, ally sharing, grid rays, unmask rules; Recon registration/waiting counts, six searcher slots,60-sector rings and renewal; all eight signal names; sound/action definition parsers and repeat publishing; injury/corpse/hit/death-cry producers; mission signal condition/reset | Sound source cancellation/lifetime, area registration lifetime; residual Recon completed-status consumers; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine lifetimes |
-| Relationships | Neutral/enemy/ally values, 18-player defaults, symmetric setter, scene diplomacy and multiplayer setup | Ownership changes and other brain flag15 producers (placement TurnOff.Targetable now bound); downstream relationship consumers |
-| Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | Class/attacking/threating flag producers; all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
+| Relationships | Neutral/enemy/ally values, 18-player defaults, symmetric setter, scene diplomacy and multiplayer setup | Player58/reset callbacks, MaskPlayer shortcut versus actual diplomacy, operatable refresh and observation ownership delivery now mapped; remaining alias/bulk brain15 writers and downstream relationship consumers |
+| Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | TargetClass property and signal/serialization threat/attack producers now mapped; alias/bulk producer closure, all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
 | Human decision states | State hierarchy/dispatch/hazards; reviewed idle/battle/cover/search flow; stance thresholds, attack return codes, tactical movement, search coordination, healing and medic gating, following and weapon changes; detour pose/cover/point stages and budgets; circle-bound construction and RNG sampling, graph generation/processed-node reachability; temporary bone/pose trials; idle request gate; dropped-weapon memory, proficiency score and sort | Network construction, remaining geometry dependencies; animation state/tag producers and completion counter; full cover masks/healing validator; Veterancy property binding; full event producers; residual action-order helpers |
 | Cover | Eight terms and rank; named kinds, source geometry, grid height query, occupancy claim/release, resident and in-progress destination lifecycle; discrete height probes, height/side-clearance kind selection, interval boundary bisection | Descriptor +8/+C consumer roles; full edge spacing and alternate offsets; geometry-query/grid construction |
 | Path/movement | Move phase lifecycle, foot traversal, requested/actual stance/mode/speed, mode profiles, pather context read set/copy ownership, grenade AreaOutside solver dispatch; graph search/heap/node marks, bounds clamp/cost toggles, edge cost formula, route reconstruction outputs and distance sampling; RNG-consuming cost probe; named profile/obstacle parsers, 12 native terrain IDs, 116 base profiles and21 obstacle types; vault geometry and PlayAnimation handoff; line/point costs and RNG, portal pruning, owner metadata snapshots, spatial enabled masks and collection; grid search, seven goal types, fallback rules, parent tracing, smoothing and shortcut settings; planar/volume shape ABI and predicates, polygon features, compound ownership and closest-result state; loaders, entity transform paths and bounded authored-shape census; zone ownership, spatial ID reuse, insertion/removal, overlap events and asynchronous queue execution | Graph construction; packed slope and remaining obstacle metadata producers; spatial seed initialization, overlap consumers, shape producers and rectangle/polygon decision regions, outer worker teardown and raw-pointer lifetime; terrain ratio/priority consumers, movement enum binding, ability/health speed modifiers; profile reload lifetime; remaining PlayAnimation handler/request/command and crush builders |
@@ -88,10 +88,19 @@ Existing completed passes: [initial structure](build-25492057.md),
 [contact iteration/body inputs/convex support/GJK](contact-solver-map-25492057.md), and
 [body integration/settling/entity mass and random interior samples](body-state-map-25492057.md), and
 [ground/water flags, simulator selection and human throwing](ground-state-map-25492057.md), and
-[entity IDs, registries, reuse and deferred destruction](entity-id-map-25492057.md). Their open questions
+[entity IDs, registries, reuse and deferred destruction](entity-id-map-25492057.md), and
+[ownership, diplomacy, observation flags and squad departure](ownership-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
+
+Latest ownership pass adds71 paired contracts: Player/MaskPlayer, brain/sensor/weapon
+reset, Operatable/blinding refresh, threat/attack/serialization producers, old-ID
+collision track removal and squad departure/complex-order backup. Same-player setter
+calls still reset and remove squad membership. MaskPlayer only supplies a same-player
+ally shortcut; remaining diplomacy uses actual ownership. Literal member scans do
+not close alias/bulk writers. Next: full squad leader election/formation/quant/order
+distribution, followed by concrete modifier filters and remaining decision inputs.
 
 Latest identity pass maps actor/entity ID banks, allocation preference, per-Quant
 age counters, collision remapping, explicit rekey/class setters, raw lookup
@@ -100,8 +109,8 @@ no hard delay. It also corrects a missed game switch: entity38 bit16 retains
 class4 during reassignment. The broad ID/deferred-disposal bullets below are
 superseded for those specific contracts. Remaining lifetime work includes outer
 worker quiescence, router dispatch/reentrancy and rekey caller constraints.
-Next: ownership/player setter7EEEC0, its brain/group/sensor/weaponry callbacks,
-and the remaining attacking/threat flags and squad coordination.
+The ownership/player and signal-flag follow-up above now resolves these direct
+callbacks. Full squad coordination and alias-aware write closure remain active.
 
 Latest ground-state pass closes the previous ground/water summaries, surface
 selection, normal-query consumer, simulator owner binding and main human throw
