@@ -82,7 +82,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [shape loading/entity updates/authored geometry](volume-producers-map-25492057.md), and
 [area lifetime/overlap events/worker queues](area-lifecycle-map-25492057.md), and
 [scene spatial state/automatic obstacles/contact dispatch](area-scene-map-25492057.md), and
-[collider profiles/entity contacts/trace volume queries](entity-contact-map-25492057.md). Their open questions
+[collider profiles/entity contacts/trace volume queries](entity-contact-map-25492057.md), and
+[physical contact queues/batch reduction/geometry helpers](physical-response-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -468,3 +469,20 @@ are historical snapshots; this frontier tracks the continuing objective.
   signed16-bit cell construction/units and query bounds. Continue contact_effect,
   in_hole and volume eventE4/E6 actions/reset/drain, simulation command28 reception,
   SoftLinkableA68 coupling removal and owning-scene lifetime through callbacks.
+- Physical-response follow-up: contact records are1C0-byte values with raw body
+  pointers; GEM assertions identify D0 friction and D4 restitution, connecting
+  material98/9C to those roles. Queue100 is all-local, not stationary/dynamic.
+  Batch reduction limits each appended bank tail tofour: deepest first, then
+  penetration plus distance spread; zero-score fallback index0 is preserved as
+  an edge case.733EF0 removes both banks' contacts on simulator deactivation.
+  734200 partitions by connected nonnull bodies and invokes73B6B0. Continue
+  sorter736410, move7369D0, grow7345E0 and solver73B6B0; body1DC reset/consumers,
+  mass/inertia/velocity/impulse and simulator lifetime. Scene passes integer
+  delta converted directly tofloat; unit factor1547DAC=(K*L)/(H*T),1547DB0=L/T
+  in real arithmetic (native float operation order retained). Matrix SIMD ABI
+  and determinant cache gate are mapped, including NaN fallthrough and stale
+  inverse on small finite determinant. Sphere initial caches now resolved12/42
+  vertices and20/80 faces; reserve helper preserves prefixes. Face/segment point
+  distance branches are mapped. Continue5FC5E0 penetration,5FAA60/5F9240 simplex,
+  DT support implementations, higher sphere levels if reachable, shape loaders,
+  unit/config writers and bone revision/invalid-transform preconditions.
