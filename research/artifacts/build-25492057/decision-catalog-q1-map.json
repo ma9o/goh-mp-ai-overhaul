@@ -1,0 +1,3969 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "export_suffix": "-decision-catalog-q1",
+  "status": "partial_catalog_Q1_split",
+  "runtime_verified": false,
+  "warning": "Partial per-variable catalog, not a complete decision inventory or callable ABI. Only C-SELECTION is enumerated; existing J1-J8 are seed evidence. OPEN is a static blank unless explicitly runtime-only.",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267"
+    }
+  },
+  "source_maps": {
+    "clock": {
+      "map": "clock-map.json",
+      "sha256": "7c0720df0e0b939fbf816e72e57cb773ccb99895e061d1a3ee234bace8a6b0aa"
+    },
+    "fine": {
+      "map": "fine-map.json",
+      "sha256": "5575378bfb05f75523ad8ca448a794fbda507e43c55a5050f5908ea1ba90616b"
+    },
+    "flow": {
+      "map": "flow-map.json",
+      "sha256": "327308e598abb0c1c7661d099454ab6d2a68f7ba318dfb9491ad908d6f8a2662"
+    },
+    "systems": {
+      "map": "systems-map.json",
+      "sha256": "bf7536342d09c84b3c5ed3399bb981143b7491df740641e45e89c92221d90ac4"
+    },
+    "ownership": {
+      "map": "ownership-map.json",
+      "sha256": "03793df9882bf0a00d7e3570b8aa9a10db910ee6120ea4e7d565cc4a469885b0"
+    },
+    "movement": {
+      "map": "movement-map.json",
+      "sha256": "e9be0ad828f2a8c4cc442db4a835c4401dbeee6bebfdda1bcc19fef9c3ffd32e"
+    }
+  },
+  "validity_contracts": {
+    "V-brain": "OPEN: incoming this is a valid live brain precondition. Inline fields need no extra allocation and are not retained, but the end-to-end actor/brain attachment and callback call-lifetime proof has not been consolidated; C-OUTPUTS must triage it. Do not label this runtime-only yet.",
+    "V-owner": "OPEN: owner and cover are dereferenced without null checks in selection. Native call requires live attached objects. Their lifetime/replacement relative to that call has not been proved here; C-OUTPUTS must triage it.",
+    "V-subject": "OPEN: sensor subjects have refcounts and entity event subscriptions (systems/ownership maps), but that alone is not a complete within-call lifetime proof for every actor/entity/brain chain. Guards and retains must be recorded per caller by the remaining census.",
+    "V-rng": "OPEN: getter supplies selected TLS pointer or default; this span neither frees nor replaces it. Custom-context pointer lifetime is still open in clock map. No blanket claim of worker/thread safety.",
+    "V-global": "Image-resident storage, available for the loaded module lifetime. Writable data is not assumed immutable.",
+    "V-query": "OPEN: terrain result is copied by value, so no cell pointer escapes to the brain. Level/cell lifetime for the native query during the call still needs its interface precondition consolidated."
+  },
+  "coverage": [
+    {
+      "id": "C-SELECTION",
+      "status": "enumerated",
+      "item": "Q1",
+      "scope": "0x941D86 <= RVA < 0x941F49, with incoming RCX/RSI at 0x941D10 and zero R15 at 0x941D49",
+      "blank": "No missing stored-input or inline-output rows within this span; semantic/freshness/validity blanks remain explicitly in those rows. Not the whole slot35 body."
+    },
+    {
+      "id": "C-BASE",
+      "status": "open",
+      "item": "Q1a",
+      "scope": "0x903B10 and 0x912110/170/1C0/200/260/370/3D0/460/4D0/520 dispatch/policy boundaries",
+      "blank": "Per-variable read-site/access-path inventory and issued-output inventory, including individual +0x39C bits and external call results; reconcile I-THREATENING/I-ATTACKING."
+    },
+    {
+      "id": "C-ROOT",
+      "status": "open",
+      "item": "Q1b",
+      "scope": "Soldier/civilian root, location selection, root interrupt 0x955A90 and hazard scanner query interfaces in movement manifest",
+      "blank": "Per-variable input and issued-output inventory; saved-order/restore fields; reconcile I-COVER-GROUP. Do not reopen avoidance physics/path internals."
+    },
+    {
+      "id": "C-IDLE",
+      "status": "open",
+      "item": "Q1c",
+      "scope": "Idle Interrupt/Execute, following, healing, medic and explicit boarding policy helpers in human-states manifest",
+      "blank": "Per-variable input and issued-output inventory; mode/task/follow/timer/health/patient fields; factory contracts only below output boundary."
+    },
+    {
+      "id": "C-BATTLE",
+      "status": "open",
+      "item": "Q1d",
+      "scope": "Outdoors/cover battle Interrupt/Execute and tactical movement/cover policy helpers in human-states and tactics manifests",
+      "blank": "Per-variable input and issued-output inventory, cover descriptor/masks and scoring-query interfaces; reconcile behavior and direct-goal rows."
+    },
+    {
+      "id": "C-SEARCH",
+      "status": "open",
+      "item": "Q1e",
+      "scope": "Find-enemy 0x94C410/750/8A0, look-point policy 0x94DD50, Recon query contracts",
+      "blank": "Per-variable input and issued-output inventory, current/pending phases, zone handles/assignment and search results; reconcile I-SEARCHED."
+    },
+    {
+      "id": "C-HELPERS",
+      "status": "open",
+      "item": "Q1f",
+      "scope": "Target refresh/picking/ranking/eligibility, attack/stance, weapon/pickup policy and hypothetical query interfaces named by the six Q1 manifests",
+      "blank": "Remaining per-variable input and issued-output inventory at policy/query boundary; reconcile terrain/linked/targetable/Operatable rows; attach row IDs for Q5-Q9."
+    },
+    {
+      "id": "C-OUTPUTS",
+      "status": "open",
+      "item": "Q1g",
+      "scope": "Setters/direct goal and orders issued by the above methods; engagement-orders manifest only to contract depth",
+      "blank": "Cross-check every issued call against one output row and all five contract columns, including query side effects; reconcile all family inventories, assign exact row/blank follow-ups and Q2-Q11 links. Factory internals/physics/animation remain parked."
+    }
+  ],
+  "fields": [
+    {
+      "id": "I-THIS",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941d10 (RCX copied to RSI); all selection accesses",
+        "access_path": "Incoming complete human-brain pointer; 8 bytes",
+        "meaning": "Actor::eHumanBrain context. Selection implementation shared with the client type; concrete single-player factory choice remains Q2.",
+        "freshness": "Call argument, stable local pointer in the reviewed span; no object replacement in this span.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes"
+      ],
+      "follow_up_items": [
+        "Q2",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-OWNER",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941d86",
+        "access_path": "brain +0x38; actor pointer, 8 bytes",
+        "meaning": "Owner actor (inferred field name).",
+        "freshness": "Read once before threshold scaling. OPEN: assignment/attachment lifetime has not been consolidated.",
+        "validity": "V-owner"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "fine.constructor_defaults"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-COVER",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941da8",
+        "access_path": "brain -> owner(+0x38) -> +0xDC0; cover-component pointer, 8 bytes",
+        "meaning": "Cover component, by the existing movement map; the same component supplies root location selection.",
+        "freshness": "Current component at decision entry. OPEN: replacement and phase relative to selection.",
+        "validity": "V-owner"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "cover_group_read_and_selection"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-COVER-GROUP",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941dbb; root corroboration 0x95742f",
+        "access_path": "brain -> owner(+0x38) -> cover(+0xDC0) -> +0x24; int32, 4 bytes",
+        "meaning": "Cover group (inferred field name): 1 selects vertical cover, 2 horizontal, 0/3/4 outdoors. Selection multiplies both thresholds by 1.5 for exactly 1 or 2; no other value is scaled. Complete native enum names OPEN.",
+        "freshness": "Current read; OPEN: first producer establishing when this group changes.",
+        "validity": "V-owner"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "cover_group_read_and_selection"
+      ],
+      "follow_up_items": [
+        "Q7",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-A",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941d8a, 0x941f0a",
+        "access_path": "brain +0x518; float32, 4 bytes",
+        "meaning": "Relative incoming pressure (inferred); sum of position/age-weighted Human/Tank attack-to-comparison ratios, apportioned over self/support positions; not an enemy count.",
+        "freshness": "F-score: for slot23 implementation 0x941BC0, cached and updated only on a due, unskipped score task; a completed job precedes later decisions in that quant. Can change during mission; no fixed per-decision refresh guarantee. Concrete brain selection remains Q2.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "score_task_gate",
+        "flow.producer_A",
+        "flow.producer_B",
+        "flow.producer_callback",
+        "systems.scene_ordering",
+        "systems.worker_wait",
+        "systems.actor_preparation",
+        "systems.task_reset",
+        "systems.task_bucket_choice"
+      ],
+      "follow_up_items": [
+        "Q2",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-B",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941d92",
+        "access_path": "brain +0x51C; float32, 4 bytes",
+        "meaning": "Relative self/support capacity (inferred); ratio of self plus eligible support AttackRate pair to opposing HitPoints pair; not a friendly count.",
+        "freshness": "F-score: for slot23 implementation 0x941BC0, cached and updated only on a due, unskipped score task; a completed job precedes later decisions in that quant. Can change during mission; no fixed per-decision refresh guarantee. Concrete brain selection remains Q2.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "score_task_gate",
+        "flow.producer_A",
+        "flow.producer_B",
+        "flow.producer_callback",
+        "systems.scene_ordering",
+        "systems.worker_wait",
+        "systems.actor_preparation",
+        "systems.task_reset",
+        "systems.task_bucket_choice"
+      ],
+      "follow_up_items": [
+        "Q2",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-S",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941e4c, 0x941ebe",
+        "access_path": "brain +0x474; float32, 4 bytes",
+        "meaning": "Morale-associated S, 0..100 for ordinary finite values; association is RTTI Scene::Stats::eMoraleProcessor, not an independently recovered property name.",
+        "freshness": "Constructor 100; slot29 clamps deltas; this span can add 5; recovery follows base reconsideration. OPEN Q4: every external delta event, recipient and phase.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "fine.constructor_defaults",
+        "fine.scalar_delta",
+        "fine.scalar_recovery",
+        "flow.morale_dispatch"
+      ],
+      "follow_up_items": [
+        "Q4",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-ADVANCE-RATIO",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941daf",
+        "access_path": "brain +0x524; float32, 4 bytes",
+        "meaning": "Bound property advance_ratio; constructor 2.0. Used as a multiplier; no full accepted-value range is established.",
+        "freshness": "Constructor/property visitor and actor_state command writers known; mission commands can change it. OPEN: their timing relative to a brain call and complete writer set.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "fine.constructor_defaults",
+        "fine.human_property_binding",
+        "fine.command_human_fields"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-RETREAT-RATIO",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941d9d",
+        "access_path": "brain +0x528; float32, 4 bytes",
+        "meaning": "Bound property retreat_ratio; constructor 2.0. Used as a multiplier; no full accepted-value range is established.",
+        "freshness": "Constructor/property visitor and actor_state command writers known; mission commands can change it. OPEN: their timing relative to a brain call and complete writer set.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "fine.constructor_defaults",
+        "fine.human_property_binding",
+        "fine.command_human_fields"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-NO-ADVANCE",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941ed9",
+        "access_path": "brain +0x520; byte, 1 byte",
+        "meaning": "Bound Boolean no_advance; any nonzero byte blocks its named normal-state branch. The state-zero branch does not read it.",
+        "freshness": "Constructor/property visitor and actor_state command writers known; mission commands can change it. OPEN: phase and complete writer set.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "fine.constructor_defaults",
+        "fine.human_property_binding",
+        "fine.command_human_fields"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-NO-RETREAT",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941f01",
+        "access_path": "brain +0x521; byte, 1 byte",
+        "meaning": "Bound Boolean no_retreat; any nonzero byte blocks its named normal-state branch. The state-zero branch does not read it.",
+        "freshness": "Constructor/property visitor and actor_state command writers known; mission commands can change it. OPEN: phase and complete writer set.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "fine.constructor_defaults",
+        "fine.human_property_binding",
+        "fine.command_human_fields"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-BEHAVIOR",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941e13",
+        "access_path": "brain +0x52C; int32, 4 bytes",
+        "meaning": "0/1 withdrawal, 2 no tactical movement, 3/4 advance are functional/inferred meanings (J6). Unreferenced flee/retreat/none/advance/charge table is not a binding.",
+        "freshness": "Constructor 2; selection writes 0..4. OPEN Q2: all writers, save/load, outlined copy, and which slot35 runs.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "fine.constructor_defaults"
+      ],
+      "follow_up_items": [
+        "Q2",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-BEHAVIOR-DEADLINE",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941deb, 0x941df4",
+        "access_path": "brain +0x530; uint32, 4 bytes",
+        "meaning": "Absolute quant-counter deadline (inferred name); 0 disables the gate. Nonzero bypasses normal selection; unsigned now>=deadline clears state AND deadline with one 8-byte store.",
+        "freshness": "Timed state-zero branch writes now+convert(1+sample). OPEN Q2: other writes and serialization. This compare is not a demonstrated wrap-safe timer.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "fine.constructor_defaults",
+        "clock.game_65e700",
+        "clock.game_65e730"
+      ],
+      "follow_up_items": [
+        "Q2",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-NOW",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941dfa, 0x941ea2 call 0x65e700; load 0x65e700",
+        "access_path": "0x65e700() -> global RVA 0x1556E48; uint32, 4 bytes",
+        "meaning": "Simulation counter, not wall time. Normal units are 1000 counter ticks per converted time unit.",
+        "freshness": "Clock core increments per reached quant; ordinary executor gates pause, explicit step wrappers can advance while paused; reset/load can change it (clock map).",
+        "validity": "V-global"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "clock.game_65e700",
+        "clock.game_65e730"
+      ],
+      "follow_up_items": []
+    },
+    {
+      "id": "I-DURATION-FACTOR",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941e9b -> 0x65e730",
+        "access_path": "global RVA 0x14776C8; float32, 4 bytes",
+        "meaning": "Duration-to-counter multiplier, file-initial 1000; conversion uses CVTTSS2SI. Ordinary units are simulation seconds, not elapsed wall seconds.",
+        "freshness": "Writable image data. No direct write references located in earlier systems/clock work; alias/configuration writes not excluded.",
+        "validity": "V-global"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "clock.game_65e730"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-RNG",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941e61, 0x941e8e call 0x554b50",
+        "access_path": "0x554b50() selected TLS RNG pointer, default per-thread fallback; 8-byte result",
+        "meaning": "Selected RNG context, not necessarily the default or a brain-owned generator. Fallback can lazily obtain the default per-thread RNG (clock map). Second getter return is unused in this span.",
+        "freshness": "Selected context can change through quant/context or explicit RNG scopes (clock map); use the pointer returned for this draw.",
+        "validity": "V-rng"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "clock.game_554b50"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-RNG-STATE",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941e69",
+        "access_path": "I-RNG +8; uint32, 4 bytes",
+        "meaning": "Generator state; new = old*0x7FF8A3ED+0x2AA01D31 modulo 2^32, upper 24 bits form sample numerator.",
+        "freshness": "Read and written by this draw (0x941e79); other users of the selected stream can change it between decisions.",
+        "validity": "V-rng"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "clock.game_554b50"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-RNG-COUNT",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941e70 (read-modify-write)",
+        "access_path": "I-RNG +0xC; uint32, 4 bytes",
+        "meaning": "Draw counter (inferred name). Incremented but not used for this branch result.",
+        "freshness": "Incremented once by this draw; other stream users also draw. Full stream history requires runtime.",
+        "validity": "V-rng"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "clock.game_554b50"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-RNG-SCALE",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941e86",
+        "access_path": "global RVA 0x1587C54; float32, 4 bytes",
+        "meaning": "Multiplier of this generator draw upper 24 bits. OPEN: initialization/value domain of this particular global; do not import 0x1584DAC from the different cover selector.",
+        "freshness": "Writable, non-file-backed data in the fine map. OPEN: initialization and later writers.",
+        "validity": "V-global"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-MORALE-DISPATCH",
+      "scope": "selection",
+      "contract": {
+        "read_site": "0x941e29, 0x941e37",
+        "access_path": "brain -> vptr at +0 -> byte offset +0xE8 (slot29); two 8-byte pointer loads",
+        "meaning": "Human implementation 0x945010 adds/clamps S. Virtual dispatch, not a hard-coded direct call; concrete brain factory is Q2.",
+        "freshness": "Read at invocation. Type table links are static; actual instantiated type is not determined by this read.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "fine.scalar_delta"
+      ],
+      "follow_up_items": [
+        "Q2",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-RECOVERY-DEADLINE",
+      "scope": "seed",
+      "contract": {
+        "read_site": "0x94225b and recovery evidence (outside selection span)",
+        "access_path": "brain +0x478; uint32, 4 bytes",
+        "meaning": "Morale recovery deadline (inferred). Separate from +0x530; 0 allows recovery.",
+        "freshness": "Negative slot29 delta sets now+convert(10); slot35 recovery adds (0.5*100)/120 then schedules convert(0.5), after base reconsideration. OPEN Q4: other S-changing paths.",
+        "validity": "V-brain"
+      },
+      "evidence_ids": [
+        "fine.scalar_delta",
+        "fine.scalar_recovery"
+      ],
+      "follow_up_items": [
+        "Q4",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-TERRAIN",
+      "scope": "seed-J1",
+      "contract": {
+        "read_site": "0x8a0b8f/0x8a0b94; accessor 0xa43b4d/0xa43b59",
+        "access_path": "Brain cover/stance query XY -> 0xA43AB0 -> level-0 cell (4-byte stride), byte +2 low nibble; uint4 in byte. No brain-owned cell pointer.",
+        "meaning": "J1: 0 undef,1 ground,2 no_pass,3 shallow_water,4 water,5 deep_water,6 swamp,7 road,8 no_pass_human,9 snow,A forest,B slope. Cover rejects 4/5 and kind1 in 3; pose/detour reject water 3..5. Same-cell lookup plus 0xA44070 names the IDs (path-profiles/ground-state).",
+        "freshness": "Returned on demand, with water-height correction. OPEN: whether packed cells can be rewritten during a mission; no producer internals needed.",
+        "validity": "V-query"
+      },
+      "evidence_ids": [
+        "terrain_decision_read",
+        "terrain_cell_read"
+      ],
+      "follow_up_items": [
+        "Q1f",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-THREATENING",
+      "scope": "seed-J2",
+      "contract": {
+        "read_site": "0x903bf3",
+        "access_path": "brain -> owner(+0x38) -> sensor(+0xDD0) -> category1 pointers [+0x280,+0x288) -> subject +0x14 bit7; uint32 bit",
+        "meaning": "J2: threatening; eligible nonally signal source. Hit3/explosion5 use ThreatZone; injury4 bypasses distance; shot2 does not set it here. Aggregates into brain +0x39C bit16 unless subject +0x6C suppresses it.",
+        "freshness": "F-sensor: event writer 0x877D20; commit expiry clears above 2 converted units since subject +0x68 while threatening is set. Subject load is another producer; phase/cadence from J7 is conditional, not a per-frame observation guarantee.",
+        "validity": "V-subject"
+      },
+      "evidence_ids": [
+        "subject_aggregate_reads",
+        "ownership.game_877d20",
+        "subject_expiry_and_search_wait"
+      ],
+      "follow_up_items": [
+        "Q1a",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-ATTACKING",
+      "scope": "seed-J2",
+      "contract": {
+        "read_site": "0x903bd3",
+        "access_path": "brain -> owner(+0x38) -> sensor(+0xDD0) -> category1 pointers [+0x280,+0x288) -> subject +0x14 bit8; uint32 bit",
+        "meaning": "J2: attacking; eligible nonally signal source. Hit3/explosion5 use AttackZone; injury4 bypasses distance; shot2 does not set it here. Aggregates into brain +0x39C bit14 unless subject +0x6C suppresses it.",
+        "freshness": "F-sensor: event writer 0x877D20; commit expiry clears above 1 converted units since subject +0x68 while threatening is set. Subject load is another producer; phase/cadence from J7 is conditional, not a per-frame observation guarantee.",
+        "validity": "V-subject"
+      },
+      "evidence_ids": [
+        "subject_aggregate_reads",
+        "ownership.game_877d20",
+        "subject_expiry_and_search_wait"
+      ],
+      "follow_up_items": [
+        "Q1a",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-TARGETABLE",
+      "scope": "seed-J3",
+      "contract": {
+        "read_site": "0x8785ac, 0x8785b3, 0x8785b9 (classification dependency)",
+        "access_path": "brain sensor subject -> actor(+0x18) -> target brain(+0xDC8) -> +0x398 bit15; uint32 bit",
+        "meaning": "J3: targetable, from TurnOff.Targetable. Subject enemy bit1 requires this bit as well as enemy relationship.",
+        "freshness": "Place Include 0x77C140 clears; Exclude 0x77B950 restores; constructor initializes. Can change in mission; relationship refresh/commit propagates it. Not an exhaustive alias-write proof.",
+        "validity": "V-subject"
+      },
+      "evidence_ids": [
+        "targetable_and_operatable_reads",
+        "ownership.game_77c140",
+        "ownership.game_77b950"
+      ],
+      "follow_up_items": [
+        "Q1f",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-LINKED",
+      "scope": "seed-J4",
+      "contract": {
+        "read_site": "0x945d0d, 0x945d13 (pickup eligibility example)",
+        "access_path": "Brain pickup candidate/entity argument -> entity +0x1C0 bit28; uint32 bit. Other subject paths use subject +0x20 entity.",
+        "meaning": "J4: linked to parent (inferred, not a recovered native flag binding); excludes this pickup candidate. Other decision consumers remain in the census.",
+        "freshness": "Current candidate read. OPEN: first link/unlink writer and phase that establish mission mutability.",
+        "validity": "V-subject"
+      },
+      "evidence_ids": [
+        "linked_pickup_read"
+      ],
+      "follow_up_items": [
+        "Q1f",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-SEARCHED",
+      "scope": "seed-J5",
+      "contract": {
+        "read_site": "0x87918a (Recon waiting dependency); write 0x94c94c",
+        "access_path": "brain +0x3C0 remembered subject (completion); sensor subject -> +0x10 bit27; uint32 bit",
+        "meaning": "J5: searched (inferred). Set at find-enemy phase9; prevents becoming Recon-waiting bit26 on the age path. It is not the Recon zone completion byte.",
+        "freshness": "Phase9 writes; sensor commit reads; load may restore flags. OPEN: complete set/clear writer list, including the other 0x878AE0 branches.",
+        "validity": "V-subject"
+      },
+      "evidence_ids": [
+        "search_completion_write",
+        "subject_expiry_and_search_wait"
+      ],
+      "follow_up_items": [
+        "Q1e",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "I-OPERATABLE",
+      "scope": "seed-J8",
+      "contract": {
+        "read_site": "0x878619 (classification dependency)",
+        "access_path": "brain sensor subject -> actor(+0x18) -> +0xDB4 bit8; uint32 bit",
+        "meaning": "J8: Operatable, token6D. Derived from brain presence, crew/noncrew operability and vitality low bits. False contributes to unusable subject bit4, not simply dead.",
+        "freshness": "0x7F0130 reconciles slot67 0x7F1A30 and emits event0x1A; blinding temporarily clears/restores for that event; property can force it. Mission-mutable. OPEN: exact phase of reconciliation relative to a decision.",
+        "validity": "V-subject"
+      },
+      "evidence_ids": [
+        "targetable_and_operatable_reads",
+        "ownership.game_7f1a30",
+        "ownership.game_7f0130"
+      ],
+      "follow_up_items": [
+        "Q1f",
+        "Q1g"
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "id": "O-BEHAVIOR",
+      "scope": "selection",
+      "issue_sites": "0x941e07/0x941e3d/0x941ea9/0x941ecd/0x941efb/0x941f36/0x941f42",
+      "contract": {
+        "effect": "Immediate write of I-BEHAVIOR. Downstream movement state consumer gives J6 functional meanings; this store does not itself create an order.",
+        "result_codes": "No result code: inline stores.",
+        "ownership": "Brain-owned scalar; no transferred pointer.",
+        "cancellation": "Superseded by subsequent writers (writer census Q2); no asynchronous operation to cancel.",
+        "side_effects": "Expiry store also zeroes I-BEHAVIOR-DEADLINE; state-zero recovery calls O-MORALE-DELTA before writing 2."
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes"
+      ],
+      "follow_up_items": [
+        "Q2"
+      ]
+    },
+    {
+      "id": "O-BEHAVIOR-DEADLINE",
+      "scope": "selection",
+      "issue_sites": "0x941e07, 0x941eb3",
+      "contract": {
+        "effect": "Clear gate on expiry, or set now+convert(1+sample) with state3.",
+        "result_codes": "No result code: inline stores. Integer conversion/overflow behavior is not an accepted-delay API.",
+        "ownership": "Brain-owned scalar.",
+        "cancellation": "Later writes replace/clear it; complete writer set Q2.",
+        "side_effects": "Random path consumes one draw and advances stream count; branch skips normal no_advance/no_retreat checks."
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "clock.game_65e730"
+      ],
+      "follow_up_items": [
+        "Q2"
+      ]
+    },
+    {
+      "id": "O-MORALE-DELTA",
+      "scope": "selection",
+      "issue_sites": "0x941e37 -> brain slot29 / 0x945010",
+      "contract": {
+        "effect": "Add delta to I-S and clamp to [0,100] for ordinary finite inputs; this call passes +5.",
+        "result_codes": "No policy result consumed at this call; no success/failure enum established.",
+        "ownership": "Borrowed brain; immediate mutation, no object ownership transfer.",
+        "cancellation": "Synchronous setter; a later delta/recovery supersedes state. No pending action created.",
+        "side_effects": "Negative deltas write recovery deadline now+convert(10); this positive call leaves that deadline unchanged. Q4 owns the other callers/events."
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "fine.scalar_delta"
+      ],
+      "follow_up_items": [
+        "Q4"
+      ]
+    },
+    {
+      "id": "O-RNG-DRAW",
+      "scope": "selection",
+      "issue_sites": "0x941e69..0x941e86 (actual writes 0x941e70, 0x941e79)",
+      "contract": {
+        "effect": "Advance selected RNG state and increment its draw count; derive float sample for the duration.",
+        "result_codes": "Computed float, no order status. Sample bounds OPEN until I-RNG-SCALE is bound.",
+        "ownership": "Borrowed selected RNG; no transfer or local free.",
+        "cancellation": "Draw is immediate and not rolled back by this span.",
+        "side_effects": "Affects later users of the same stream even if they are outside this brain."
+      },
+      "evidence_ids": [
+        "selection_reads_and_writes",
+        "clock.game_554b50"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "O-DIRECT-GOAL",
+      "scope": "seed-boundary; issuing-method census incomplete",
+      "issue_sites": "boundary 0x902FB0; effect sites 0x902fcf, 0x903020, 0x90302a",
+      "contract": {
+        "effect": "Copy goal XY (8 bytes from RDX) into brain +0x130; clear flags7/9/11/29, set6/8/25. Complete movement/arrival/abandonment contract OPEN Q3.",
+        "result_codes": "No explicit success/failure value in setter body; subsequent state/order outcomes OPEN Q3.",
+        "ownership": "Copies XY, does not retain the supplied coordinate pointer. Current-order end/ownership through slot13 remains Q3/Q10.",
+        "cancellation": "Calls brain slot13 with null if current order exists; later task clear, arrival and failure paths OPEN Q3.",
+        "side_effects": "Resets +0x140/+0x144/+0x148 from globals 0x146E000/4/8. Those are data loads, not proved readonly constants."
+      },
+      "evidence_ids": [
+        "direct_goal_setter"
+      ],
+      "follow_up_items": [
+        "Q3",
+        "Q10",
+        "Q1g"
+      ]
+    },
+    {
+      "id": "O-MOVE-MODE",
+      "scope": "seed-boundary; issuing-method census incomplete",
+      "issue_sites": "boundary 0x903140; writes 0x903170, 0x903184; cleanup call 0x9031a3",
+      "contract": {
+        "effect": "Set brain +0x398 bits12..13 to masked input; free0/hold1/zone2 named, pattern3 unnamed. Compare uses unmasked input.",
+        "result_codes": "Synchronous setter; no success/failure enum exposed by reviewed body.",
+        "ownership": "Borrowed brain/root/active-child pointers; deactivation keeps state attached, does not destroy it.",
+        "cancellation": "A changed mode deactivates active child with reason0. This is a state transition, not a complete order-cancellation proof.",
+        "side_effects": "Zone copies owner XY to +0x128. 0x912520 sends event4, deactivates descendants reason2, sets brain flag21, selects parent and sends event3; root child pointer is cleared."
+      },
+      "evidence_ids": [
+        "fine.move_mode_setter",
+        "movement.deactivate_child"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    },
+    {
+      "id": "O-MOVE-SPEED",
+      "scope": "seed-boundary; issuing-method census incomplete",
+      "issue_sites": "boundary 0x9031C0; store 0x9031e3",
+      "contract": {
+        "effect": "Set brain +0x398 bit14 from masked input when current extracted value differs from unmasked input; fast0/slow1.",
+        "result_codes": "No status enum; leaf setter.",
+        "ownership": "Borrowed brain; no ownership transfer.",
+        "cancellation": "Immediate scalar policy change; no pending object to cancel.",
+        "side_effects": "No calls in this leaf; other flag bits preserved."
+      },
+      "evidence_ids": [
+        "move_speed_setter"
+      ],
+      "follow_up_items": [
+        "Q1g"
+      ]
+    }
+  ],
+  "methods": [
+    {
+      "id": "systems.worker_wait",
+      "entry_rvas": {
+        "game": "0xa3ee0"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "systems.task_reset",
+      "entry_rvas": {
+        "game": "0x1cef70"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "systems.task_bucket_choice",
+      "entry_rvas": {
+        "game": "0x1cf600"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "clock.game_554b50",
+      "entry_rvas": {
+        "game": "0x554b50"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "clock.game_65e700",
+      "entry_rvas": {
+        "game": "0x65e700"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "clock.game_65e730",
+      "entry_rvas": {
+        "game": "0x65e730"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "ownership.game_77b950",
+      "entry_rvas": {
+        "game": "0x77b950"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "ownership.game_77c140",
+      "entry_rvas": {
+        "game": "0x77c140"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "systems.actor_preparation",
+      "entry_rvas": {
+        "game": "0x7efbf0"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "sensor_before_reconsideration",
+      "entry_rvas": {
+        "game": "0x7efd10"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "ownership.game_7f0130",
+      "entry_rvas": {
+        "game": "0x7f0130"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "ownership.game_7f1a30",
+      "entry_rvas": {
+        "game": "0x7f1a30"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "flow.producer_B",
+      "entry_rvas": {
+        "game": "0x877170"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "ownership.game_877d20",
+      "entry_rvas": {
+        "game": "0x877d20"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "targetable_and_operatable_reads",
+      "entry_rvas": {
+        "game": "0x878560"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "subject_expiry_and_search_wait",
+      "entry_rvas": {
+        "game": "0x878ae0"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "terrain_decision_read",
+      "entry_rvas": {
+        "game": "0x8a0b20"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "direct_goal_setter",
+      "entry_rvas": {
+        "game": "0x902fb0"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "fine.move_mode_setter",
+      "entry_rvas": {
+        "game": "0x903140"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "move_speed_setter",
+      "entry_rvas": {
+        "game": "0x9031c0"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "subject_aggregate_reads",
+      "entry_rvas": {
+        "game": "0x903b10"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "movement.deactivate_child",
+      "entry_rvas": {
+        "game": "0x912520"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "fine.constructor_defaults",
+      "entry_rvas": {
+        "game": "0x9417e0"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "flow.producer_callback",
+      "entry_rvas": {
+        "game": "0x941bc0"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "fine.scalar_recovery",
+      "entry_rvas": {
+        "game": "0x941d00"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "fine.human_property_binding",
+      "entry_rvas": {
+        "game": "0x9426e0"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "fine.scalar_delta",
+      "entry_rvas": {
+        "game": "0x945010"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "linked_pickup_read",
+      "entry_rvas": {
+        "game": "0x945c80"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "search_completion_write",
+      "entry_rvas": {
+        "game": "0x94c8a0"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "cover_group_read_and_selection",
+      "entry_rvas": {
+        "game": "0x957420"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "fine.command_human_fields",
+      "entry_rvas": {
+        "game": "0x99f940"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "systems.scene_ordering",
+      "entry_rvas": {
+        "game": "0xa1b320"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "terrain_cell_read",
+      "entry_rvas": {
+        "game": "0xa43ab0"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    },
+    {
+      "id": "flow.morale_dispatch",
+      "entry_rvas": {
+        "game": "0xa5a490"
+      },
+      "scope": "evidence entry, not whole-function policy coverage"
+    }
+  ],
+  "inline_regions": [
+    {
+      "id": "selection_inventory",
+      "function_rva": "0x941d00",
+      "start_rva": "0x941d86",
+      "end_rva_exclusive": "0x941f49",
+      "evidence_ids": [
+        "selection_reads_and_writes"
+      ]
+    }
+  ],
+  "enums": [
+    {
+      "id": "move_mode",
+      "offset": "0x398",
+      "mask": "0x3000",
+      "shift": 12,
+      "values": {
+        "hold": 1,
+        "zone": 2,
+        "free": 0
+      },
+      "table_rvas": {
+        "game": "0x10ea460"
+      }
+    },
+    {
+      "id": "move_speed",
+      "offset": "0x398",
+      "mask": "0x4000",
+      "shift": 14,
+      "values": {
+        "fast": 0,
+        "slow": 1
+      },
+      "table_rvas": {
+        "game": "0x10ea4a0"
+      }
+    }
+  ],
+  "float_constants": [
+    {
+      "id": "K-SCALE",
+      "binary": "game",
+      "rva": "0x10220d4",
+      "value": 1.5,
+      "read_instruction_rvas": [
+        "0x941dc5",
+        "0x941dcd"
+      ],
+      "role": "Cover group1/2 threshold multiplier",
+      "width": 4,
+      "representation": "float32",
+      "freshness": "Read-only PE data on the fingerprinted build",
+      "validity": "Module lifetime; no retained pointer"
+    },
+    {
+      "id": "K-ONE",
+      "binary": "game",
+      "rva": "0x10004d0",
+      "value": 1.0,
+      "read_instruction_rvas": [
+        "0x941dd5"
+      ],
+      "role": "Base of randomized duration",
+      "width": 4,
+      "representation": "float32",
+      "freshness": "Read-only PE data on the fingerprinted build",
+      "validity": "Module lifetime; no retained pointer"
+    },
+    {
+      "id": "K-DELTA",
+      "binary": "game",
+      "rva": "0x10124b4",
+      "value": 5.0,
+      "read_instruction_rvas": [
+        "0x941e2f"
+      ],
+      "role": "Morale delta on leaving state0",
+      "width": 4,
+      "representation": "float32",
+      "freshness": "Read-only PE data on the fingerprinted build",
+      "validity": "Module lifetime; no retained pointer"
+    },
+    {
+      "id": "K-FIFTY",
+      "binary": "game",
+      "rva": "0x10099b0",
+      "value": 50.0,
+      "read_instruction_rvas": [
+        "0x941e54",
+        "0x941f17"
+      ],
+      "role": "State0 morale and normal retreat threshold",
+      "width": 4,
+      "representation": "float32",
+      "freshness": "Read-only PE data on the fingerprinted build",
+      "validity": "Module lifetime; no retained pointer"
+    },
+    {
+      "id": "K-SEVENTY",
+      "binary": "game",
+      "rva": "0x10d205c",
+      "value": 70.0,
+      "read_instruction_rvas": [
+        "0x941ec6"
+      ],
+      "role": "Advance morale threshold",
+      "width": 4,
+      "representation": "float32",
+      "freshness": "Read-only PE data on the fingerprinted build",
+      "validity": "Module lifetime; no retained pointer"
+    },
+    {
+      "id": "K-DOUBLE",
+      "binary": "game",
+      "rva": "0x10004d4",
+      "value": 2.0,
+      "read_instruction_rvas": [
+        "0x941ee7"
+      ],
+      "role": "Multiplier distinguishing states3/4",
+      "width": 4,
+      "representation": "float32",
+      "freshness": "Read-only PE data on the fingerprinted build",
+      "validity": "Module lifetime; no retained pointer"
+    },
+    {
+      "id": "K-THIRTY",
+      "binary": "game",
+      "rva": "0x105ffbc",
+      "value": 30.0,
+      "read_instruction_rvas": [
+        "0x941f29"
+      ],
+      "role": "Normal retreat/flee threshold",
+      "width": 4,
+      "representation": "float32",
+      "freshness": "Read-only PE data on the fingerprinted build",
+      "validity": "Module lifetime; no retained pointer"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "selection_reads_and_writes",
+      "binary": "game",
+      "function_rva": "0x941d00",
+      "instruction_rvas": [
+        "0x941d10",
+        "0x941d49",
+        "0x941d86",
+        "0x941d8a",
+        "0x941d92",
+        "0x941d9d",
+        "0x941da8",
+        "0x941daf",
+        "0x941dbb",
+        "0x941dbe",
+        "0x941dc0",
+        "0x941dc3",
+        "0x941dc5",
+        "0x941dcd",
+        "0x941dd5",
+        "0x941deb",
+        "0x941df4",
+        "0x941dfa",
+        "0x941dff",
+        "0x941e07",
+        "0x941e13",
+        "0x941e20",
+        "0x941e24",
+        "0x941e29",
+        "0x941e2f",
+        "0x941e37",
+        "0x941e3d",
+        "0x941e4c",
+        "0x941e54",
+        "0x941e61",
+        "0x941e69",
+        "0x941e70",
+        "0x941e73",
+        "0x941e79",
+        "0x941e7c",
+        "0x941e81",
+        "0x941e86",
+        "0x941e8e",
+        "0x941e93",
+        "0x941e9b",
+        "0x941ea2",
+        "0x941ea9",
+        "0x941eb3",
+        "0x941ebe",
+        "0x941ec6",
+        "0x941ecd",
+        "0x941ed9",
+        "0x941ee2",
+        "0x941ee7",
+        "0x941ef2",
+        "0x941efb",
+        "0x941f01",
+        "0x941f0a",
+        "0x941f12",
+        "0x941f17",
+        "0x941f1f",
+        "0x941f29",
+        "0x941f31",
+        "0x941f36",
+        "0x941f42"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-fine/0x941d00.asm"
+    },
+    {
+      "id": "score_task_gate",
+      "binary": "game",
+      "function_rva": "0x941bc0",
+      "instruction_rvas": [
+        "0x941c56",
+        "0x941c63",
+        "0x941c69",
+        "0x941c6b",
+        "0x941c74",
+        "0x941c7b",
+        "0x941c89",
+        "0x941c8c",
+        "0x941c91",
+        "0x941c95",
+        "0x941c98",
+        "0x941c9a",
+        "0x941c9d",
+        "0x941c9f",
+        "0x941cd3"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-flow/0x941bc0.asm"
+    },
+    {
+      "id": "cover_group_read_and_selection",
+      "binary": "game",
+      "function_rva": "0x957420",
+      "instruction_rvas": [
+        "0x957428",
+        "0x95742f",
+        "0x95743f",
+        "0x957444",
+        "0x957450",
+        "0x95745d",
+        "0x957469"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-movement/0x957420.asm"
+    },
+    {
+      "id": "clock.game_65e700",
+      "binary": "game",
+      "function_rva": "0x65e700",
+      "instruction_rvas": [
+        "0x65e700",
+        "0x65e706"
+      ],
+      "inherited_from": {
+        "map": "clock-map.json",
+        "evidence_id": "game_65e700"
+      }
+    },
+    {
+      "id": "clock.game_65e730",
+      "binary": "game",
+      "function_rva": "0x65e730",
+      "instruction_rvas": [
+        "0x65e730",
+        "0x65e738",
+        "0x65e73c"
+      ],
+      "inherited_from": {
+        "map": "clock-map.json",
+        "evidence_id": "game_65e730"
+      }
+    },
+    {
+      "id": "clock.game_554b50",
+      "binary": "game",
+      "function_rva": "0x554b50",
+      "instruction_rvas": [
+        "0x554b50",
+        "0x554b54",
+        "0x554b5a",
+        "0x554b60",
+        "0x554b63",
+        "0x554b65",
+        "0x554b6b",
+        "0x554b74",
+        "0x554b79",
+        "0x554b7e",
+        "0x554b82",
+        "0x554b85",
+        "0x554b8b",
+        "0x554b8d",
+        "0x554b94",
+        "0x554b99",
+        "0x554b9f",
+        "0x554ba2",
+        "0x554ba8",
+        "0x554bab",
+        "0x554bad",
+        "0x554bb3",
+        "0x554bb6",
+        "0x554bbc",
+        "0x554bbf",
+        "0x554bc4",
+        "0x554bc8",
+        "0x554bc9",
+        "0x554bd0",
+        "0x554bd5",
+        "0x554bdc",
+        "0x554be1",
+        "0x554be3",
+        "0x554bea",
+        "0x554bef",
+        "0x554bf6",
+        "0x554bf8",
+        "0x554bfa",
+        "0x554c01",
+        "0x554c06",
+        "0x554c0d",
+        "0x554c0f",
+        "0x554c14",
+        "0x554c19",
+        "0x554c1e",
+        "0x554c23",
+        "0x554c2a",
+        "0x554c31",
+        "0x554c36",
+        "0x554c3b",
+        "0x554c42",
+        "0x554c45",
+        "0x554c47",
+        "0x554c4a",
+        "0x554c51",
+        "0x554c53",
+        "0x554c5a",
+        "0x554c61",
+        "0x554c68",
+        "0x554c6f",
+        "0x554c76",
+        "0x554c7d",
+        "0x554c84",
+        "0x554c8b",
+        "0x554c8e",
+        "0x554c95",
+        "0x554c9d",
+        "0x554ca4",
+        "0x554cab",
+        "0x554cb1",
+        "0x554cb6",
+        "0x554cb9",
+        "0x554cbf",
+        "0x554cc4",
+        "0x554cc7",
+        "0x554cca",
+        "0x554ccd",
+        "0x554cd0"
+      ],
+      "inherited_from": {
+        "map": "clock-map.json",
+        "evidence_id": "game_554b50"
+      }
+    },
+    {
+      "id": "fine.constructor_defaults",
+      "binary": "game",
+      "function_rva": "0x9417e0",
+      "instruction_rvas": [
+        "0x94190b",
+        "0x941929",
+        "0x941936",
+        "0x941944",
+        "0x94194e",
+        "0x941958"
+      ],
+      "inherited_from": {
+        "map": "fine-map.json",
+        "evidence_id": "constructor_defaults"
+      }
+    },
+    {
+      "id": "fine.human_property_binding",
+      "binary": "game",
+      "function_rva": "0x9426e0",
+      "instruction_rvas": [
+        "0x942702",
+        "0x942795",
+        "0x9427c0",
+        "0x94283e",
+        "0x942861",
+        "0x9428df",
+        "0x942903",
+        "0x94299f",
+        "0x9429af",
+        "0x942a4b"
+      ],
+      "inherited_from": {
+        "map": "fine-map.json",
+        "evidence_id": "human_property_binding"
+      }
+    },
+    {
+      "id": "fine.command_human_fields",
+      "binary": "game",
+      "function_rva": "0x99f940",
+      "instruction_rvas": [
+        "0x99f9c0",
+        "0x99fe24",
+        "0x99fe3b",
+        "0x99fe72",
+        "0x99feab",
+        "0x99fec0",
+        "0x99fed7"
+      ],
+      "inherited_from": {
+        "map": "fine-map.json",
+        "evidence_id": "command_human_fields"
+      }
+    },
+    {
+      "id": "fine.scalar_delta",
+      "binary": "game",
+      "function_rva": "0x945010",
+      "instruction_rvas": [
+        "0x945021",
+        "0x945041",
+        "0x945057",
+        "0x945067",
+        "0x94506f",
+        "0x94508f"
+      ],
+      "inherited_from": {
+        "map": "fine-map.json",
+        "evidence_id": "scalar_delta"
+      }
+    },
+    {
+      "id": "fine.scalar_recovery",
+      "binary": "game",
+      "function_rva": "0x941d00",
+      "instruction_rvas": [
+        "0x942256",
+        "0x94225b",
+        "0x94229b",
+        "0x9422a4",
+        "0x9422ab",
+        "0x9422b2"
+      ],
+      "inherited_from": {
+        "map": "fine-map.json",
+        "evidence_id": "scalar_recovery"
+      }
+    },
+    {
+      "id": "flow.producer_A",
+      "binary": "game",
+      "function_rva": "0x877170",
+      "instruction_rvas": [
+        "0x877267",
+        "0x87726f",
+        "0x87729c",
+        "0x8772bc",
+        "0x8772c7",
+        "0x8772d5",
+        "0x877303",
+        "0x877322",
+        "0x87733d",
+        "0x877341",
+        "0x87734b"
+      ],
+      "inherited_from": {
+        "map": "flow-map.json",
+        "evidence_id": "producer_A"
+      }
+    },
+    {
+      "id": "flow.producer_B",
+      "binary": "game",
+      "function_rva": "0x877170",
+      "instruction_rvas": [
+        "0x8771eb",
+        "0x877224",
+        "0x877229",
+        "0x8773d7",
+        "0x8773dd",
+        "0x8773e3",
+        "0x8773ed",
+        "0x877408",
+        "0x877412"
+      ],
+      "inherited_from": {
+        "map": "flow-map.json",
+        "evidence_id": "producer_B"
+      }
+    },
+    {
+      "id": "flow.producer_callback",
+      "binary": "game",
+      "function_rva": "0x941bc0",
+      "instruction_rvas": [
+        "0x941c9f",
+        "0x941cd3"
+      ],
+      "inherited_from": {
+        "map": "flow-map.json",
+        "evidence_id": "producer_callback"
+      }
+    },
+    {
+      "id": "flow.morale_dispatch",
+      "binary": "game",
+      "function_rva": "0xa5a490",
+      "instruction_rvas": [
+        "0xa5a4d3",
+        "0xa5a4e7",
+        "0xa5a541",
+        "0xa5a5a3",
+        "0xa5a5ad"
+      ],
+      "inherited_from": {
+        "map": "flow-map.json",
+        "evidence_id": "morale_dispatch"
+      }
+    },
+    {
+      "id": "systems.scene_ordering",
+      "binary": "game",
+      "function_rva": "0xa1b320",
+      "instruction_rvas": [
+        "0xa1b7c4",
+        "0xa1b7d1",
+        "0xa1bb13",
+        "0xa1bbc4",
+        "0xa1bbd1",
+        "0xa1bc47",
+        "0xa1bc4d",
+        "0xa1bc91",
+        "0xa1c0a5",
+        "0xa1c0fe",
+        "0xa1c153",
+        "0xa1c1e7",
+        "0xa1c207",
+        "0xa1c2b1",
+        "0xa1c337",
+        "0xa1c357",
+        "0xa1c534",
+        "0xa1c541",
+        "0xa1c550"
+      ],
+      "inherited_from": {
+        "map": "systems-map.json",
+        "evidence_id": "scene_ordering"
+      }
+    },
+    {
+      "id": "systems.worker_wait",
+      "binary": "game",
+      "function_rva": "0xa3ee0",
+      "instruction_rvas": [
+        "0xa3f14",
+        "0xa40c7",
+        "0xa40d2"
+      ],
+      "inherited_from": {
+        "map": "systems-map.json",
+        "evidence_id": "worker_wait"
+      }
+    },
+    {
+      "id": "systems.actor_preparation",
+      "binary": "game",
+      "function_rva": "0x7efbf0",
+      "instruction_rvas": [
+        "0x7efcb7",
+        "0x7efcbc",
+        "0x7efce0",
+        "0x7efce3",
+        "0x7efcf7"
+      ],
+      "inherited_from": {
+        "map": "systems-map.json",
+        "evidence_id": "actor_preparation"
+      }
+    },
+    {
+      "id": "systems.task_reset",
+      "binary": "game",
+      "function_rva": "0x1cef70",
+      "instruction_rvas": [
+        "0x1cef87",
+        "0x1cefae",
+        "0x1cefe1",
+        "0x1cefed",
+        "0x1cf027",
+        "0x1cf02f",
+        "0x1cf04e",
+        "0x1cf05d",
+        "0x1cf075",
+        "0x1cf07c",
+        "0x1cf083"
+      ],
+      "inherited_from": {
+        "map": "systems-map.json",
+        "evidence_id": "task_reset"
+      }
+    },
+    {
+      "id": "systems.task_bucket_choice",
+      "binary": "game",
+      "function_rva": "0x1cf600",
+      "instruction_rvas": [
+        "0x1cf635",
+        "0x1cf69e",
+        "0x1cf6aa",
+        "0x1cf79c",
+        "0x1cf7b0",
+        "0x1cf7d9",
+        "0x1cf7e1",
+        "0x1cf7e8",
+        "0x1cf86c",
+        "0x1cf880",
+        "0x1cf8af",
+        "0x1cf8de",
+        "0x1cf8e6",
+        "0x1cf8fd"
+      ],
+      "inherited_from": {
+        "map": "systems-map.json",
+        "evidence_id": "task_bucket_choice"
+      }
+    },
+    {
+      "id": "sensor_before_reconsideration",
+      "binary": "game",
+      "function_rva": "0x7efd10",
+      "instruction_rvas": [
+        "0x7efe51",
+        "0x7efe5b",
+        "0x7efe6e",
+        "0x7efea0",
+        "0x7efea7"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-fine/0x7efd10.asm"
+    },
+    {
+      "id": "terrain_decision_read",
+      "binary": "game",
+      "function_rva": "0x8a0b20",
+      "instruction_rvas": [
+        "0x8a0b8f",
+        "0x8a0b94",
+        "0x8a0b9c",
+        "0x8a0b9f",
+        "0x8a0ba2",
+        "0x8a0ba8"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-systems/0x8a0b20.asm"
+    },
+    {
+      "id": "terrain_cell_read",
+      "binary": "game",
+      "function_rva": "0xa43ab0",
+      "instruction_rvas": [
+        "0xa43b49",
+        "0xa43b4d",
+        "0xa43b53",
+        "0xa43b59",
+        "0xa43b5c",
+        "0xa43b60"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-ground-state/0xa43ab0.asm"
+    },
+    {
+      "id": "subject_aggregate_reads",
+      "binary": "game",
+      "function_rva": "0x903b10",
+      "instruction_rvas": [
+        "0x903b6a",
+        "0x903b6e",
+        "0x903bac",
+        "0x903bb3",
+        "0x903bc3",
+        "0x903bc6",
+        "0x903bd3",
+        "0x903bd7",
+        "0x903be2",
+        "0x903bec",
+        "0x903bf3",
+        "0x903bf7",
+        "0x903c02",
+        "0x903c0b"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-movement/0x903b10.asm"
+    },
+    {
+      "id": "ownership.game_877d20",
+      "binary": "game",
+      "function_rva": "0x877d20",
+      "instruction_rvas": [
+        "0x877d20",
+        "0x877d22",
+        "0x877d23",
+        "0x877d25",
+        "0x877d29",
+        "0x877d30",
+        "0x877d33",
+        "0x877d36",
+        "0x877d39",
+        "0x877d3f",
+        "0x877d45",
+        "0x877d48",
+        "0x877d4a",
+        "0x877d50",
+        "0x877d55",
+        "0x877d57",
+        "0x877d5e",
+        "0x877d61",
+        "0x877d63",
+        "0x877d66",
+        "0x877d68",
+        "0x877d6b",
+        "0x877d6d",
+        "0x877d70",
+        "0x877d72",
+        "0x877d75",
+        "0x877d77",
+        "0x877d7a",
+        "0x877d7d",
+        "0x877d84",
+        "0x877d88",
+        "0x877d8d",
+        "0x877d90",
+        "0x877d96",
+        "0x877d98",
+        "0x877d9b",
+        "0x877da1",
+        "0x877da8",
+        "0x877dae",
+        "0x877db1",
+        "0x877db4",
+        "0x877db6",
+        "0x877dbc",
+        "0x877dbf",
+        "0x877dc1",
+        "0x877dc5",
+        "0x877dc8",
+        "0x877dcd",
+        "0x877dd1",
+        "0x877dd3",
+        "0x877dd4",
+        "0x877dd5",
+        "0x877dda",
+        "0x877ddd",
+        "0x877de0",
+        "0x877de2",
+        "0x877de7",
+        "0x877de9",
+        "0x877dee",
+        "0x877df1",
+        "0x877df4",
+        "0x877dfa",
+        "0x877dfd",
+        "0x877dff",
+        "0x877e05",
+        "0x877e07",
+        "0x877e09",
+        "0x877e0d",
+        "0x877e10",
+        "0x877e17",
+        "0x877e1c",
+        "0x877e1f",
+        "0x877e25",
+        "0x877e29",
+        "0x877e31",
+        "0x877e36",
+        "0x877e39",
+        "0x877e3b",
+        "0x877e42",
+        "0x877e47",
+        "0x877e4c",
+        "0x877e50",
+        "0x877e53",
+        "0x877e56",
+        "0x877e59",
+        "0x877e5e",
+        "0x877e62",
+        "0x877e69",
+        "0x877e6d",
+        "0x877e70",
+        "0x877e72",
+        "0x877e75",
+        "0x877e78",
+        "0x877e7d",
+        "0x877e84",
+        "0x877e8b",
+        "0x877e8e",
+        "0x877e90",
+        "0x877e93",
+        "0x877e96",
+        "0x877e99",
+        "0x877e9e",
+        "0x877ea2",
+        "0x877ea5",
+        "0x877ea7",
+        "0x877ea9",
+        "0x877eac",
+        "0x877eae",
+        "0x877eb1",
+        "0x877eb5",
+        "0x877eb8",
+        "0x877ebc",
+        "0x877ec0",
+        "0x877ec2",
+        "0x877ec5",
+        "0x877ec7",
+        "0x877ece",
+        "0x877ed2",
+        "0x877ed6",
+        "0x877edb",
+        "0x877ede",
+        "0x877ee1",
+        "0x877ee9",
+        "0x877eed",
+        "0x877eef",
+        "0x877ef4",
+        "0x877ef7",
+        "0x877ef9",
+        "0x877efe",
+        "0x877f02",
+        "0x877f05",
+        "0x877f0a",
+        "0x877f0f",
+        "0x877f12",
+        "0x877f15",
+        "0x877f1a",
+        "0x877f21",
+        "0x877f24",
+        "0x877f29",
+        "0x877f2c",
+        "0x877f2f",
+        "0x877f31",
+        "0x877f34",
+        "0x877f37",
+        "0x877f39",
+        "0x877f40",
+        "0x877f45",
+        "0x877f48",
+        "0x877f4f",
+        "0x877f53",
+        "0x877f56",
+        "0x877f5c",
+        "0x877f63",
+        "0x877f67",
+        "0x877f6b",
+        "0x877f70",
+        "0x877f78",
+        "0x877f7b",
+        "0x877f7e",
+        "0x877f80",
+        "0x877f83",
+        "0x877f89",
+        "0x877f8e",
+        "0x877f94",
+        "0x877f97",
+        "0x877f9a",
+        "0x877f9c",
+        "0x877f9e",
+        "0x877fa2",
+        "0x877fa7",
+        "0x877faa",
+        "0x877fb2",
+        "0x877fb5",
+        "0x877fb7",
+        "0x877fba",
+        "0x877fc0",
+        "0x877fc4",
+        "0x877fc6",
+        "0x877fca",
+        "0x877fce",
+        "0x877fd1",
+        "0x877fd4",
+        "0x877fd7",
+        "0x877fdc",
+        "0x877fdf",
+        "0x877fe1",
+        "0x877fe4",
+        "0x877fe8",
+        "0x877fea",
+        "0x877fee",
+        "0x877ff2",
+        "0x877ff5",
+        "0x877ffa",
+        "0x878000",
+        "0x878004",
+        "0x878006",
+        "0x87800d",
+        "0x87800f",
+        "0x878016",
+        "0x87801a",
+        "0x878022",
+        "0x878026",
+        "0x87802b",
+        "0x87802e",
+        "0x878030",
+        "0x878033",
+        "0x878036",
+        "0x87803b",
+        "0x878040",
+        "0x878045",
+        "0x878048",
+        "0x87804b",
+        "0x87804e",
+        "0x878053",
+        "0x878056",
+        "0x87805b",
+        "0x878060",
+        "0x878064",
+        "0x878069",
+        "0x87806c",
+        "0x878070",
+        "0x878074",
+        "0x87807a",
+        "0x87807e",
+        "0x878084",
+        "0x878087",
+        "0x878089",
+        "0x87808d",
+        "0x878091",
+        "0x878093",
+        "0x878097",
+        "0x87809b",
+        "0x87809e",
+        "0x8780a2",
+        "0x8780a7",
+        "0x8780aa",
+        "0x8780ad",
+        "0x8780b2",
+        "0x8780b5",
+        "0x8780b9",
+        "0x8780c0",
+        "0x8780c4",
+        "0x8780c9",
+        "0x8780cc",
+        "0x8780ce",
+        "0x8780d6",
+        "0x8780db",
+        "0x8780e0",
+        "0x8780e5",
+        "0x8780eb",
+        "0x8780f0",
+        "0x8780f6",
+        "0x8780fb",
+        "0x878100",
+        "0x878104",
+        "0x878108",
+        "0x87810c",
+        "0x878110",
+        "0x878114",
+        "0x878118",
+        "0x87811b",
+        "0x878120",
+        "0x878125",
+        "0x87812d",
+        "0x878135",
+        "0x87813a",
+        "0x878142",
+        "0x87814b",
+        "0x87814e",
+        "0x878154",
+        "0x878158",
+        "0x87815a",
+        "0x87815d",
+        "0x878161",
+        "0x878164",
+        "0x87816a",
+        "0x87816e",
+        "0x878170",
+        "0x878173",
+        "0x878176",
+        "0x87817b",
+        "0x878182",
+        "0x878187",
+        "0x87818c",
+        "0x878194",
+        "0x878199",
+        "0x87819e",
+        "0x8781a2",
+        "0x8781a4",
+        "0x8781a5",
+        "0x8781a6",
+        "0x8781a7",
+        "0x8781aa",
+        "0x8781ac",
+        "0x8781b1",
+        "0x8781b4",
+        "0x8781b8",
+        "0x8781bf",
+        "0x8781c4",
+        "0x8781c9",
+        "0x8781cc",
+        "0x8781cf",
+        "0x8781d4",
+        "0x8781d7",
+        "0x8781da",
+        "0x8781dd",
+        "0x8781e4",
+        "0x8781e9",
+        "0x8781ed",
+        "0x8781ef",
+        "0x8781f0",
+        "0x8781f1",
+        "0x8781f6",
+        "0x8781f8",
+        "0x8781fb",
+        "0x8781fd",
+        "0x878200",
+        "0x878202",
+        "0x878205",
+        "0x878207",
+        "0x87820a",
+        "0x87820c",
+        "0x87820f",
+        "0x878214",
+        "0x878219",
+        "0x87821e",
+        "0x878223",
+        "0x878228",
+        "0x87822d",
+        "0x878231",
+        "0x878235",
+        "0x878239",
+        "0x87823d",
+        "0x878241",
+        "0x878246",
+        "0x87824e",
+        "0x878252",
+        "0x878255",
+        "0x878258",
+        "0x87825b",
+        "0x87825e",
+        "0x878263",
+        "0x878267",
+        "0x878269",
+        "0x87826a",
+        "0x87826b"
+      ],
+      "inherited_from": {
+        "map": "ownership-map.json",
+        "evidence_id": "game_877d20"
+      }
+    },
+    {
+      "id": "subject_expiry_and_search_wait",
+      "binary": "game",
+      "function_rva": "0x878ae0",
+      "instruction_rvas": [
+        "0x87918a",
+        "0x879192",
+        "0x879198",
+        "0x8791a2",
+        "0x8791ab",
+        "0x879214",
+        "0x87921b",
+        "0x87921f",
+        "0x879229",
+        "0x879237",
+        "0x879247",
+        "0x879257"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-ownership/0x878ae0.asm"
+    },
+    {
+      "id": "targetable_and_operatable_reads",
+      "binary": "game",
+      "function_rva": "0x878560",
+      "instruction_rvas": [
+        "0x8785a3",
+        "0x8785aa",
+        "0x8785ac",
+        "0x8785b3",
+        "0x8785b9",
+        "0x8785be",
+        "0x878619",
+        "0x878635",
+        "0x87863e"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-ownership/0x878560.asm"
+    },
+    {
+      "id": "ownership.game_77c140",
+      "binary": "game",
+      "function_rva": "0x77c140",
+      "instruction_rvas": [
+        "0x77c140",
+        "0x77c143",
+        "0x77c148",
+        "0x77c14c",
+        "0x77c150",
+        "0x77c151",
+        "0x77c152",
+        "0x77c154",
+        "0x77c156",
+        "0x77c15d",
+        "0x77c164",
+        "0x77c167",
+        "0x77c16b",
+        "0x77c16e",
+        "0x77c178",
+        "0x77c17b",
+        "0x77c17f",
+        "0x77c183",
+        "0x77c186",
+        "0x77c189",
+        "0x77c18d",
+        "0x77c190",
+        "0x77c194",
+        "0x77c197",
+        "0x77c19a",
+        "0x77c1a0",
+        "0x77c1a4",
+        "0x77c1ab",
+        "0x77c1af",
+        "0x77c1b2",
+        "0x77c1b6",
+        "0x77c1bd",
+        "0x77c1c1",
+        "0x77c1c7",
+        "0x77c1cb",
+        "0x77c1d0",
+        "0x77c1d3",
+        "0x77c1d8",
+        "0x77c1df",
+        "0x77c1e2",
+        "0x77c1e6",
+        "0x77c1eb",
+        "0x77c1f0",
+        "0x77c1f2",
+        "0x77c1f5",
+        "0x77c1fc",
+        "0x77c203",
+        "0x77c206",
+        "0x77c20b",
+        "0x77c20f",
+        "0x77c214",
+        "0x77c216",
+        "0x77c219",
+        "0x77c220",
+        "0x77c227",
+        "0x77c22a",
+        "0x77c22f",
+        "0x77c232",
+        "0x77c237",
+        "0x77c23a",
+        "0x77c23f",
+        "0x77c244",
+        "0x77c246",
+        "0x77c249",
+        "0x77c250",
+        "0x77c257",
+        "0x77c25a",
+        "0x77c25f",
+        "0x77c262",
+        "0x77c267",
+        "0x77c26a",
+        "0x77c26f",
+        "0x77c274",
+        "0x77c276",
+        "0x77c279",
+        "0x77c280",
+        "0x77c287",
+        "0x77c28a",
+        "0x77c28f",
+        "0x77c294",
+        "0x77c29b",
+        "0x77c29f",
+        "0x77c2a4",
+        "0x77c2a8",
+        "0x77c2ad",
+        "0x77c2b2",
+        "0x77c2b6",
+        "0x77c2b8",
+        "0x77c2bd",
+        "0x77c2c0",
+        "0x77c2c3",
+        "0x77c2ca",
+        "0x77c2cc",
+        "0x77c2d0",
+        "0x77c2d4",
+        "0x77c2d7",
+        "0x77c2db",
+        "0x77c2df",
+        "0x77c2e5",
+        "0x77c2ea",
+        "0x77c2ef",
+        "0x77c2f2",
+        "0x77c2f7",
+        "0x77c300",
+        "0x77c305",
+        "0x77c309",
+        "0x77c30b",
+        "0x77c310",
+        "0x77c313",
+        "0x77c316",
+        "0x77c31d",
+        "0x77c31f",
+        "0x77c323",
+        "0x77c327",
+        "0x77c32a",
+        "0x77c32e",
+        "0x77c332",
+        "0x77c338",
+        "0x77c33d",
+        "0x77c341",
+        "0x77c346",
+        "0x77c34f",
+        "0x77c354",
+        "0x77c358",
+        "0x77c35e",
+        "0x77c363",
+        "0x77c366",
+        "0x77c369",
+        "0x77c370",
+        "0x77c372",
+        "0x77c376",
+        "0x77c37a",
+        "0x77c37d",
+        "0x77c381",
+        "0x77c385",
+        "0x77c38b",
+        "0x77c390",
+        "0x77c395",
+        "0x77c398",
+        "0x77c3a0",
+        "0x77c3a3",
+        "0x77c3a5",
+        "0x77c3aa",
+        "0x77c3ac",
+        "0x77c3b1",
+        "0x77c3b4",
+        "0x77c3b6",
+        "0x77c3ba",
+        "0x77c3be",
+        "0x77c3c2",
+        "0x77c3c4",
+        "0x77c3c7",
+        "0x77c3cc",
+        "0x77c3ce",
+        "0x77c3d5",
+        "0x77c3da",
+        "0x77c3dc",
+        "0x77c3df",
+        "0x77c3e2",
+        "0x77c3e5",
+        "0x77c3ea",
+        "0x77c3f1",
+        "0x77c3f5",
+        "0x77c3fb",
+        "0x77c3fd",
+        "0x77c401",
+        "0x77c408",
+        "0x77c40b",
+        "0x77c410",
+        "0x77c415",
+        "0x77c418",
+        "0x77c41a",
+        "0x77c41e",
+        "0x77c421",
+        "0x77c423",
+        "0x77c427",
+        "0x77c429",
+        "0x77c430",
+        "0x77c432",
+        "0x77c439",
+        "0x77c440",
+        "0x77c445",
+        "0x77c448",
+        "0x77c44b",
+        "0x77c44d",
+        "0x77c457",
+        "0x77c459",
+        "0x77c461",
+        "0x77c464",
+        "0x77c46b",
+        "0x77c46e",
+        "0x77c471",
+        "0x77c475",
+        "0x77c47a",
+        "0x77c47e",
+        "0x77c481",
+        "0x77c485",
+        "0x77c48c",
+        "0x77c493",
+        "0x77c499",
+        "0x77c49b",
+        "0x77c4a0",
+        "0x77c4a7",
+        "0x77c4a9",
+        "0x77c4b1",
+        "0x77c4b6",
+        "0x77c4bb",
+        "0x77c4c2",
+        "0x77c4c7",
+        "0x77c4cc",
+        "0x77c4d0",
+        "0x77c4d5",
+        "0x77c4d9",
+        "0x77c4de",
+        "0x77c4e1",
+        "0x77c4e5",
+        "0x77c4e8",
+        "0x77c4eb",
+        "0x77c4f0",
+        "0x77c4f6",
+        "0x77c4fb",
+        "0x77c500",
+        "0x77c50a",
+        "0x77c50f",
+        "0x77c516",
+        "0x77c51b",
+        "0x77c520",
+        "0x77c523",
+        "0x77c526",
+        "0x77c52b",
+        "0x77c52e",
+        "0x77c533",
+        "0x77c53a",
+        "0x77c540",
+        "0x77c544",
+        "0x77c549",
+        "0x77c54e",
+        "0x77c553",
+        "0x77c557",
+        "0x77c55a",
+        "0x77c55f",
+        "0x77c562",
+        "0x77c569",
+        "0x77c56c",
+        "0x77c571",
+        "0x77c576",
+        "0x77c57b",
+        "0x77c580",
+        "0x77c587",
+        "0x77c58e",
+        "0x77c591",
+        "0x77c596",
+        "0x77c59f",
+        "0x77c5a8",
+        "0x77c5ab",
+        "0x77c5b3",
+        "0x77c5b8",
+        "0x77c5bf",
+        "0x77c5c3",
+        "0x77c5c6",
+        "0x77c5cd",
+        "0x77c5d0",
+        "0x77c5d4",
+        "0x77c5d9",
+        "0x77c5de",
+        "0x77c5e3",
+        "0x77c5e7",
+        "0x77c5e9",
+        "0x77c5ee",
+        "0x77c5f1",
+        "0x77c5f4",
+        "0x77c5fb",
+        "0x77c5fd",
+        "0x77c601",
+        "0x77c605",
+        "0x77c608",
+        "0x77c60c",
+        "0x77c610",
+        "0x77c616",
+        "0x77c61b",
+        "0x77c61d",
+        "0x77c620",
+        "0x77c625",
+        "0x77c628",
+        "0x77c631",
+        "0x77c634",
+        "0x77c63d",
+        "0x77c642",
+        "0x77c647",
+        "0x77c64c",
+        "0x77c64f",
+        "0x77c654",
+        "0x77c659",
+        "0x77c65e",
+        "0x77c663",
+        "0x77c667",
+        "0x77c669",
+        "0x77c66e",
+        "0x77c671",
+        "0x77c674",
+        "0x77c67b",
+        "0x77c67d",
+        "0x77c681",
+        "0x77c685",
+        "0x77c688",
+        "0x77c68c",
+        "0x77c690",
+        "0x77c696",
+        "0x77c69b",
+        "0x77c69e",
+        "0x77c6a3",
+        "0x77c6a8",
+        "0x77c6ab",
+        "0x77c6ae",
+        "0x77c6b3",
+        "0x77c6b6",
+        "0x77c6bf",
+        "0x77c6c4",
+        "0x77c6ce",
+        "0x77c6d3",
+        "0x77c6d8",
+        "0x77c6dd",
+        "0x77c6e0",
+        "0x77c6e9",
+        "0x77c6ee",
+        "0x77c6f3",
+        "0x77c6f7",
+        "0x77c6f9",
+        "0x77c6fe",
+        "0x77c701",
+        "0x77c704",
+        "0x77c70b",
+        "0x77c70d",
+        "0x77c711",
+        "0x77c715",
+        "0x77c718",
+        "0x77c71c",
+        "0x77c720",
+        "0x77c726",
+        "0x77c72b",
+        "0x77c72e",
+        "0x77c733",
+        "0x77c737",
+        "0x77c73c",
+        "0x77c741",
+        "0x77c745",
+        "0x77c747",
+        "0x77c74c",
+        "0x77c74f",
+        "0x77c752",
+        "0x77c759",
+        "0x77c75b",
+        "0x77c75f",
+        "0x77c763",
+        "0x77c766",
+        "0x77c76a",
+        "0x77c76e",
+        "0x77c774",
+        "0x77c779",
+        "0x77c77d",
+        "0x77c782",
+        "0x77c78b",
+        "0x77c790",
+        "0x77c794",
+        "0x77c79a",
+        "0x77c79f",
+        "0x77c7a2",
+        "0x77c7a5",
+        "0x77c7ac",
+        "0x77c7b2",
+        "0x77c7b6",
+        "0x77c7ba",
+        "0x77c7bd",
+        "0x77c7c1",
+        "0x77c7c5",
+        "0x77c7cb",
+        "0x77c7d0",
+        "0x77c7d2",
+        "0x77c7d7",
+        "0x77c7da",
+        "0x77c7df",
+        "0x77c7e2",
+        "0x77c7e7",
+        "0x77c7ec",
+        "0x77c7ef",
+        "0x77c7f4",
+        "0x77c7fb",
+        "0x77c801",
+        "0x77c805",
+        "0x77c80a",
+        "0x77c80f",
+        "0x77c814",
+        "0x77c818",
+        "0x77c81b",
+        "0x77c820",
+        "0x77c823",
+        "0x77c82a",
+        "0x77c82d",
+        "0x77c832",
+        "0x77c837",
+        "0x77c83c",
+        "0x77c841",
+        "0x77c848",
+        "0x77c84f",
+        "0x77c852",
+        "0x77c857",
+        "0x77c860",
+        "0x77c869",
+        "0x77c86c",
+        "0x77c874",
+        "0x77c879",
+        "0x77c880",
+        "0x77c884",
+        "0x77c887",
+        "0x77c88e",
+        "0x77c891",
+        "0x77c895",
+        "0x77c89a",
+        "0x77c89f",
+        "0x77c8a4",
+        "0x77c8a8",
+        "0x77c8aa",
+        "0x77c8af",
+        "0x77c8b2",
+        "0x77c8b5",
+        "0x77c8bc",
+        "0x77c8be",
+        "0x77c8c2",
+        "0x77c8c6",
+        "0x77c8c9",
+        "0x77c8cd",
+        "0x77c8d1",
+        "0x77c8d7",
+        "0x77c8dc",
+        "0x77c8de",
+        "0x77c8e1",
+        "0x77c8e6",
+        "0x77c8e9",
+        "0x77c8f2",
+        "0x77c8f5",
+        "0x77c8fe",
+        "0x77c903",
+        "0x77c908",
+        "0x77c90d",
+        "0x77c910",
+        "0x77c915",
+        "0x77c91a",
+        "0x77c91f",
+        "0x77c924",
+        "0x77c928",
+        "0x77c92a",
+        "0x77c92f",
+        "0x77c932",
+        "0x77c935",
+        "0x77c93c",
+        "0x77c93e",
+        "0x77c942",
+        "0x77c946",
+        "0x77c949",
+        "0x77c94d",
+        "0x77c951",
+        "0x77c957",
+        "0x77c95c",
+        "0x77c95f",
+        "0x77c964",
+        "0x77c969",
+        "0x77c96c",
+        "0x77c96f",
+        "0x77c974",
+        "0x77c97b",
+        "0x77c980",
+        "0x77c983",
+        "0x77c98c",
+        "0x77c991",
+        "0x77c994",
+        "0x77c99d",
+        "0x77c9a5",
+        "0x77c9ab",
+        "0x77c9b0",
+        "0x77c9b5",
+        "0x77c9ba",
+        "0x77c9bf",
+        "0x77c9c3",
+        "0x77c9c5",
+        "0x77c9ca",
+        "0x77c9cd",
+        "0x77c9d0",
+        "0x77c9d7",
+        "0x77c9d9",
+        "0x77c9dd",
+        "0x77c9e1",
+        "0x77c9e4",
+        "0x77c9e8",
+        "0x77c9ec",
+        "0x77c9f2",
+        "0x77c9f7",
+        "0x77c9fa",
+        "0x77c9ff",
+        "0x77ca03",
+        "0x77ca08",
+        "0x77ca0d",
+        "0x77ca11",
+        "0x77ca13",
+        "0x77ca18",
+        "0x77ca1b",
+        "0x77ca1e",
+        "0x77ca25",
+        "0x77ca27",
+        "0x77ca2b",
+        "0x77ca2f",
+        "0x77ca32",
+        "0x77ca36",
+        "0x77ca3a",
+        "0x77ca40",
+        "0x77ca45",
+        "0x77ca49",
+        "0x77ca4e",
+        "0x77ca57",
+        "0x77ca5c",
+        "0x77ca60",
+        "0x77ca62",
+        "0x77ca67",
+        "0x77ca6a",
+        "0x77ca6d",
+        "0x77ca74",
+        "0x77ca76",
+        "0x77ca7a",
+        "0x77ca7e",
+        "0x77ca81",
+        "0x77ca85",
+        "0x77ca89",
+        "0x77ca8f",
+        "0x77ca94",
+        "0x77ca9e",
+        "0x77caa0",
+        "0x77caab",
+        "0x77cab2",
+        "0x77cab4",
+        "0x77cab8",
+        "0x77caba",
+        "0x77cabc",
+        "0x77cabf",
+        "0x77cac2",
+        "0x77cac6",
+        "0x77cac9",
+        "0x77cacc",
+        "0x77cad2",
+        "0x77cad4",
+        "0x77cad6",
+        "0x77cad9",
+        "0x77cadb",
+        "0x77cae3",
+        "0x77caed",
+        "0x77caf3",
+        "0x77caf5",
+        "0x77caf8",
+        "0x77cafa",
+        "0x77cafc",
+        "0x77cafe",
+        "0x77cb06",
+        "0x77cb0a",
+        "0x77cb0c",
+        "0x77cb0f",
+        "0x77cb13",
+        "0x77cb16",
+        "0x77cb1d",
+        "0x77cb23",
+        "0x77cb2a",
+        "0x77cb2e",
+        "0x77cb33",
+        "0x77cb3a",
+        "0x77cb3e",
+        "0x77cb45",
+        "0x77cb4c",
+        "0x77cb53",
+        "0x77cb56",
+        "0x77cb58",
+        "0x77cb5e",
+        "0x77cb60",
+        "0x77cb63",
+        "0x77cb67",
+        "0x77cb69",
+        "0x77cb6d",
+        "0x77cb71",
+        "0x77cb76",
+        "0x77cb78",
+        "0x77cb7a",
+        "0x77cb7d",
+        "0x77cb80",
+        "0x77cb83",
+        "0x77cb87",
+        "0x77cb8a",
+        "0x77cb8c",
+        "0x77cb8f",
+        "0x77cb93",
+        "0x77cb96",
+        "0x77cb98",
+        "0x77cb9f",
+        "0x77cba6",
+        "0x77cbad",
+        "0x77cbb4",
+        "0x77cbb7",
+        "0x77cbb9",
+        "0x77cbc0",
+        "0x77cbc3",
+        "0x77cbc7",
+        "0x77cbcd",
+        "0x77cbd0",
+        "0x77cbd5",
+        "0x77cbd7",
+        "0x77cbd9",
+        "0x77cbdd",
+        "0x77cbe0",
+        "0x77cbe2",
+        "0x77cbe6",
+        "0x77cbeb",
+        "0x77cbf2",
+        "0x77cbfc",
+        "0x77cbfe",
+        "0x77cc01",
+        "0x77cc04",
+        "0x77cc07",
+        "0x77cc0c",
+        "0x77cc13",
+        "0x77cc19",
+        "0x77cc20",
+        "0x77cc26",
+        "0x77cc29",
+        "0x77cc2f",
+        "0x77cc37",
+        "0x77cc3b",
+        "0x77cc43",
+        "0x77cc48",
+        "0x77cc4d",
+        "0x77cc54",
+        "0x77cc59",
+        "0x77cc5d",
+        "0x77cc62",
+        "0x77cc6a",
+        "0x77cc72",
+        "0x77cc79",
+        "0x77cc7e",
+        "0x77cc83",
+        "0x77cc88",
+        "0x77cc8d",
+        "0x77cc91",
+        "0x77cc98",
+        "0x77cc9c",
+        "0x77cca0",
+        "0x77cca2",
+        "0x77cca5",
+        "0x77ccaa",
+        "0x77ccb2",
+        "0x77ccb9",
+        "0x77ccbe",
+        "0x77ccc6",
+        "0x77cccb",
+        "0x77ccd0",
+        "0x77ccd3",
+        "0x77ccd7",
+        "0x77ccdc",
+        "0x77cce3",
+        "0x77cce8",
+        "0x77ccec",
+        "0x77ccf0",
+        "0x77ccf4",
+        "0x77ccf7",
+        "0x77ccfa",
+        "0x77ccfe",
+        "0x77cd02",
+        "0x77cd06",
+        "0x77cd0b",
+        "0x77cd13",
+        "0x77cd1a",
+        "0x77cd1e",
+        "0x77cd23",
+        "0x77cd26",
+        "0x77cd29",
+        "0x77cd2e",
+        "0x77cd31",
+        "0x77cd33",
+        "0x77cd37",
+        "0x77cd3b",
+        "0x77cd3d",
+        "0x77cd3f",
+        "0x77cd45",
+        "0x77cd48",
+        "0x77cd4a",
+        "0x77cd4c",
+        "0x77cd4f",
+        "0x77cd55",
+        "0x77cd57",
+        "0x77cd5a",
+        "0x77cd5e",
+        "0x77cd64",
+        "0x77cd66",
+        "0x77cd6c",
+        "0x77cd70",
+        "0x77cd72",
+        "0x77cd78",
+        "0x77cd7c",
+        "0x77cd81",
+        "0x77cd88",
+        "0x77cd8a",
+        "0x77cd91",
+        "0x77cd96",
+        "0x77cd9b",
+        "0x77cd9e",
+        "0x77cda1",
+        "0x77cda6",
+        "0x77cdae",
+        "0x77cdb5",
+        "0x77cdb8",
+        "0x77cdc0",
+        "0x77cdc3",
+        "0x77cdc8",
+        "0x77cdcd",
+        "0x77cdd2",
+        "0x77cdd7",
+        "0x77cdda",
+        "0x77cddc",
+        "0x77cde6",
+        "0x77cdeb",
+        "0x77cded",
+        "0x77cdf0",
+        "0x77cdf3",
+        "0x77cdf6",
+        "0x77cdfa",
+        "0x77cdfe",
+        "0x77ce04",
+        "0x77ce0a",
+        "0x77ce0e",
+        "0x77ce13",
+        "0x77ce1d",
+        "0x77ce20",
+        "0x77ce26",
+        "0x77ce29",
+        "0x77ce2c",
+        "0x77ce30",
+        "0x77ce36",
+        "0x77ce39",
+        "0x77ce41",
+        "0x77ce44",
+        "0x77ce48",
+        "0x77ce4f",
+        "0x77ce51",
+        "0x77ce56",
+        "0x77ce5b",
+        "0x77ce60",
+        "0x77ce65",
+        "0x77ce6a",
+        "0x77ce72",
+        "0x77ce7a",
+        "0x77ce82",
+        "0x77ce8a",
+        "0x77ce91",
+        "0x77ce93",
+        "0x77ce95",
+        "0x77ce96",
+        "0x77ce97",
+        "0x77ce98",
+        "0x77ce9e",
+        "0x77cea4",
+        "0x77ceaa",
+        "0x77ceb0",
+        "0x77ceb6",
+        "0x77cebc",
+        "0x77cec2",
+        "0x77cec8",
+        "0x77cece"
+      ],
+      "inherited_from": {
+        "map": "ownership-map.json",
+        "evidence_id": "game_77c140"
+      }
+    },
+    {
+      "id": "ownership.game_77b950",
+      "binary": "game",
+      "function_rva": "0x77b950",
+      "instruction_rvas": [
+        "0x77b950",
+        "0x77b955",
+        "0x77b958",
+        "0x77b959",
+        "0x77b95a",
+        "0x77b95c",
+        "0x77b960",
+        "0x77b967",
+        "0x77b96b",
+        "0x77b96e",
+        "0x77b978",
+        "0x77b97b",
+        "0x77b97f",
+        "0x77b983",
+        "0x77b986",
+        "0x77b989",
+        "0x77b98d",
+        "0x77b990",
+        "0x77b994",
+        "0x77b997",
+        "0x77b99a",
+        "0x77b9a0",
+        "0x77b9a4",
+        "0x77b9a8",
+        "0x77b9ac",
+        "0x77b9b0",
+        "0x77b9b7",
+        "0x77b9ba",
+        "0x77b9be",
+        "0x77b9c0",
+        "0x77b9c4",
+        "0x77b9c7",
+        "0x77b9c9",
+        "0x77b9d0",
+        "0x77b9d4",
+        "0x77b9d7",
+        "0x77b9d9",
+        "0x77b9dc",
+        "0x77b9df",
+        "0x77b9e1",
+        "0x77b9e3",
+        "0x77b9e6",
+        "0x77b9e8",
+        "0x77b9f0",
+        "0x77b9f4",
+        "0x77b9f8",
+        "0x77b9fa",
+        "0x77b9fd",
+        "0x77ba01",
+        "0x77ba05",
+        "0x77ba09",
+        "0x77ba0c",
+        "0x77ba0e",
+        "0x77ba11",
+        "0x77ba13",
+        "0x77ba17",
+        "0x77ba1a",
+        "0x77ba1d",
+        "0x77ba20",
+        "0x77ba25",
+        "0x77ba29",
+        "0x77ba2d",
+        "0x77ba34",
+        "0x77ba38",
+        "0x77ba3a",
+        "0x77ba3e",
+        "0x77ba41",
+        "0x77ba44",
+        "0x77ba4b",
+        "0x77ba50",
+        "0x77ba5b",
+        "0x77ba62",
+        "0x77ba64",
+        "0x77ba6c",
+        "0x77ba74",
+        "0x77ba77",
+        "0x77ba79",
+        "0x77ba7d",
+        "0x77ba7f",
+        "0x77ba82",
+        "0x77ba84",
+        "0x77ba87",
+        "0x77ba8a",
+        "0x77ba90",
+        "0x77ba94",
+        "0x77ba97",
+        "0x77ba99",
+        "0x77ba9d",
+        "0x77ba9f",
+        "0x77baa6",
+        "0x77baa8",
+        "0x77baaf",
+        "0x77bab6",
+        "0x77babb",
+        "0x77babe",
+        "0x77bac0",
+        "0x77bac4",
+        "0x77bacf",
+        "0x77bad1",
+        "0x77bad4",
+        "0x77bad6",
+        "0x77bad9",
+        "0x77bade",
+        "0x77bae5",
+        "0x77baef",
+        "0x77baf6",
+        "0x77baf9",
+        "0x77bafc",
+        "0x77bafe",
+        "0x77bb00",
+        "0x77bb04",
+        "0x77bb09",
+        "0x77bb0d",
+        "0x77bb15",
+        "0x77bb1a",
+        "0x77bb1f",
+        "0x77bb22",
+        "0x77bb25",
+        "0x77bb2a",
+        "0x77bb2f",
+        "0x77bb37",
+        "0x77bb39",
+        "0x77bb40",
+        "0x77bb43",
+        "0x77bb45",
+        "0x77bb47",
+        "0x77bb4a",
+        "0x77bb4d",
+        "0x77bb50",
+        "0x77bb53",
+        "0x77bb5b",
+        "0x77bb61",
+        "0x77bb68",
+        "0x77bb6c",
+        "0x77bb71",
+        "0x77bb78",
+        "0x77bb7c",
+        "0x77bb83",
+        "0x77bb87",
+        "0x77bb8e",
+        "0x77bb95",
+        "0x77bb98",
+        "0x77bb9a",
+        "0x77bb9f",
+        "0x77bba0",
+        "0x77bba5",
+        "0x77bba8",
+        "0x77bbaa",
+        "0x77bbae",
+        "0x77bbb2",
+        "0x77bbb7",
+        "0x77bbb9",
+        "0x77bbbb",
+        "0x77bbbe",
+        "0x77bbc0",
+        "0x77bbc3",
+        "0x77bbc6",
+        "0x77bbc9",
+        "0x77bbcb",
+        "0x77bbce",
+        "0x77bbd2",
+        "0x77bbd5",
+        "0x77bbd7",
+        "0x77bbdb",
+        "0x77bbdf",
+        "0x77bbe6",
+        "0x77bbed",
+        "0x77bbf0",
+        "0x77bbf2",
+        "0x77bbf6",
+        "0x77bc00",
+        "0x77bc03",
+        "0x77bc07",
+        "0x77bc0d",
+        "0x77bc10",
+        "0x77bc15",
+        "0x77bc17",
+        "0x77bc19",
+        "0x77bc1d",
+        "0x77bc20",
+        "0x77bc22",
+        "0x77bc26",
+        "0x77bc2b",
+        "0x77bc36",
+        "0x77bc38",
+        "0x77bc3b",
+        "0x77bc3e",
+        "0x77bc41",
+        "0x77bc46",
+        "0x77bc4b",
+        "0x77bc51",
+        "0x77bc54",
+        "0x77bc5a",
+        "0x77bc62",
+        "0x77bc64",
+        "0x77bc6c",
+        "0x77bc6f",
+        "0x77bc71",
+        "0x77bc7b",
+        "0x77bc83",
+        "0x77bc85",
+        "0x77bc8d",
+        "0x77bc91",
+        "0x77bc93",
+        "0x77bc96",
+        "0x77bc9a",
+        "0x77bc9d",
+        "0x77bca8",
+        "0x77bcaa",
+        "0x77bcb2",
+        "0x77bcb5",
+        "0x77bcb7",
+        "0x77bcb9",
+        "0x77bcbd",
+        "0x77bcc2",
+        "0x77bcc5",
+        "0x77bccd",
+        "0x77bcd3",
+        "0x77bcd6",
+        "0x77bcdc",
+        "0x77bce7",
+        "0x77bcea",
+        "0x77bcef",
+        "0x77bcf2",
+        "0x77bcf5",
+        "0x77bcf9",
+        "0x77bcfc",
+        "0x77bd00",
+        "0x77bd06",
+        "0x77bd0c",
+        "0x77bd13",
+        "0x77bd19",
+        "0x77bd1d",
+        "0x77bd22",
+        "0x77bd27",
+        "0x77bd2c",
+        "0x77bd30",
+        "0x77bd33",
+        "0x77bd38",
+        "0x77bd3b",
+        "0x77bd3f",
+        "0x77bd42",
+        "0x77bd45",
+        "0x77bd4a",
+        "0x77bd4f",
+        "0x77bd58",
+        "0x77bd5d",
+        "0x77bd64",
+        "0x77bd69",
+        "0x77bd6e",
+        "0x77bd77",
+        "0x77bd7c",
+        "0x77bd7f",
+        "0x77bd87",
+        "0x77bd8c",
+        "0x77bd93",
+        "0x77bd97",
+        "0x77bd9e",
+        "0x77bda1",
+        "0x77bda4",
+        "0x77bda8",
+        "0x77bdad",
+        "0x77bdb2",
+        "0x77bdb6",
+        "0x77bdb8",
+        "0x77bdbd",
+        "0x77bdc0",
+        "0x77bdc3",
+        "0x77bdca",
+        "0x77bdcc",
+        "0x77bdd0",
+        "0x77bdd4",
+        "0x77bdd7",
+        "0x77bddb",
+        "0x77bdde",
+        "0x77bde4",
+        "0x77bde9",
+        "0x77bdec",
+        "0x77bdf1",
+        "0x77bdf6",
+        "0x77bdfa",
+        "0x77bdfd",
+        "0x77be00",
+        "0x77be05",
+        "0x77be08",
+        "0x77be11",
+        "0x77be14",
+        "0x77be1d",
+        "0x77be22",
+        "0x77be27",
+        "0x77be2c",
+        "0x77be2f",
+        "0x77be34",
+        "0x77be39",
+        "0x77be3e",
+        "0x77be43",
+        "0x77be47",
+        "0x77be49",
+        "0x77be4e",
+        "0x77be51",
+        "0x77be54",
+        "0x77be5b",
+        "0x77be5d",
+        "0x77be61",
+        "0x77be65",
+        "0x77be68",
+        "0x77be6c",
+        "0x77be6f",
+        "0x77be75",
+        "0x77be7a",
+        "0x77be7d",
+        "0x77be80",
+        "0x77be85",
+        "0x77be88",
+        "0x77be91",
+        "0x77be96",
+        "0x77be9b",
+        "0x77bea0",
+        "0x77bea5",
+        "0x77beaa",
+        "0x77bead",
+        "0x77beb6",
+        "0x77bebb",
+        "0x77bec0",
+        "0x77bec4",
+        "0x77bec6",
+        "0x77becb",
+        "0x77bece",
+        "0x77bed1",
+        "0x77bed8",
+        "0x77beda",
+        "0x77bede",
+        "0x77bee2",
+        "0x77bee5",
+        "0x77bee9",
+        "0x77beec",
+        "0x77bef2",
+        "0x77bef7",
+        "0x77befa",
+        "0x77beff",
+        "0x77bf03",
+        "0x77bf08",
+        "0x77bf0d",
+        "0x77bf11",
+        "0x77bf13",
+        "0x77bf18",
+        "0x77bf1b",
+        "0x77bf1e",
+        "0x77bf25",
+        "0x77bf27",
+        "0x77bf2b",
+        "0x77bf2f",
+        "0x77bf32",
+        "0x77bf36",
+        "0x77bf39",
+        "0x77bf3f",
+        "0x77bf44",
+        "0x77bf48",
+        "0x77bf51",
+        "0x77bf5a",
+        "0x77bf5f",
+        "0x77bf63",
+        "0x77bf65",
+        "0x77bf6a",
+        "0x77bf6d",
+        "0x77bf70",
+        "0x77bf77",
+        "0x77bf79",
+        "0x77bf7d",
+        "0x77bf81",
+        "0x77bf84",
+        "0x77bf88",
+        "0x77bf8b",
+        "0x77bf91",
+        "0x77bf96",
+        "0x77bf9d",
+        "0x77bfa0",
+        "0x77bfa3",
+        "0x77bfa5",
+        "0x77bfa9",
+        "0x77bfae",
+        "0x77bfb2",
+        "0x77bfb5",
+        "0x77bfb7",
+        "0x77bfbb",
+        "0x77bfbf",
+        "0x77bfc1",
+        "0x77bfc4",
+        "0x77bfc6",
+        "0x77bfd0",
+        "0x77bfd4",
+        "0x77bfd8",
+        "0x77bfdb",
+        "0x77bfdd",
+        "0x77bfe0",
+        "0x77bfe2",
+        "0x77bfe4",
+        "0x77bfe8",
+        "0x77bfeb",
+        "0x77bfed",
+        "0x77bff0",
+        "0x77bff4",
+        "0x77bffa",
+        "0x77bffc",
+        "0x77c001",
+        "0x77c004",
+        "0x77c008",
+        "0x77c00d",
+        "0x77c018",
+        "0x77c01d",
+        "0x77c020",
+        "0x77c024",
+        "0x77c027",
+        "0x77c02c",
+        "0x77c032",
+        "0x77c038",
+        "0x77c03a",
+        "0x77c042",
+        "0x77c049",
+        "0x77c04b",
+        "0x77c04e",
+        "0x77c050",
+        "0x77c058",
+        "0x77c05b",
+        "0x77c060",
+        "0x77c06b",
+        "0x77c06d",
+        "0x77c070",
+        "0x77c073",
+        "0x77c078",
+        "0x77c07b",
+        "0x77c07d",
+        "0x77c084",
+        "0x77c08f",
+        "0x77c09a",
+        "0x77c09e",
+        "0x77c0a2",
+        "0x77c0a4",
+        "0x77c0a7",
+        "0x77c0ac",
+        "0x77c0b1",
+        "0x77c0b4",
+        "0x77c0bc",
+        "0x77c0bf",
+        "0x77c0c3",
+        "0x77c0ca",
+        "0x77c0cc",
+        "0x77c0d1",
+        "0x77c0d6",
+        "0x77c0db",
+        "0x77c0e0",
+        "0x77c0e5",
+        "0x77c0ed",
+        "0x77c0f5",
+        "0x77c0fd",
+        "0x77c105",
+        "0x77c10d",
+        "0x77c114",
+        "0x77c116",
+        "0x77c117",
+        "0x77c118",
+        "0x77c119",
+        "0x77c11f",
+        "0x77c125",
+        "0x77c12b",
+        "0x77c131"
+      ],
+      "inherited_from": {
+        "map": "ownership-map.json",
+        "evidence_id": "game_77b950"
+      }
+    },
+    {
+      "id": "linked_pickup_read",
+      "binary": "game",
+      "function_rva": "0x945c80",
+      "instruction_rvas": [
+        "0x945d0d",
+        "0x945d13",
+        "0x945d16",
+        "0x945d18"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-human-states/0x945c80.asm"
+    },
+    {
+      "id": "search_completion_write",
+      "binary": "game",
+      "function_rva": "0x94c8a0",
+      "instruction_rvas": [
+        "0x94c941",
+        "0x94c945",
+        "0x94c94c",
+        "0x94c957",
+        "0x94c961"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-human-states/0x94c8a0.asm"
+    },
+    {
+      "id": "ownership.game_7f1a30",
+      "binary": "game",
+      "function_rva": "0x7f1a30",
+      "instruction_rvas": [
+        "0x7f1a30",
+        "0x7f1a38",
+        "0x7f1a3a",
+        "0x7f1a41",
+        "0x7f1a46",
+        "0x7f1a48",
+        "0x7f1a4e",
+        "0x7f1a51",
+        "0x7f1a54",
+        "0x7f1a56",
+        "0x7f1a5a",
+        "0x7f1a5c",
+        "0x7f1a60",
+        "0x7f1a63",
+        "0x7f1a65",
+        "0x7f1a67",
+        "0x7f1a6e",
+        "0x7f1a72",
+        "0x7f1a75",
+        "0x7f1a77",
+        "0x7f1a7e",
+        "0x7f1a80",
+        "0x7f1a82",
+        "0x7f1a83",
+        "0x7f1a85"
+      ],
+      "inherited_from": {
+        "map": "ownership-map.json",
+        "evidence_id": "game_7f1a30"
+      }
+    },
+    {
+      "id": "ownership.game_7f0130",
+      "binary": "game",
+      "function_rva": "0x7f0130",
+      "instruction_rvas": [
+        "0x7f0130",
+        "0x7f0135",
+        "0x7f0136",
+        "0x7f013a",
+        "0x7f0141",
+        "0x7f0144",
+        "0x7f0146",
+        "0x7f014a",
+        "0x7f014c",
+        "0x7f0150",
+        "0x7f0158",
+        "0x7f015a",
+        "0x7f015f",
+        "0x7f0162",
+        "0x7f0165",
+        "0x7f016b",
+        "0x7f0171",
+        "0x7f0176",
+        "0x7f017a",
+        "0x7f017b",
+        "0x7f017c",
+        "0x7f0183",
+        "0x7f0188",
+        "0x7f018b",
+        "0x7f018f",
+        "0x7f0192",
+        "0x7f0194",
+        "0x7f0199",
+        "0x7f019b",
+        "0x7f019d",
+        "0x7f01a0",
+        "0x7f01a3",
+        "0x7f01a9",
+        "0x7f01ab",
+        "0x7f01af",
+        "0x7f01b5",
+        "0x7f01b9",
+        "0x7f01c1",
+        "0x7f01c3",
+        "0x7f01c8",
+        "0x7f01cb",
+        "0x7f01ce",
+        "0x7f01d1",
+        "0x7f01d7",
+        "0x7f01dd",
+        "0x7f01e3",
+        "0x7f01e8",
+        "0x7f01ed",
+        "0x7f01f1",
+        "0x7f01f2",
+        "0x7f01f3",
+        "0x7f01fa",
+        "0x7f01fd",
+        "0x7f0200",
+        "0x7f0206",
+        "0x7f0208",
+        "0x7f020b",
+        "0x7f020d",
+        "0x7f0210",
+        "0x7f0213",
+        "0x7f0215",
+        "0x7f0217",
+        "0x7f021a",
+        "0x7f021d",
+        "0x7f0220",
+        "0x7f0222",
+        "0x7f022a",
+        "0x7f0230",
+        "0x7f0232",
+        "0x7f0237",
+        "0x7f0239",
+        "0x7f023c",
+        "0x7f0242",
+        "0x7f0248",
+        "0x7f024d",
+        "0x7f0252",
+        "0x7f0256",
+        "0x7f0257"
+      ],
+      "inherited_from": {
+        "map": "ownership-map.json",
+        "evidence_id": "game_7f0130"
+      }
+    },
+    {
+      "id": "direct_goal_setter",
+      "binary": "game",
+      "function_rva": "0x902fb0",
+      "instruction_rvas": [
+        "0x902fba",
+        "0x902fcf",
+        "0x902fd2",
+        "0x902fd8",
+        "0x902fdc",
+        "0x902fe7",
+        "0x902feb",
+        "0x902ff3",
+        "0x902ff8",
+        "0x903000",
+        "0x903008",
+        "0x903010",
+        "0x903018",
+        "0x903020",
+        "0x903026",
+        "0x90302a"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-squad/0x902fb0.asm"
+    },
+    {
+      "id": "fine.move_mode_setter",
+      "binary": "game",
+      "function_rva": "0x903140",
+      "instruction_rvas": [
+        "0x903144",
+        "0x903170",
+        "0x90317f",
+        "0x903184",
+        "0x9031a3",
+        "0x9031a8"
+      ],
+      "inherited_from": {
+        "map": "fine-map.json",
+        "evidence_id": "move_mode_setter"
+      }
+    },
+    {
+      "id": "move_speed_setter",
+      "binary": "game",
+      "function_rva": "0x9031c0",
+      "instruction_rvas": [
+        "0x9031c0",
+        "0x9031ca",
+        "0x9031cd",
+        "0x9031d0",
+        "0x9031d2",
+        "0x9031da",
+        "0x9031e3",
+        "0x9031e9"
+      ],
+      "checked_existing_export": "local-work/exports/build-25492057/call_to_arms-fine/0x9031c0.asm"
+    },
+    {
+      "id": "movement.deactivate_child",
+      "binary": "game",
+      "function_rva": "0x912520",
+      "instruction_rvas": [
+        "0x912520",
+        "0x912533",
+        "0x912538",
+        "0x912541",
+        "0x912549",
+        "0x91254e",
+        "0x912551",
+        "0x91255f",
+        "0x912564",
+        "0x912568",
+        "0x91256d",
+        "0x912576",
+        "0x91257e",
+        "0x912583",
+        "0x91258b",
+        "0x91258f",
+        "0x912599",
+        "0x91259d",
+        "0x9125a1",
+        "0x9125a8",
+        "0x9125af"
+      ],
+      "inherited_from": {
+        "map": "movement-map.json",
+        "evidence_id": "deactivate_child"
+      }
+    }
+  ],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHumanBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x10ec7c8",
+      "methods": {
+        "23": "0x941bc0",
+        "29": "0x945010",
+        "35": "0x941d00"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHumanBrainClient@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0xfffee8",
+      "methods": {
+        "23": "0xa7720",
+        "29": "0x945010",
+        "35": "0x941d00"
+      }
+    }
+  ],
+  "selection_access_audit": {
+    "function_rva": "0x941d00",
+    "start_rva": "0x941d86",
+    "end_rva_exclusive": "0x941f49",
+    "incoming_register_rows": [
+      "I-THIS"
+    ],
+    "excluded_storage": "Two RSP-relative ABI save stores; no policy inputs. Register-only intermediates are derived in the decision equations, not independent stored inputs.",
+    "records": [
+      {
+        "instruction_rva": "0x941d86",
+        "kind": "read",
+        "row_ids": [
+          "I-OWNER"
+        ]
+      },
+      {
+        "instruction_rva": "0x941d8a",
+        "kind": "read",
+        "row_ids": [
+          "I-A"
+        ]
+      },
+      {
+        "instruction_rva": "0x941d92",
+        "kind": "read",
+        "row_ids": [
+          "I-B"
+        ]
+      },
+      {
+        "instruction_rva": "0x941d9d",
+        "kind": "read",
+        "row_ids": [
+          "I-RETREAT-RATIO"
+        ]
+      },
+      {
+        "instruction_rva": "0x941da8",
+        "kind": "read",
+        "row_ids": [
+          "I-COVER"
+        ]
+      },
+      {
+        "instruction_rva": "0x941daf",
+        "kind": "read",
+        "row_ids": [
+          "I-ADVANCE-RATIO"
+        ]
+      },
+      {
+        "instruction_rva": "0x941dbb",
+        "kind": "read",
+        "row_ids": [
+          "I-COVER-GROUP"
+        ]
+      },
+      {
+        "instruction_rva": "0x941dc5",
+        "kind": "read",
+        "row_ids": [
+          "K-SCALE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941dcd",
+        "kind": "read",
+        "row_ids": [
+          "K-SCALE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941dd5",
+        "kind": "read",
+        "row_ids": [
+          "K-ONE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941dde",
+        "kind": "stack_save",
+        "row_ids": []
+      },
+      {
+        "instruction_rva": "0x941de6",
+        "kind": "stack_save",
+        "row_ids": []
+      },
+      {
+        "instruction_rva": "0x941deb",
+        "kind": "read",
+        "row_ids": [
+          "I-BEHAVIOR-DEADLINE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941df4",
+        "kind": "read",
+        "row_ids": [
+          "I-BEHAVIOR-DEADLINE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941dfa",
+        "kind": "call",
+        "row_ids": [
+          "I-NOW"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e07",
+        "kind": "write",
+        "row_ids": [
+          "O-BEHAVIOR",
+          "O-BEHAVIOR-DEADLINE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e13",
+        "kind": "read",
+        "row_ids": [
+          "I-BEHAVIOR"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e29",
+        "kind": "read",
+        "row_ids": [
+          "I-MORALE-DISPATCH"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e2f",
+        "kind": "read",
+        "row_ids": [
+          "K-DELTA"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e37",
+        "kind": "indirect_call",
+        "row_ids": [
+          "I-MORALE-DISPATCH",
+          "O-MORALE-DELTA"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e3d",
+        "kind": "write",
+        "row_ids": [
+          "O-BEHAVIOR"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e4c",
+        "kind": "read",
+        "row_ids": [
+          "I-S"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e54",
+        "kind": "read",
+        "row_ids": [
+          "K-FIFTY"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e61",
+        "kind": "call",
+        "row_ids": [
+          "I-RNG"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e69",
+        "kind": "read",
+        "row_ids": [
+          "I-RNG-STATE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e70",
+        "kind": "read_write",
+        "row_ids": [
+          "I-RNG-COUNT",
+          "O-RNG-DRAW"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e79",
+        "kind": "write",
+        "row_ids": [
+          "O-RNG-DRAW"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e86",
+        "kind": "read",
+        "row_ids": [
+          "I-RNG-SCALE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e8e",
+        "kind": "call",
+        "row_ids": [
+          "I-RNG"
+        ]
+      },
+      {
+        "instruction_rva": "0x941e9b",
+        "kind": "call",
+        "row_ids": [
+          "I-DURATION-FACTOR"
+        ]
+      },
+      {
+        "instruction_rva": "0x941ea2",
+        "kind": "call",
+        "row_ids": [
+          "I-NOW"
+        ]
+      },
+      {
+        "instruction_rva": "0x941ea9",
+        "kind": "write",
+        "row_ids": [
+          "O-BEHAVIOR"
+        ]
+      },
+      {
+        "instruction_rva": "0x941eb3",
+        "kind": "write",
+        "row_ids": [
+          "O-BEHAVIOR-DEADLINE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941ebe",
+        "kind": "read",
+        "row_ids": [
+          "I-S"
+        ]
+      },
+      {
+        "instruction_rva": "0x941ec6",
+        "kind": "read",
+        "row_ids": [
+          "K-SEVENTY"
+        ]
+      },
+      {
+        "instruction_rva": "0x941ecd",
+        "kind": "write",
+        "row_ids": [
+          "O-BEHAVIOR"
+        ]
+      },
+      {
+        "instruction_rva": "0x941ed9",
+        "kind": "read",
+        "row_ids": [
+          "I-NO-ADVANCE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941ee7",
+        "kind": "read",
+        "row_ids": [
+          "K-DOUBLE"
+        ]
+      },
+      {
+        "instruction_rva": "0x941efb",
+        "kind": "write",
+        "row_ids": [
+          "O-BEHAVIOR"
+        ]
+      },
+      {
+        "instruction_rva": "0x941f01",
+        "kind": "read",
+        "row_ids": [
+          "I-NO-RETREAT"
+        ]
+      },
+      {
+        "instruction_rva": "0x941f0a",
+        "kind": "read",
+        "row_ids": [
+          "I-A"
+        ]
+      },
+      {
+        "instruction_rva": "0x941f17",
+        "kind": "read",
+        "row_ids": [
+          "K-FIFTY"
+        ]
+      },
+      {
+        "instruction_rva": "0x941f29",
+        "kind": "read",
+        "row_ids": [
+          "K-THIRTY"
+        ]
+      },
+      {
+        "instruction_rva": "0x941f36",
+        "kind": "write",
+        "row_ids": [
+          "O-BEHAVIOR"
+        ]
+      },
+      {
+        "instruction_rva": "0x941f42",
+        "kind": "write",
+        "row_ids": [
+          "O-BEHAVIOR"
+        ]
+      }
+    ],
+    "claim_limit": "All exported instructions containing a memory operand or CALL in this span are classified. This is not a transitive census of helpers, other blocks, or unrecognized code."
+  }
+}

@@ -154,9 +154,7 @@ access `0x7FA9D0`. Evidence: ownership map ("Operatable is also derived"),
 modifier map (filter term `operatable`). The engagement-orders map's "still
 open" remark predates this.
 
-## Open: next
-
-### Q1. Input and output catalog
+### Q1. Input and output catalog — split
 
 The ledger that makes the scope rule checkable: one row per variable read by
 the human decision logic and per output it issues, with the five blanks, read
@@ -170,6 +168,100 @@ This is mostly consolidation. Several answers already exist but are scattered,
 and older notes still call some of them open (J5, J6, J8). Seed it with J1–J8.
 Done when every variable those methods read has a row and every empty blank is
 explicit.
+
+**Result (partial inventory; Q1a–Q1g below finish it):** created the
+[decision catalog](decision-catalog-25492057.md) with 28 input rows, seven
+output rows, seven fixed operands and explicit coverage rows. J1–J8 are seeded;
+all memory-access/call sites in the slot-35 selection span
+`0x941D86 <= RVA < 0x941F49` are classified (45 sites, including two ABI stack
+saves). The full base/state/helper inventory is not claimed complete.
+
+Two joins sharpen the seed evidence: the threshold multiplier reads cover
+group `owner+0xDC0 -> +0x24` (`0x941DA8/0x941DBB`, same path as root selector
+`0x957428/0x95742F`); A/B refresh is conditional on the scheduled task being due
+and unskipped (`0x941C56`–`0x941CD3`). J7's same-quant score statement applies
+when that job runs, not to every decision. Concrete brain factory selection
+remains Q2. Unknown names, freshness, validity and output-contract details are
+explicit catalog blanks, not runtime-only conclusions.
+
+Evidence: [Q1 manifest](../artifacts/build-25492057/decision-catalog-q1-map.json),
+[validation](../artifacts/build-25492057/decision-catalog-q1-validation.json),
+game-only `call_to_arms.decision-catalog-q1-pass.tsv`, and the catalog's seed
+crosswalk to the preserved maps. The new catalog checker reuses
+`verify_fine_map.py` and additionally checks row links and the bounded access
+census. No game/editor execution; no editor analysis was needed.
+
+## Open: next
+
+The Q1 splits below finish the catalog **inventory**. Each fills its named
+coverage row's read-site/access-path and issued-output inventory blank by adding
+individual variable/output rows with all five columns, using existing evidence
+first. Do not treat a coverage row as a substitute for those individual rows.
+Contract details not established by consolidation stay explicit and are triaged
+by Q1g; Q2–Q11 retain their scope and order afterwards.
+
+### Q1a. Base reconsideration and state dispatch catalog
+
+Catalog row **C-BASE**, blank: per-variable inputs and issued outputs of
+`0x903B10` and the state dispatch/interrupt boundaries
+`0x912110/170/1C0/200/260/370/3D0/460/4D0/520` in the movement manifest.
+Enumerate individual `+0x39C` bits, queue/state pointers, aggregate inputs,
+external query results and emitted events. Reuse I-THREATENING/I-ATTACKING.
+Stop at query/output contracts; do not expand state bodies assigned below.
+
+### Q1b. Root, location and hazard policy catalog
+
+Catalog row **C-ROOT**, blank: per-variable inputs and issued outputs of
+soldier/civilian root and location selection, root interrupt `0x955A90`, and
+hazard-scanner query interfaces in the movement manifest. Include saved-order
+and restoration fields; reuse I-COVER-GROUP. Order execution, physical escape
+and path internals are outside this census.
+
+### Q1c. Idle, following, healing and medic policy catalog
+
+Catalog row **C-IDLE**, blank: per-variable inputs and issued outputs of idle
+Interrupt/Execute and their following/healing/medic/explicit-boarding policy
+helpers in the human-states manifest. Include task/mode/follow flags, timers,
+health queries and patient-selection interfaces. Reuse O-DIRECT-GOAL where
+appropriate; record factory contracts without tracing animation or health
+implementation internals.
+
+### Q1d. Battle, cover and tactical movement policy catalog
+
+Catalog row **C-BATTLE**, blank: per-variable inputs and issued outputs of
+outdoors/cover battle Interrupt/Execute and tactical movement/cover helpers in
+the human-states and tactics manifests. Include descriptor/mask fields and
+cover-scoring query interfaces, keeping current-value reads distinct from
+hypothetical queries and their side effects. Reuse I-BEHAVIOR and O-DIRECT-GOAL.
+
+### Q1e. Find-enemy and Recon interface catalog
+
+Catalog row **C-SEARCH**, blank: per-variable inputs and issued outputs of
+`0x94C410/750/8A0`, look-point policy `0x94DD50`, and their Recon query
+contracts. Include current/pending phases, zone handles, assignment, deadlines
+and results. Reuse I-SEARCHED; distinguish its bit from zone completion and
+do not reopen Recon implementation once its query contract fills the row.
+
+### Q1f. Target, stance and equipment policy helper catalog
+
+Catalog row **C-HELPERS**, blank: remaining per-variable inputs and issued
+outputs of target refresh/picking/ranking/eligibility, attack/stance and
+weapon/pickup policy helpers in the six Q1 manifests. Record hypothetical
+geometry/visibility query inputs, returns and side effects at their boundary.
+Reuse I-TERRAIN/I-LINKED/I-TARGETABLE/I-OPERATABLE, and create the precise
+variable/query rows needed by Q5–Q9. Do not map their producers past the first
+step that fills a meaning or freshness blank.
+
+### Q1g. Output contracts and catalog reconciliation
+
+Catalog row **C-OUTPUTS**, blank: complete issuing-call coverage and five-column
+output contracts for the setters, direct-goal path and factories used by the
+enumerated methods. Consolidate engagement-orders only to effect/result/
+ownership/cancellation/side-effect depth. Link Q2–Q11 to exact variable/output
+rows, reconcile the family inventories and assign row-specific follow-ups for
+remaining static meaning/freshness/validity blanks. Runtime-only blanks must
+say why. Done when the original Q1 completeness condition is checkable; no
+producer, physics or animation internals are reopened merely for completeness.
 
 ### Q2. Everything that can change the behavior state between decisions
 
@@ -293,6 +385,7 @@ remain usable evidence.
 - Lower-priority decision details, until a catalog row needs them: Veterancy
   binding, target sorter partition/heap branches, ground/volume target
   resolution, Recon completed-status consumers, Advance byte `+0x39`.
+- Other slot-35 blocks at `0x941F49`–`0x942253`, outside Q1's selection span: expand only if a catalog row identifies the read/output blank they fill.
 
 ## Triage record
 
