@@ -1,0 +1,15 @@
+# RVA	Label	Filter	Limit
+0x60faa0	bounding_object_factory_callers	all	2048
+0x60fd60	bounding_area_factory_callers	all	2048
+0x60ff30	bounding_volume_factory_callers	all	2048
+0x610050	bounding_kind_parser_callers	all	2048
+0x610a10	sphere3_load_callers	all	2048
+0x610b00	capsule3_load_callers	all	2048
+0x610df0	lozenge3_load_callers	all	2048
+0x6111e0	compound_volume_load_callers	all	2048
+0x613cf0	dynamic_volume_intersection_callers	all	2048
+0x10c1c70	eBoundingCapsule3_vtable	all	2048
+0x10c1cc8	eBoundingLozenge3_vtable	all	2048
+0x10c1f60	dynamic_compound_vtable	all	2048
+0x7215e0	entity_shape_transform_matrix_callers	all	2048
+0x722750	entity_shape_translate_scale_callers	all	2048

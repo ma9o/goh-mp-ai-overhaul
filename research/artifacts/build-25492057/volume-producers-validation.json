@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "d3413ab7e8b0a56f557d1339d8048664c2f595c2fe71b514793707e8cdc293b7",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "fe70379e8806abab005027d96a53877cca65883055d2111d11861301a5cc58c3",
+      "exact_candidates": 28,
+      "exported_functions": 33,
+      "exported_basic_blocks": 884,
+      "checked_enums": 0,
+      "checked_constants": 3,
+      "checked_method_entries": 28,
+      "checked_instruction_locations": 4476,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 3,
+      "checked_byte_sequences": 36
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "03e6b1b814c41f293cc47ae77b11f5e6d6d07b77aefbb2617b6c01aca9c96e72",
+      "exact_candidates": 28,
+      "exported_functions": 33,
+      "exported_basic_blocks": 909,
+      "checked_enums": 0,
+      "checked_constants": 3,
+      "checked_method_entries": 28,
+      "checked_instruction_locations": 4629,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 3,
+      "checked_byte_sequences": 36
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "entity/construction.pak",
+      "member": "construction/_map-specific/pavlovs_house/pavlovs_house.mdl",
+      "size": 72091,
+      "sha256": "62362403b94cd6b91ff824f9927badfe6f02d56f2b37df5a76949ca2c779ac13"
+    },
+    {
+      "archive": "entity/construction.pak",
+      "member": "construction/_urban/buildings/generic_ruin_13/generic_ruin_13.mdl",
+      "size": 12220,
+      "sha256": "31db5455b08a2d256f0e21c3fb1ae44e746e7293adf920baeca6af3913410d4d"
+    },
+    {
+      "archive": "entity/landscape.pak",
+      "member": "landscape/cliff/euro/beach_cliff2/beach_cliff2.mdl",
+      "size": 5611,
+      "sha256": "9184a43fd26952f5e669351967e146c493846bbe3e0036399c18d3b441aab493"
+    }
+  ],
+  "status": "passed"
+}
