@@ -29,7 +29,7 @@ after their behavior and effect on the AI contract are established.
 | Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion; animation manager pending/active membership, scene phase and immediate request-side Quant; clock/delta producer, pause tokens, explicit stepping, slowdown stack, deadline codecs, default/selected/synced RNG context | Frame event-router/worker lifecycle, registered timer registration/unlink, slowdown guard and packet producers; manager bucket creation, entity lifetime through queued work; default/entity RNG disposal and scope completeness; full deferred mesh drain; skip setter now mapped |
 | Physical entity state | Contact queues/solver; mass/inertia and integration; pose recovery; settling; inventory plus authored Mass; random interior samples; six named simulator factories and raw owner binding; ground/water flags and named events; grenade/pillar/airborne/water movement; force-at-point; human trajectory trials, flight/slide, animation selection and landing | Simulator/registry/shared-scratch lifetime; shape-weight/material/terrain producers; cache invalidation; remaining force/impulse writers; scene boundary/ray queries; water chassis inputs; command28 reception; support overrides and invalid-input preconditions |
 | Group/vehicle behavior | Type roots; cannon fire/move/trailing states, role-index transfers, seat Disable and obstacle enable writers; place readiness/assignment; crew groups, sealing, entrance balancing, Board/Bind/Emit phases, traversal graph/animation/inventory, walker sync/cancel/load and occupant perception effects; six concrete exit callbacks; abandoned/ally_crew/any_crew/select bindings; boarder command reception; vehicle root/multiweapon allocation, gunner withdrawal, repairer selection, emergency triggers and basic airborne/animal roots; cannon command5E reception; squad membership/commander election/Quant, display representative, automatic and explicit formation, individual goals, order-transfer predicates and waypoint iterator | Waypoint object/edge/action ownership and normal scene teardown now mapped; arbitrary live graph replacement/rename and downstream squad-goal consumers; aircraft/helicopter chassis and animal scanners; exit source-pointer lifetime; full reservation/queue lifetime and derived chassis permissions, remaining availability flag producers; cannon matrix correction |
-| Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Modifiers/filters/standard and advanced selectors now mapped; concrete native commands/conditions, remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
+| Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Modifiers/filters/standard and advanced selectors plus eight actor commands now mapped; remaining62 native commands/conditions, remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
 | Cross-binary comparison | Selected game/editor contracts | Compare newly reviewed contracts; distinguish outlining/inlining and behavior differences |
 
 ## Working method
@@ -92,10 +92,27 @@ Existing completed passes: [initial structure](build-25492057.md),
 [ownership, diplomacy, observation flags and squad departure](ownership-map-25492057.md), and
 [squad coordination, formation assignment and waypoint inputs](squad-map-25492057.md), and
 [waypoint ownership, actor orders and native script execution](waypoint-map-25492057.md), and
-[modifiers, filters, selectors and weapon profile ownership](modifier-map-25492057.md). Their open questions
+[modifiers, filters, selectors and weapon profile ownership](modifier-map-25492057.md), and
+[actor commands, repeated targeting and squad-status inputs](actor-controls-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
+
+Latest actor-controls pass adds105 paired contracts plus one game binding helper,
+116 fields,26 RTTI tables,13 named enums per binary and19,167 independently checked
+instruction starts. Eight actor commands now have concrete defaults/effects:
+fire/recon/cover/wait/state/ables/player/component. ActorB88 summary producer is
+mapped to cover/modes/abilities/crew/eligible equipment. AmmoLocked launchers count
+loaded weapons; ordinary ammunition also reads compatible filling in weapon-tagged
+items. Linked inventory traversal7D0610/7D0990 remains a concrete next lead.
+AttackBySelector owns its selector, schedules retries/children, and checks duration
+after childcompletion; no-weapon returns before phase2 flagcleanup. Its local
+load/factory omitcheating54, requiring outer allocation/load investigation.
+Script health/stamina write both max/current; leadingminus subtracts a parsednegative.
+GEM network gates arefalse and human breed ability/veterancy offsets differ by8.
+Current work: remaining62 native command entries, inventory enumeration and actor
+flag catalog; then native conditions and other frontier inputs. No semantic closure
+is claimed for command inventory or the broader investigation.
 
 Latest modifier pass adds140 paired contracts and three game-only helpers,
 126 fields,146 RTTI tables and16 enum tables, with22,582 independently checked
@@ -133,7 +150,7 @@ while direct group goals write130XY. Cost elimination/forced assignment, cluster
 placement, line drag settings and filtered sequence cloning are mapped. MoveTask
 slot7 requires a Point task even though its slot8 is true. Next: waypoint object,
 edge parser, action context and raw-pointer/graph lifetime; downstream brain goal
-consumers and actorB88 producers; concrete modifier filters/effects. The previous
+consumers; actorB88 summary producer now mapped in actor-controls, remaining writers/callers still open; concrete modifier filters/effects. The previous
 "full squad coordination" lead is superseded for the reviewed branches, not a
 claim that the group/waypoint system is exhausted.
 
