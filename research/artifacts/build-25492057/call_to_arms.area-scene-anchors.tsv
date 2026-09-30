@@ -1,0 +1,14 @@
+# RVA	Label	Filter	Limit
+0x147f3b0	maximum_scale_writes	write	2048
+0x71bb10	revision_increment_callers	all	2048
+0x71f450	area_refresh_all_callers	all	2048
+0x7721e0	area_overlap_access_callers	all	2048
+0x775da0	storage_configuration_callers	all	2048
+0x775f60	storage_initialize_callers	all	2048
+0x6978f0	global_stop_signal_callers	all	2048
+0x8bdf40	worker_cleanup_callers	all	2048
+0x727520	entity_overlap_dispatch_callers	all	2048
+0x772eb0	requested_id_allocate_callers	all	2048
+0x71bb10	placement_handler_references	all	2048
+0x8bddf0	worker_construct_callers	all	2048
+0xa55e0	thread_construct_callers	all	2048

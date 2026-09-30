@@ -80,7 +80,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [planar shape predicates/polygon features/compound ownership](spatial-shapes-map-25492057.md), and
 [volume predicates/closest-result state/compound traversal](spatial-volumes-map-25492057.md), and
 [shape loading/entity updates/authored geometry](volume-producers-map-25492057.md), and
-[area lifetime/overlap events/worker queues](area-lifecycle-map-25492057.md). Their open questions
+[area lifetime/overlap events/worker queues](area-lifecycle-map-25492057.md), and
+[scene spatial state/automatic obstacles/contact dispatch](area-scene-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -422,8 +423,26 @@ are historical snapshots; this frontier tracks the continuing objective.
   two banks0/80000 without generation counters. Zone bit8 owns its record,
   bit9 its source/working geometry. Pair tick7762A0 caches unchanged overlap,
   checks dirty pairs with strict Z overlap, and updates raw overlap rows. Trace
-  storage seed construction, entity overlap consumers andA18/A20 writers,
-  source720B40 and zoneC8 pather shapes. Worker8BE020 executes updates FIFO,
+  storage/overlap dependencies below and zoneC8 pather shapes. Worker8BE020 executes updates FIFO,
   higher then eligible lower work;198 flush/199 acknowledgement govern scene
-  teardown8B2E00. Follow global stop697870/6978D0/6978F0/697940 and outer thread
-  teardown, scene tickA1B320, scale cap147F3B0 initialization and bone updates.
+  teardown8B2E00. Scene pass maps global stop697870/6978D0/6978F0/697940,
+  generic task thread and worker exit thunk; inner application697A40, quit
+  handlersBEE460/BEE560 and complete join/destruction order remain open.
+- Scene spatial follow-up: A20 is current placement frame, A18 last area refresh
+  (corrects prior field names). Slot33 incrementsA20; refresh-all always copies
+  it even when obstacle zones are skipped. Continue71F560 procedural refresh,
+  720070 patherC8 production,84FA80/8798D0/887760/A75CD0 revision consumers.
+  Automatic720B40 fits combined/per-volume circle or sampledOBB clouds;
+  CompoundObstacles bit25 and obstacle_ignore_height are bound, with bounded
+  authored declaration census. Follow795890 volume refresh, shape slot5,
+  terrain704380, pointappend723830 and mounted/inherited property resolution.
+  Seeds are50x50 radius5 spheres; worker storagecopy concatenates both banks
+  and uses loop-index IDs. Follow second-bank preconditions and worker heightmap
+  A3C2D0/modeA6D1D0, queued pather captures and8C2650/8C2BE0/8C2900 internals.
+  Body overlap rows sort by cached ownerID and dispatch727520/727370 into stack
+  contact context727BD0. Follow actual727D60 resolver,727410 direction flags,
+  9843C0 exclusions,93BDD0 knockdown consumer and physical callbacks. Raw area,
+  entity and link lifetimes need their owning-scene ordering established.
+  Scene tickA1B320 prologue maps general-manager overlap tick after animation;
+  full callees/later phases remain. Scale cap initializer45540 sets configurable
+  g_maxEntityScale=10; full setter, bone updates and transform propagation open.

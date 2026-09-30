@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "011f4cd0e46f015af3db1bc49127b4d270c98b6c6f616d39ba18276bdde4d795",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "965eee4ed9bcaeaf86366a453eeca52f8dc613a0819769cb5ba47b35ed02ca5b",
+      "exact_candidates": 56,
+      "exported_functions": 76,
+      "exported_basic_blocks": 1761,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 56,
+      "checked_instruction_locations": 6353,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 2,
+      "checked_byte_sequences": 3
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "f28e470d8b57d7654349f80571b33698b0a659c2ab011f4730e0ff224aa7e914",
+      "exact_candidates": 57,
+      "exported_functions": 75,
+      "exported_basic_blocks": 1655,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 57,
+      "checked_instruction_locations": 6313,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 2,
+      "checked_byte_sequences": 3
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/airborne.ext",
+      "size": 10260,
+      "sha256": "8f6f474bcbc2870eddbd8f7e72b27b52cf94dc813f04200d3ea6ca8b3f2da43c"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/animal.ext",
+      "size": 1626,
+      "sha256": "f845d2f6c3caac39bd32b6f6289d359e1b89dc7e4e933b7534c8983b66742681"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/cliff.inc",
+      "size": 1189,
+      "sha256": "bd128d461af0391bf2d144dce7c6bb89f93c4b9ae72e740035f6bf6c4129f75b"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/vehicle.ext",
+      "size": 19465,
+      "sha256": "2dade19bee3db0f13aa1b6e7868deeb17e3a8d3a2cfd6d7e037953ff2c7398a0"
+    }
+  ],
+  "status": "passed"
+}
