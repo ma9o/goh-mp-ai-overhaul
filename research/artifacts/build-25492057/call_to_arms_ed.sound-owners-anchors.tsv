@@ -1,0 +1,17 @@
+# RVA	Sound owner and event references
+0xf3d128	.?AVeSpeakerExtender@Entity@@
+0xf3d180	.?AVeSpeakerExtender@Entity@@
+0xf3d1e0	.?AVeSpeakerExtender@Entity@@
+0xf24a18	.?AUcmQuant@Scene@Events@@
+0xf1bbb0	.?AUcmNonPausedQuant@Scene@Events@@
+0xf24a58	.?AUcmPause@Scene@Events@@
+0xf62ac0	.?AUcmSceneDestroy@Scene@Events@@
+0xf62b00	.?AUcmSceneInit@Scene@Events@@
+0xf62be0	.?AVeScene@@
+0xf62c40	.?AVeScene@@
+0x36f150	loop_wrapper_callers
+0x36f210	stop_wrapper_callers
+0x3742d0	channel_create_callers
+0x374260	bridge_callers
+0x36f480	sound_position_wrapper_callers
+0x8a49d0	sound_queue_append_callers

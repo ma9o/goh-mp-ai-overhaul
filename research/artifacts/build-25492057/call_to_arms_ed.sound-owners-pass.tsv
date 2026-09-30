@@ -1,0 +1,20 @@
+# RVA	Sound owners counterpart candidates
+0x36f150	sound_loop_wrapper
+0x36f210	sound_explicit_stop_wrapper
+0x3742d0	sound_channel_creation_and_signal_slice
+0x374260	sound_path_to_channel_bridge
+0x5d24e0	play_sound_first_alias_stop_and_replace
+0x5d2780	stop_sound_first_alias
+0x5e5460	interaction_handler_destroy_event_clear
+0x36f480	sound_handle_position_update
+0x370300	channel_position_update
+0x5968f0	game_entity_position_update_slice
+0x810340	fx_entity_sound_queue_slice
+0x8a49d0	scene_sound_queue_append
+0x8a63f0	sound_queue_grow
+0x8a7c90	sound_queue_destroy
+0x6301e0	speaker_entity_event
+0x6303b0	speaker_global_event
+0x62fd50	speaker_property_names_slice
+0x264fc0	medic_execute_sound_slice
+0x8a7260	sound_queue_move_range

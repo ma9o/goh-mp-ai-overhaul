@@ -355,8 +355,9 @@ two medics from treating the same patient.
 inventory; approach with progressively relaxed positioning; empty hands and
 rotate toward the patient; wait for that child; request `revive`; then count
 down while the Fsm remains active. It sets patient+0x12BA when treatment starts
-and clears it on interruption/end. `0x3713E0` emits start_healing and creates
-the healing marker. Completion0x371960 updates the patient's health component,
+and clears it on interruption/end. `0x3713E0` emits start_healing and starts
+a source-free `human/action/healing` audio loop at the patient position; see the
+[sound-owner follow-up](sound-owners-map-25492057.md). Completion0x371960 updates the patient's health component,
 transitions Fsm states, updates medic/patient statistics and emits an event.
 Damage/death flags, exact restoration quantity, statistics and replication
 semantics remain part of the health/entity investigation.

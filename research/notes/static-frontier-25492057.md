@@ -70,7 +70,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [human marker actions/condition inputs/sound perception bridge](marker-actions-map-25492057.md), and
 [deferred interactions/context/cleanup/extender dispatch](interaction-lifecycle-map-25492057.md), and
 [sound-folder inheritance/asset RNG/channel lifetime/base sound audit](sound-definitions-map-25492057.md), and
-[human marker path expressions/branch guards/inherited signal join](marker-sound-paths-25492057.md). Their open questions
+[human marker path expressions/branch guards/inherited signal join](marker-sound-paths-25492057.md), and
+[sound loop owners/alias movement/deferred FX queue/event names](sound-owners-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -97,8 +98,16 @@ are historical snapshots; this frontier tracks the continuing objective.
   Multi-asset directory choices consume the current RNG with a no-repeat cycle;
   explicit files and one-asset directories skip that draw. Pause does not itself
   erase repeats; retirement removes the matching repeat before handle reuse.
-  Follow all loop-owner cancellation/position updates, raw source lifetime,
-  event codes FB3/FB4/FD2/FD3/FD7/FE4 and clock/pause producers, default-loudness108
+  Six direct loop owners now mapped in both binaries: Medic, Speaker and two
+  SnipingAimer paths pass null AI source; aliases pass context owner; scene queue
+  passes raw row38. The only located queue producer is eFXEntity vslot32 and
+  forces one-shot. Entity vslot33 updates alias sound positions from owner74.
+  Speaker cleanup uses entityevent6, not an explicit stop in its C++ destructor.
+  FB3/FB4 are SceneDestroy/SceneInit; FD2/FD3 are Quant/NonPausedQuant;
+  FD7/FE4 are Pause/MuteVolume. Ordinary executor publishes FD3 outside the pause
+  gate; explicit-step65F3D0 invokes FD2 without a local pause gate.
+  Follow FX198 source writers/lifetime and initialization callers, alias callback
+  reachability/replacement, clock/delta/pause producers, default-loudness108
   relocation and mounted folder/cache lifetime. The marker path-expression join
   now resolves147 potential sound rows/64 normalized paths; all three speed/sand
   paths plus gear_rattle/lying lack a base asset. Movement start_sound integer1
