@@ -16,7 +16,7 @@ after their behavior and effect on the AI contract are established.
 
 | Area | Current evidence | Open static work |
 |---|---|---|
-| Entity/component structure | Constructor-backed Fsm/Cover/Brain/Sensor/Weaponry/Chassis pointers; direct component clone/load ownership; extender collection/cache/attach/clone/rebind; inventory queue, item/box/holder ownership, filling mass and stack limits; placer ownership/clone and physical link tree; deletion request→scene retirement→delivery callbacks→reference release→SoftLinkable invalidation; repair component policy; selected IDs/fields; 392/391 native RTTI roots plus dependencies | Component replacement/removal and factory completeness; enumeration/ID reuse/actor registry; deferred reference disposal; raw owner/holder/box replacement; derived holder behavior |
+| Entity/component structure | Constructor-backed Fsm/Cover/Brain/Sensor/Weaponry/Chassis pointers; direct component clone/load ownership; extender collection/cache/attach/clone/rebind; inventory queue, item/box/holder ownership, filling mass and stack limits; placer ownership/clone and physical link tree; deletion request→scene retirement→delivery callbacks→reference release→SoftLinkable invalidation; repair component policy; actor/entity ID banks, reuse/remap/rekey and raw lookup; deferred destructor queue/phase contracts; selected IDs/fields; 392/391 native RTTI roots plus dependencies | Component replacement/removal and factory completeness; remaining enumeration/lifecycle callers, rekey input constraints; deferred disposal outer worker/router invariants; raw owner/holder/box replacement; derived holder behavior |
 | Sensor/perception | Candidate commit/categories, memory/eviction, ally sharing, grid rays, unmask rules; Recon registration/waiting counts, six searcher slots,60-sector rings and renewal; all eight signal names; sound/action definition parsers and repeat publishing; injury/corpse/hit/death-cry producers; mission signal condition/reset | Sound source cancellation/lifetime, area registration lifetime; residual Recon completed-status consumers; grid/material construction/query state; environment factor; linked-actor type; unmask inventory/appearance/examine lifetimes |
 | Relationships | Neutral/enemy/ally values, 18-player defaults, symmetric setter, scene diplomacy and multiplayer setup | Ownership changes and other brain flag15 producers (placement TurnOff.Targetable now bound); downstream relationship consumers |
 | Target choice | Eligibility; ranking groups and exact predicate IDs; numeric keys; weapon/ammunition policy and multi-pass evaluator | Class/attacking/threating flag producers; all sorter branch equivalence; weapon target volume/ground resolution; reservation handles; other brain pickers |
@@ -87,10 +87,21 @@ Existing completed passes: [initial structure](build-25492057.md),
 [physical contact queues/batch reduction/geometry helpers](physical-response-map-25492057.md), and
 [contact iteration/body inputs/convex support/GJK](contact-solver-map-25492057.md), and
 [body integration/settling/entity mass and random interior samples](body-state-map-25492057.md), and
-[ground/water flags, simulator selection and human throwing](ground-state-map-25492057.md). Their open questions
+[ground/water flags, simulator selection and human throwing](ground-state-map-25492057.md), and
+[entity IDs, registries, reuse and deferred destruction](entity-id-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
+
+Latest identity pass maps actor/entity ID banks, allocation preference, per-Quant
+age counters, collision remapping, explicit rekey/class setters, raw lookup
+contracts and deferred destructor queues in both binaries. Numeric ID reuse has
+no hard delay. It also corrects a missed game switch: entity38 bit16 retains
+class4 during reassignment. The broad ID/deferred-disposal bullets below are
+superseded for those specific contracts. Remaining lifetime work includes outer
+worker quiescence, router dispatch/reentrancy and rekey caller constraints.
+Next: ownership/player setter7EEEC0, its brain/group/sensor/weaponry callbacks,
+and the remaining attacking/threat flags and squad coordination.
 
 Latest ground-state pass closes the previous ground/water summaries, surface
 selection, normal-query consumer, simulator owner binding and main human throw

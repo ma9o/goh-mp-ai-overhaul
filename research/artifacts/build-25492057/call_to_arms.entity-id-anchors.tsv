@@ -1,0 +1,15 @@
+# RVA	Label	Filter	Limit
+0xa5dda0	actor_id_remap_inplace_callers	all	4096
+0xa5de80	actor_remaps_clear_callers	all	4096
+0xa5dec0	actor_id_age_advance_callers	all	4096
+0xa5fb60	entity_id_remap_inplace_callers	all	4096
+0xa5fde0	all_remaps_clear_callers	all	4096
+0xa5fe20	entity_and_actor_id_age_advance_callers	all	4096
+0xa60590	entity_id_class_set_callers	all	4096
+0xa5e760	actor_class_set_callers	all	4096
+0x652ae0	deferred_drain_callers	all	4096
+0x652ba0	deferred_shutdown_callers	all	4096
+0x147d610	deferred_mode_references	all	4096
+0x159a068	scene_global_writers	write	4096
+0xa5efd0	actor_id_allocator_callers	all	4096
+0xa60f30	entity_id_allocator_callers	all	4096
