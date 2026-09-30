@@ -1,0 +1,29 @@
+# RVA	Clock producers and scheduling callers
+0x1556e48	clock_global_writer	write
+0x1556e4c	clock_global_writer	write
+0x1556e40	clock_global_writer	write
+0x1556e50	clock_global_writer	write
+0x14776c8	clock_global_writer	write
+0x1556e00	clock_producer_or_caller
+0x65f440	clock_producer_or_caller
+0x65f3d0	clock_producer_or_caller
+0x65f0a0	clock_producer_or_caller
+0x65f280	clock_producer_or_caller
+0x1547d9c	clock_global_writer	write
+0x147d670	clock_global_writer	write
+0x154c158	clock_global_writer	write
+0x147b848	clock_global_writer	write
+0x65f380	clock_producer_or_caller
+0x65f390	clock_producer_or_caller
+0x65f5e0	clock_producer_or_caller
+0x65eb80	clock_producer_or_caller
+0x65eba0	clock_producer_or_caller
+0x65ebc0	clock_producer_or_caller
+0x65ed10	clock_producer_or_caller
+0x65f050	clock_producer_or_caller
+0x57b3b0	clock_producer_or_caller
+0x554ce0	clock_producer_or_caller
+0x65fb20	clock_producer_or_caller
+0x154af7c	rng_tls_writer	write
+0x65f9d0	clock_producer_or_caller
+0x6601d0	clock_producer_or_caller

@@ -129,8 +129,11 @@ when enabled and the path is nonempty. It samples owner+74 but passes null as
 the AI source. In non-loop mode with a positive cycle center, it schedules a
 new deadline: current clock plus converted center + (2×draw−1)×spread. A spread
 whose absolute value is below the comparison epsilon skips the RNG draw.
-The RNG accessor is `554B50 / 3DC040`, distinct from the current-context asset
-selector's `5549F0`; its wider initialization policy is not inferred here.
+The RNG accessor is `554B50 / 3DC040`, which reads the selected context pointer.
+Asset selection uses `5549F0 / 3DBED0`, the default thread-storage accessor,
+and bypasses that selected pointer. The clock/context follow-up establishes this
+distinction; the earlier description of asset selection as current-context was
+incorrect.
 
 The entity callback `7AFF60 / 6301E0` handles these events:
 
@@ -165,7 +168,9 @@ note's description of the start helper as creating a healing marker: it emits
 an interaction event and starts an audible loop.
 
 `Actor::Weapon::eSnipingAimer` quant `826EA0 / 6AA130` derives a boolean from
-state+180!=sentinel and converted clock>=deadline+168. Chassis helper
+state+180!=sentinel and conversion of **member+180** >= float threshold+168.
+The conversion helper takes an integer argument; assembly loads ECX from+180
+before calling it. This is not a read of the current clock. Chassis helper
 `83FB80 / 6C3350` gates the `human/calm` cue transition. False→true starts a
 null-source loop and stores+1A0; true→false stops and invalidates it. The final
 weapon+264 bit4 write occurs independently of that chassis gate.

@@ -1,6 +1,7 @@
 // Export focused static evidence without renaming functions or changing types.
 // Args: PE survey JSON, candidate TSV, output directory, optional anchor TSV and --focused.
 // An anchor TSV may have a third column "write" to follow only write references.
+// A fourth column may raise/lower the reference cap (default 128, range 1..100000).
 // Decompiled text and instruction listings belong in ignored local-work/ only.
 //@category GoH.Research
 
@@ -48,21 +49,29 @@ public class ExportAiAnchors extends GhidraScript {
         return item;
     }
 
-    private JsonObject anchor(String label, Address target) {
+    private JsonObject anchor(String label, Address target) throws Exception {
         return anchor(label, target, "all");
     }
 
-    private JsonObject anchor(String label, Address target, String filter) {
+    private JsonObject anchor(String label, Address target, String filter) throws Exception {
+        return anchor(label, target, filter, 128);
+    }
+
+    private JsonObject anchor(String label, Address target, String filter, int limit) throws Exception {
         if (!filter.equals("all") && !filter.equals("write"))
             throw new IllegalArgumentException("Unknown reference filter: " + filter);
+        if (limit < 1 || limit > 100000)
+            throw new IllegalArgumentException("Reference limit must be in 1..100000: " + limit);
         JsonObject item = new JsonObject();
         item.addProperty("label", label);
         item.addProperty("rva", rva(target));
         item.addProperty("reference_filter", filter);
+        item.addProperty("reference_limit", limit);
         JsonArray refs = new JsonArray();
         ReferenceIterator iterator = currentProgram.getReferenceManager().getReferencesTo(target);
         int count = 0;
-        while (iterator.hasNext() && count < 128) {
+        while (iterator.hasNext() && count < limit) {
+            monitor.checkCancelled();
             Reference ref = iterator.next();
             if (filter.equals("write") && !ref.getReferenceType().isWrite()) continue;
             count++;
@@ -128,8 +137,10 @@ public class ExportAiAnchors extends GhidraScript {
         if (anchorsPath != null) {
             for (String line : Files.readAllLines(Paths.get(anchorsPath), StandardCharsets.UTF_8)) {
                 if (line.isBlank() || line.startsWith("#")) continue;
-                String[] fields = line.split("\t", 3);
-                anchors.add(anchor(fields[1], address(fields[0]), fields.length > 2 ? fields[2] : "all"));
+                String[] fields = line.split("\t", 4);
+                anchors.add(anchor(fields[1], address(fields[0]),
+                    fields.length > 2 ? fields[2] : "all",
+                    fields.length > 3 ? Integer.parseInt(fields[3]) : 128));
             }
         }
         if (!focused) {

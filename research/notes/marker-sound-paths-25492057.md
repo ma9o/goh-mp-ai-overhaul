@@ -75,7 +75,8 @@ register periodic AI signals. The only explicit play_sound loops in this closure
 are the two fast-branch breath requests; their base folder has no AI signal.
 
 The directories used by gear, ordinary surface steps and breath contain multiple
-WAVs, so each successful selection consumes one current-context RNG draw. For a
+WAVs, so each successful selection consumes one default-thread RNG draw through
+`5549F0`, which bypasses the selected context pointer read by `554B50`. For a
 matched non-sand terrain branch with base aliases present, the sound selections
 alone account for three draws in fast, two in normal and one in lying. The sand
 branch has no matching step asset, leaving two/one/zero respectively in this

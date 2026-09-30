@@ -26,7 +26,7 @@ after their behavior and effect on the AI contract are established.
 | Weapon behavior | AttackRate; runtime/definition split; weapon selection; spread profiles/scales; motion accuracy/zeroing; named aim modes and ballistic solvers; burst sampler and stateful preview; adaptive geometry trace; live projectile fields/pool/flight and contact-to-damage bridge; TargetAccessor result gates; occupied-slot readiness; named crew slot flags, Sealed exposure, priority assignment and reservations; gunner/charger/commander/driver requests and minWorkers; cannon animation completion counter | Place/profile/owner lifetime; bone limit solvers and sway/reload; charger and animation producers; weaponry86 state; full contact/material/ricochet outcomes, guided steering and synchronization; other shooter types |
 | Health/morale | Vitality attachment; raw/effective health and stamina; incapacitation/dying/final death/blinding flags and brain/sensor propagation; revival half-health; load-dependent stamina rates and inventory producer; Heal/Medic; damage subclass dispatch/formulas; first-eligible armor lookup and holder parser; armor thickness/overmatch/quality formulas; two-stage component damage; RepairTime/RepairOrder, countdown/restoration and repair command59; event-layer/extender dispatch; timed knockdown/recovery/serialization; Avoidance parameters and lookup | Material coefficient units, wound-list removal and component event names; remaining outer damage gates; concrete conditional/action-list execution; blinding producers; full throwoff simulation/landing; carried-patient predicate; replication thresholds; full avoidance consumers; morale/suppression links; medic statistics; melee defence/counterattack and blow effects |
 | Orders | Move/cover sequence; base phase0/1/2 lifecycle and retry/cleanup; Attack equipment/range/detour/fire transitions, WeaponFire/WeaponAiming, Advance movement/engagement and subject marks, Fight selection/timing/blow application; vehicle allocation/root/emergency/Hideout/SmartRepair dispatcher; Repair/KitExchange/Collect/TakeItem/OrderTake and transfer/equip operations | Remaining action families; Advance byte39 reachability; controller/charger and body-turn helpers; Board/Bind/Emit now mapped; Repair phase6 reachability and group variants; scripted blow effects and melee defence/counterattack |
-| Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion; animation manager pending/active membership, scene phase and immediate request-side Quant | Quant-clock producer/pause/time scale, manager bucket creation, context/RNG setup, entity lifetime through queued work; full deferred mesh drain; skip setter now mapped |
+| Scheduling/time | Owner-grouped 0x50-byte callbacks, phase ordering, serial/parallel execution and wait; bucket-allocated task intervals; editor worker-mutation assertion; animation manager pending/active membership, scene phase and immediate request-side Quant; clock/delta producer, pause tokens, explicit stepping, slowdown stack, deadline codecs, default/selected/synced RNG context | Frame event-router/worker lifecycle, registered timer registration/unlink, slowdown guard and packet producers; manager bucket creation, entity lifetime through queued work; default/entity RNG disposal and scope completeness; full deferred mesh drain; skip setter now mapped |
 | Group/vehicle behavior | Type roots; cannon fire/move/trailing states, role-index transfers, seat Disable and obstacle enable writers; place readiness/assignment; crew groups, sealing, entrance balancing, Board/Bind/Emit phases, traversal graph/animation/inventory, walker sync/cancel/load and occupant perception effects; six concrete exit callbacks; abandoned/ally_crew/any_crew/select bindings; boarder command reception; vehicle root/multiweapon allocation, gunner withdrawal, repairer selection, emergency triggers and basic airborne/animal roots; cannon command5E reception | Full squad/leader coordination, aircraft/helicopter chassis and animal scanners; exit source-pointer lifetime; full reservation/queue lifetime and derived chassis permissions, remaining availability flag producers; cannon matrix correction |
 | Configuration/scripting | Named mode/ratio fields, score registry; exact-shape property-token catalog (1229 game/1254 editor); reviewed combat property registries | Remaining AI-readable properties, entity definitions, abilities, mission controls and current script-facing APIs; token discovery is not parser coverage |
 | Cross-binary comparison | Selected game/editor contracts | Compare newly reviewed contracts; distinguish outlining/inlining and behavior differences |
@@ -71,7 +71,8 @@ Existing completed passes: [initial structure](build-25492057.md),
 [deferred interactions/context/cleanup/extender dispatch](interaction-lifecycle-map-25492057.md), and
 [sound-folder inheritance/asset RNG/channel lifetime/base sound audit](sound-definitions-map-25492057.md), and
 [human marker path expressions/branch guards/inherited signal join](marker-sound-paths-25492057.md), and
-[sound loop owners/alias movement/deferred FX queue/event names](sound-owners-map-25492057.md). Their open questions
+[sound loop owners/alias movement/deferred FX queue/event names](sound-owners-map-25492057.md), and
+[clock/pause/slowdown/timer codecs/RNG context](clock-map-25492057.md). Their open questions
 are historical snapshots; this frontier tracks the continuing objective.
 
 ## Immediate static leads
@@ -95,7 +96,9 @@ are historical snapshots; this frontier tracks the continuing objective.
   the earlier marker map.548 base folder declarations/551 hashed text resources
   join20,883 WAV entries in2,943 immediate directories. Gear-first normal/fast
   folders inherit movement8; playback volume does not scale AI signal radius.
-  Multi-asset directory choices consume the current RNG with a no-repeat cycle;
+  Multi-asset directory choices consume the default thread RNG with a no-repeat cycle;
+  this bypasses the selected context pointer (5549F0 versus554B50), as established
+  by the clock/context follow-up, correcting the earlier current-context label.
   explicit files and one-asset directories skip that draw. Pause does not itself
   erase repeats; retirement removes the matching repeat before handle reuse.
   Six direct loop owners now mapped in both binaries: Medic, Speaker and two
@@ -107,7 +110,7 @@ are historical snapshots; this frontier tracks the continuing objective.
   FD7/FE4 are Pause/MuteVolume. Ordinary executor publishes FD3 outside the pause
   gate; explicit-step65F3D0 invokes FD2 without a local pause gate.
   Follow FX198 source writers/lifetime and initialization callers, alias callback
-  reachability/replacement, clock/delta/pause producers, default-loudness108
+  reachability/replacement, default-loudness108
   relocation and mounted folder/cache lifetime. The marker path-expression join
   now resolves147 potential sound rows/64 normalized paths; all three speed/sand
   paths plus gear_rattle/lying lack a base asset. Movement start_sound integer1
@@ -154,6 +157,17 @@ are historical snapshots; this frontier tracks the continuing objective.
 - Movement: path request `0x8C8F60`, route probe `0x8AE780`, moving-entity
   registry `0x8AA360`; profile initialization/config; low-ratio speed modifier
   reads `0x925010/0x924F90`, abilities `0x936580/0x9744E0`.
+- Clock/context: core65F440 increments48 by4C beforeFD2 even during explicit
+  paused steps; normal583250 gates it with pausecount0/flags4. FD3 sits outside
+  that gate. Mainframe57B750 derives/clamps delta1..100 after slowdown division,
+  but nonzero override154C158 bypasses calculation and clamp. Slowdown request
+  rows18 use last-token precedence, per-quant steps and no empty-stack factor
+  reset. Deadline relative codecs and scenequant/speed serialization are mapped.
+  Follow registered list6601D0 (separate1556E60, not quant58), event router6532B0,
+  guard15A4A80 writers, multiplayer frame packet producers, default RNG registry
+  cleanup and all entity RNG scopes. Context push/pop switches selected stream
+  only on changed boolean; default asset getter5549F0 bypasses selected554B50.
+ 65E710 converts its argument, correcting the sniping cue's former clock label.
 - Target selection: class at actor +0xDE8; subject +0x14 bits7/8 writers;
   `0x913230/0x912EB0` ground/volume resolution; sorter partition/heap branches.
 - Weapons: aim modes `direct/curved/adaptive/nocurve`, solvers `0x5E8290/0x5E7E80`,

@@ -4,7 +4,7 @@
   "export_suffix": "-sound-definitions",
   "runtime_verified": false,
   "status": "partial_static_behavior_review",
-  "warning": "Sound-folder inheritance, base sound resource audit, current-RNG asset choice and AI signal/channel lifecycle. Audio arbitration, mounted overrides, raw source lifetime and full event/clock producers remain open. RVAs/offsets hex; virtual slots decimal. See sound-definitions-map-25492057.md.",
+  "warning": "Sound-folder inheritance, base sound resource audit, default-thread-RNG asset choice and AI signal/channel lifecycle. Audio arbitration, mounted overrides, raw source lifetime and full event/clock producers remain open. RVAs/offsets hex; virtual slots decimal. See sound-definitions-map-25492057.md.",
   "binaries": {
     "game": {
       "filename": "call_to_arms.exe",
@@ -8406,8 +8406,8 @@
   "selection_contract": {
     "path": "Empty request returnsnull. Is-directory uses /sound/+path; directory selects empty stem, file selects parent and basename without extension. Empty folder or missing exact stem returnsnull.",
     "explicit": "First exact stem string match, no RNG and no cycle-counter change.",
-    "random": "Single asset returns it without RNG. Multi-asset empty selector resets remaining to N only when zero, obtains current RNG5549F0, increments counterC, updates state8=state*7FF8A3ED+2AA01D31 modulo2^32, decrements remaining, swaps entire48-byte rows at remaining and (state>>8)%old_remaining, returns remaining row.",
-    "implications": "Sampling without replacement per complete random cycle; adjacent cycles may repeat. Multi-asset folder consumes one current-context draw even when remaining==1. Exact-file selections can repeat and do not participate in cycle. No uniformity or mounted iteration-order guarantee.",
+    "random": "Single asset returns it without RNG. Multi-asset empty selector resets remaining to N only when zero, obtains default thread RNG5549F0, bypassing the selected TLS pointer read by554B50, increments counterC, updates state8=state*7FF8A3ED+2AA01D31 modulo2^32, decrements remaining, swaps entire48-byte rows at remaining and (state>>8)%old_remaining, returns remaining row.",
+    "implications": "Sampling without replacement per complete random cycle; adjacent cycles may repeat. Multi-asset folder consumes one default-thread draw even when remaining==1. Exact-file selections can repeat and do not participate in cycle. No uniformity or mounted iteration-order guarantee.",
     "row_mutation": "Channels retain pointers to asset slots while selection swaps row contents. All slots in a folder share the same definition, so this swap does not change that folder signal descriptor; per-asset audible bookkeeping effects remain open."
   },
   "publication_contract": {

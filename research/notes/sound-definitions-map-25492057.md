@@ -94,7 +94,7 @@ not prove publication or recipient detection. The two unresolved loudness names
 are `mission_voice` and `vehicle_internal`; native lookup requests default
 fallback for both. Six repeated loudness names are updated in place.
 
-## Selecting a sound consumes the current engine RNG
+## Selecting a sound consumes the thread's default RNG
 
 `4D3900/3753A0` caches directories, recursively resolving the parent first.
 `4CF490` enumerates mounted resources but accepts only immediate children of
@@ -108,7 +108,7 @@ extension. Descendant WAV files do not form a recursive random pool.
    with no random draw and no cycle-counter change.
 2. A directory containing one asset: return that asset without a draw.
 3. A directory containing multiple assets: refill remaining60 with N only when
-   zero; fetch the current engine RNG; increment its counterC; update state8
+   zero; fetch the thread's default RNG through `5549F0 / 3DBED0`; increment its counterC; update state8
    with `state*7FF8A3ED+2AA01D31` modulo2^32; decrement remaining; swap rows at
    remaining and `(state >> 8) % old_remaining`; return the remaining row.
 
@@ -118,9 +118,13 @@ random cycle, but the boundary between cycles can repeat. Even the last choice
 of a multi-asset cycle consumes a draw. Explicit file requests bypass that cycle.
 No unbiased distribution or native enumeration-order claim is made.
 
-This is the **current** RNG context, so sound selection can consume the context
-selected by the interaction/event executor. It is not established as a separate
-audio-only random stream. Retained channels point to asset slots whose contents
+The clock/context follow-up distinguishes this accessor from `554B50 / 3DC040`,
+which reads the selected RNG pointer from TLS. Sound asset selection calls the
+default thread-storage accessor directly and therefore bypasses a selected
+`synced_global` or entity stream. It is not established as an audio-only stream;
+other default-stream users can share it. This corrects the earlier interpretation
+that selection necessarily consumed the interaction executor's current context.
+Retained channels point to asset slots whose contents
 can be swapped; folder signal properties are unchanged because those rows share
 the same folder. Full per-asset audio bookkeeping consequences remain open.
 

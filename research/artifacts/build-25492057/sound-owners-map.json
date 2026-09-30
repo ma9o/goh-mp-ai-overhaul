@@ -636,11 +636,11 @@
       ]
     },
     {
-      "id": "Actor_Weapon_eSnipingAimer_cue_deadline",
+      "id": "Actor_Weapon_eSnipingAimer_cue_threshold",
       "owner": "Actor::Weapon::eSnipingAimer",
       "offset": "0x168",
       "width": 4,
-      "role": "Float compared with converted simulation clock",
+      "role": "Float compared with conversion of integer member180; not current clock",
       "evidence_ids": [
         "game_826ea0",
         "game_827470",
@@ -654,7 +654,7 @@
       "owner": "Actor::Weapon::eSnipingAimer",
       "offset": "0x180",
       "width": 4,
-      "role": "Sentinel1556DE8 disables quant-side cue bit",
+      "role": "Integer converted by65E710; sentinel1556DE8 disables quant-side cue bit",
       "evidence_ids": [
         "game_826ea0",
         "game_827470",
@@ -10518,7 +10518,7 @@
   },
   "medic_sniping_contract": {
     "medic": "3713E0 emits start_healing and starts source-free human/action/healing loop at patient74; guarded by38. Stop3714D0, Exec phase2 and Execute inline exits clear38, emitstop_healing and stop60. GEM outlines Execute stops via265930. This is audio plus interaction event, not evidence that the sound itself publishes healing perception.",
-    "sniping": "Quant826EA0 compares180 against sentinel and clockFloat>=168 to obtain weapon264bit4; chassis83FB80 gates calm cue changes, not final bit write. Explicit827470 accepts desired bit. On cuefalse->true human/calm nullsource loop, store1A0; true->false stop/invalidate. Reset and both destructors stop. Full aim/accuracy meaning of bit4 and83FB80 predicate remain separate leads."
+    "sniping": "Quant826EA0 compares180 against sentinel and converts that same integer member180 via65E710 before comparing>=float168 to obtain weapon264bit4; chassis83FB80 gates calm cue changes, not final bit write. Explicit827470 accepts desired bit. On cuefalse->true human/calm nullsource loop, store1A0; true->false stop/invalidate. Reset and both destructors stop. Full aim/accuracy meaning of bit4 and83FB80 predicate remain separate leads."
   },
   "event_bindings": [
     {
@@ -10590,7 +10590,7 @@
   "related_artifacts": [
     {
       "filename": "sound-definitions-map.json",
-      "sha256": "c71e5a7274469615f81a6ed94ae6d30fd2b3d7065498b4f8af1e65da316fad8d"
+      "sha256": "f8f7b1a63d60917630424e6f07036aab99ffc9ba738fc3b39c464fea808c452c"
     },
     {
       "filename": "interaction-lifecycle-map.json",

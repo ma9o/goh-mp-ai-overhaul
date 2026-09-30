@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "7c0720df0e0b939fbf816e72e57cb773ccb99895e061d1a3ee234bace8a6b0aa",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "178912cd4cae63bc451f9f1d75a8520ae5ef145674d0ef5a2530cc31ad4d1e8d",
+      "exact_candidates": 56,
+      "exported_functions": 189,
+      "exported_basic_blocks": 5047,
+      "checked_enums": 0,
+      "checked_constants": 7,
+      "checked_method_entries": 69,
+      "checked_instruction_locations": 3956,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 5,
+      "checked_byte_sequences": 2
+    },
+    "editor": {
+      "filename": "call_to_arms_ed.exe",
+      "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+      "export_report_sha256": "9a480c3bba4d38a7858aec40ada869efc3dcc783a58efd62e10be714c9068a8a",
+      "exact_candidates": 57,
+      "exported_functions": 202,
+      "exported_basic_blocks": 4800,
+      "checked_enums": 0,
+      "checked_constants": 7,
+      "checked_method_entries": 62,
+      "checked_instruction_locations": 2852,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 5,
+      "checked_byte_sequences": 3
+    }
+  },
+  "status": "passed"
+}
