@@ -1,0 +1,6 @@
+# RVA	Q3 direct-goal contract blanks
+0x9052f0	current-order ownership and cancellation
+0x86f8d0	idle progress predicate
+0x8f3600	point MoveTask factory
+0x8f6230	MoveTask result boundary
+0x8f6970	MoveTask start and replan boundary

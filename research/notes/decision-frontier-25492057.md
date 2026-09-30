@@ -310,8 +310,6 @@ Evidence: [catalog Q2](decision-catalog-25492057.md#q2--behavior-writers-and-con
 35 game entries, 2,878 instruction locations, seven RTTI tables and five data
 ranges checked with the existing verifier. No game/editor execution.
 
-## Open: next
-
 ### Q3. Direct-goal contract (`0x902FB0`)
 
 Blank: output contract (effect, completion, failure, cancellation).
@@ -327,6 +325,21 @@ more than five failures counted at `state+0x3D8` can clear the task), squad Quan
 Done when, for idle, battle and cover states, it is known how a goal becomes
 movement, what marks arrival, what abandons it, and how the behavior state
 gates it.
+
+**Closed:** O-DIRECT-GOAL now distinguishes request storage, current-order
+ownership/cancellation, idle progress retries, tactical near-goal and failure
+clears, cover-state gates and squad waypoint completion. A cleared task bit is
+not proof of arrival; the clear helper does not itself end the current order.
+Leaf movement results stop at their output interfaces; Q10 remains deferred.
+
+Evidence: [catalog Q3](decision-catalog-25492057.md#q3--direct-goal-output-contract),
+[map](../artifacts/build-25492057/decision-q3-map.json),
+[validation](../artifacts/build-25492057/decision-q3-validation.json), plus the
+preserved human-states, movement, flow and squad maps. Five new game entries,
+598 instruction locations, two floats and one RTTI table checked. Actual arrival
+and interruption timing need runtime verification. No game/editor execution.
+
+## Open: next
 
 ### Q4. Morale inputs (`brain+0x474`)
 

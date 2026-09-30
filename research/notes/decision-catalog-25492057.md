@@ -773,3 +773,63 @@ choose its write phase: a state-only write with deadline0 is recomputed by the
 next selector, while a nonzero deadline suppresses selection until expiry, when
 both fields are zeroed. Static analysis does not establish a safe concurrent
 injection point or make the two separate prototype stores atomic.
+
+## Q3 — direct-goal output contract
+
+**O-DIRECT-GOAL is closed to the prototype boundary.** It is a replaceable
+movement request, not an order handle or a promise of arrival. The decision
+join below uses preserved [human-states](human-states-map-25492057.md) /
+[manifest](../artifacts/build-25492057/human-states-map.json),
+[squad](squad-map-25492057.md) /
+[manifest](../artifacts/build-25492057/squad-map.json),
+[movement](movement-map-25492057.md) /
+[manifest](../artifacts/build-25492057/movement-map.json), and
+[flow](flow-map-25492057.md) /
+[manifest](../artifacts/build-25492057/flow-map.json).
+New disassembly fills the order-ownership, point-factory and leaf-result blanks:
+[Q3 map](../artifacts/build-25492057/decision-q3-map.json),
+[validation](../artifacts/build-25492057/decision-q3-validation.json)
+(five entries,598 instruction locations, two floats, one RTTI table).
+
+| Contract part | Observable behavior and evidence |
+|---|---|
+| Call and ownership |0x902FB0(RCX=live attached brain,RDX=readable XY float32[2]) copies eight bytes at0x903026/2A. It does not retain RDX. The caller must keep the argument valid through the preceding order-End callback; passing an owned independent coordinate value avoids an alias invalidated by cancellation. No explicit result, goal ID or completion callback is returned. |
+| Immediate effects |If brain+0xF0 is nonnull, call slot13(null) at0x902FCF. Clear +0x39C bits7/9/11/29, set6/8/25; copy goal to+0x130; reset +0x140/+0x144/+0x148 from writable globals0x146E000/4/8. Bit6=request pending,8=new task,25=reconsider. No leaf allocation or immediate chassis movement in this setter. |
+| Current-order replacement |Both human types use0x9052F0. Outside order-update flag24, it calls old order slot4 End at0x90532B and deleting slot0 at0x905342. Inside that callback phase it instead marks old order+0x18 bit22 at0x90531F for deferred cleanup. In both cases it clears brain+0xF0 and+0x108; a null replacement sets bit12. The setter owns installed orders; no retained order pointer is returned to a goal caller. Existing slot24 evidence0x905710 describes deferred cleanup after the callback. |
+| Cancellation / replacement |Another0x902FB0 cancels the current order and replaces XY.0x902F50 clears6/7/9/11/29 and the look-point defaults, preserving stored goal/follower XY. It does **not** itself call End or clear+0xF0: clearing the request alone is not an immediate stop of an already installed movement order. Ending that order uses slot13(null). Squad updates and saved-policy restoration can replace requests later; the request has no exclusive ownership lease. |
+
+| Decision context | How the goal is consumed, ended or deferred |
+|---|---|
+| Outdoors idle0x94EF90 |Bit6 is checked before other idle work. Bit8 forces the first attempt and is cleared. State+0x3D8 snapshots current actor XY; the sequence appends point MoveTask0x8F3600(brain+0x130,0), then state event0x10. If bit7 was set by squad policy, it first appends MovementChange using current configured movement type/mode. Sites0x94F039..0x94F0EF. On a later Execute, it compares the snapshot with current XY through0x86F8D0: both component differences <= float32(1e-5) means no progress, so0x94F118 clears the task. Otherwise it snapshots again and retries. This is a progress/stall test, not a distance-to-goal success test. Idle event0x10 sets reconsider25; event0xC only refreshes anchor (0x94EE50), so neither is an arrival receipt. |
+| Outdoors battle0x94A790 |Tactical movement0x9538A0 is attempted through its due timer and0x950AB0 gate (0x94AC6E/0x94AC88), after higher-priority healing/medic and other policy. With a task, behavior>=3 permits movement along goal direction. Below3, it compares the first component of the threat query at self and ten scaled units toward the goal; only a non-increase permits the task direction (0x953A42..0x953AE1). A rejected task direction falls back to ordinary behavior motion; behavior2 then returns false. Thus a goal can remain pending while native policy chooses another action. |
+| Tactical arrival / abandonment |On an accepted task direction, current XY distance times inverse spatial scale0x1547D90 < float32(0.1) clears the request at0x953B25. This is the explicit local near-goal test; equality does not clear. Otherwise action4(task) chooses a cover candidate or a bounded point-path step. If actor XYZ still equals the last successful-attempt snapshot, the function delays and clears a pending task. A rejected movement-bound query returns false without clearing. Failed/nonpositive paths increment state+0x3D8; >5 with task6 set clears at0x954503. Successful issue resets the failure counter and snapshots position through0x9545F0 (0x954778/0x954789). A false return is therefore not one universal failure reason. |
+| Cover idle0x947200 |After motion eligibility0x942C10 and hide gate0x950A50, task6 or follow9 triggers named motion_required: cancel current action via0x9122C0, leave the cover through0x898C50, deactivate the cover-idle state. Root/location selection then uses the outdoors path. A selected enemy first switches away from idle. These gates can defer a request; setter0x902FB0 does not bypass them. |
+| Cover battle0x9477A0 |The same motion gate, tactical timer,0x950AB0 and hide gate precede0x9538A0 (0x9478E0/0x9478FA), so task-direction, near-goal and failure rules are shared with outdoors battle. Following9 separately leaves cover. Task movement may select MoveToCover or a Move step; it need not leave cover immediately or move straight to the final XY. |
+| Behavior/mode gates |0x950AB0 rejects behavior2 only when task6 is clear; with direct-user control it additionally requires self-as-commander and a task.0x942C10 rejects linked actors, blocks hold mode except its permitted commander-follow branch, and rejects control1 with flag28.0x950A50 supplies a behavior0/current-cover hide gate. These are conditional native movement eligibility rules, not a universal authorization gained by setting bit6. |
+| Squad waypoint0x9309C0 |Commander path waits only while task6 is set AND squared XYZ distance >= waypoint-radius squared (0x9312B5..0x93130E). Thus either strict radius entry OR task-clear permits context/advance; it does not distinguish arrival from abandonment. Without commander, members count as done when task-clear or near; all-done clears each task, with a separate empty-action-list/any-near shortcut. These waypoint rules are not a result code for an independent0x902FB0 call. |
+
+The idle point factory0x8F3600 creates an owned eMoveTask plus ePoint task,
+copies XY into task+0x10, and stores the task pointer at order+0x40. Near-zero
+coordinates invoke the "Moving to zero bug!" diagnostic; there is no ordinary
+false/invalid-coordinate return path. Do not treat arbitrary XY as prevalidated.
+MoveTask Exec0x8F6230 returns0 while waiting for route work/child progress,
+2 when the chassis start gate fails or bounded retries fail, and otherwise
+propagates child completion. It may replan after progress and alter the local
+point within actor radius on failed path requests. Cleanup phase2 removes its
+chassis request and child.0x8F6970 is the start/replan boundary; path generation
+and chassis execution stop at their result interfaces here.
+
+For tactical Move, the preserved movement map establishes0 running,1 success,
+2 failure; its internal route-end code6 maps to1. MoveToCover0x8CE670 returns2
+when its initial cover destination gate rejects, propagates its child result,
+and on success installs the cover descriptor through0x898AD0; cleanup releases
+its reservation. Neither leaf result alone guarantees final direct-goal XY was
+reached: tactical movement uses intermediate steps, and MoveTask can adjust its
+local destination. Sequence-wide event/failure propagation beyond this request
+boundary remains Q10, as requested.
+
+**Prototype observation contract:** inspect the still-current request, task6,
+actual self position and the intended tolerance separately. A runtime scenario
+must confirm accepted orders, achieved distance and interruption timing; static
+code cannot report those outcomes for a mission. This closes the contract
+without entering pathfinding, animation or physical-movement internals.
