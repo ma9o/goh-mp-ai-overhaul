@@ -1067,3 +1067,575 @@ cover/fire/stance/output details remain static work for a later prototype
 stage; the full native-read census stays parked. Runtime still must establish
 the admitted concrete object/ABI/hook timing, actual values/cadence, and observed
 movement outcomes. No game/editor execution or modification was performed.
+
+## Q6 — preferred-subject source and ownership contract
+
+This closes I-PREFERRED-TARGET and O-PREFERRED-SUBJECT-QUERY. The older label
+"preferred/explicit" describes its use; the producer is specifically a
+**squad-target-derived preference**, not a separate user/order subject slot.
+
+Evidence: [Q6 map](../artifacts/build-25492057/decision-q6-map.json),
+[validation](../artifacts/build-25492057/decision-q6-validation.json), and the
+preserved [squad note](squad-map-25492057.md)/[map](../artifacts/build-25492057/squad-map.json),
+[combat note](combat-map-25492057.md)/[map](../artifacts/build-25492057/combat-map.json),
+[engagement orders](engagement-orders-map-25492057.md)/[map](../artifacts/build-25492057/engagement-orders-map.json),
+[ownership](ownership-map-25492057.md)/[map](../artifacts/build-25492057/ownership-map.json).
+All addresses here are game RVAs.
+
+| Row / blank | Effective contract and instruction evidence |
+| --- | --- |
+| O-PREFERRED-SUBJECT-QUERY: input/access | RCX=live brain. brain+0x100 must name a squad whose target kind at squad+0xB8 is nonzero (0x903059/0x903069). Otherwise return null. The target accessor begins at squad+0xB0. Query0x83DAA0 returns actor+0x74 for accessor kind1, otherwise accessor+0xC; that pointer is borrowed (0x83DAA0/0x83DAA6/0x83DAAF). |
+| Query meaning/domain | Iterate owner(+0x38)→sensor(+0xDD0) category1 pointers [+0x280,+0x288). Require known-position subject+0x10 bit28 and clear apparent-ally subject+0x14 bit2 (0x9030C3/0x9030CC). Choose the closest remembered XYZ strictly inside (10·L)^2 of the squad target, tightening the squared bound after each hit (0x903106/0x90310B/0x90310E). Equal distances keep the earlier entry. Return null if none qualifies. This query does not test current visibility, enemy bit1, unusable bit4, eligibility0x912AE0 or weapon feasibility. |
+| Query effect/result/ownership | RAX=borrowed subject* or null (0x90311A/0x903123). No allocation, retain, release, order issue or field mutation occurs in this body or its position accessor. No completion/cancellation token is returned. It samples current shared-target state and cached observations; it does not own either. |
+| I-PREFERRED-TARGET: refresh/ownership | Human refresh0x943560 calls at0x943578. If the result differs, release the previous+0x3D0 reference (atomic decrement0x94359B, dispose at zero according to subject+0xC flags), store at0x9435C1 and retain nonnull at0x9435CD. Equality preserves the existing reference. Refresh also snapshots/selects other target slots and clears+0x3DA; these are separate from the preferred source. |
+| Refresh phase/validity | Human slot35 calls refresh at0x941D19 before behavior selection, after the reached sensor commit (Q2/F-sensor). A retained subject can lose its actor/entity binding; P-subject remains required. Sensor ownership keeps the borrowed result available for this native within-call assignment. Do not carry the query result or a category iterator across a reset/mutation without native ownership handling. |
+| Vehicle consumers |0x988FC0 call0x9890B7 and0x989900 call0x9899D8 insert a nonnull result at the front of their candidate vector. They do not make human+0x3D0 ownership semantics applicable to the vehicle layout. |
+| Shared target meaning | squad+0xB0 is a TargetAccessor-compatible object; +0xB8 is its kind. Assignment0x83DBC0 accepts kind0 clear,1 live actor position,2 fixed XYZ,3 actor-associated stored XYZ. Copying actor-associated state registers the accessor as a Delivery listener, and replacing/clearing removes the old registration. Position query kind1 assumes a valid actor binding; it has no null guard. This is a native callback precondition, not a transferred actor reference. |
+| Explicit source/freshness |0x9301D0(squad,source accessor*) reference-assigns at0x9301E4 and arms squad+0x130=now+convert(2) at0x930204. Its located executable caller0x806550 forwards the active weapon place's accessor+0xC8 at0x806683 when nonzero weapon control passes its placement gates and the owner brain has a squad. Source data is copied; the source accessor pointer is not retained. |
+| User/manual source | Manual-shot forwarding0xB0EC0 tail-jumps to0x806550 at0xB0ED4; manual interface0x8DB620 calls at0x8DB678 and constructs the named eManualShotCommand. Thus successful manual enable can feed the same shared target. Disabling does not enter its squad-set branch. There is no separate user-priority branch in0x903050. Stop at this first source binding. |
+| Native order/weapon source | WeaponFire Execute commits its target through0x80A370 at0x8D79CE (engagement-orders/combat maps). Squad Quant0x9309C0 copies qualifying occupied weapon-place+0xC8 state through0x83DBC0 at0x930EAF and arms a one-unit deadline at0x930EC5. This is the first shared-target producer that answers the order-source blank; attack, animation and shooter internals are outside Q6. |
+| Shared-source precedence/expiry | Both sources write the same accessor/deadline. The query observes the current value, without a user/squad/order priority hierarchy. A qualifying later Quant write can replace/refresh it. Quant checks the nonzero deadline at0x931500/0x93150A and clears deadline/accessor at0x931521/0x931528 when due; commander replacement/removal also clears it (squad map). The query itself never tests the deadline, so expiry takes effect when the producer clears the accessor. |
+
+The retained subject is an observation near the target position; it need not
+be the exact actor named by a source accessor. The cached position and apparent
+relationship are the sensor's values. Runtime must establish live callback/type
+admission and actual writer/Quant ordering for a prototype; it does not need to
+resolve another static source-precedence rule.
+
+The new focused game export validates 11 entries, 937 instruction locations and
+two floats with the existing verifier. No editor evidence was needed. No game
+or editor was launched or modified. Manual-input, attack and TargetAccessor
+implementation beyond the source/ownership interfaces is parked.
+
+## Q7 — cover descriptor, direction and healing contracts
+
+Closes I-COVER-DESCRIPTOR (+8/+0xC), I-COVER-DIRECTION, I-COVER-STATE,
+I-COVER-RESIDENT validity and O-COVER-HEAL-QUERY. Evidence:
+[Q7 map](../artifacts/build-25492057/decision-q7-map.json) and
+[validation](../artifacts/build-25492057/decision-q7-validation.json);
+existing [systems](systems-map-25492057.md)/[map](../artifacts/build-25492057/systems-map.json),
+[perception](perception-map-25492057.md)/[map](../artifacts/build-25492057/perception-map.json),
+[human states](human-states-map-25492057.md)/[map](../artifacts/build-25492057/human-states-map.json)
+and [tactics](tactics-map-25492057.md)/[map](../artifacts/build-25492057/tactics-map.json).
+
+The0x88-byte descriptor is at owner→cover(+0xDC0)+0x20. Its first four dwords
+are kind, group, protected-height class and usable-height class. The last two
+names are functional inferences from kind bindings and height/filter consumers;
+they are not recovered parser field names. Domain0 is none/unavailable,
+1 lying height,2 squatting height,3 standing height. They are not the chassis
+movement enum. Constructor0x8A5880 writes +8/+0xC through0x8A9870/0x8A9890;
+the writable initialized tables0x14821E0/0x1482218 return0 for kind>=13.
+
+| Kind / recovered name | +8 protected height | +0xC usable/firing height |
+| --- | ---: | ---: |
+| 0 none | 0 | 0 |
+| 1 look_left;2 look_right;3 look_2way | 3 | 3 |
+| 4 snipe_cover | 2 | 3 |
+| 5 squat_lie | 1 | 2 |
+| 6 hide_stand | 3 | 0 |
+| 7 hide_squat | 2 | 0 |
+| 8 open_lie | 1 | 1 |
+| 9 bush_stand | 3 | 3 |
+| 10 bush_squat | 2 | 2 |
+| 11 bush_lie;12 terrain_lie | 1 | 1 |
+
+Protected height drives the resident-cover height check in0x8A0750; the usable
+height drives common candidate acceptance0x8A0B20 through sector collection
+0x8A25D0. The latter's height1 terrain/crawl restriction is J1's established
+water gate. Kind changes/construction derive both dwords; resident entry copies
+the descriptor. The tables are writable data, so a file-initial mapping is not
+a claim about externally modified values.
+
+### Direction masks and named cover states
+
+State lookup0x8982E0 initializes19 records at0x14816A0, stride0x78:
++8 name pointer,+0x10 supported-kind bits,+0x14 action/direction bits.
+0x898EF0 returns that full mask;0x898E90 returns bit0. Initialization
+instruction examples0x898378/0x8983F6/0x8984B3/0x898531 bind the masks.
+
+| Requested mask | Meaning from named state records |
+| --- | --- |
+| 0x20 | Hiding-compatible sector/state; may overlap an exposed state |
+| 0x40 | Fire/open over horizontal cover |
+| 0x80 | Fire/open from the left edge |
+| 0x100 | Fire/open from the right edge |
+| 0x180 | Either vertical-cover firing edge |
+| 0x1C0 | Any of the three firing sectors |
+
+| State ID / name | Supported kind mask | Action/direction mask |
+| --- | ---: | ---: |
+| 0 none | 0 | 0 |
+| 1 look_hide | 0xE | 0x22 |
+| 2 look_left_peep | 0xA | 0x05 |
+| 3 look_left | 0xA | 0x81 |
+| 4 look_left_stealth | 0xA | 0x91 |
+| 5 look_right_peep | 0xC | 0x09 |
+| 6 look_right | 0xC | 0x101 |
+| 7 look_right_stealth | 0xC | 0x111 |
+| 8 snipe | 0x10 | 0x41 |
+| 9 snipe_squat | 0x10 | 0x22 |
+| 10 squat | 0x20 | 0x61 |
+| 11 squat_hide | 0x20 | 0x02 |
+| 12 open_lie | 0x100 | 0x63 |
+| 13 hide_stand | 0x40 | 0x22 |
+| 14 hide_squat | 0x80 | 0x22 |
+| 15 bush_stand | 0x200 | 0x22 |
+| 16 bush_squat | 0x400 | 0x22 |
+| 17 bush_lie | 0x800 | 0x22 |
+| 18 terrain_lie | 0x1000 | 0x61 |
+
+0x899380(cover,mask) returns the first state supporting the current kind and
+intersecting the requested mask, or0.0x899310(cover,targetXYZ*,mask) additionally
+intersects the target-direction result. These are borrowed scalar queries,
+not state mutation.0x8A5F60(descriptor,targetXYZ*) returns the usable sector
+mask: group1 combines supported left/right queries0x8A5CF0; group2 tests the
+target angle relative to the descriptor's edge; other groups return0x20.
+The query performs geometry arithmetic without allocating or retaining a
+target. It needs live descriptor/XYZ arguments only for the call.
+The brain consumers0x947CF0/0x948B60/0x9493D0 use these scalar results as
+documented in human-states; masks are not world compass headings.
+
+### Healing, copying and validity
+
+Human::eCoversForHeal slot0=0x952810 returns **true to reject** a candidate
+whose kind's protected-height class is<2 (call0x952816,test0x95281B).
+Thus it rejects none/lying-height candidates, including5/8/11/12, and permits
+the standing/squatting-height classes. It does not test health, threat, arrival
+or actual chassis stance. The search/scorer invokes this borrowed validator
+synchronously; battle healing0x951B60 owns the broader threat/item policy.
+
+Descriptor copy0x8A52D0 and component entry0x898AD0 perform value copies with
+no source retain/release. Source metadata+0x18 is a uint32 entity identity,
+not a raw retained pointer:0x8A5750 copies entity+0xC0 and computes local XY.
+The occupancy token+0x24 records an actor ID and follows the claim/release
+contract0x8A5C80/0x8A5CB0 (perception map). Copying neither claims occupancy nor
+keeps the source geometry alive. Preserve the native descriptor value; do not
+turn these tokens into owning pointers or assume that a saved copy is current.
+
+Resident query0x8988C0 uses0x8A0750 to revalidate/re-score the value. Result2
+invalidates it and calls exit0x898C50; lack of owner/nonzero group also returns2.
+0x8A0750 can return0/1/2 despite its misleading Boolean decompiler signature.
+MoveToCover execution rechecks occupancy and temporary claims before resident
+entry (perception/Q3 contracts). These static interfaces close the copy/lifetime
+blank: native validation remains required at use, while actual invalidation
+and movement ordering are runtime observations. No source lifetime is extended
+by the copied descriptor.
+
+Q7 validation passed15 game entries,1,010 instruction locations,one RTTI table
+and four byte ranges. New disassembly was limited to these query/binding/value
+interfaces; geometry, cover animation and identity-bank implementation remain
+parked. This item remains uncommitted under the user's instruction to proceed
+without Git.
+
+
+## Q8 — fire and movement output enums
+
+This closes I-FIRE-MODE/O-FIRE-MODE, I-STANCE/I-REQUESTED-STANCE and the
+MovementChange output enum/side-effect blanks. Evidence: [Q8 map](../artifacts/build-25492057/decision-q8-map.json),
+[validation](../artifacts/build-25492057/decision-q8-validation.json),
+[game pass](../artifacts/build-25492057/call_to_arms.decision-q8-pass.tsv).
+The preserved [fine map](fine-map-25492057.md),
+[movement map](movement-map-25492057.md#movement-orders-and-foot-chassis),
+[actor controls](actor-controls-map-25492057.md) and their manifests supply
+prior enum/dispatch joins. These are bounded interface results, not a census
+of every native policy read.
+
+### Fire policy and native consumers
+
+`brain+0x398` bits10–11 are an inline two-bit enum, named by table0x10EA410
+and parser0x90FFB0. Predicate0x902A70 returns a Boolean in **AL**; its other
+return-register bits are not a result code (0x902A70..0x902A96).
+
+| Value | Native name | Predicate result | Decision effect |
+| --- | --- | --- | --- |
+| 0 | open | true | Permits the autonomous fire-policy branch; other target/weapon/state gates still apply. |
+| 1 | hold | false | Blocks those attack branches; outdoors code also has an explicit hold-specific cover policy. |
+| 2 | return | brain+0x39C bit18 | Permits those branches only while the aggregate return-fire/alert flag is set. |
+| 3 | unnamed | false | No table name; not a supported prototype request. |
+
+Bit18 is the Q1a/Q5 aggregate: base reconsideration0x903B10 derives it from
+squad+0x10 bit1 when attached, otherwise the brain's recent-threat bit17;
+store0x903DEE. It is not a direct-hit-only predicate. The catalog's existing
+phase/lifetime contracts apply; this gate reads the current aggregate inline.
+
+| Located consumer | Instruction evidence and consequence |
+| --- | --- |
+| Outdoors Interrupt0x949AA0 | After its target-change gate, when movement policy is not hold, raw fire hold test0x949B60/0x949B66 calls cover policy0x950B60 at0x949B7C. Thus hold has an observable policy effect beyond suppressing an attack. |
+| Outdoors Execute0x94A790 | Calls predicate at0x94A8E8,0x94A9BD,0x94ACB6 for autonomous attack paths; its explicit hold branch also blocks normal attack preparation. The earlier human-states map records outdoors Battle Interrupt0x94A010's hold-specific branch. |
+| Shared cover Execute0x9477A0 | Predicate call0x9479F4 gates its action/attack path. |
+| Advance helpers | Calls0x8D1345 (entry0x8D1270),0x8D164F (0x8D14B0),0x8D1995 (0x8D1910),0x8D22E4 (0x8D2120); the same bodies also make explicit hold checks. |
+| Human attack-control wrapper0x942EA0 | Call0x942EA9; false policy returns its blocking result before the actor/sensor/timestamp tests. |
+| Vehicle native consumers | Calls0x98916A (entry0x988FC0),0x98F123 (0x98F0A0),0x990913 (0x990870) use the shared base policy. No vehicle implementation is expanded here. |
+
+The discovery anchor found12 executable references to0x902A70, all represented
+above. This is the located reference set, not proof against indirect or aliased
+policy readers. Full native census remains parked.
+
+### Fire-mode write contract
+
+Actor_state0x99F940 takes command+0x68, skips -1, and replaces only mask0xC00
+in the owner's brain at0x99F9B8/0x99F9C0. Property visitor0x9089F0 uses the
+secondary brain+0x10 interface: its +0x388 is brain+0x398. After parsing
+`fire_mode` at0x908AE8, store0x908B03 performs
+`(old & ~0xC00) | ((value & 3) << 10)`.
+
+Neither **fire-mode branch** calls an event, setter, shooter cancellation or
+reschedule helper after the masked store. This closes the write-equivalence
+blank at the native policy boundary: preserve all other bits and supply a
+named value. The rest of actor_state can perform other requested changes and
+is not equivalent to this one store. There is no receipt or allocation,
+retained argument, automatic rollback, or demonstrated cancellation of an
+already running explicit fire order. Later native writes supersede it; state
+logic sees it when it next evaluates the policy. The prototype's admitted
+phase, interaction with already issued orders and actual latency need runtime
+verification. This does not authorize runtime work.
+
+### Chassis type, mode and MovementChange contract
+
+These are different enums from the **brain** move_mode/move_speed bits and
+setters0x903140/0x9031C0 already closed in Q1z/Q3.
+
+| Field or argument | Native domain and binding | Contract |
+| --- | --- | --- |
+| Chassis type +0x2C actual / +0x30 requested | Table0x10E19A0, referenced by options binding0x9ADF10: normal0,crawl1,squat2,swim3,none=-1 | The prior functional label stand for type0 means the native `normal` stance. Actual and requested may differ during transitions. -1 is the order's unchanged sentinel, not a physical stance. |
+| Requested movement mode +0x460 | Table0x10E18E0/parser0x748050: slow0,normal1,fast2,walk3,bow4,assault5,sneak6,spot7,none=-1 | In particular the decision requests2/4/5 are fast/bow/assault. -1 is skipped by MovementChange; the resolver uses a table index and does not establish arbitrary-value safety. |
+| MovementChange0x8F7330 | Order+0x38 type,+0x3C mode,+0x40 wait; phase0 calls slots45/44 | Owner+8 is the adjusted actor+0xAF0 Ordered interface; +0x2F0 reaches actor+0xDE0 chassis. It calls SetMovementType first, then SetMovementMode for non--1 arguments, with force=false. |
+| Result and cancellation | running0,success1,failure2 | With attached chassis owner and wait=true/type!=-1: requested type differing from the argument fails2; actual matching succeeds1; otherwise runs0. Without that wait, or without an attached chassis owner, it reports1. It does not wait for mode/speed resolution. Phase2 does not reverse setters already issued. Generic order ownership/cancellation is Q10. Borrowed owner/chassis must be valid for the call. |
+| SetMovementMode0x848490 | Foot RTTI0x10E24B0 slot44 | Non-client or forced branch writes requested mode+0x460, clears speed override+0x468, calls notification0x840ED0 at0x8484DA and RequestMode0x84E050 at0x8484E2. No status; requested mode is not proof of applied speed. Notification may publish eSetMovementModeCommand(type0x19) via0x14C010 when its native role gate permits. |
+| SetMovementType0x848710 | Same RTTI slot45 | Client without force returns; crawl in shallow_water returns; swim/terrain/linked and inventory gates may reject or coerce the request. Accepted normal/crawl/squat writes +0x30 at0x848B2C and requests the native Fsm transition; water branches request swim3 and remember the later type at+0x444. Actual+0x2C is not written by that scalar request. Notification0x840F20 at0x848CF6 may publish eSetMovementTypeCommand(type0x1C). No status or owned argument. |
+
+Resolver0x84E540 is a scalar query: chassis input, output mode(int32) and
+speed(float32), no local allocation, retention or field write. With speed
+limit+0x468==1 it caps the native profile speed by+0x464 and maps speed to mode
+through0x847F10. Otherwise slot41 indexes the four-by-eight int32 table0x1481170
+by policy row and requested mode. Existing movement evidence binds slot41 to
+0x849400: combine limits+0x440/+0x40, either3→3, else either0→0, else either1→1,
+else2. Their deeper producer names do not fill this output enum blank.
+
+| Slot41 result | Resolved modes for requests0,1,2,3,4,5,6,7 |
+| --- | --- |
+| 0 | 0,0,0,3,0,0,6,7 |
+| 1 | 0,1,1,3,4,5,6,7 |
+| 2 | 0,1,2,3,4,5,6,7 |
+| 3 | 3,3,3,3,3,3,6,7 |
+
+For requested type other than0, resolved3/6/7 become0 and4/5 become2. Speed is
+slot39(mode,requestedType) times chassis+0x38. RequestMode0x84E050 applies the
+result through the native transition/application boundary; profile, animation
+and networking internals remain parked. A direct +0x460 store omits the setter's
+override reset, notification and recomputation, so it is not an equivalent
+movement output.
+
+Q8 closes these static blanks. Enum, instruction and RTTI verification does
+not establish external ABI, callback admission, live object lifetime or actual
+order/fire/movement timing. No game/editor execution or modification.
+
+
+## Q9 — target eligibility and perception meaning
+
+This closes I-LINKED-TARGET/I-LINKED, I-VISION-ENVIRONMENT,
+I-SUBJECT-ELIGIBILITY-DEADLINE, I-SUBJECT-ACCUMULATOR and the remembered
+I-SUBJECT-WEAPON meaning/lifetime blanks. New bounded evidence:
+[Q9 map](../artifacts/build-25492057/decision-q9-map.json),
+[validation](../artifacts/build-25492057/decision-q9-validation.json),
+[game pass](../artifacts/build-25492057/call_to_arms.decision-q9-pass.tsv).
+Consolidated evidence: [combat](combat-map-25492057.md#order-lifecycle-and-follow-up-perception-findings),
+[perception](perception-map-25492057.md#persistent-subject-fields-and-memory),
+[ownership](ownership-map-25492057.md), [vehicle identity](vehicle-brain-map-25492057.md#identity-ownership-and-configuration)
+and their preserved manifests. Earlier open/inferred labels stay as historical
+text; the corrections below are the effective prototype contracts.
+
+### Linked target eligibility
+
+Eligibility0x912AE0 returns a Boolean-like0/1 value. For a human owner
+(owner+0x30 bit2), a bound target actor with entity+0x1C0 bit28 is additionally
+rejected when **self brain+0x39C bit17 is clear and its linked parent matches
+the native `tank` tag**. Path: subject+0x18→actor+0x560→link+8;
+tag predicate0x4B3500 at0x912BC8, tag object0x1570140 at0x912BBD.
+Initializer0x48E60 binds that object to literal `tank` at0x105DC90, independently
+joined by the preserved vehicle default policy. This is a parent tag check,
+not a different subject-category enum or a blanket rejection of all links.
+When self recent-threat bit17 is set, this extra rejection is bypassed; other
+eligibility gates still apply.
+
+The actor/link/parent chain is borrowed. The native branch assumes the link
+exists once bit28 is set; it does not retain any object or validate an external
+adapter's stale link. Parent/tag and self-threat changes can affect the next
+query during a mission. J4/Q1z ownership and within-call admission conditions
+remain applicable; never carry the raw linked pointer across decisions.
+
+### Night vision query and freshness
+
+Vision0x88EA30 first evaluates the configured range query0x88E4C0, then may
+multiply its float32 result by global0x1481658. That global's file-initial
+value is0.13, but it is **mutable**, bound to environment property
+`night_vision` (eLightParameters+0x94). Property `night` is the byte+0x90;
+parser0xA49D80 binds both, and apply0xA4AF60 publishes
+`0x147EFC0 = !night` and the configured night_vision factor. Fade/interpolation
+0xA4B3B0 can publish them too. RTTI0x10FE790 identifies
+Scene::Environment::eLightParameters, parser slot2/apply4/fade5.
+
+| Query boundary | Inputs, output and effect |
+| --- | --- |
+| Gate0x88EA51/0x88EA5D | Apply the reduction only when !night global0x147EFC0==0 and thunder override0x159BAD8==0. The latter is set by Scene::Environment::eThunder event slot1 0xA4F480 while its transient state exists, and cleared by0xA4FBB0. It is not a target property. |
+| Light service0x6F4710 | Returns the native static service at0x156E178; borrowed, no allocation/retention. |
+| Coverage query0x6F44B0, call0x88EA7D | Service, target current XYZ(actor+0x74), threshold float0.05 (0x1012494). Returns true if **any** eligible registered local light contains the point and its intensity query0x57CC30 is strictly above0.05. It tests each light, not a sum of lights, ambient color or a geometric visibility ray. False triggers the night_vision multiplier0x88EA86. |
+| Light validity | Query reads a service vector of0x18-byte records and borrowed light data. Registration0x6F3DD0 associates eLightView with view+0x108 data; eLightView event0x562DF0 adds/removes it, destructor0x5644D0 removes a registered view. The query performs no mutation or retain. Active flags, radius, position and directional intensity are native current data. |
+| Phase | Scene dispatcher0xA1C980 names `scene:quant.light` immediately before service update0x6F3BB0; environment apply/fade and thunder events can also change globals during a mission. Sensor visibility testing/commit and its relation to the brain update remain J7/Q1z. This is an on-demand range query, not a permanently cached0.13 brain operand. |
+
+The intensity helper's input/output interface is established: borrowed light
+data and XYZ, scalar local intensity. Lighting, render and attenuation internals
+are outside the prototype blank. The prototype can call the native range/query
+interface for hypothetical points under native object/service admission; no
+external ABI or concurrent-service safety is established. Actual environment
+values and callback ordering require runtime verification.
+
+### Eligibility timestamp correction
+
+| Blank | Effective I-SUBJECT-ELIGIBILITY-DEADLINE contract |
+| --- | --- |
+| Read/access/domain |0x912B2C/0x912B36 read subject+0x70,uint32; require nonzero and <=current simulation counter. It is a not-before eligibility gate, separate from +0x60 visibility-transition time and the recognition-delay computation. Functional name, no symbolic parser name located. |
+| Typed writer/phase | Subject constructor0x873290 clears it at0x87332D, then sets it to now+convert(0) at0x873366. Thus the observed initial value is the creation counter, not a guessed distance-based recognition deadline. Sensor slot19 creation and the mapped signal/load creation paths use this constructor. |
+| Freshness and load | Reviewed commit0x878AE0, signal0x877D20 and information0x87A090 update recognition/observation fields but do not supply a +0x70 refresh writer. Subject load0x875030 restores +0x60/+0x64/+0x68/+0x5C; it does not deserialize +0x70, which retains constructor initialization. There is no evidence for the earlier catalog's recognition/signal-deadline producer label. |
+| Validity | Inline storage in the retained subject, P-subject. Holding the subject does not make its actor binding valid or override any other eligibility gate. Zero remains an explicit rejection, including a creation counter of zero. |
+
+A literal +0x70 scan was used only to find typed writer leads; same-offset
+Recon zones/vision/order storage is not this field. It cannot prove absence of
+aliases or bulk writes. The bounded constructor, loader and native eligibility
+contract closes this freshness/meaning blank; no exhaustive native-write census
+is claimed and no invented future defer writer is inferred.
+
+### Unmasking accumulator and remembered weapon definition
+
+| Row | Meaning and nearest evidence | Freshness and validity |
+| --- | --- | --- |
+| I-SUBJECT-ACCUMULATOR,+0x38 float32 | **Unmasking** progress, not suppression/morale. Existing combat evidence: actor `unmask` index registered by0x57DA0; increment0x891C00 uses rules loaded from `/set/unmasking.set` by0x891D90. Threshold100 calls0x878830, sets relationship+0x14 bit5 and tags the observed actor `unmasked`. This first binding closes the semantic blank; term internals need no new analysis. | Sensor commit0x878AE0 adds at0x87909E/0x8790A3, checks threshold and invokes action0x8790B9, resets0x8790C1. With zero increment it decays by3 times elapsed duration, clamped at0 (0x8790D0..0x8790E7). Runs only with an attached profile and qualifying unmask actor flag. Inline retained-subject storage; action uses admitted actor binding. J7 supplies commit-before-decision ordering. |
+| I-SUBJECT-WEAPON,+0x40 pointer | **Remembered weapon definition**, not an owned inventory item. Refresh0x878740 obtains the actor's runtime weapon through actor+0xDD8→0x806340, then copies runtime weapon+0x98 to subject+0x40 at0x878770/0x878777, or null0x878793. Target term0x91A0B0 reads definition tags+0xEC8. Existing combat map binds runtime+0x98 to weapon_definition. | Relationship refresh0x878560 calls this when actor+0xBD8 differs from remembered subject+0x74 (call0x87866E); the existing scheduled/signal equipment refresh supplies other updates and +0x5C age. Information0x87A090 copies a newer definition observation at0x87A212. Load0x875030 looks up its saved tag identity with0x7E2CC0. That query returns a borrowed entry from global definition vector0x157B248..0x157B250 and performs no retained-reference assignment. |
+| Remembered-definition ownership | Refresh, information copy and load do not retain/release the definition. A retained subject owns its own storage and counters, not the remembered definition's lifetime. The pointer names resource-definition identity, so loss/replacement of the observed inventory instance is not ownership of this cached pointer. | Native cache lifetime is a precondition for tag dereferences during the admitted brain call. Null is allowed, and cached equipment age can be stale even when nonnull. Copy needed tags/scalars during that call; do not carry the pointer across definition-cache unload or assume external retention from the subject reference. Cache/unload and thread implementation is parked. |
+
+Q9 closes the stated static blanks with native bindings and explicit writer/
+borrow contracts. Live cache/object admission, initialized counter values,
+actual mission lighting and event ordering remain runtime checks. No game or
+editor was launched or modified.
+
+
+Q9 evidence classification correction: the authoritative checked manifest is
+[decision-q9-validated-map.json](../artifacts/build-25492057/decision-q9-validated-map.json).
+The initial Q9 map is retained: its classification of writable0x1481658 as a
+read-only float was rejected by the verifier. The corrected manifest checks
+that initial value as data bytes and leaves its documented mutable meaning
+unchanged. Validation passed19 entries,3,036 instruction locations,one read-only
+float,three RTTI tables and four data ranges.
+
+## Q10 — secondary orders, sequencing and state-event contracts
+
+This closes the Q10 blanks in O-CREATE-SEQUENCE, O-APPEND-SEQUENCE,
+O-STATE-EVENT16-ORDER, O-ROTATE and C-OUTPUTS, and adds O-LOOK-AT, O-AIM,
+O-WEAPON-WAIT-READY and O-GROUND-PICKUP. Earlier Q10 placeholders remain as
+history; the contracts here are authoritative for the bounded prototype rows.
+New game disassembly is recorded in the [Q10 pass](../artifacts/build-25492057/call_to_arms.decision-q10-pass.tsv),
+[map](../artifacts/build-25492057/decision-q10-map.json) and
+[validation](../artifacts/build-25492057/decision-q10-validation.json).
+The validation passes 43 exact entries, 3,148 instruction locations, nine RTTI
+bindings, two byte ranges and one readonly constant. It checks structure/data,
+not semantic interpretation, ABI or runtime success. Existing
+[human-state notes](human-states-map-25492057.md),
+[combat notes](combat-map-25492057.md),
+[engagement-order notes](engagement-orders-map-25492057.md),
+[repair/pickup notes](repair-tooling-map-25492057.md) and their preserved manifests
+supply the prior policy joins and lower-level contracts.
+
+### Sequence ownership, failure and cancellation
+
+| Row / boundary | Effect and results | Ownership / cancellation / side effects |
+|---|---|---|
+| O-CREATE-SEQUENCE;0x912370 | Allocate0x58, construct eComplexOrder via0x8FFD50, install through brain slot13 when different from current; return the same pointer. Constructor clears queue/owner/result state and sets cleanup bit18. | Brain owns an installed sequence; returned pointer is borrowed for appending. Q3 setter0x9052F0 ends/deletes the old order, or marks bit22 for deferred deletion inside the order callback (brain flag24). A null allocation can install null; this is not a tactical failure result. |
+| O-APPEND-SEQUENCE;0x900A60 | Require nonnull child with begun16/finished17 clear; layer<=queue count. Layer0 appends at the tail. Return sequence, with no policy success receipt.0x900AB7 attaches the sequence's owner to the child via0x8FF560 (store child+8, invoke child slot16). | Queue accepts the child pointer without a refcount retain or clone: do not delete it after append. Invalid input/layer invokes native diagnostics. With stop=true, a displaced begun child is marked bit19 and saved at sequence+0x50 for End on the next update; allocator/container internals remain parked. |
+| Sequence Update(slot3)=0x9001A0 | Front child Update at0x900217:0 keeps sequence running0; **any nonzero result**, including failure2, leads to End/delete/pop at0x900253/0x900263 and the next child in the same update. Empty queue reports1. | It does not propagate a child2 as sequence2. Generic child retries can still return0 before their final2. A trailing notification can execute after movement/rotation failure; sequence1 is not evidence that every child succeeded. |
+| Sequence End(slot4)=0x9007B0;clear0x900BE0;destructor0x901590 | End stops pending-stop/front child without itself deleting the queue. Clear outside Update ends/deletes the requested front portion; inside Update it records deferred clear/keep count. End inside Update is also deferred until the callback returns. Destructor calls clear(0), destroys queue storage, then base order storage. | Ordinary queued children are owned and destroyed rather than executed during cancellation, including unbegun notification orders. Clear has a preservation exception: it calls slot2 at0x900C10, then re-appends a nonnull extracted result at0x900CD5. eComplexOrder slot2=0x9009E0 returns self if its bit23 is set, detaches a front child with bit23, otherwise delegates to that child's slot2. Therefore clear is not an unconditional cancellation guarantee for arbitrary externally flagged children. None of the reviewed output factories sets bit23. |
+
+Single-order Update0x901750 calls slot19 phase0 once, then phase1; it returns
+running0, success1 or failure2, mirrors the result to optional handle+8 and
+calls End on a nonzero result. A remaining low16 retry count turns failure2
+into a delayed retry/running0; it does not make the enclosing sequence fail.
+End0x9018D0 invokes phase2 only for a begun order with cleanup bit18, then
+ends/deletes child+0x30 and clears begun16/stop19. Unbegun cancellation does not
+invoke phase2. Factory-returned targets use native value-copy0x83DBC0 and its
+subscription/handle lifetime (Q6), not retention of the caller's stack target.
+Attached owner/chassis/brain and notification state are borrowed; these are
+native-call lifetime requirements, not independently safe external pointers.
+
+### Notification payloads and the requested state transitions
+
+Factory0x9125D0 creates Order::eNotifyState: raw state pointer+0x40, event ID+0x48,
+byte+0x38=boolArgument^1. It does **not** retain the state. Exec0x9128D0 marks
+the byte1 and calls that specific state's slot2 synchronously at0x912904 with
+(event, payload1=1, payload2=0), then returns1. It does not broadcast to current
+active descendants. The actual attached receiver must still be alive.
+
+Destructor0x912840 emits the same event with both payloads0 at0x912898 when
+byte+0x38 is still0, the state exists and its brain reset flag23 is clear
+(0x912868..0x91287B). Thus boolArgument=true supports an unexecuted/canceled
+fallback; false suppresses it. Normal Exec suppresses a second destructor event.
+Both child failure followed by normal execution and cancellation followed by
+fallback can notify the state. This closes the earlier O-STATE-EVENT16-ORDER
+question without treating a notification as proof of arrival, healing or pickup.
+
+| Event / catalog row | Receiver-specific effects and instruction evidence |
+|---|---|
+|0xB;O-SECONDARY-STATE-EVENTS | Common Human handler0x950430 calls0x9122C0(state,empty label,true) at0x95049D to clear/reselect the action. OutdoorsBattle additionally deactivates itself with reason0 via tail0x94A61B→0x912520, returning selection to its parent (Q1a deactivation events/attachment remain in force). The healing-cover producer0x951B60 appends this event; it is not immediate healing success. |
+|0xC;idle anchor | OutdoorsIdle/Civilian handler0x94EE50 calls0x903250 at0x94EECB, copying current owner XY into brain anchor+0x128. Nonzero payload1 also sets reconsider flag25; fallback payload0 still copies the anchor. It is a receiver-specific anchor snapshot, not a general task-completion API. |
+|0xF;healing latch | Common0x950430 clears receiver byte+0x3C0 at0x950466; event2 also clears it. Heal helper0x9519A0 appends this notification. This event does not itself restore health or undo an inventory operation. |
+|0x10;restore/task/cover movement | BattleGeneric0x952910 clears the action (0x95296C), calls selector slot5 (0x9529B4), sets action+0x3DC=0, rearms look deadline+0x3BC and sets reconsider25. OutdoorsBattle also rearms+0x3F0 (tail0x94A724). Idle sets reconsider25 and clears+0x3E9 (0x94EEB5). RootGeneric0x956A20 clears restore-mode+0x4C0 **only for nonzero payload1** at0x956A56, then selects its location through slot5 at0x956A70 for either payload. RootSoldier0x9570F0 delegates this event unchanged. Consequently the canceled restore notification leaves restore-mode intact while still invoking selection. |
+|0x11;cover/fight/search phase | CoverBattle0x947FB0 (shared horizontal/vertical handler) inherits BattleGeneric and rearms+0x3FC at0x947FF5, then calls reload helper0x943BB0 (tail0x948010). Existing human-states manifest/0x943C39 establishes a conditional reload request at remaining ammunition<=definition capacity*argument, subject to charger gates; this caller passes the constant at0x1011210 (0.2). OutdoorsBattle resets action+0x3DC and rearms+0x400 at0x94A639/0x94A64F. FindEnemy copies pending+0x3DC into phase+0x3D8 (0x94C459/0x94C45F), sets reconsider25, and for pending6 refreshes its search/look-point vector and deadline+0x438. Idle just sets reconsider25. |
+|0x12;look/aim follow-up | OutdoorsBattle sets reconsider25 at0x94A6E2; the look-point helper0x94B590 and Aim fallback in0x94A790 append this event. It requests reconsideration, without proving that aim or turning succeeded. |
+|0x13;commander-follow follow-up | OutdoorsBattle clears/reselects the action at0x94A67E, rearms+0x3F0 at0x94A6D3, resets action+0x3DC and sets reconsider25. Producer0x94B2B0 appends this after following movement. |
+
+All derived handlers first invoke the common/inherited handler stated above;
+requested codes without a branch have no additional effect in that receiver.
+The producer joins are the preserved human-state/engagement manifests and
+policy RVAs already cataloged, not a new census of all event senders or states.
+Handler timers use native now/conversion helpers; their actual mission values
+remain runtime inputs. Destruction fallback can cause these callbacks while a
+sequence is being cleared: admission must use the native callback-safe phase.
+
+### Secondary output rows
+
+| Output row / factory → Exec | Effect | Results | Ownership and cancellation | Other side effects / limits |
+|---|---|---|---|---|
+| O-ROTATE;0x8F3880→0x8F3C10 | Copy eTarget at order+0x40 and scalar option+0xC4. Exec dispatches chassis slot67(+0x218) at0x8F3D2F with native phase-map[0,3,1]. Begin/End set/clear chassis+0x64 and helper0x840E30 movement flag via0x8F3A50. | Internal chassis result0..6 maps to[2,2,0,0,0,2,1] via data0x1482978; phase-map0x1482968. Thus native running/success/failure, not a Boolean return. | Sequence/brain owns order; target copied via0x83DBC0. End requests native stop/clears rotation state; it does not restore previous facing. Owner/chassis must be live. | Native role-dependent rotation/drop commands may be emitted (0x8F3CD8;0x8F3ABA). Physical rotation/network implementation is parked. |
+| O-LOOK-AT;0x8D68E0→0x8D9880 | Copy target+0x40 and option+0xC0; option can call0x903270 to set brain look XYZ/flag29 (0x8D9977). Uses cover orientation, native Rotate child via0x8D9DD0 (0x8D9E5E/0x8D9E69), cannon adjustments and mode3 weapon aim target/WeaponAiming child. |0 while child/native aiming waits;1 for internal phase6 with no child or aimer state3/4 in internal phase2.2 for missing required weapon, unsupported aimer/internal state or rejected cannon/turning branch (explicit EAX2 at0x8D9C78). Completed child results are discarded at0x8D9992, so disappearance of a Rotate child can follow its failure. | Copied target and owned child; phase2 clears chassis orientation, brain requested look (0x8D990B), weapon target when present (0x8D991A), and child. Generic End/dtor owns cleanup. | May request cannon/model changes and actor notification in supported branches. LookAt is the factory used by0x94B590, distinct from timed WeaponAimTarget. No shot or target-hit receipt. |
+| O-AIM target;0x8D63B0→0x8D7AC0 | Copy target+0x38, set deadline+0xB8=now+caller **integer duration** from pointed argument (0x8D6432/0x8D6443), copy option byte+0xBC. Begin clears active weaponry targets whose mode+0x208 is2 through0x807A60; installs mode3 aim target (0x8D7BCC) and WeaponAiming child. |2 if primary runtime weapon absent or0x80A070 false; otherwise0 until deadline. After deadline1 unless option+0xBC demands chassis+0x48 low2 bits clear; a still-busy chassis keeps0. This does not test successful shot, hit or readiness completion. | Copied target; owned aiming child. Begun cleanup clears the currently selected weapon target at0x8D7B2B. Weapon is re-queried each invocation, not a retained original runtime place. If the top weapon gate fails during phase2, target clearing is skipped; base child cleanup still applies. |0x807A60 is a **clear** by matching mode, not a setter of global aim mode2. Target setup/clear effects from combat manifest include shooter stop, modes reset and event0x26. No old target restoration. |
+| O-AIM trajectory;0x8D64F0→0x8D7EE0 | Copy current XYZ+0x38 and destination XYZ+0x44; scalar speed+0x50=caller float*mutable scale0x1547DB0. Begin clears mode2 targets, sets current point as mode3 target and installs aiming child. Tick advances point by quantDelta0x1556E4C*speed toward destination only when native Fsm readiness0x81BEC0 is true and chassis activity bits clear, then replaces the aim point (0x8D81AD). |2 on absent/not-admitted primary weapon.1 once all three component differences<=readonly epsilon0x1003F60 (~1e-5;0x8D7FEE), otherwise0. No independent timeout; actual progress depends on readiness/activity and finite positive speed. | XYZ values copied; no coordinate-pointer retention. Cleanup clears current primary target at0x8D7F5D, subject to the same top gate; generic owned child cleanup applies. | This completes an aim-point trajectory, not projectile flight or a movement path. Scale0x1547DB0 is mutable/BSS, not a recovered constant. |
+| O-WEAPON-WAIT-READY;0x8D6470→0x8D7C80 | Copy target+0x38. Begin assigns mode3 target (0x8D7E1A), installs WeaponAiming and marks cleanup. Tick updates/removes finished child; for nonempty target on a human, cover groups1/2 can keep it running while a valid alternative directional state is needed (0x8D7D87..0x8D7DB2). It then queries Fsm state0x81BEC0 using weapon definition+0x13D8. | Actual EAX2 at0x8D7E4F for absent/failed primary weapon gate; Ghidra's bool cast is misleading. Eligible human/nonempty-target branch returns native readiness0/1; empty-target/nonhuman/inner missing-primary branches return1. No readiness timeout in this body. | Native target copy and owned child. Cleanup0x8D7CEA clears current selected weapon target, unless its top gate fails; generic End deletes child. Borrowed weapon/Fsm/cover state valid only for each call. | Predicate0x8D6980 is a separate permissive query, not a replacement for Exec lifecycle. Readiness1 does not prove range, line of fire, ammunition delivery or a shot. |
+| O-GROUND-PICKUP (“Take” in prior policy discussion);0x8CD4C0→0x8CE230 | RTTI identifies the issued order as **Order::eCollect**. Track entity+0x38; option+0x4C skips approach when true. Otherwise create an approach child0x8E0500. After approach1 and an empty actor inventory queue, submit PickupToRight (0x8CE4C4/0x8CE53F), with try_arrange_box=1; save operation ID+0x48 and phase+0x50=1. |2 for null/disposed entity, already-held stuff, incompatible inventory queue or failed approach;0 while approach/op pending. Poll0x7CCC70→0x7CA9D0 returns AL1 when the ID is **absent** from operation vector+0xA8..+0xB0 (0x7CA9F9), AL0 while present. Collect returns that Boolean at0x8CE5CF. It does not distinguish operation success, failure or cancellation. |0xB8220 registers/unregisters the pointer in entity observation storage, not a strong refcount retain of the entity; destructor0x8CF8B0 unregisters at0x8CF8CD. Inventory submission retains its params; local ref is released. Phase2 simply returns1 with valid target (0x8CE26A), without canceling the submitted inventory operation. Generic cancellation ends the approach child; a submitted operation can outlive Collect. | UI refresh can occur for a selected actor. Inventory transfer/rollback is governed by the submitted operation, not this order's completion; no Collect rollback or post-transfer receipt. Other TakeItem/WeaponTake/OrderTake families are outside this issued-row blank. |
+
+Q10 has no remaining static blank for these bounded output interfaces. Actual
+movement/turning/readiness/inventory outcomes, pointer validity during callbacks
+and the native reset/destruction phase remain runtime admission/verification
+requirements. Animation, chassis, firing and inventory-operation internals are
+parked at their first binding. This does not claim the full native decision-read
+or order/event census.
+
+## Q11 — native actor and squad waypoint command contracts
+
+C-OUTPUTS gains separate O-ACTOR-TO-WAYPOINT and O-SQUAD-TO-WAYPOINT rows.
+These fill Q11's default/effect/result/ownership/cancellation blanks without
+expanding other native commands. The [Q11 pass](../artifacts/build-25492057/call_to_arms.decision-q11-pass.tsv),
+[map](../artifacts/build-25492057/decision-q11-map.json) and
+[validation](../artifacts/build-25492057/decision-q11-validation.json) record new
+game disassembly:38 exact entries,2,638 instruction locations,five RTTI bindings
+and seven byte ranges pass structural/data checks. ABI, semantic interpretation
+and runtime outcomes are not validated by those checks.
+
+Existing [waypoint notes](waypoint-map-25492057.md) and
+[manifest](../artifacts/build-25492057/waypoint-map.json),
+[squad notes](squad-map-25492057.md) and
+[manifest](../artifacts/build-25492057/squad-map.json),
+[selector/command notes](modifier-map-25492057.md) and
+[manifest](../artifacts/build-25492057/modifier-map.json), and
+[ownership notes](ownership-map-25492057.md) supply the progression, dispatcher
+and lifecycle joins. Q3's direct-goal contract and Q10's order preservation and
+cleanup contracts remain in force.
+
+### Defaults and arguments
+
+| Row / native boundary | Defaults and access |
+|---|---|
+| O-ACTOR-TO-WAYPOINT factory0x1A9740;name0x1A85B0 | Helper::eCmd_actor_to_waypoint, allocation0xB0, initial reference count1. Embedded selector+0x10 uses constructor0x9E8BF0: allowed-source mask6, no owned source, source/config integers0 and ignore-captured-by-user byte1 (command+0x34). Command gate flags+0x38=0; clone counter+0x40=0; waypoint tag+0x48 initialized empty; clone+0xA8=false; approach+0xAC=0. Stores0x1A9784/0x1A9793/0x1A979A establish the latter defaults. |
+| Actor parser0x1A89A0 | Shared actor-selector parser0x99D7B0; `waypoint` tag at+0x48 (0x1A89CC), `clone` Boolean+0xA8 (0x1A8A74), `approach` int32+0xAC (0x1A8B84). Defaults are the factory's current field values, not invented coordinates or a cloned actor by default. Serialization0x1A8610 uses C for clone and F/T/TR/ST/STR for nonzero approaches. |
+| O-SQUAD-TO-WAYPOINT factory0x9CF980;name0x9CCF20 | Helper::eCmd_squad_to_waypoint, allocation0xD0, initial reference count1; both squad tag+0x10 and waypoint tag+0x70 initialized empty by0x556220. There is no clone or approach field/parameter in this reviewed class. |
+| Squad parser0x9CD140 and execution0x9CD3D0 | `squad` tag+0x10 (0x9CD24E), `waypoint` remappable ID+0x70 (0x9CD28C, with native name/ID forms). Nonempty squad name resolves through0x92F3B0. Otherwise execution uses context squad+0x18, then context actor+0x10→brain+0xDC8→squad+0x100; absent actor/squad returns without action. Both tags stay mutable configuration; mission registry contents are runtime inputs. |
+
+The approach labels are a six-element **indexed pointer array**, not the
+16-byte enum-record format used by the existing verifier. Raw table0x146FAE8
+(six pointers and null terminator) and every label string are checked as byte
+ranges; parser0x1A8B84 and serializer0x1A8610 establish the index domain.
+
+| approach+0xAC | Native label | Effect at0x1A8C60 after waypoint assignment |
+|---|---|---|
+|0 | `-` | Default ordinary waypoint progression; skip-reach-check false. No immediate relocation. |
+|1 | `force` | Set skip-reach-check true; no immediate relocation (approaches<2 return1 after assignment). Progression can run waypoint action/advance without proving arrival. |
+|2 | `teleport` | Request XYZ relocation to the waypoint through0x6FDD20 at0x1A8FA3, with no new direction. |
+|3 | `teleport & rotate` | Resolve an eligible next waypoint via0x996F50/0x996270; when found, relocate with normalized current→next direction at0x1A8F66. Without a next waypoint, use plain relocation. |
+|4 | `safe teleport` | Query0x983930(actor,inoutXYZ,0,0) at0x1A8FE9 for a nearby placement; if true, relocate to its adjusted point; if false, **fall back to the original waypoint point**, then relocate. The safe label is not a guarantee that failure prevents teleportation. |
+|5 | `safe teleport & rotate` | Same placement query at0x1A901F; when it succeeds, derive direction from adjusted point to the next waypoint and relocate at0x1A90CD (null direction if no next). Placement failure falls back to plain original-point relocation. |
+
+Every nonzero approach sets the waypoint skip byte. Flying-tag actors add
+waypoint authored offset+0x11C to Z before the optional relocation branches.
+Relocation0x6FDD20 snapshots the actor transform+0x50..+0x7F, calls placement
+slot25(+0xC8) with XYZ/direction at0x6FDD52, writes the resulting transform back
+at0x6FDD70..0x6FDD7D and publishes change through slot33 with(3,0) at0x6FDD81.
+The actor implementation0x7F03D0 delegates to chassis placement when available;
+placement, geometry and physical synchronization internals remain parked.
+
+### Effect, result, ownership and cancellation rows
+
+| Output row / effect boundary | Effect and results | Ownership / cancellation / side effects |
+|---|---|---|
+| O-ACTOR-TO-WAYPOINT;0x1A85D0→0x1A8C60 | With an assigned tag (command+0x98 nonzero), the actor-specific dispatcher calls helper at0x1A8604.0x1A9470 resolves it, rejects missing/unassigned waypoint or linked actor with diagnostics, and returns AL0 on rejection; optional clone failure also returns0. Successful helper processing returns AL1, including approaches that do not relocate. Wrapper consumes no result; this is acceptance, not arrival. | Generic selector dispatch0x9B1310 collects actor candidates;0x99D7F0 checks0x99D880 before slot16. Factory gate flags0 avoid optional broad reset flags, but dead/nonactor entries are rejected and ignore-captured-by-user still applies. Actor/context/waypoint are borrowed for the synchronous call. No asynchronous completion handle is returned. |
+| Same;helper0x1A8C60;I-STANCE/I-COVER-DESCRIPTOR/native order state | Resolver activates the selected actor through0x9B1150(actor,0) at0x1A9707 (inactive bit9 cleared; native callback/network/tag update may follow). A squad commander also activates the squad's members (0x1A8D16). Cannon/extender adjustment is requested when needed. Then brain slot32 receives a value copy of waypoint name/ID and approach!=0 at0x1A8D78. | Human/client slot32=0x942BB0 releases current cover when assigning a nonempty tag (0x942BE2→0x898C50); that emits cover event0x21 and may publish a cover-sector command. These effects precede progression and are not undone by later waypoint failure. No direct +0x52C/+0x530 store is made by these command interfaces. |
+| O-ACTOR-WAYPOINT-ASSIGN;0x905940 | First Cancel slot19 with mask0x107 (0x90596F). Install value-copied start tag and borrowed owner filter into extended iterator at brain+0x1E8 through0x999420 (0x905995); write skip-reach-check byte+0x395 at0x90599A; broadcast event6 to root and active descendants at0x9059C8. Human/client slot19=0x9424F0 delegates mask to0x905530. No success result/arrival receipt. | Mask bits0/1 clear existing complex/user order queues and replace current order through slot13 when the extracted preserved order differs; Q10 slot2/bit23 exception applies. Bit2 resets individual waypoint;bit8 sends event7. Mask0x107 does **not** include bit10, the separate direct-task/squad-travel clear. Thus assigning an individual waypoint is not equivalent to0x902FB0 or unconditional erasure of every task source. |
+| O-ACTOR-WAYPOINT-CANCEL;slot33=0x905A00 | Clear active/skip bytes+0x394/+0x395, retry count+0x388, restore previous XY+0x38C/+0x390, assign empty iterator, send event6 (0x905A5F/0x905A86). Later SetWaypoint replaces the iterator through the same native assignment path. | Resetting iterator is immediate; this body does not by itself End/delete the current movement order. Use the native Cancel/order path for that contract. Command destruction0x1A8BD0 releases waypoint/selector configuration only; it does not cancel stored travel. |
+| O-ACTOR-WAYPOINT-CLONE;0x1A9470→0x1A9190 | With clone=true, increment command+0x40 counter, generate `pap-%1%-%2%-%3%` identity and replace the local context actor with clone result (0x1A96B1). Clone interface requires original actor inactive; otherwise diagnostic/null. It calls native scene clone0x984650 (0x1A933C), restores original inactive flag and can emit scene-clone command. Returned actor is activated by the resolver and receives waypoint assignment. | This clones the actor, not the command or its target tag. The returned actor pointer is raw; command dtor does not own/delete it, and created actor lifetime is not tied to command configuration. Template activation/restoration and scene ownership follow native creation/lifetime admission; no new independent retained actor handle is supplied to an adapter. Clone implementation is parked at this interface. |
+| O-SQUAD-TO-WAYPOINT;0x9CD3D0 | Resolve named or context squad; activate members via0x9B1150(actor,0) at0x9CD445; call0x9326F0 at0x9CD45F with command waypoint tag+0x70. No status or arrival value returned; absent squad is a no-op. | Borrowed squad and members during the call; no member transfer to command. All members are activated, even though commander/formation logic may issue subsequent goals to a subset. |
+| O-SQUAD-WAYPOINT-ASSIGN;0x9326F0 | Clear prior travel via0x932240 (0x932703), value-copy tag into iterator+squad+0x1B8 with null actor filter (0x932724), clear action/hold byte+0x1B0, refresh first goal via0x932ED0. Current valid waypoint yields lookahead and0x932970; failed lookup clears the iterator rather than returning a command failure status. | Clear ends/deletes owned backup sequence+squad+0x1A8 (0x93227D/0x932294), clears member following flag28 (0x9322CE), group-goal flag/center, member direct tasks via0x902F50 and individual waypoints via slot33 (0x9323EA/0x9323FC). Task/iterator clearing alone does not End every leaf order; newly issued direct goals use Q3's setter cancellation. Tag storage is copied; raw resolved waypoint is not retained as a strong reference by the iterator. |
+| O-SQUAD-WAYPOINT-GOAL;0x932970 | Store squad goal XY+0x190 and group bit0. Commander gets0x902FB0 at0x9329FC; without one, members get translated formation goals through0x932CDF. Brain flag7 reflects a current squad waypoint. Later replacement/reset0x932240 clears travel; execution is driven by squad Quant. | Copies XY through direct-goal boundary; formation/path internals stay parked. Command destructor0x9CD4E0 frees its two tags only. Iterator/member movement persists independently of command object storage. Arrival/action completion must be observed separately. |
+
+Value-copy0x556270/0x5564F0 and tag destructors establish configuration storage
+ownership. Waypoints remain raw registry results; scene destruction or graph
+edits do not become safe through copying a tag. The extended actor iterator
+also borrows its actor filter. Actual live context, callbacks, registry and
+brain/chassis must be admitted at runtime.
+
+### Comparison with direct goal and downstream receipts
+
+| Contract | O-DIRECT-GOAL0x902FB0 (Q3) | Actor waypoint command | Squad waypoint command |
+|---|---|---|---|
+| Destination | Immediate copied XY+0x130 and task flags6/8/25 | Named waypoint/graph iterator at brain+0x1E8; uses waypoint radius/action/next edge, with optional clone and relocation | Named shared iterator+squad+0x1B8; issues commander/formation XY goals using0x902FB0 |
+| Immediate effects | Current-order setter, look-point reset and task-flag updates | Activation, possible cover release, Cancel(0x107), iterator assignment/event6; nonzero approaches skip reach check,2–5 request relocation | Member activation, old travel/backup/task/individual-waypoint clear, new shared iterator and goal refresh |
+| Return | No explicit success/failure value | Helper AL acceptance0/1 ignored by wrapper | No status; unresolved squad no-op; missing waypoint clears travel |
+| Cancellation | Replacement/native setter and Q3 task-clear limits | Cancel mask/order path plus independent iterator reset; dtor does not cancel | Shared travel reset/replacement plus issued direct-goal contracts; dtor does not cancel |
+| Completion meaning | Task clear is not proof of arrival | Native action/iterator advancement is not proof of arrival | Shared action/advance is not proof that every member reached the waypoint |
+
+The preserved waypoint manifest's0x904BF0/0x905AB0 establishes individual
+order production:2D reach with strict radius comparison, retries1..5 returning
+Wait, then failure6 warning **followed by action execution and advancement**;
+skip-reach-check also reaches action/advance. Command acceptance1 therefore
+cannot be a movement-success receipt. The preserved squad manifest's0x9309C0
+and Q3 establish commander/member reach/task gates, shared action execution and
+advancement, with native halted/action state. These existing producer interfaces
+fill the completion blank; graph routing, action/thread execution, placement and
+other command families remain parked.
+
+Q11 has no remaining static blank at the requested contract depth. Concrete
+mission bindings, selector result, movement/teleport/action outcome and live
+pointer/phase admission remain runtime verification requirements.
+
+### Q10 final verification — AimTrajectory cleanup enablement
+
+This additive correction is authoritative for the O-AIM trajectory cancellation
+cell above. That cell describes the **phase-2 body**, not a guaranteed call to
+that body. New bounded constructor/attachment disassembly is in the
+[cleanup pass](../artifacts/build-25492057/call_to_arms.decision-q10-cleanup-pass.tsv),
+[map](../artifacts/build-25492057/decision-q10-cleanup-map.json) and
+[validation](../artifacts/build-25492057/decision-q10-cleanup-validation.json):
+two entries and34 instruction locations pass structural checks.
+
+SingleOrder constructor0x901600 writes flags+0x18=0 at0x901617. Child attachment
+0x901940 ends/deletes the old child, stores the new pointer at0x901979 and
+attaches its owner through tail0x901987→0x8FF560; it does not enable parent
+cleanup bit18. Combined with the preserved Q10 factory0x8D64F0 and
+Exec0x8D7EE0 (neither sets18), the ordinary factory/default trajectory lifecycle
+therefore **does not invoke its phase-2 target-clear branch** at0x8D7F5D.
+Generic End0x9018D0 still ends/deletes its begun child+0x30 regardless of18.
+The existing engagement manifest's WeaponAiming0x8D6F30 cleanup releases its
+chassis/cover requests, not the parent's weapon target through0x80A730.
+
+A target-clear guarantee cannot be inferred from the existence of that unused
+branch. If another native caller explicitly enables18, its phase2 body becomes
+eligible and the existing top weapon gate can still suppress clearing. The
+reviewed target-Aim, WaitReady, LookAt and Rotate begin paths explicitly set18;
+they retain their documented conditional cleanup contracts. Collect also does
+not enable18, strengthening the recorded absence of inventory-operation
+cancellation by its order body. No arbitrary caller/flag census is claimed.

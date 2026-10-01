@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "fine_map_sha256": "d4f1698645b3c417577de74ac6df9549123ee484a4c07a3bcb4799dbdbc3ea90",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "export_report_sha256": "bda633fbc9a8a91c7cb66979ab89269d4d35bd8c7307ddf5a3acea5bf43a8ef0",
+      "exact_candidates": 11,
+      "exported_functions": 11,
+      "exported_basic_blocks": 217,
+      "checked_enums": 0,
+      "checked_constants": 2,
+      "checked_method_entries": 11,
+      "checked_instruction_locations": 937,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 0,
+      "checked_byte_sequences": 0
+    }
+  },
+  "status": "passed"
+}

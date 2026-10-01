@@ -1,0 +1,12 @@
+# RVA	Q6 prototype preferred target boundary
+0xb0ec0	manual shot command forwarding
+0x806550	weapon-control squad target assignment
+0x83daa0	target position accessor
+0x83dbc0	accessor assignment contract
+0x83e4f0	accessor clear
+0x8db620	manual shot interface boundary
+0x903050	preferred query
+0x9301d0	shared target setter
+0x943560	human retained refresh
+0x988fc0	vehicle decision query call
+0x989900	vehicle list query call

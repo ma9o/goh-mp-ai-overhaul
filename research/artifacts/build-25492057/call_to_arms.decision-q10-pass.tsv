@@ -1,0 +1,44 @@
+# RVA	Q10 secondary output contract
+0xb8220	Q10 bounded output or event boundary
+0x7ca9d0	Q10 inventory_operation_absence
+0x7ccc70	Q10 actor_inventory_operation_poll
+0x807a60	Q10 weaponry_clear_matching_mode_targets
+0x8cd4c0	Q10 output contract
+0x8ce230	Q10 bounded output or event boundary
+0x8cf8b0	Q10 Collect_destructor
+0x8d63b0	WeaponAimTarget factory
+0x8d6470	Q10 output contract
+0x8d64f0	WeaponAimTrajectory factory
+0x8d68e0	Q10 output contract
+0x8d6980	Q10 output contract
+0x8d7ac0	Q10 bounded output or event boundary
+0x8d7c80	Q10 output contract
+0x8d7ee0	WeaponAimTrajectory executor
+0x8d9880	Q10 output contract
+0x8d9dd0	LookAt_body_rotate_child_boundary
+0x8f3880	Q10 output contract
+0x8f3a50	Q10 bounded output or event boundary
+0x8f3c10	Q10 output contract
+0x8ff560	order_attach_owner
+0x8ffd50	Q10 output contract
+0x9001a0	Q10 output contract
+0x9007b0	Q10 output contract
+0x9009e0	complex_order_detach_result
+0x900a60	Q10 output contract
+0x900be0	Q10 bounded output or event boundary
+0x901040	complex_order_restore_queue_context
+0x901590	Q10 bounded output or event boundary
+0x901750	Q10 single_order_update
+0x9018d0	Q10 single_order_end
+0x912370	Q10 output contract
+0x9125d0	Q10 output contract
+0x912840	Q10 bounded output or event boundary
+0x9128d0	Q10 bounded output or event boundary
+0x947fb0	Q10 cover_battle_event_handler
+0x94a4b0	Q10 bounded output or event boundary
+0x94c410	Q10 bounded output or event boundary
+0x94ee50	Q10 bounded output or event boundary
+0x950430	Q10 bounded output or event boundary
+0x952910	Q10 bounded output or event boundary
+0x956a20	Q10 root_generic_event_handler
+0x9570f0	Q10 bounded output or event boundary

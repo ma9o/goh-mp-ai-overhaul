@@ -36,6 +36,21 @@ it, a lead that fills none of the blanks above is parked as one line.
 
 ## Working rules
 
+- Current status,2026-10-01: Q6–Q11 are closed; no active items remain. The
+  completion summary at the end is authoritative. Stop without Git, as the
+  user instructed. Earlier stop/queue/commit text is retained as history.
+
+- User instruction, 2026-10-01: continue Q7–Q11 without Git. This supersedes
+  the pending-Q6-commit gate and commit requirements for this continuation.
+  Keep separate per-item catalog/evidence results, append the Q11 status
+  summary and stop. Q6–Q11 will remain uncommitted; no Git write is authorized
+  under the current filesystem profile.
+
+- User continuation, 2026-10-01: Q6–Q11 are now authorized in order. This
+  supersedes the Q5 stop condition and earlier later-stage deferrals for those
+  six items. After Q11, append a status summary, commit it and stop. The bounded
+  catalog scope, evidence rule and full-census deferral still apply.
+
 - Re-read this file at the start of every item. It takes precedence over the
   old static frontier and over the README's game/editor pairing rule.
 - Take work only from Open: next, one item per pass, in order. Open: later
@@ -396,13 +411,7 @@ tables and two byte ranges checked. Existing notes/manifests supply the
 timestamp, deadline, aggregate and ownership joins. No full native census or
 runtime execution is claimed.
 
-## Open: next
-
-No active research items. Add the required status summary, commit it and stop.
-
-## Open: later
-
-Needed when the prototype takes over target, cover, fire or stance choice.
+### Q6. Preferred-subject source and ownership contract
 
 - **Q6. Preferred subject `0x903050`.** Target refresh `0x943560` calls it at
   `0x943578`, stores the borrowed result at `+0x3D0` and retains it
@@ -410,28 +419,165 @@ Needed when the prototype takes over target, cover, fire or stance choice.
   it disposes through `0x652A10` (bit 1) or vslot 0. Vehicle brains use it too.
   Close its sources (user, squad and order target assignments) and the
   ownership of its return value.
+**Closed:** I-PREFERRED-TARGET/O-PREFERRED-SUBJECT-QUERY now specify the
+squad-target-derived nearest observation, strict10·L bound, cached flag gates,
+borrowed return, human retain/release and vehicle list consumers. Shared-target
+manual/weapon/Quant source interfaces, overwrite/expiry and accessor lifetime
+preconditions are explicit. The query has no separate user/order precedence.
+
+Evidence: [catalog Q6](decision-catalog-25492057.md#q6--preferred-subject-source-and-ownership-contract),
+[map](../artifacts/build-25492057/decision-q6-map.json),
+[validation](../artifacts/build-25492057/decision-q6-validation.json).
+11 game entries,937 instruction locations and two floats checked; existing
+squad/combat/engagement/ownership maps supply the source/phase joins. Actual
+writer ordering and adapter admission require runtime verification.
+
+### Q7. Cover descriptor, direction and healing contracts
+
 - **Q7. Cover-state meaning.** Direction masks `0x20`, `0x40`, `0x180`, `0x1C0`
   (cover battle `0x947CF0`, horizontal `0x948B60`, vertical `0x9493D0`);
   descriptor `+8`/`+0xC` roles (tables `0x14821E0`/`0x1482218`);
   healing-cover validator `Human::eCoversForHeal`.
+
+**Closed:** the catalog binds descriptor height domains,19 named cover states,
+hiding/over/left/right masks, borrowed query results and the healing validator's
+true-means-reject rule. Value copying and native revalidation/occupancy contracts
+close the source-lifetime blank; actual invalidation/order timing is runtime.
+
+Evidence: [catalog Q7](decision-catalog-25492057.md#q7--cover-descriptor-direction-and-healing-contracts),
+[map](../artifacts/build-25492057/decision-q7-map.json),
+[validation](../artifacts/build-25492057/decision-q7-validation.json).
+15 game entries,1,010 instruction locations,one RTTI table and four byte ranges
+checked. No game/editor execution. Uncommitted at user direction.
+
+### Q8. Fire and movement output enums
+
 - **Q8. Output enums.** Which decision code reads each fire_mode value
   (`+0x398` bits 10–11; "firing is held" in the outdoors interrupt, the
   attack-control predicate), and whether a write needs side effects beyond the
   `actor_state` path `0x99F940`. Names of the movement type/mode values that
   MovementChange uses in modes 2, 4 and 5 (`0x8F7330` → foot slots 44/45
   `0x848490`/`0x848710`; table `0x1481170`).
+
+**Closed:** the catalog binds open/hold/return policy, located autonomous-fire
+consumers, masked write-only branches and their cancellation limits; movement
+types/modes now have native names, requested/resolved distinctions and setter
+side effects. MovementChange waits only for type when enabled.
+
+Evidence: [catalog Q8](decision-catalog-25492057.md#q8--fire-and-movement-output-enums),
+[map](../artifacts/build-25492057/decision-q8-map.json),
+[validation](../artifacts/build-25492057/decision-q8-validation.json).
+Game-only focused evidence; runtime admission and already issued order/timing
+behavior remain runtime checks. Uncommitted at user direction.
+
+### Q9. Target eligibility and perception meaning
+
 - **Q9. Remaining target/perception blanks.** The linked-actor type test in
   target eligibility `0x912AE0`; the meaning of the environment query behind
   the 0.13 vision factor in `0x88EA30`.
+
+**Closed:** linked eligibility is a borrowed parent `tank` tag test;
+night_vision is a mutable environment factor with local-light and thunder gates.
+The catalog corrects +0x70 to its initialized eligibility timestamp, identifies
++0x38 unmasking from existing evidence and distinguishes the borrowed weapon
+definition from an inventory instance.
+
+Evidence: [catalog Q9](decision-catalog-25492057.md#q9--target-eligibility-and-perception-meaning),
+[map](../artifacts/build-25492057/decision-q9-validated-map.json),
+[validation](../artifacts/build-25492057/decision-q9-validation.json).
+Game-only bounded evidence; cache admission, mission values and actual callback
+ordering need runtime verification. Uncommitted at user direction.
+
+### Q10. Secondary output and state-event contracts
+
 - **Q10. Secondary outputs.** Complex-order sequencing and failure propagation
   (`0x912370`, `0x900A60`); state events 0xB, 0xC, 0xF and 0x10–0x13 and the
   transitions they trigger; Rotate, LookAt, Aim, WeaponWaitReady `0x8D6470` and
   Take: effect, results, cancellation.
+
+Result: closed at the bounded output-interface depth in the catalog's Q10
+append. Complex sequences continue after final child failure and do not return
+that failure as their own; cancellation destroys ordinary queued children,
+with native slot2/bit23 preservation documented. NotifyState borrows its state
+and emits normal payload1 or canceled fallback payload0 (unless reset flag23).
+The requested B/C/F/10–13 receiver transitions and Rotate, LookAt, both Aim
+forms, WeaponWaitReady and the actually issued Collect ground-pickup contract
+are explicit. Pickup completion means operation-ID absence, not successful
+transfer. No runtime ABI/admission or operation-success claim is made.
+
+New disassembly evidence: [Q10 pass](../artifacts/build-25492057/call_to_arms.decision-q10-pass.tsv),
+[map](../artifacts/build-25492057/decision-q10-map.json),
+[validation](../artifacts/build-25492057/decision-q10-validation.json).
+Structural/data checks pass:43 entries,3,148 instruction locations,nine RTTI
+bindings,two byte ranges,one readonly float. Existing evidence is retained.
+Per the user's instruction, Q10 remains uncommitted; no Git operation was used.
+
+Final verification addendum: AimTrajectory does not enable parent cleanup bit18
+in its factory/default Exec or child attachment; its phase2 target-clear body
+is therefore not guaranteed to run. Generic child End/deletion still applies.
+The catalog correction cites the new [cleanup map](../artifacts/build-25492057/decision-q10-cleanup-map.json)
+and [validation](../artifacts/build-25492057/decision-q10-cleanup-validation.json)
+(two entries,34 instruction locations checked). Prior Q10 evidence is retained.
+
+### Q11. Native actor and squad waypoint command contracts
+
 - **Q11. Native go-to commands.** `actor_to_waypoint` (factory `0x1A9740`) and
   `squad_to_waypoint` (`0x9CF980`): defaults and effects, compared with
   `0x902FB0`.
 
+
+Result: closed in the additive Q11 catalog section. Actor command defaults are
+empty waypoint/no clone/approach0; the six native approach labels distinguish
+ordinary/forced progression from relocation and rotation variants. Actor
+SetWaypoint activation, cover release,Cancel(0x107), copied iterator, event6,
+optional clone interface and result/cancel limits are explicit. Squad command
+resolves named/context squad, activates members, clears prior travel, copies a
+shared iterator and issues commander/formation direct goals. Command object
+storage does not own the ongoing travel; command/helper acceptance and action
+advancement are not arrival receipts.
+
+Evidence: [Q11 pass](../artifacts/build-25492057/call_to_arms.decision-q11-pass.tsv),
+[map](../artifacts/build-25492057/decision-q11-map.json),
+[validation](../artifacts/build-25492057/decision-q11-validation.json).
+38 exact game entries,2,638 instruction locations,five RTTI bindings and seven
+byte ranges pass structural/data checks. Existing waypoint/squad/selector and
+Q3/Q10 notes/manifests supply the progression/lifecycle joins. Static only;
+actual ABI, mission bindings, outcomes and callback admission remain runtime.
+Uncommitted at user direction; no Git operation or push.
+
+## Open: next
+
+The user has authorized proceeding without Git; the commit gate below is
+retained as historical text and no longer blocks Q7.
+
+Q6 static evidence is ready, but its commit is pending: the permission profile
+changed to make .git read-only on2026-10-01. Commit the five Q6 paths before
+starting Q7; do not combine items to work around this restriction.
+
+Active queue authorized 2026-10-01: **No remaining active items**, in that order.
+Their preserved definitions below name the blanks. Q6 fills I-PREFERRED-TARGET
+and O-PREFERRED-SUBJECT-QUERY source precedence, freshness and return ownership.
+The following prior stop instruction is retained as historical text.
+
+No active research items. Add the required status summary, commit it and stop.
+
+## Open: later
+
+Needed when the prototype takes over target, cover, fire or stance choice.
+
 ## Parked
+
+- Q11 clone/placement/chassis, waypoint graph/action/thread internals and all other command families: parked after the named command defaults/effect/result/ownership/cancel interfaces.
+
+- Q10 animation/aiming/chassis and inventory-operation internals, other Take families and unrelated0x955800 geometry lead: parked after the issued order/result/cleanup interfaces.
+
+- Q9 local-light/render, environment/thunder implementation, definition-cache unloading and unmask term internals: parked after the first meaning/freshness/borrow bindings.
+
+- Q8 chassis profiles, animation, shooter and synchronization internals: parked at named enums, scalar resolver and native output interfaces.
+
+- Q7 cover geometry, animation and identity-bank internals: parked after mask/height, value-copy and native revalidation contracts.
+
+- Q6 manual-input, attack and TargetAccessor internals: parked at the shared-target source/ownership interfaces; resume only for a named catalog blank.
 
 - Full census of native decision reads: deferred; Q1/Q1a work is retained; resume only if a prototype row needs it.
 
@@ -557,3 +703,70 @@ and RTTI checks; evidence and validation files are linked in each closed item.
 Q1z and this summary consolidate existing evidence and add no disassembly,
 manifest, validation file or verifier. Existing notes and artifacts, the old
 frontier and the earlier compatibility work are retained. No push was made.
+
+## Q11 completion status — 2026-10-01
+
+Q6–Q11 are closed at the bounded prototype catalog depth. **No active items
+remain. Stop here.** This is the effective status, superseding the historical
+Q5 stop-point/later-stage queue and Q6 commit-gate text retained above. The
+user's instruction to continue without Git governs this continuation: Q6–Q11
+and this summary remain uncommitted. No staging, commit or push was performed
+for these results.
+
+### Closed items and retained evidence
+
+| Item | Current result |
+|---|---|
+| Q1/Q1a,partial Q1b | Seed/base catalog and partial root checkpoint retained. The rest of the native census remains deferred, not claimed complete. |
+| Q1z,Q2–Q5 | Existing bounded inventory, behavior/factory/freshness, direct goal, morale and field/flag closures retained. Later catalog corrections (including the+5 recovery bonus) remain authoritative over older text. |
+| Q6 | Preferred-subject query sources, nearest observed subject, borrowed return, human retain/release, shared-target writer/expiry and accessor admission contracts. |
+| Q7 | Cover height/domain/direction masks, descriptor value-copy/revalidation, borrowed handles and healing-cover true-means-reject interface. |
+| Q8 | Native fire/movement names, predicate consumers, scalar setter side effects and their limits; MovementChange waits for type rather than applied mode. |
+| Q9 | Linked-target parent `tank` gate, mutable `night_vision` environment factor and light/thunder gates, initialized subject eligibility timestamp, unmasking and borrowed weapon-definition meaning/lifetime. |
+| Q10 | Complex sequence result/ownership/cancel contracts, notification normal/fallback payloads and B/C/F/10–13 receiver transitions, Rotate/LookAt/Aim/WaitReady/issued Collect interfaces. Final correction: default AimTrajectory does not enable parent phase2 target clear; generic child cleanup remains. |
+| Q11 | Actor/squad command defaults, waypoint/tag ownership, actor Cancel(0x107), clone/relocation/query interfaces, shared squad travel/reset/direct-goal effects, and acceptance/advance versus arrival distinctions. |
+
+The appended [catalog](decision-catalog-25492057.md) sections are the effective
+contracts. Q6–Q11 focused game checks pass **151 method entries and16,940
+instruction-location checks across the per-item passes**, including Q10's
+constructor/attachment addendum, plus each pass's recorded data/RTTI checks.
+These are structural/data validations, not runtime ABI or semantic proofs.
+Q9's authoritative [validated map](../artifacts/build-25492057/decision-q9-validated-map.json)
+records the mutable environment factor as bytes; its initial map is retained.
+All validation reports match their authoritative manifest hashes. Consolidation
+uses existing notes/manifests/instruction RVAs; no new verifier was created.
+
+### Blanks requiring runtime verification
+
+- Actual brain type, selector/context/owner/subject/waypoint/weapon bindings and
+  native ABI at the chosen mission hook. Copies, reference counts and borrowed
+  returns do not independently admit an external pointer or callback.
+- Adapter ordering relative to native decision, scheduled score/perception
+  refresh, events, shared-target writes, order update/reset/destruction and
+  scene lifetime. Observe intervening writers and cache age rather than assume
+  every value refreshes on every decision.
+- Mission/mod scales, clock, environment/light state, cover invalidation and
+  actual query results. In particular a remembered weapon definition is not a
+  retained inventory item; an iterator's raw waypoint can be invalidated.
+- Concrete arrival, failure, turning/aiming readiness, pickup transfer and
+  cancellation outcomes. Task clear, complex-sequence1, state notification,
+  operation-ID absence, command acceptance and waypoint advancement are
+  different receipts; none alone proves that the requested action succeeded.
+  Observe cleanup flags and native callback phase for the selected integration.
+
+These remaining blanks are runtime admission/outcome questions. No game or
+editor was launched or modified, and no runtime verification was attempted.
+
+### Deferred work
+
+Full census of native decision reads: deferred; Q1/Q1a work is retained; resume
+only if a prototype row needs it. This includes the rest of Q1b and Q1c–Q1g.
+The one-line Parked records retain all other producer internals, including
+physical/path/geometry, animation/FSM, inventory operation, clone/placement,
+entity/clock/network and graph/action/thread machinery. No additional native
+command or unrelated lead is activated by completing Q11.
+
+Existing notes, manifests, TSVs, scripts, tests and the old frontier are retained.
+The earlier uncommitted compatibility work was left untouched. Required research
+artifacts and catalog/frontier updates are reviewable in the workspace without
+Git; the authorized static continuation is complete.

@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "export_suffix": "-decision-q10-cleanup",
+  "scope": "Q10 final verification addendum only: SingleOrder constructor and child attachment determine whether AimTrajectory factory/default Exec enable phase2 cleanup. Existing Q10 factory/Exec/End evidence supplies the other half.",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267"
+    }
+  },
+  "methods": [
+    {
+      "id": "Q10-CLEANUP-0x901600",
+      "entry_rvas": {
+        "game": "0x901600"
+      }
+    },
+    {
+      "id": "Q10-CLEANUP-0x901940",
+      "entry_rvas": {
+        "game": "0x901940"
+      }
+    }
+  ],
+  "fields": [
+    {
+      "id": "O-AIM-TRAJECTORY-CANCELLATION",
+      "evidence_ids": [
+        "E-0x901600",
+        "E-0x901940"
+      ]
+    }
+  ],
+  "inline_regions": [],
+  "enums": [],
+  "float_constants": [],
+  "evidence": [
+    {
+      "id": "E-0x901600",
+      "binary": "game",
+      "function_rva": "0x901600",
+      "instruction_rvas": [
+        "0x901600",
+        "0x901602",
+        "0x901609",
+        "0x90160c",
+        "0x90160f",
+        "0x901613",
+        "0x901617",
+        "0x90161a",
+        "0x90161e",
+        "0x901621",
+        "0x901625"
+      ]
+    },
+    {
+      "id": "E-0x901940",
+      "binary": "game",
+      "function_rva": "0x901940",
+      "instruction_rvas": [
+        "0x901940",
+        "0x901945",
+        "0x901946",
+        "0x90194a",
+        "0x90194d",
+        "0x901950",
+        "0x901954",
+        "0x901957",
+        "0x901959",
+        "0x90195c",
+        "0x90195f",
+        "0x901963",
+        "0x901966",
+        "0x901968",
+        "0x90196b",
+        "0x901970",
+        "0x901972",
+        "0x901976",
+        "0x901979",
+        "0x90197d",
+        "0x901982",
+        "0x901986",
+        "0x901987"
+      ]
+    }
+  ],
+  "rtti_vtables": [],
+  "byte_sequences": [],
+  "prior_evidence": "decision-q10-map.json:0x8d64f0,0x8d7ee0,0x9018d0; engagement-orders-map.json:WeaponAiming0x8d6f30",
+  "runtime_only": [
+    "Externally added order flags, live weapon/owner and callback admission require runtime validation."
+  ]
+}
