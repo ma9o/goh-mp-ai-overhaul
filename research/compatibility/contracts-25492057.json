@@ -1,0 +1,139 @@
+{
+  "baseline_build_id": "25492057",
+  "code_sequences": ["flow-map/game_input_bridge", "flow-map/editor_input_bridge", "tactics-map/sort_comparator", "tactics-map/editor_sort_comparator", "tactics-map/random_scale_initializer", "systems-map/counter_read_leaf"],
+  "operands": [
+    {
+      "id": "actor.brain_pointer",
+      "parent": "reviewed-map/methods/actor_quant_dispatch",
+      "source": "reviewed-map.json#/fields/0",
+      "at": {"game": "0x7efe6e", "editor": "0x671f59"},
+      "captures": [{"name": "offset", "operand": 1, "attribute": "displacement"}, {"name": "width", "operand": 1, "attribute": "width"}],
+      "expected": {"offset": "0xdc8", "width": 8}
+    },
+    {
+      "id": "brain.pending_clear",
+      "parent": "reviewed-map/methods/brain_clear_request_and_dispatch",
+      "source": "reviewed-map.json#/fields/1",
+      "at": {"game": "0x9035c3", "editor": "0x789b43"},
+      "captures": [{"name": "offset", "operand": 0, "attribute": "displacement"}, {"name": "width", "operand": 0, "attribute": "width"}, {"name": "and_mask", "operand": 1, "attribute": "immediate", "mask": "0xffffffff"}],
+      "expected": {"offset": "0x39c", "width": 4, "and_mask": "0xfdffffff"}
+    },
+    {
+      "id": "brain.reconsider_dispatch_slot",
+      "parent": "reviewed-map/methods/brain_clear_request_and_dispatch",
+      "source": "reviewed-map.json#/methods/1",
+      "at": {"game": "0x9035cd", "editor": "0x789b4d"},
+      "captures": [{"name": "slot_byte_offset", "operand": 0, "attribute": "displacement"}],
+      "expected": {"slot_byte_offset": "0x118"}
+    },
+    {
+      "id": "brain.pending_set",
+      "parent": "reviewed-map/methods/brain_update_order_sets_request_flag",
+      "source": "reviewed-map.json#/fields/1",
+      "at": {"game": "0x8cedde", "editor": "0x754efe"},
+      "captures": [{"name": "offset", "operand": 0, "attribute": "displacement"}, {"name": "width", "operand": 0, "attribute": "width"}, {"name": "or_mask", "operand": 1, "attribute": "immediate"}],
+      "expected": {"offset": "0x39c", "width": 4, "or_mask": "0x2000000"}
+    },
+    {
+      "id": "human.advance_ratio_binding",
+      "parent": "fine-map/methods/human_property_binding",
+      "source": "fine-map.json#/fields/13",
+      "at": {"game": "0x942903", "editor": "0x7c9f2b"},
+      "captures": [{"name": "complete_object_offset", "operand": 1, "attribute": "displacement", "add": 16}],
+      "expected": {"complete_object_offset": "0x524"}
+    },
+    {
+      "id": "human.retreat_ratio_binding",
+      "parent": "fine-map/methods/human_property_binding",
+      "source": "fine-map.json#/fields/14",
+      "at": {"game": "0x9429af", "editor": "0x7c9fdf"},
+      "captures": [{"name": "complete_object_offset", "operand": 1, "attribute": "displacement", "add": 16}],
+      "expected": {"complete_object_offset": "0x528"}
+    },
+    {
+      "id": "human.advance_ratio_consumer",
+      "parent": "fine-map/methods/human_reconsideration",
+      "source": "fine-map.json#/fields/13",
+      "at": {"game": "0x941daf", "editor": "0x7c941d"},
+      "captures": [{"name": "offset", "operand": 1, "attribute": "displacement"}, {"name": "width", "operand": 1, "attribute": "width"}],
+      "expected": {"offset": "0x524", "width": 4}
+    },
+    {
+      "id": "human.retreat_ratio_consumer",
+      "parent": "fine-map/methods/human_reconsideration",
+      "source": "fine-map.json#/fields/14",
+      "at": {"game": "0x941d9d", "editor": "0x7c940b"},
+      "captures": [{"name": "offset", "operand": 1, "attribute": "displacement"}, {"name": "width", "operand": 1, "attribute": "width"}],
+      "expected": {"offset": "0x528", "width": 4}
+    },
+    {
+      "id": "brain.move_mode_field",
+      "parent": "fine-map/methods/set_move_mode",
+      "source": "fine-map.json#/enums/2",
+      "at": {"game": "0x903144", "editor": "0x7896b4"},
+      "captures": [{"name": "offset", "operand": 1, "attribute": "displacement"}, {"name": "width", "operand": 1, "attribute": "width"}],
+      "expected": {"offset": "0x398", "width": 4}
+    },
+    {
+      "id": "brain.move_mode_mask",
+      "parent": "fine-map/methods/set_move_mode",
+      "source": "fine-map.json#/enums/2",
+      "at": {"game": "0x903168", "editor": "0x7896d8"},
+      "captures": [{"name": "mask", "operand": 1, "attribute": "immediate"}],
+      "expected": {"mask": "0x3000"}
+    },
+    {
+      "id": "brain.move_mode_shift",
+      "parent": "fine-map/methods/set_move_mode",
+      "source": "fine-map.json#/enums/2",
+      "at": {"game": "0x90314e", "editor": "0x7896be"},
+      "captures": [{"name": "shift", "operand": 1, "attribute": "immediate"}],
+      "expected": {"shift": 12}
+    },
+    {
+      "id": "brain.move_speed_field",
+      "parent": "fine-map/methods/set_move_speed",
+      "source": "fine-map.json#/enums/3",
+      "at": {"game": "0x9031c0", "editor": "0x789730"},
+      "captures": [{"name": "offset", "operand": 1, "attribute": "displacement"}, {"name": "width", "operand": 1, "attribute": "width"}],
+      "expected": {"offset": "0x398", "width": 4}
+    },
+    {
+      "id": "brain.move_speed_mask",
+      "parent": "fine-map/methods/set_move_speed",
+      "source": "fine-map.json#/enums/3",
+      "at": {"game": "0x9031da", "editor": "0x78974a"},
+      "captures": [{"name": "mask", "operand": 1, "attribute": "immediate"}],
+      "expected": {"mask": "0x4000"}
+    },
+    {
+      "id": "brain.move_speed_shift",
+      "parent": "fine-map/methods/set_move_speed",
+      "source": "fine-map.json#/enums/3",
+      "at": {"game": "0x9031ca", "editor": "0x78973a"},
+      "captures": [{"name": "shift", "operand": 1, "attribute": "immediate"}],
+      "expected": {"shift": 14}
+    },
+    {
+      "id": "order.actor_subobject_brain_offset",
+      "parent": "reviewed-map/methods/brain_update_order_sets_request_flag",
+      "source": "reviewed-map.json#/fields/0",
+      "at": {"game": "0x8cedd0", "editor": "0x754ef0"},
+      "captures": [{"name": "subobject_relative_offset", "operand": 1, "attribute": "displacement"}],
+      "expected": {"subobject_relative_offset": "0x2d8"}
+    },
+    {
+      "id": "brain.owner_actor",
+      "parent": "fine-map/methods/set_move_mode",
+      "source": "fine-map.json#/fields/0",
+      "at": {"game": "0x90317b", "editor": "0x7896eb"},
+      "captures": [{"name": "offset", "operand": 1, "attribute": "displacement"}, {"name": "width", "operand": 1, "attribute": "width"}],
+      "expected": {"offset": "0x38", "width": 8}
+    }
+  ],
+  "capabilities": [
+    {"id": "game/ai.update_observation", "requires": ["game/reviewed-map/methods/actor_quant_dispatch", "game/reviewed-map/methods/brain_clear_request_and_dispatch", "game/reviewed-map/methods/brain_update_order_sets_request_flag", "game/fine-map/methods/human_reconsideration", "game/fine-map/methods/order_progression", "game/contracts/actor.brain_pointer", "game/contracts/brain.pending_clear", "game/contracts/brain.pending_set", "game/contracts/brain.reconsider_dispatch_slot", "game/contracts/order.actor_subobject_brain_offset"]},
+    {"id": "game/ai.ratio_access", "requires": ["game/fine-map/methods/human_property_binding", "game/fine-map/methods/human_reconsideration", "game/contracts/human.advance_ratio_binding", "game/contracts/human.retreat_ratio_binding", "game/contracts/human.advance_ratio_consumer", "game/contracts/human.retreat_ratio_consumer"]},
+    {"id": "game/ai.movement_modes", "requires": ["game/fine-map/methods/base_property_binding", "game/fine-map/methods/set_move_mode", "game/fine-map/methods/set_move_speed", "game/fine-map/enums/move_mode", "game/fine-map/enums/move_speed", "game/contracts/brain.move_mode_field", "game/contracts/brain.move_mode_mask", "game/contracts/brain.move_mode_shift", "game/contracts/brain.move_speed_field", "game/contracts/brain.move_speed_mask", "game/contracts/brain.move_speed_shift", "game/contracts/brain.owner_actor"]}
+  ]
+}

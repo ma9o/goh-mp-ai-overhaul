@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "25492057",
+  "runtime_verified": false,
+  "profile_sha256": "7fa42502ffa71f92fc676b2831acc4b40d4467f076f9c381f25880965c0d74d1",
+  "same_build": {
+    "exit_code": 0,
+    "summary": {
+      "UNCHANGED": 337,
+      "NOT_CHECKED": 185
+    },
+    "binaries": {
+      "game": {
+        "filename": "call_to_arms.exe",
+        "baseline_sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+        "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+        "matches_baseline": true
+      },
+      "editor": {
+        "filename": "call_to_arms_ed.exe",
+        "baseline_sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+        "sha256": "3c6d7db86d530740d17945a212a4981bfa07307393d0cbb04b3d547a7cb44976",
+        "matches_baseline": true
+      }
+    },
+    "capabilities": [
+      {
+        "id": "game/ai.update_observation",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      },
+      {
+        "id": "game/ai.ratio_access",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      },
+      {
+        "id": "game/ai.movement_modes",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      },
+      {
+        "id": "editor/ai.update_observation",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      },
+      {
+        "id": "editor/ai.ratio_access",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      },
+      {
+        "id": "editor/ai.movement_modes",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      }
+    ]
+  },
+  "file_copy_mutation": {
+    "scope": "Synthetic file-only mutation, not a released game build or runtime experiment",
+    "instruction_rva": "0x7efe6e",
+    "expected_offset": "0xdc8",
+    "mutated_offset": "0xdd0",
+    "exit_code": 1,
+    "summary": {
+      "UNCHANGED": 306,
+      "NOT_CHECKED": 202,
+      "AMBIGUOUS": 12,
+      "CONTRACT_CHANGED": 2
+    },
+    "detected_mapping": {
+      "id": "game/contracts/actor.brain_pointer",
+      "kind": "operand",
+      "source": "reviewed-map.json#/fields/0",
+      "required": true,
+      "status": "CONTRACT_CHANGED",
+      "baseline": {
+        "rva": "0x7efe66",
+        "values": {
+          "offset": 3528,
+          "width": 8
+        }
+      },
+      "current": {
+        "values": {
+          "offset": 3536,
+          "width": 8
+        },
+        "rva": "0x7efe66"
+      },
+      "reasons": [
+        "offset: 0xdc8 -> 0xdd0"
+      ],
+      "candidates": [
+        "0x7efe66"
+      ],
+      "scope": "Selected operands in baseline-relative Ghidra windows; owner/type interpretation remains analyst evidence"
+    },
+    "capabilities": [
+      {
+        "id": "game/ai.update_observation",
+        "static_checks_passed": false,
+        "blocked_by": [
+          "game/reviewed-map/methods/actor_quant_dispatch",
+          "game/contracts/actor.brain_pointer"
+        ],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      },
+      {
+        "id": "game/ai.ratio_access",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      },
+      {
+        "id": "game/ai.movement_modes",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      },
+      {
+        "id": "editor/ai.update_observation",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      },
+      {
+        "id": "editor/ai.ratio_access",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      },
+      {
+        "id": "editor/ai.movement_modes",
+        "static_checks_passed": true,
+        "blocked_by": [],
+        "runtime_allowed": false,
+        "runtime_reason": "No verified callable ABI/lifecycle or approved runtime profile"
+      }
+    ]
+  },
+  "tests": {
+    "command": "local-work/compat-venv/bin/python -m unittest discover -s research/tests -v",
+    "passed": 36,
+    "compatibility_tests": 27,
+    "game_files_required": false
+  },
+  "limitations": [
+    "185 optional research records have no dedicated complete contract",
+    "No runtime smoke scenarios executed; native adapter ABI/lifecycle remains unverified",
+    "Cross-build recovery tested through synthetic PEs and an altered copy, not two released builds"
+  ]
+}

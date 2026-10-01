@@ -1,0 +1,2 @@
+# Instruction decoding for the optional update-audit tools. The PE scanner stays stdlib-only.
+capstone==5.0.6

@@ -11,6 +11,8 @@ weapon behavior. The upstream loader and SDK are retained as reference material.
 
 ## Start here
 
+- [Version compatibility](research/notes/version-compatibility.md): run a static
+  update audit, see changed mappings and coverage gaps, and prepare a new baseline.
 - [Upstream audit](research/notes/upstream-audit.md): what is implemented, missing,
   or unverified in the inherited SDK.
 - [Current build findings](research/notes/build-25492057.md): evidence from the
@@ -55,6 +57,13 @@ hierarchies, and vtable code pointers. A structural match is a lead, not proof o
 a function's behavior or calling convention.
 
 ## Ghidra workflow
+
+For game updates, the [compatibility audit](research/notes/version-compatibility.md)
+compares new binaries with a versioned profile and reports changed, relocated,
+ambiguous, unresolved, and unchecked mappings. It includes targeted field/mask
+checks, resource hashes, capability dependencies, and candidate TSVs for review.
+See that guide for setup, the one-command audit, exit codes, and coverage limits.
+A static pass is not runtime hook approval.
 
 Test environment: Ghidra 12.1.4, OpenJDK 21, macOS arm64. The wrapper defaults to
 the local Homebrew installations; use `--ghidra-home` and `--java-home`, or
