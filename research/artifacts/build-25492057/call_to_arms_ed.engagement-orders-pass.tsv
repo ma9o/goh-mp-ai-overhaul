@@ -1,9 +1,0 @@
-# RVA	Selected order/editor comparisons
-0x756400	advance_execute
-0x7572e0	advance_replace_test
-0x757330	advance_replace_apply
-0x76cf10	fight_execute
-0x75dd30	weapon_fire_execute
-0x69cd00	bullet_shooter_slot12
-0x7fedb0	melee_ability_parse
-0x7fefd0	melee_params_parse

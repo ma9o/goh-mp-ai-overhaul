@@ -1,6 +1,0 @@
-# RVA	Placement and entity-link cross references
-0x10d7f38	placement_primary_vtable
-0x77a830	placement_reservation_callers
-0x77b4e0	placement_sealed_callers
-0x781370	placement_request_registration_callers
-0x7792e0	entity_unlink_callers

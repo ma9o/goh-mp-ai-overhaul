@@ -1,5 +1,0 @@
-# RVA	Label	Filter	Limit
-0x6710c0	actor_player_set_direct_callers	all	4096
-0x13e5448	actor_property_registry	all	4096
-0x6f6f10	sensor_clear_callers	all	4096
-0x72f270	chassis_registration_callers	all	4096

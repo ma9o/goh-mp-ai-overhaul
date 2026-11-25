@@ -1,5 +1,0 @@
-# RVA	Human FSM action anchors
-0x10edf70	Human::eFsmHandler_vtable
-0x95fad0	human_equipment_tags_set_callers
-0x147d69c	reload_animation_threshold_writes	write
-0x1547d90	throw_distance_scale_writes	write

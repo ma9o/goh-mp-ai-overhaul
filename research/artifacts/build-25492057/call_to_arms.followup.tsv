@@ -1,8 +1,0 @@
-# RVA	Analyst-selected follow-up; proposed roles are not callable ABI declarations
-0x7efd10	candidate_actor_quant_primary_slot23
-0x9035c0	candidate_brain_clear_update_flag_dispatch_slot35
-0x902490	candidate_brain_constructor
-0x905710	candidate_brain_primary_slot24
-0x9417e0	candidate_human_brain_constructor
-0x8cd320	candidate_move_to_cover_order_factory
-0x7efa10	candidate_actor_order_submission

@@ -1,4 +1,0 @@
-# RVA	Boarding order vtables
-0xf4d470	Order::eBindForBoard_primary_vtable
-0xf4da60	Order::eBoard_primary_vtable
-0xf4dcd8	Order::eEmit_primary_vtable

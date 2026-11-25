@@ -1,5 +1,0 @@
-# RVA	Vision and actor construction anchors
-0xf417c8	vtable:eActor
-0xf45a00	vtable:Actor::eChassis
-0xf4a160	vtable:Actor::eCover
-0xf499e0	vtable:Actor::eVision

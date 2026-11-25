@@ -1,7 +1,0 @@
-# RVA	Editor line helper callers
-0x731760	line_constructor_callers	all	2048
-0x731820	line_cost_callers	all	2048
-0x731200	line_blocked_callers	all	2048
-0x5f0150	obstacle_enable_callers	all	2048
-0x12f9968	portal_adjust_config	all	2048
-0x13d8100	owner_actor_destroyed_tag	all	2048

@@ -1,9 +1,0 @@
-# RVA	Cross-check weapon accuracy contracts and property registrar
-0x4dfe80	property_token_registration
-0x69b800	bullet_shooter_accuracy_scale4_set
-0x69b820	bullet_shooter_accuracy_scale5_set
-0x69b840	bullet_shooter_accuracy_refresh_thunk
-0x69ca20	bullet_shooter_spread_radius
-0x69cb80	bullet_shooter_spread_radius_at_target
-0x7cad70	human_target_picker
-0x7cb5a0	human_target_changed

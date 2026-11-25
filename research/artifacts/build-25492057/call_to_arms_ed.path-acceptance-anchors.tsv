@@ -1,8 +1,0 @@
-# RVA	Path counterpart callers
-0x486c90	path_callers
-0x74ede0	path_callers
-0x74c240	path_callers
-0x732cb0	path_callers
-0x74d680	path_callers
-0x13bd238	path_scalar_writer	write
-0x13ec76c	path_scalar_writer	write

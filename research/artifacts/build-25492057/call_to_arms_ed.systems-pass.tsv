@@ -1,6 +1,0 @@
-# RVA	Paired scheduler and sensor methods
-0x671cd0	actor_quant_prepare
-0x6f71b0	sensor_quant_prepare
-0x6f8d90	subject_category_insertion
-0x14b5c0	scheduled_task_due
-0x14b5f0	scheduled_task_reset

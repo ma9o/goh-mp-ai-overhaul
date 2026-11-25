@@ -1,8 +1,0 @@
-# RVA	FSM routing anchors
-0x10f2158	Actor::eAnimalFsmHandler_vtable
-0x10e72d0	Order::eFsmRequest_vtable
-0x10deae8	Actor::eFsm_vtable
-0x10edf70	Human::eFsmHandler_vtable
-0x10dea48	Actor::Fsm::eHandler_vtable
-0x157e058	fsm_property_registry
-0x800e30	request_comparator_unrecognized_leaf
