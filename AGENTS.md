@@ -15,6 +15,9 @@ only when one of its assertions answers an open item.
 - Static analysis only. Do not launch or modify the game or the editor.
 - Stage files by path, only those you changed for the item. Start commit
   messages with the item ID. Do not push.
+- Whenever an AI feature in `mods/` is added, completed, or materially changed,
+  update `## AI changes (running total)` in `README.md` with its summary and
+  linked build contract note.
 
 ## Multiplayer AI goals and non-desync constraints
 
@@ -60,9 +63,16 @@ All future research and prototype/hook designs must obey these constraints
   (`0x83FB90`) / `weaponry+0x70` bit 1 is set (note `0x941D00` still runs before
   `0x903B10` checks that counter). Do not silently overwrite human-player
   `brain+0x398` (`fire_mode`/`move_mode`) UI toggles (`0x903140` and raw masked
-  stores do not emit wire UI sync commands), and respect `control == user`,
-  `hold` modes, and active user orders (`brain+0x39C` bit 28) unless explicitly
-  handling an emergency defensive reaction (such as dodging a live grenade).
+  stores do not emit wire UI sync commands). Note that player-owned units in
+  skirmish and multiplayer have `control == user` (`(brain+0x398 & 3) == 1`); do
+  **not** exclude `control == user` units from autonomous AI improvements
+  (target prioritization, LOF, defensive smoke, grenade dodge, etc.). Instead,
+  preserve player intent: never hijack an active explicit `Order::eAttack`,
+  respect `fire_mode == hold` (and unalerted `return`), and respect
+  `move_mode == hold` / active user movement orders (`brain+0x39C` bit 28) for
+  movement actions unless handling an emergency defensive reaction (such as
+  dodging a live grenade)—while keeping autonomous firing and target
+  prioritization active during Hold Position or movement.
 - **Do not perturb engine RNG.** Never draw from `synced_global` (`0x554B50` /
   `0x6FBD60`, re-seeded per MP frame packet in `0x53ACA0`) or the default thread
   RNG (`0x5549F0`) in custom AI code; use a private PRNG. Never poll native

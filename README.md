@@ -9,6 +9,31 @@ our own tactical decision system: cover, attack/retreat, target selection, and
 weapon behavior. The upstream loader and SDK are retained as reference material.
 **This is a research fork, not an updated or working extender release.**
 
+## AI changes (running total)
+
+Host-only runtime prototype (`mods/goh_ai_mod.cpp`, Steam build `26734796`, zero `resource/` edits, PE SHA-256 gated):
+
+1. **Early flying-grenade dodge & directional sprint** (`mods/goh_ai_mod.cpp`, [contracts](research/notes/grenade-escape-26734796.md))
+   - Tracks armed grenades in flight (`eGrenadeSimulator::Tick` / `~dtor`), predicts landing point with terrain refinement, wakes nearby soldiers immediately, and triggers `Order::eAvoidGrenade` before impact.
+   - Ignores outbound airborne/away-rolling grenades predicted to land outside the soldier's danger radius so throwers and nearby allies do not dodge their own throws.
+   - Bypasses the vanilla cover-hide trap on flying grenades and sprints standing (`SetMovementType(0)` + `SetMovementMode(2)`) away from both the predicted landing spot and known enemy threats via native replicating `Order::eMoveTask`.
+2. **General soft-cover shoot-through LOF override (autonomous & explicit fire)** (`mods/goh_ai_mod.cpp`, [contracts](research/notes/lof-detour-soft-cover-26734796.md))
+   - Extends live `TargetAccessor::Try` (`0x835790`) bullet trajectory previews (`0x400000`) for both autonomous firing and explicit `Order::eAttack` with zero extra RNG draws (skipping speculative detour probes and respecting Direct Control / Hold Fire).
+   - Overrides trajectory-blocked verdicts (`5 → 3`) for **piercing/kinetic rounds only** (AP, APHE, APCR, AT-rifle, MG, rifle — explicitly vetoing HE/AA/smoke/WP via `possibleDamageRadius`/`detonationThickness` and HEAT/bazooka/panzerfaust via `cumulative > 0`) when only soft/penetrable cover (wooden walls, fences, trees; thin masonry for `>= 75 mm`) lies in front of the target and kinetic penetration cleanly clears every layer with residual energy remaining.
+   - Strictly vetoes terrain/water, friendly actors anywhere along/near the trajectory, non-target vehicle hulls, hard/immune materials, and HE shells whose true max blastwave radius (`PossibleDamageRadius` + all effect descriptors) reaches the shooter.
+3. **Smarter explicit-Attack LOF detour for infantry and vehicles** (`mods/goh_ai_mod.cpp`, [contracts](research/notes/lof-detour-soft-cover-26734796.md))
+   - Replaces blind random sampling for blocked explicit `Order::eAttack` orders (and adds repositioning for blocked vehicles, which vanilla otherwise leaves idle) using structured lateral and blocking-corner candidates scored by RNG-free segment LOF (`0xA409C0`/`0xA40A20`/`0xA40AC0`) and committed enemy-threat exposure.
+   - Stands prone/crouched infantry up in place when standing alone clears LOF; lets limited-traverse/casemate vehicles rotate hulls (`eLookAt`) first when traverse-limited.
+   - Issues parent-owned replicating `Order::eMoveTask` children so the unit keeps its explicit Attack target, while respecting Direct Control, inhibition counters, and Hold Position (`move_mode == 1`).
+4. **Autonomous target prioritization & MG-first shell economy** (`mods/target_prioritization_module.hpp`, [contract](research/notes/target-prioritization-26734796.md))
+   - Infantry and vehicles weigh visible enemies against their available weapons and ammo, range, threat, and current aim. Up to four line-of-fire checks per actor tick can promote a clear target. Explicit Attack orders, Direct Control, and Hold Fire retain authority.
+   - Against an isolated soldier, a vehicle with a shell gun of 50 mm or larger gives an eligible mounted MG the first attempt. If the MG cannot engage, native weapon and ammo selection handles the fallback.
+5. **Auto-Smoke for vehicles, pinned infantry squads, and medics** (`mods/auto_smoke_module.hpp`, [contracts](research/notes/auto-smoke-26734796.md))
+   - **Vehicles:** Triggers native replicating smoke dischargers (`eControl` action `0x11` / `deploy_smoke`) when a vehicle's tracks, engine, or gun is damaged or it takes a penetrating/heavy hull hit under active enemy AT threat (25 s per-vehicle cooldown; respects Direct Control and Hold Fire).
+   - **Pinned infantry squads:** When a squad is suppressed, losing morale (`< 50` or recent morale drop/injury), or taking fire from an enemy vehicle, MG, or enemy squad, **one** squad member carrying a smoke grenade throws a screen 6–12 m between the squad and the primary threat (25 s per-squad / 20 m group cooldown so squads don't dump all grenades at once).
+   - **Medics / revives under fire:** Screens downed allies toward the active threat while approaching/reviving.
+   - **Strict White Phosphorus (WP) exclusion:** Positively whitelists only the 8 audited non-lethal smoke grenade keys (`anm8_smoke`, `m24_smoke`, `m43_smoke`, `rdg1_smoke`, `svkkr_pm`, `nbk39`, `nbks`, `no8_smoke`) and audited pure-smoke vehicle launcher programs (blocking WP grenades like `m15_wp`/`m42_wp`/`no77_wp` and WP vehicle launchers like `2in_wp` / M24 Chaffee).
+
 ## Start here
 
 - [Version compatibility](research/notes/version-compatibility.md): run a static

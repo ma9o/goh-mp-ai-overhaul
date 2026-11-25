@@ -1,0 +1,4898 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "runtime_allowed": false,
+  "export_suffix": "-target-prioritization",
+  "scope": "Game only. Q5/Q6/Q9. Verified structural anchors; inferred ABI and proposed host-only policy are static.",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "image_base": "0x140000000"
+    }
+  },
+  "export_mode": "focused; candidates are methods in manifest order, TSV columns entry_rvas.game and label",
+  "enums": [],
+  "float_constants": [
+    {
+      "id": "eligibility_age",
+      "binary": "game",
+      "rva": "0x1031b48",
+      "value": 20.0
+    },
+    {
+      "id": "user_age_and_squad_radius_factor",
+      "binary": "game",
+      "rva": "0x1024cb4",
+      "value": 10.0
+    },
+    {
+      "id": "recent_observation_age",
+      "binary": "game",
+      "rva": "0x102af14",
+      "value": 3.0
+    },
+    {
+      "id": "approach_range_factor",
+      "binary": "game",
+      "rva": "0x103314c",
+      "value": 0.949999988079071
+    },
+    {
+      "id": "one_second",
+      "binary": "game",
+      "rva": "0x10205ec",
+      "value": 1.0
+    },
+    {
+      "id": "two_seconds",
+      "binary": "game",
+      "rva": "0x10205f0",
+      "value": 2.0
+    }
+  ],
+  "methods": [
+    {
+      "id": "shared-ranker",
+      "label": "shared ranker",
+      "entry_rvas": {
+        "game": "0x92bf20"
+      },
+      "baseline_25492057_rva": "0x9136e0"
+    },
+    {
+      "id": "profile-selection",
+      "label": "profile selection",
+      "entry_rvas": {
+        "game": "0x931e70"
+      },
+      "baseline_25492057_rva": "0x919630"
+    },
+    {
+      "id": "group-application",
+      "label": "group application",
+      "entry_rvas": {
+        "game": "0x9314b0"
+      },
+      "baseline_25492057_rva": "0x918c70"
+    },
+    {
+      "id": "group-transfer",
+      "label": "group transfer",
+      "entry_rvas": {
+        "game": "0x92e2b0"
+      },
+      "baseline_25492057_rva": "0x915a70"
+    },
+    {
+      "id": "insertion-comparator",
+      "label": "insertion comparator",
+      "entry_rvas": {
+        "game": "0x92f3d0"
+      },
+      "baseline_25492057_rva": "0x916b90"
+    },
+    {
+      "id": "predicate-evaluator",
+      "label": "predicate evaluator",
+      "entry_rvas": {
+        "game": "0x9328f0"
+      },
+      "baseline_25492057_rva": "0x91a0b0"
+    },
+    {
+      "id": "eligibility",
+      "label": "eligibility",
+      "entry_rvas": {
+        "game": "0x92b320"
+      },
+      "baseline_25492057_rva": "0x912ae0"
+    },
+    {
+      "id": "firing-target-construction",
+      "label": "firing-target construction",
+      "entry_rvas": {
+        "game": "0x92b5a0"
+      },
+      "baseline_25492057_rva": "0x912d60"
+    },
+    {
+      "id": "squad-subject-query",
+      "label": "squad subject query",
+      "entry_rvas": {
+        "game": "0x91b890"
+      },
+      "baseline_25492057_rva": "0x903050"
+    },
+    {
+      "id": "human-refresh",
+      "label": "human refresh",
+      "entry_rvas": {
+        "game": "0x95bee0"
+      },
+      "baseline_25492057_rva": "0x943560"
+    },
+    {
+      "id": "human-picker",
+      "label": "human picker",
+      "entry_rvas": {
+        "game": "0x95c120"
+      },
+      "baseline_25492057_rva": "0x9437a0"
+    },
+    {
+      "id": "cover-attack-fallback",
+      "label": "cover attack fallback",
+      "entry_rvas": {
+        "game": "0x960ae0"
+      },
+      "baseline_25492057_rva": "0x948160"
+    },
+    {
+      "id": "cover-list-try",
+      "label": "cover list try",
+      "entry_rvas": {
+        "game": "0x96bca0"
+      },
+      "baseline_25492057_rva": "0x953320"
+    },
+    {
+      "id": "outdoors-target-change-interrupt",
+      "label": "outdoors target-change interrupt",
+      "entry_rvas": {
+        "game": "0x962420"
+      },
+      "baseline_25492057_rva": "0x949aa0"
+    },
+    {
+      "id": "outdoors-battle-interrupt",
+      "label": "outdoors battle interrupt",
+      "entry_rvas": {
+        "game": "0x962990"
+      },
+      "baseline_25492057_rva": "0x94a010"
+    },
+    {
+      "id": "equipment-evaluator-constructor",
+      "label": "equipment evaluator constructor",
+      "entry_rvas": {
+        "game": "0x970490"
+      },
+      "baseline_25492057_rva": "0x957b10"
+    },
+    {
+      "id": "equipment-evaluator-setup",
+      "label": "equipment evaluator setup",
+      "entry_rvas": {
+        "game": "0x970580"
+      },
+      "baseline_25492057_rva": "0x957c00"
+    },
+    {
+      "id": "equipment-evaluation",
+      "label": "equipment evaluation",
+      "entry_rvas": {
+        "game": "0x9705f0"
+      },
+      "baseline_25492057_rva": "0x957c70"
+    },
+    {
+      "id": "carried-item-scan",
+      "label": "carried-item scan",
+      "entry_rvas": {
+        "game": "0x9708f0"
+      },
+      "baseline_25492057_rva": "0x957f70"
+    },
+    {
+      "id": "equipment-item-evaluation",
+      "label": "equipment item evaluation",
+      "entry_rvas": {
+        "game": "0x970990"
+      },
+      "baseline_25492057_rva": "0x958010"
+    },
+    {
+      "id": "equipment-switch-trigger",
+      "label": "equipment switch trigger",
+      "entry_rvas": {
+        "game": "0x95cea0"
+      },
+      "baseline_25492057_rva": "0x944520"
+    },
+    {
+      "id": "vehicle-brain-rebuild",
+      "label": "vehicle brain rebuild",
+      "entry_rvas": {
+        "game": "0x9a74e0"
+      },
+      "baseline_25492057_rva": "0x988fc0"
+    },
+    {
+      "id": "vehicle-alternate-rebuild",
+      "label": "vehicle alternate rebuild",
+      "entry_rvas": {
+        "game": "0x9a7e20"
+      },
+      "baseline_25492057_rva": "0x989900"
+    },
+    {
+      "id": "vehicle-assignment",
+      "label": "vehicle assignment",
+      "entry_rvas": {
+        "game": "0x9a7fa0"
+      },
+      "baseline_25492057_rva": "0x989a80"
+    },
+    {
+      "id": "vehicle-weapon-ammo-selection",
+      "label": "vehicle weapon-ammo selection",
+      "entry_rvas": {
+        "game": "0x9a90c0"
+      },
+      "baseline_25492057_rva": "0x98aba0"
+    },
+    {
+      "id": "vehicle-row-rebuild",
+      "label": "vehicle row rebuild",
+      "entry_rvas": {
+        "game": "0x9a8a40"
+      },
+      "baseline_25492057_rva": "0x98a520"
+    },
+    {
+      "id": "observed-equipment-and-pair-refresh",
+      "label": "observed equipment and pair refresh",
+      "entry_rvas": {
+        "game": "0x88ded0"
+      }
+    },
+    {
+      "id": "sensor-commit",
+      "label": "sensor commit",
+      "entry_rvas": {
+        "game": "0x88e270"
+      }
+    },
+    {
+      "id": "transient-threat-writer",
+      "label": "transient threat writer",
+      "entry_rvas": {
+        "game": "0x88d4b0"
+      }
+    },
+    {
+      "id": "detach",
+      "label": "detach",
+      "entry_rvas": {
+        "game": "0x88fc80"
+      }
+    },
+    {
+      "id": "selected-runtime-weapon",
+      "label": "selected runtime weapon",
+      "entry_rvas": {
+        "game": "0x81b080"
+      }
+    },
+    {
+      "id": "inventory-iterator-begin",
+      "label": "inventory iterator begin",
+      "entry_rvas": {
+        "game": "0x7e1ce0"
+      }
+    },
+    {
+      "id": "inventory-iterator-next",
+      "label": "inventory iterator next",
+      "entry_rvas": {
+        "game": "0x7e2220"
+      }
+    },
+    {
+      "id": "iterator-item",
+      "label": "iterator item",
+      "entry_rvas": {
+        "game": "0x7e1f40"
+      }
+    },
+    {
+      "id": "inventory-access",
+      "label": "inventory access",
+      "entry_rvas": {
+        "game": "0x7e0420"
+      }
+    },
+    {
+      "id": "target-assignment-support",
+      "label": "target assignment support",
+      "entry_rvas": {
+        "game": "0x853180"
+      }
+    },
+    {
+      "id": "weapon-target-setup",
+      "label": "weapon target setup",
+      "entry_rvas": {
+        "game": "0x81f0c0"
+      }
+    },
+    {
+      "id": "human-slot-35-and-target-change",
+      "label": "human slot 35 and target change",
+      "entry_rvas": {
+        "game": "0x95a680"
+      },
+      "baseline_25492057_rva": "0x941d00"
+    },
+    {
+      "id": "selection-change-bookkeeping",
+      "label": "selection change bookkeeping",
+      "entry_rvas": {
+        "game": "0x95c9f0"
+      }
+    },
+    {
+      "id": "cover-eligibility-predicate",
+      "label": "cover eligibility predicate",
+      "entry_rvas": {
+        "game": "0x95c040"
+      }
+    },
+    {
+      "id": "native-infantry-attack-sequence",
+      "label": "native infantry attack sequence",
+      "entry_rvas": {
+        "game": "0x96b430"
+      }
+    },
+    {
+      "id": "human-try-attack-result",
+      "label": "human try attack result",
+      "entry_rvas": {
+        "game": "0x95d360"
+      }
+    },
+    {
+      "id": "body-facing-snapshot",
+      "label": "body facing snapshot",
+      "entry_rvas": {
+        "game": "0x96f6f0"
+      }
+    },
+    {
+      "id": "subject-class",
+      "label": "subject class",
+      "entry_rvas": {
+        "game": "0x92c400"
+      }
+    },
+    {
+      "id": "numeric-sort-key",
+      "label": "numeric sort key",
+      "entry_rvas": {
+        "game": "0x932cf0"
+      }
+    },
+    {
+      "id": "native-aim-estimate",
+      "label": "native aim estimate",
+      "entry_rvas": {
+        "game": "0x833d80"
+      }
+    },
+    {
+      "id": "motion-direction-update",
+      "label": "motion direction update",
+      "entry_rvas": {
+        "game": "0x824c90"
+      }
+    },
+    {
+      "id": "motion-direction-caller",
+      "label": "motion direction caller",
+      "entry_rvas": {
+        "game": "0x81f760"
+      }
+    },
+    {
+      "id": "box-index-lookup",
+      "label": "box index lookup",
+      "entry_rvas": {
+        "game": "0x7ee780"
+      }
+    },
+    {
+      "id": "right-hand-definition",
+      "label": "right-hand definition",
+      "entry_rvas": {
+        "game": "0x7e04e0"
+      }
+    },
+    {
+      "id": "right-hand-holder",
+      "label": "right-hand holder",
+      "entry_rvas": {
+        "game": "0x7e04b0"
+      }
+    },
+    {
+      "id": "synthetic-place-mutation",
+      "label": "synthetic place mutation",
+      "entry_rvas": {
+        "game": "0x81b590"
+      },
+      "baseline_25492057_rva": "0x806850"
+    },
+    {
+      "id": "tag-equality",
+      "label": "tag equality",
+      "entry_rvas": {
+        "game": "0x565340"
+      }
+    },
+    {
+      "id": "target-position",
+      "label": "target position",
+      "entry_rvas": {
+        "game": "0x8527f0"
+      }
+    },
+    {
+      "id": "native-target-copy",
+      "label": "native target copy",
+      "entry_rvas": {
+        "game": "0x852910"
+      }
+    },
+    {
+      "id": "native-weapon-priority-source",
+      "label": "native weapon priority source",
+      "entry_rvas": {
+        "game": "0x81a8d0"
+      }
+    },
+    {
+      "id": "subject-insert",
+      "label": "subject insert",
+      "entry_rvas": {
+        "game": "0x88ab50"
+      }
+    },
+    {
+      "id": "subject-relationship-refresh",
+      "label": "subject relationship refresh",
+      "entry_rvas": {
+        "game": "0x88dcf0"
+      }
+    },
+    {
+      "id": "subject-initialization",
+      "label": "subject initialization",
+      "entry_rvas": {
+        "game": "0x888a20"
+      }
+    },
+    {
+      "id": "cached-threat-channels",
+      "label": "cached threat channels",
+      "entry_rvas": {
+        "game": "0x88c6f0"
+      }
+    },
+    {
+      "id": "cached-hit-point-pair-producer",
+      "label": "cached hit point pair producer",
+      "entry_rvas": {
+        "game": "0x828430"
+      }
+    },
+    {
+      "id": "serial-dispatch",
+      "label": "serial dispatch",
+      "entry_rvas": {
+        "game": "0x804ac0"
+      },
+      "baseline_25492057_rva": "0x7efd10"
+    },
+    {
+      "id": "dispatch-to-concrete-slot-35",
+      "label": "dispatch to concrete slot 35",
+      "entry_rvas": {
+        "game": "0x91be00"
+      }
+    },
+    {
+      "id": "entity-and-volume-firing-trial",
+      "label": "entity and volume firing trial",
+      "entry_rvas": {
+        "game": "0x92b6f0"
+      }
+    },
+    {
+      "id": "ground-firing-trial",
+      "label": "ground firing trial",
+      "entry_rvas": {
+        "game": "0x92ba70"
+      }
+    },
+    {
+      "id": "cached-group-predicate",
+      "label": "cached group predicate",
+      "entry_rvas": {
+        "game": "0x92e090"
+      },
+      "baseline_25492057_rva": "0x915850"
+    },
+    {
+      "id": "group-sort-dispatch",
+      "label": "group sort dispatch",
+      "entry_rvas": {
+        "game": "0x92e5c0"
+      },
+      "baseline_25492057_rva": "0x915d80"
+    },
+    {
+      "id": "replace-group-scratch-contents",
+      "label": "replace group scratch contents",
+      "entry_rvas": {
+        "game": "0x92ea00"
+      }
+    },
+    {
+      "id": "weapon-and-ammunition-tag-matching",
+      "label": "weapon and ammunition tag matching",
+      "entry_rvas": {
+        "game": "0x565a50"
+      }
+    },
+    {
+      "id": "tag-initialization",
+      "label": "tag initialization",
+      "entry_rvas": {
+        "game": "0x564da0"
+      }
+    },
+    {
+      "id": "hand-holder-lookup",
+      "label": "hand holder lookup",
+      "entry_rvas": {
+        "game": "0x7dd9c0"
+      }
+    },
+    {
+      "id": "item-filling-definition-and-amount-assignment",
+      "label": "item filling definition and amount assignment",
+      "entry_rvas": {
+        "game": "0x7dc2e0"
+      }
+    },
+    {
+      "id": "candidate-weapon-range",
+      "label": "candidate weapon range",
+      "entry_rvas": {
+        "game": "0x83f210"
+      }
+    },
+    {
+      "id": "native-weapon-target-commit",
+      "label": "native weapon target commit",
+      "entry_rvas": {
+        "game": "0x81fcb0"
+      }
+    },
+    {
+      "id": "segment-initialization",
+      "label": "segment initialization",
+      "entry_rvas": {
+        "game": "0xa409c0"
+      }
+    },
+    {
+      "id": "segment-endpoints",
+      "label": "segment endpoints",
+      "entry_rvas": {
+        "game": "0xa40a20"
+      }
+    },
+    {
+      "id": "segment-contacts",
+      "label": "segment contacts",
+      "entry_rvas": {
+        "game": "0xa40ac0"
+      }
+    },
+    {
+      "id": "native-fire-policy",
+      "label": "native fire policy",
+      "entry_rvas": {
+        "game": "0x91b2b0"
+      }
+    },
+    {
+      "id": "remote-role",
+      "label": "remote role",
+      "entry_rvas": {
+        "game": "0xc2b7a0"
+      },
+      "baseline_25492057_rva": "0xc0b630"
+    },
+    {
+      "id": "emission-role",
+      "label": "emission role",
+      "entry_rvas": {
+        "game": "0xc2b740"
+      },
+      "baseline_25492057_rva": "0xc0b5d0"
+    },
+    {
+      "id": "quant-worker-predicate",
+      "label": "quant worker predicate",
+      "entry_rvas": {
+        "game": "0xa7a80"
+      },
+      "baseline_25492057_rva": "0xa6740"
+    },
+    {
+      "id": "ammunition-rule-input-construction",
+      "label": "ammunition rule input construction",
+      "entry_rvas": {
+        "game": "0x92c8e0"
+      }
+    },
+    {
+      "id": "ammunition-rule-selection",
+      "label": "ammunition rule selection",
+      "entry_rvas": {
+        "game": "0x92c9c0"
+      }
+    },
+    {
+      "id": "ammo-set-class-and-rule-loader",
+      "label": "ammo.set class and rule loader",
+      "entry_rvas": {
+        "game": "0x92cd30"
+      }
+    },
+    {
+      "id": "aimer-target-commit-notification",
+      "label": "aimer target commit notification",
+      "entry_rvas": {
+        "game": "0x834290"
+      }
+    },
+    {
+      "id": "aimer-update",
+      "label": "aimer update",
+      "entry_rvas": {
+        "game": "0x834020"
+      }
+    },
+    {
+      "id": "runtime-weapon-clear-and-release",
+      "label": "runtime weapon clear and release",
+      "entry_rvas": {
+        "game": "0x81f480"
+      }
+    },
+    {
+      "id": "bullet-blocking-contacts-and-query-cleanup",
+      "label": "bullet-blocking contacts and query cleanup",
+      "entry_rvas": {
+        "game": "0x84f5a0"
+      }
+    },
+    {
+      "id": "vehicle-approach-and-detour-consumer",
+      "label": "vehicle approach and detour consumer",
+      "entry_rvas": {
+        "game": "0x9aeda0"
+      },
+      "baseline_25492057_rva": "0x990870"
+    },
+    {
+      "id": "human-broken-component-gate",
+      "label": "human broken component gate",
+      "entry_rvas": {
+        "game": "0x8abb40"
+      }
+    },
+    {
+      "id": "projectile-profile-lookup-for-range",
+      "label": "projectile profile lookup for range",
+      "entry_rvas": {
+        "game": "0x83de90"
+      }
+    },
+    {
+      "id": "equipped-projectile-profile",
+      "label": "equipped projectile profile",
+      "entry_rvas": {
+        "game": "0x81ec40"
+      }
+    },
+    {
+      "id": "current-charged-ammo-definition",
+      "label": "current charged ammo definition",
+      "entry_rvas": {
+        "game": "0x820b50"
+      }
+    },
+    {
+      "id": "aimer-reads-active-target-and-writes-world-aim-xyz",
+      "label": "aimer reads active target and writes world aim XYZ",
+      "entry_rvas": {
+        "game": "0x832eb0"
+      }
+    },
+    {
+      "id": "aimer-reads-secondary-place-target",
+      "label": "aimer reads secondary place target",
+      "entry_rvas": {
+        "game": "0x833780"
+      }
+    },
+    {
+      "id": "bullet-aimer-slot-7-direction",
+      "label": "bullet aimer slot 7 direction",
+      "entry_rvas": {
+        "game": "0x83cbb0"
+      }
+    },
+    {
+      "id": "spread-sampler-direction-cache-reader",
+      "label": "spread sampler direction-cache reader",
+      "entry_rvas": {
+        "game": "0x82d760"
+      }
+    },
+    {
+      "id": "charged-and-ready-predicate",
+      "label": "charged and ready predicate",
+      "entry_rvas": {
+        "game": "0x81eda0"
+      }
+    },
+    {
+      "id": "charger-match-input",
+      "label": "charger match input",
+      "entry_rvas": {
+        "game": "0x820ba0"
+      }
+    },
+    {
+      "id": "dummy-charger-predicate",
+      "label": "dummy charger predicate",
+      "entry_rvas": {
+        "game": "0x820ce0"
+      }
+    },
+    {
+      "id": "segment-volume-collection",
+      "label": "segment volume collection",
+      "entry_rvas": {
+        "game": "0xa420e0"
+      }
+    },
+    {
+      "id": "volume-revision-and-transform-refresh",
+      "label": "volume revision and transform refresh",
+      "entry_rvas": {
+        "game": "0x7a8410"
+      }
+    },
+    {
+      "id": "alternate-vehicle-rebuild-caller",
+      "label": "alternate vehicle rebuild caller",
+      "entry_rvas": {
+        "game": "0x91b620"
+      }
+    },
+    {
+      "id": "base-brain-tick-before-vehicle-assignment",
+      "label": "base brain tick before vehicle assignment",
+      "entry_rvas": {
+        "game": "0x91c350"
+      }
+    },
+    {
+      "id": "aim-point-resolution",
+      "label": "aim point resolution",
+      "entry_rvas": {
+        "game": "0x852810"
+      }
+    },
+    {
+      "id": "target-release",
+      "label": "target release",
+      "entry_rvas": {
+        "game": "0x853240"
+      }
+    },
+    {
+      "id": "human-equipment-evaluator-destructor",
+      "label": "human equipment evaluator destructor",
+      "entry_rvas": {
+        "game": "0x9704f0"
+      }
+    },
+    {
+      "id": "native-inventory-location-copy",
+      "label": "native inventory location copy",
+      "entry_rvas": {
+        "game": "0x7e35e0"
+      }
+    },
+    {
+      "id": "native-inventory-location-release",
+      "label": "native inventory location release",
+      "entry_rvas": {
+        "game": "0x7e1ec0"
+      }
+    },
+    {
+      "id": "staffed-place-gate",
+      "label": "staffed place gate",
+      "entry_rvas": {
+        "game": "0x81edc0"
+      }
+    },
+    {
+      "id": "segment-broad-phase",
+      "label": "segment broad phase",
+      "entry_rvas": {
+        "game": "0xa41640"
+      }
+    },
+    {
+      "id": "segment-volume-filter",
+      "label": "segment volume filter",
+      "entry_rvas": {
+        "game": "0xa41130"
+      }
+    },
+    {
+      "id": "segment-contact-conversion",
+      "label": "segment contact conversion",
+      "entry_rvas": {
+        "game": "0xa41360"
+      }
+    },
+    {
+      "id": "attack-rate-pair-producer",
+      "label": "attack rate pair producer",
+      "entry_rvas": {
+        "game": "0x828520"
+      }
+    },
+    {
+      "id": "scheduled-weapon-range-cache-writer",
+      "label": "scheduled weapon range cache writer",
+      "entry_rvas": {
+        "game": "0x91c950"
+      },
+      "baseline_25492057_rva": "0x904110"
+    },
+    {
+      "id": "human-slot-21-weapon-range",
+      "label": "human slot 21 weapon range",
+      "entry_rvas": {
+        "game": "0x95cc60"
+      },
+      "baseline_25492057_rva": "0x9442e0"
+    },
+    {
+      "id": "vehicle-slot-21-weapon-range",
+      "label": "vehicle slot 21 weapon range",
+      "entry_rvas": {
+        "game": "0x9a7980"
+      }
+    },
+    {
+      "id": "bullet-aimer-slot-6-origin",
+      "label": "bullet aimer slot 6 origin",
+      "entry_rvas": {
+        "game": "0x8367d0"
+      }
+    }
+  ],
+  "fields": [
+    {
+      "id": "sensor-subject",
+      "contract": "+0x10 u32 flags (removed bit 16, category 21–22, known 28, **currently visible 29**), overlapping rank byte +0x11. +0x14 u32 recognition 0, targetable enemy 1, apparent/true ally 2/3, unusable 4, threatening/attacking/injured/combat 7/8/9/10. +0x18/+0x20 nullable actor/entity links, cleared by detach. +0x28/2C/30 f32 last XYZ, +0x34 f32 uncertainty. +0x40 remembered weapon **definition**. +0x48/4C f32 AttackRate vs Human/Tank, +0x50 remembered range (fallback 10 × length scale), +0x54/58 f32 HitPoints vs Human/Tank, derived ability channels. +0x5C/60/64/68 u32 simulation timestamps for equipment/visibility transition/position/signal, +0x6C u8 suppression veto, +0x70 u32 eligibility deadline. Age uses the simulation clock and tick conversion. 0x88DED0 populates the channels, 0x88D4B0 writes signal flags and 0x88E270 commits/ages observations. AttackRate and HitPoints are ability pairs. The human HitPoints producer returns its Health ability in the first channel and zero in the second.",
+      "evidence_ids": [
+        "subject-initialization",
+        "subject-insert",
+        "subject-relationship-refresh",
+        "observed-equipment-and-pair-refresh",
+        "transient-threat-writer",
+        "sensor-commit",
+        "detach",
+        "cached-threat-channels",
+        "cached-hit-point-pair-producer",
+        "attack-rate-pair-producer",
+        "eligibility"
+      ]
+    },
+    {
+      "id": "visibility-and-identity",
+      "contract": "Test subject+0x10 bit 29 **before every live enemy actor/entity, class, cover, volume, weapon, barrel, facing, active-target or aimer read**. Also require known, recognized, hostile, usable, attached and unsuppressed for promotion. Reject removed subjects, allies and expired observations. When visibility clears, use only copied observation values and previously observed classification. Treat incidental unidentified ray contacts as anonymous obstructions. Do not follow enemy pointers to improve a remembered contact. No hidden enemy target inspection, inferred muzzle ray or unseen threat bonus. 0x92C400 returns embedded actor+0xDE8 class tag for recognized actors and a shared unknown tag for unrecognized known subjects. Entity-definition tags span offsets +0x330/+0x338 in [entity+0x548], instance tags [+0x4E8,+0x4F0), definition equipment tags [+0x11E0,+0x11E8), all tag stride 0x60. 0x565340 compares tag keys, 0x565A50 checks required terms.",
+      "evidence_ids": [
+        "sensor-commit",
+        "detach",
+        "firing-target-construction",
+        "subject-class",
+        "predicate-evaluator",
+        "tag-equality",
+        "weapon-and-ammunition-tag-matching",
+        "tag-initialization"
+      ]
+    },
+    {
+      "id": "incumbent-and-slew",
+      "contract": "Human +0x3B8 is the selected subject, +0x3D0 squad hint, +0x3E8 last successfully constructed eTarget (kind +0x3F0, entity +0x400, copy at 0x95D592). Vehicle +0x3B8/3C0/3C8 is a **row vector**. Each 0x1B8 row has +0 used, +1 cached target usable, +8 weapon*, +0x10 deadline and +0x18 inline eTarget (kind +0x20, entity +0x30). Rebuild at 0x9A8A40 carries the old deadline and cached target by matching weapon identity. Read live weapon eTarget +0xC8 (kind +0xD0, entity +0xE0, XYZ +0xD4/D8/DC), secondary +0x168 (kind +0x170, entity +0x180, XYZ +0x174/178/17C). Kind 0 empty, 1 bound entity, 2 point, 3 entity-associated stored point. A point alone gives no target identity. 0x832EB0 reads the primary via aimer+0x10 → weapon and writes cached **double** aim point +0x60/68/70 and desired direction +0x48/50/58. 0x833780 reads secondary, bullet slot 7 at 0x83CBB0 returns +0x138. The bullet aimer primary vtable is 0x11032F8 (slots 6/7/9/13). No separate engaged-subject pointer appeared in that aimer path.",
+      "evidence_ids": [
+        "human-refresh",
+        "human-try-attack-result",
+        "selection-change-bookkeeping",
+        "vehicle-assignment",
+        "vehicle-row-rebuild",
+        "runtime-weapon-clear-and-release",
+        "native-weapon-target-commit",
+        "target-position",
+        "aim-point-resolution",
+        "aimer-reads-active-target-and-writes-world-aim-xyz",
+        "aimer-reads-secondary-place-target",
+        "bullet-aimer-slot-6-origin",
+        "bullet-aimer-slot-7-direction",
+        "spread-sampler-direction-cache-reader"
+      ]
+    },
+    {
+      "id": "actual-direction-and-enemy-intent",
+      "contract": "From [weapon+0xA8]→aimer+0x20 bone, read f32 world forward +0xA8/AC/B0 and origin +0xCC/D0/D4 **only with valid clean world transform**, bone+0x10 bit 0 clear (0x81F760/0x824C90). For vehicle range parity, bullet aimer slot 6 (0x8367D0) returns bone+0x120, three f64 coordinates, refreshing a dirty bone first. Read the clean cache directly. For a shot chord use the verified place muzzle or matched shot origin. Body forward actor+0x50/54/58 is a coarser hint. Normalize in private memory. A visible enemy's active kind-1 entity equal to self is strong intent. A clean barrel pointed toward self is weaker and cannot identify an order. Use active place per gun. Omit missing, dirty, nonfinite or zero-length vectors. The native aim estimator, aimer update and bone refresh can change state or take RNG. No pure exact slew-time getter was established.",
+      "evidence_ids": [
+        "body-facing-snapshot",
+        "motion-direction-caller",
+        "motion-direction-update",
+        "bullet-aimer-slot-6-origin",
+        "aimer-reads-active-target-and-writes-world-aim-xyz",
+        "native-aim-estimate",
+        "aimer-update",
+        "aimer-target-commit-notification"
+      ]
+    },
+    {
+      "id": "own-inventory-and-weapon-places",
+      "contract": "[actor+0x578]→[+0x28]→manager, [manager+0xA0]→inventory box, [+0x10,+0x18) array of item*, stride 8. Right hand 0x7E04B0 uses manager holder vector +0x88/90 and named holder, slot 3 gets its item. Include hand and positive-count carried stacks (+0x48), dedup item identity. Item+0x40 definition, +0x50 filling definition, +0x58 filling count. Match loaded or positive compatible reserve ammo to weaponDef+0x120 with ammoDef+0xEC8. For human owners, 0x970990 checks the ability list at [actor+0x1390]→[+0x548,+0x550). A recognised empty ability list needs no callback. Treat unresolved virtual ability predicates or nested containers as unknown. Handle single-use throwables from real stacks. Weapon tags distinguish rocketlauncher, at_rifle, smg, mgun and grenades at/fg. A weapon tag alone establishes neither ammunition nor effectiveness.",
+      "evidence_ids": [
+        "inventory-access",
+        "box-index-lookup",
+        "right-hand-holder",
+        "right-hand-definition",
+        "hand-holder-lookup",
+        "item-filling-definition-and-amount-assignment",
+        "inventory-iterator-begin",
+        "inventory-iterator-next",
+        "iterator-item",
+        "equipment-item-evaluation",
+        "synthetic-place-mutation"
+      ]
+    },
+    {
+      "id": "effective-weapon-ammo-pair",
+      "contract": "Vehicle row+0x98 contains up to four 0x48-byte records (ammoDef*, then owned location). 0x9A8A40 gathers loaded and compatible inventory ammo from available runtime places. [weapon+0x98/+0xA8/+0xB0/+0xB8] are definition/aimer/charger/shooter. 0x820B50 reads actual charged ammo (slot 1 item+0x50) when supported, 0x820BA0 selected charger definition, 0x820CE0 dummy check. Recheck actual quantity, ready/charging, current reservation, place eligibility, range and observed arc/obstructions before promotion. For known conventional weapons 0x83F210 uses weaponDef+0x1600 → profile selected by ammo tags, range +0x20 (throw override). The vehicle equipped profile 0x81EC40 uses weapon+0xA0. Different rows can have different feasible arcs, ammo and ranges.",
+      "evidence_ids": [
+        "vehicle-row-rebuild",
+        "vehicle-weapon-ammo-selection",
+        "staffed-place-gate",
+        "equipped-projectile-profile",
+        "charged-and-ready-predicate",
+        "current-charged-ammo-definition",
+        "charger-match-input",
+        "dummy-charger-predicate",
+        "projectile-profile-lookup-for-range",
+        "candidate-weapon-range"
+      ]
+    },
+    {
+      "id": "ammo-set-compiled-rule-and-input",
+      "contract": "**Ammunition policy.** 0x92CD30 loads stock `set/target/ammo.set` into [0x15B3A30,0x15B3A38), class stride 0x80. +0 is the class tag, +0x60 is the cover restriction (1 requires cover group 3, 2 any nonzero group), +0x68/70 is the rules vector, stride 0x398. +0x390 signed priority counts upward from zero in reverse file order at 0x92D5FB, followed by a −1 fallback at 0x92D633. +0x394 bits 0/1 select ground/volume, 2/3/4 enable AI/user/human-user, 5 requires grenade safety, 6 ready, 7 charging. 0x92C8E0(ctx, placeOrNull, ammoDef, owner, subject, held) supplies ammo/owner/subject at +0/8/10 and ready/charging +0x18/19. Human held-item matching uses the null-place branch. Vehicle readiness compares charger definition and ammo +0x868 terms, then charger flags+0x14 and timer+0x10. 0x92C9C0 scans in order, requires all ammo tags, applies flags and returns the first matching rule. A disabled term stops that class block. A volume rule requires an unbroken matching part (target [+0x510,+0x518), volume+0x38 → part+0x24 zero, [volume+0x30]→[+0x398,+0x3A0) tags against rule+0x330).\n\nMirror these tests on copied data for cheap capability. Stock human rules can put ready small arms above HE, then HE above unconditional small arms. For tank_heavy, ready shell hv_ap and ready heat_medium precede shell apcbche. The tank_medium sequence reaches apcbche directly after the artillery HE choices. Ordinary small_arms has no heavy-tank entry. Both blocks have separate loaded large-calibre body-volume exceptions. A class-compatible nonnegative rule and an available pair establish **plausible effectiveness**. Calibre or AttackRate alone gives no penetration guarantee. Treat a known rifle-only/ordinary-small-arms inventory against a heavy tank as ineffective. Reserve ammo, carried AT and single-use grenades require actual quantities, range and ability. If an earlier matching rule has an unresolved safety/ability/volume condition, or a place cannot be classified, mark that pair unknown. Keep unknown below positively effective pairs. Never poll the human evaluator, vehicle selector, resolver or synthetic-place builder to fill missing inputs.",
+      "evidence_ids": [
+        "ammo-set-class-and-rule-loader",
+        "ammunition-rule-input-construction",
+        "ammunition-rule-selection",
+        "subject-class",
+        "charged-and-ready-predicate",
+        "charger-match-input",
+        "weapon-and-ammunition-tag-matching",
+        "equipment-item-evaluation",
+        "vehicle-weapon-ammo-selection"
+      ]
+    },
+    {
+      "id": "native-references",
+      "contract": "Subject refs use signed atomic count +8. Refresh releases the old reference on change, on a 1→0 transition with +0xC bit 0 set invokes 0x662AC0 if bit 1 is set or deleting slot 0 with EDX=1 otherwise, then stores/retains the new one (0x95BF1B/41/4D, 0x95BFDF/EB). Return only a borrowed current sensor member to these assignments. eTarget is a native 0x80-byte object with listener and tag lifetime. Use native copy/clear on existing scheduled paths (0x852910/0x853240). Keep all borrows inside the current serial owner invocation. Reacquire after base dispatch or weaponry revision.",
+      "evidence_ids": [
+        "human-refresh",
+        "human-slot-35-and-target-change",
+        "native-target-copy",
+        "target-release",
+        "detach"
+      ]
+    }
+  ],
+  "inline_regions": [
+    {
+      "id": "api-shared-ranker",
+      "paired_builds": "0x9136E0 → **0x92BF20**",
+      "contract": "`void rank(SubjectPtrVec*, Actor*)`. Three qwords begin/end/capacity, 8-byte borrowed subject slots. If any 3-D distance from owner+0x74 to subject+0x28 is **strictly** below [owner+0xDC8]→brain+0x14C (f32 cached range), exclude every candidate at or beyond it. If none is inside, keep all for the profile. 0x91C950 calls brain slot 21 and stores XMM0 at 0x91C96A. Human 0x95CC60 scans inventory and vehicle 0x9A7980 scans usable places for a maximum range. An AI fallback ammo definition can contribute even without a round in hand. No profile gives empty output. Internal records have stride 0x18, subject* +0, u32 predicate truth/evaluated masks +8/+0xC, two lazy f32 sort keys +0x10/+0x14. 0x92C0F5 writes N through 1 modulo 256 into subject+0x11. The last occurrence wins for duplicates. The ranker rewrites the public vector, may reallocate it, and frees both private buffers.",
+      "evidence_ids": [
+        "shared-ranker",
+        "cached-group-predicate",
+        "insertion-comparator",
+        "scheduled-weapon-range-cache-writer",
+        "human-slot-21-weapon-range",
+        "vehicle-slot-21-weapon-range"
+      ]
+    },
+    {
+      "id": "api-profile-selection",
+      "paired_builds": "0x919630 → **0x931E70**",
+      "contract": "`Profile*(Actor*)`, borrowed. 0x81B080([actor+0xDD8]) uses signed selected index +0x4C into [+0x18,+0x20), place+0x2B8, then first runtime weapon in [+0x30,+0x38). Selector matches unit tags at [actor+0x548]+0x18 or alternate unit type actor+0x1180, plus [weapon+0x98]+0xEC8 tags. First matching profile wins. Carried AT can make a surviving candidate effective even with a bullet profile selected.",
+      "evidence_ids": [
+        "profile-selection",
+        "selected-runtime-weapon"
+      ]
+    },
+    {
+      "id": "api-group-application",
+      "paired_builds": "0x918C70 → **0x9314B0**, 0x915A70 → **0x92E2B0**, 0x916B90 → **0x92F3D0**",
+      "contract": "At 0x92C09F arguments are profile, **address of owner pointer**, output RecordVec*, remaining RecordVec*. Void return to 0x92C0A4. Per group, 0x92E2B0(group, context, scratch, remaining) removes ignore matches (+0x18 vector), transfers select matches (+0 vector), or replaces scratch with **all remaining** and clears remaining on empty select. 0x9314B0 walks profile+0x6C0/+0x6C8, sorts, then appends the whole scratch. Scratch persists between groups and can repeat earlier entries. The insertion sorter takes first, last, comparison context. It compares configured boolean groups lexicographically (true first), then the configured numeric keys ascending. Empty selects in the identified heavy/cannon/SPG groups and medium group 5 still shadow subsequent groups.",
+      "evidence_ids": [
+        "group-application",
+        "group-transfer",
+        "replace-group-scratch-contents",
+        "group-sort-dispatch",
+        "insertion-comparator",
+        "predicate-evaluator",
+        "numeric-sort-key"
+      ]
+    },
+    {
+      "id": "api-eligibility",
+      "paired_builds": "0x912AE0 → **0x92B320**",
+      "contract": "`bool(brain, subject)`. Position age ≤20 s (≤10 for user control), +0x70 nonzero and due, +0x6C clear, no disqualifying burning flag or conditionally excluded linked tank occupant. Recognized subjects require enemy bit 1. Unrecognized subjects require known position, an actor and either combat bit 10 or a weapon seen <3 s ago. This admits unseen and blocked subjects.",
+      "evidence_ids": [
+        "eligibility"
+      ]
+    },
+    {
+      "id": "api-firing-target-construction",
+      "paired_builds": "0x912D60 → **0x92B5A0**",
+      "contract": "`void(initialized eTarget* out, DL skipTrial, weapon*, subject*, ruleOrNull, previousTargetOrNull)`. Requires actor and visible or position age <3 s. An early exit can leave out untouched. Rule+0x394 bit 0 invokes ground sampling (0x92BA70), bit 1 requests the +0x330 volume tag, otherwise default volume/entity. 0x92B6F0 uses shared scratch, optionally reuses the previous volume and tries sampled volumes. DL=0 requests the firing trial. Ground sampling alone can take three RNG draws. Leave this entire call to native consumers.",
+      "evidence_ids": [
+        "firing-target-construction",
+        "entity-and-volume-firing-trial",
+        "ground-firing-trial",
+        "native-target-copy",
+        "target-release"
+      ]
+    },
+    {
+      "id": "api-squad-subject-query",
+      "paired_builds": "0x903050 → **0x91B890**",
+      "contract": "`Subject*(brain)`, nullable borrow. [brain+0x100]→squad+0xB0 inline eTarget, +0xB8 nonzero kind. 0x8527F0 resolves its point. Scans [owner+0xDD0]→[+0x280,+0x288), picks first strictly nearest known, non-apparent-ally position within (10 × world-length scale at 0x149E750)². No eligibility, visibility, LOF or weapon-capability test. A squad hint can originate from ordinary squad logic or a player.",
+      "evidence_ids": [
+        "squad-subject-query",
+        "target-position"
+      ]
+    },
+    {
+      "id": "api-human-refresh",
+      "paired_builds": "0x943560 → **0x95BEE0**, 0x9437A0 → **0x95C120**",
+      "contract": "Refresh returns void, picker returns a borrowed subject or null. Both take brain. Refresh calls squad query at 0x95BEF8, retains preferred +0x3D0, snapshots selected +0x3B8 into previous +0x3B0, clears +0x3DA, calls picker at 0x95BF96 and assigns the borrowed result into +0x3B8 at 0x95BFDF. Picker checks the feature gate, returns preferred immediately at 0x95C154 or after collection at 0x95C422. Otherwise it filters sensor subjects by actor, eligibility, broken component and control-dependent hostility, ranks at 0x95C436, and tests candidates with the scheduled equipment evaluator. First chosen item wins, otherwise list head or null.",
+      "evidence_ids": [
+        "human-refresh",
+        "human-picker",
+        "cover-eligibility-predicate",
+        "human-slot-35-and-target-change"
+      ]
+    },
+    {
+      "id": "api-cover-attack-fallback",
+      "paired_builds": "0x948160 → **0x960AE0**, 0x953320 → **0x96BCA0**",
+      "contract": "Cover fallback (state, selected subject, u32 sector, i32 rotate option) returns handled status in EAX and tries selected at 0x960B15. On failure it collects preferred and eligible subjects for the sector. List try (state, vector*, reason string) copies the vector, ranks at 0x96BCF2, swaps the preferred member to front at 0x96BD05–0x96BD3C, then calls 0x96B430 until a nonnegative result. Exhausted returns −3. 0x95D360 distinguishes range −2, wait 1, disallowed rule −1, empty target −3 and success 0. Keep wait/sector/child handling native.",
+      "evidence_ids": [
+        "cover-attack-fallback",
+        "cover-list-try",
+        "native-infantry-attack-sequence",
+        "human-try-attack-result"
+      ]
+    },
+    {
+      "id": "api-outdoors-battle-interrupt",
+      "paired_builds": "0x94A010 → **0x962990**, 0x949AA0 → **0x962420**",
+      "contract": "Both outdoors handlers take state in RCX and return void. A missing selected subject can exit battle. Enemy-alarm acceptance depends on state+0x28 versus state+0x3D8 child, brain+0x1E0 state, and follow flag. Hold policy affects rotate/cover. Human slot 35 at 0x95A680 compares +0x3B0/+0x3B8, updates Recon ownership (+0x3E4), supplies +0x3DA on acquisition from null and releases the previous snapshot. These are discrete change tests, with no continuous score margin.",
+      "evidence_ids": [
+        "outdoors-battle-interrupt",
+        "outdoors-target-change-interrupt",
+        "human-slot-35-and-target-change",
+        "selection-change-bookkeeping"
+      ]
+    },
+    {
+      "id": "api-equipment-evaluator-constructor",
+      "paired_builds": "0x957B10/0x957C00/0x957C70 → **0x970490/0x970580/0x9705F0**, 0x944520 → **0x95CEA0**",
+      "contract": "Evaluator ctor(ctx)→ctx, setup(ctx, owner, subject), run(ctx). Context chosen borrowed item +0x10, signed priority +8 initially −1, owner/inventory/hand/brain/subject +0x20/28/30/38/40, private definition vector +0x48/50/58, flag +0x60 default 1 (picker clears). Against actor+0x30 bit 3, first try rocketlauncher in hand then inventory. General passes test hand and carried items, rules, ability, ammo and range, then relax checks on failure. 0x970990 can clear expired brain+0x3A8 and call 0x81B590 (old 0x806850) to alter the synthetic place at weaponry+0x78. Switch trigger (brain, operation*)→AL evaluates selected +0x3B8 when +0x47C is due and existing busy/manual gates allow, reserves a different item at 0x95D181, builds the native mount operation at 0x95D1B0 and rearms the timer.",
+      "evidence_ids": [
+        "equipment-evaluator-constructor",
+        "equipment-evaluator-setup",
+        "equipment-evaluation",
+        "carried-item-scan",
+        "equipment-item-evaluation",
+        "human-equipment-evaluator-destructor",
+        "synthetic-place-mutation",
+        "equipment-switch-trigger"
+      ]
+    },
+    {
+      "id": "api-vehicle-brain-rebuild",
+      "paired_builds": "0x988FC0/0x989900 → **0x9A74E0/0x9A7E20**",
+      "contract": "Both take vehicle brain. Subject-pointer vector at +0x3A0/+0x3A8/+0x3B0. Rank at 0x9A75CF/0x9A7EF0, then query preferred at 0x9A75D7/0x9A7EF8 and prepend even a duplicate or a subject absent from the ranked output. Slot 35 rebuilds rows, services the base brain, rechecks weaponry+0x84 revision against brain+0x3D0 and rebuilds again on change. On admission it tail-jumps at 0x9A76A7 to assignment.",
+      "evidence_ids": [
+        "vehicle-brain-rebuild",
+        "vehicle-alternate-rebuild",
+        "alternate-vehicle-rebuild-caller",
+        "base-brain-tick-before-vehicle-assignment"
+      ]
+    },
+    {
+      "id": "api-vehicle-assignment",
+      "paired_builds": "0x989A80 → **0x9A7FA0**, 0x98ABA0 → **0x9A90C0**",
+      "contract": "Assignment(brain) scans candidates across successive passes. Selector(brain, subject, signed R8W reservation priority, initialized Result* R9, i32 mode)→AL. At 0x9A822D mode=0. 0x81A8D0 counts trailing set bits in the weaponry reservation mask at +0x10. For each unused row, active weapon+0xD0 nonzero requires signed [weapon+0x214] ≥ requested and mode [weapon+0x208] outside {1,3}. Mode 1 requires aimer-origin min ≤ distance < max (profile+0x28/+0x24). Mode 0 has a withdrawn-gunner restriction. Native aim result 6 skips the row. Dummy charger has a separate row-only return. Result is row* +0, rule* +8, ammoDef* +0x10 and **owned** 0x40-byte inventory location +0x18. Native winner copies it at 0x9A9480 (0x7E35E0 copy, 0x7E1EC0 release). Preserve copy/destruct and first-on-equal priority.",
+      "evidence_ids": [
+        "vehicle-assignment",
+        "vehicle-weapon-ammo-selection",
+        "native-weapon-priority-source",
+        "native-inventory-location-copy",
+        "native-inventory-location-release"
+      ]
+    },
+    {
+      "id": "admit-once-per-owner-and-recheck-before-consuming-the-proposal",
+      "classification": "proposed policy",
+      "contract": "Require the PE fingerprint, 0xC2B740 true, 0xC2B7A0 false, 0xA7A80 false, and a thread-local owner scope entered only from the serial 0x804AC0 actor dispatch (sensor commit call 0x804C0B when enabled, brain dispatch 0x804C57 and order phase 0x804C96). Verify [actor+0xDC8]=brain, [brain+0x38]=actor, primary vtable human 0x110FF88 or vehicle 0x101FD68. Client brains share slot 24. Require positively autonomous order provenance and AI control (brain+0x398 low two bits zero). Pass through on any explicit Attack/current, parent or suspended player order, unclassified order provenance, +0x39C low six bits or bit 28, [actor+0xDE0]→chassis+0x18 nonzero, or weaponry+0x70 bit 1. Preserve fire/move UI fields. 0x91B2B0 allows open fire or return fire only with +0x39C bit 18. Honor move hold conservatively by passing through. No work from Present, workers or other callers.",
+      "evidence_ids": [
+        "serial-dispatch",
+        "dispatch-to-concrete-slot-35",
+        "native-fire-policy",
+        "human-slot-35-and-target-change",
+        "vehicle-brain-rebuild",
+        "emission-role",
+        "remote-role",
+        "quant-worker-predicate",
+        "motion-direction-caller",
+        "outdoors-target-change-interrupt"
+      ]
+    },
+    {
+      "id": "compute-the-normal-order-once",
+      "classification": "proposed policy",
+      "contract": "Admit human ranker callers 0x95C436 and 0x96BCF2 by call site and active actor scope. Leave vehicle rank calls 0x9A75CF and 0x9A7EF0 native and merge their final lists in step 8. At 0x92C09F call original 0x9314B0 once, keeping the header address in private stack storage. Read its final output pointers **after** return. Rank only surviving unique subjects. On a committed change permute entire 0x18 records, compact duplicate records in place and update only the output header's end. Keep begin/capacity/native allocator intact. 0x92C0A4 onward owns rank bytes and rebuilding the 8-byte public slots. On fallback leave native records, duplicates and range/profile decisions intact. Never call a stock comparator to score additional pairs. Its time_to_aim path can enter the aimer.",
+      "evidence_ids": [
+        "shared-ranker",
+        "group-application",
+        "human-picker",
+        "cover-list-try",
+        "vehicle-brain-rebuild",
+        "vehicle-alternate-rebuild",
+        "numeric-sort-key"
+      ]
+    },
+    {
+      "id": "score-only-effective-pairs",
+      "classification": "proposed policy",
+      "contract": "Snapshot own weapon/ammo capabilities once per owner/revision and evaluate each admitted subject against that snapshot. Among effective in-range pairs use, for example, `0.40 × danger + 0.35 × proximity + 0.25 × alignment`, all terms in [0,1]. Danger uses the observed attack channel against the owner's class, short native threat flags and visible aim-at-self. Use `x/(1+x)` on nonnegative finite ability values, `1/(1+d/range)` on world-unit distance and `(1+dot)/2` on unit vectors. Missing channels contribute no bonus. Require a qualifying direct threat and plausible damaging pair for urgent preemption. Promote capable in-range infantry ahead of an ineffective tank target even if the tank is closer and marked attacking. For a reproducible starting danger value, weight normalized observed AttackRate 0.5, active aim-at-self 0.3 and the stronger native threatening/attacking flag 0.2. Apply the cached durability channel only when both classes have calibrated coefficients. Use the best feasible pair per subject. Respect the native ranker's earlier range cutoff. A carried launcher cannot recover a candidate already removed there.",
+      "evidence_ids": [
+        "ammunition-rule-selection",
+        "ammunition-rule-input-construction",
+        "equipment-item-evaluation",
+        "candidate-weapon-range",
+        "vehicle-weapon-ammo-selection",
+        "observed-equipment-and-pair-refresh",
+        "cached-threat-channels",
+        "cached-hit-point-pair-producer",
+        "attack-rate-pair-producer",
+        "shared-ranker"
+      ]
+    },
+    {
+      "id": "stabilize-the-engaged-weapon",
+      "classification": "proposed policy",
+      "contract": "For infantry match +0x3B8 and the active hand weapon target. For a vehicle match each relevant row's active weapon target first, then a valid identity-matching cached row target. Use the main gun's incumbent for a main-gun decision. An MG may independently retain another subject. Prefer the incumbent on a tie, then original ordinal. A proposed normalized margin of 0.20 (0.30 for a slow turret) means a challenger must beat the incumbent by that much even while the turret is turning. Waive the margin only for a clearly higher lethal threat, confirmed loss of feasibility/LOF, or loss of current visibility with a confirmed visible alternative. An unknown ray cannot evict an engaged gun by itself. Recompute identity in the current invocation. Margins and weights are design parameters.",
+      "evidence_ids": [
+        "human-refresh",
+        "human-slot-35-and-target-change",
+        "human-try-attack-result",
+        "outdoors-battle-interrupt",
+        "outdoors-target-change-interrupt",
+        "vehicle-row-rebuild",
+        "vehicle-assignment",
+        "native-weapon-target-commit",
+        "aimer-reads-active-target-and-writes-world-aim-xyz",
+        "aimer-reads-secondary-place-target"
+      ]
+    },
+    {
+      "id": "spend-at-most-four-segment-tests-per-actor-decision",
+      "classification": "proposed policy",
+      "contract": "Zero tests for zero/one unique candidate. With competition, rank eligible subjects by cheap score including the incumbent margin, then test only the top min(4, N). An incumbent or stock head outside that set receives no fifth ray. Use already-known incapability/range or a current matching native result to justify displacement when necessary. Share that budget across preferred, cover and weapon hooks. Test only visible in-range candidates with supported direct-fire geometry. Cache by observing owner, target, weapon, muzzle, point and simulation phase. An MG result cannot clear a main-gun muzzle. On an ordinary bullet, initialize a private query (at least 0xA8 bytes) with 0xA409C0(query, 0x86803, shooterActor, −1), then 0xA40A20(query, &muzzleXYZ, &observedAimXYZ) and 0xA40AC0(query, &emptyHitVec). XYZ are 3 × f32. Walk the distance-sorted 0x48 records, using kind+0, distance+4, entity+0x18, volume+0x20. With mask bit 14, 0x84FA86–0x84FA93 accepts a volume iff `(vol[0x28] & 0x20) == 0 && (u32(vol+0x0C) & 2) != 0`. Null-volume terrain/water kinds 1/2 have their own stop branch at 0x84FB32. An earlier bullet blocker or friendly contact vetoes promotion. A target hit first or a clear chord to a supported visible aim point qualifies for this tiebreak only. Unknown arcs, origin inside own hull, dirty muzzle, degenerate rays or incomplete geometry give unknown. Release query scratch [+0x90,+0x98,+0xA0] and hit-vector storage with the game's matching vector teardown, including large-allocation adjustment. Native query scratch cleanup is at 0x84FA1A–0x84FA53. 0x84FBF8 frees the hit buffer using capacity × 0x48, including alignment adjustment above 0xFFF bytes.",
+      "evidence_ids": [
+        "segment-initialization",
+        "segment-endpoints",
+        "segment-contacts",
+        "segment-volume-filter",
+        "segment-contact-conversion",
+        "bullet-blocking-contacts-and-query-cleanup",
+        "motion-direction-update",
+        "bullet-aimer-slot-6-origin"
+      ]
+    },
+    {
+      "id": "account-for-native-query-side-effects",
+      "classification": "proposed policy",
+      "contract": "The segment path omits the shooter sampler and draws no shot RNG. It can lazily update shared geometry. 0xA420E0 → 0x7A8410 compares volume+8 with [volume+0x48]+0x1EC and on mismatch writes the revision and refreshes the transform at 0x7A844C. The broad phase 0xA41640 also uses per-thread scratch. For a read-only first implementation, observe the scheduled full-step return at 0x84F6C8 or refined-step return at 0x84FA1A, copy numeric hit data from the caller's vector, and cache only a complete segment with matching phase, origin, endpoint, weapon and mask. A partial ballistic step cannot certify the whole chord. Additional tests require a current private geometry snapshot and the same contact filter. If freshness/completeness cannot be established, return unknown. Calling 0xA40AC0 on the live scene therefore requires accepting native cache writes. Only change the native head when there is positive evidence for an effective open alternative. If every tested candidate is blocked, out of range or unresolved, preserve the original head, preference, vector order and assignment path.",
+      "evidence_ids": [
+        "segment-contacts",
+        "segment-broad-phase",
+        "segment-volume-collection",
+        "volume-revision-and-transform-refresh"
+      ]
+    },
+    {
+      "id": "close-preference-bypasses-at-their-consumers",
+      "classification": "proposed policy",
+      "contract": "At 0x95BF96 call the picker once. If it returned the nonnull squad preference without ranking, compare that return with visible, eligible sensor members using the same bounded policy. Admit alternatives only from category 1, with 0x95C040(brain, subject, null) passing, the same +0x14C cutoff as the normal collection and a verified profile acceptance. Match the effective compiled profile to the reviewed human_bullet shape (excludes airborne) or human_ap shape (no ignore) before substituting here. Unknown shapes pass through. Return the winning borrowed subject to the existing reference assignment. Leave +0x3D0 as the original squad hint. At the 0x960AE0 entry substitute RDX only for an admitted current sensor member in the requested R8D sector mask (0x8BB8A0 result AND mask nonzero). Preserve RCX=state and R9D option, then call original once. Its 0x960B15 first attempt and 0x960FE4 rotate fallback must see the same subject. At 0x96BD05 bypass only the subsequent preferred swap (to 0x96BD49) if it would undo an admitted cover-list decision.",
+      "evidence_ids": [
+        "human-refresh",
+        "human-picker",
+        "squad-subject-query",
+        "cover-eligibility-predicate",
+        "cover-attack-fallback",
+        "cover-list-try",
+        "shared-ranker"
+      ]
+    },
+    {
+      "id": "merge-vehicles-after-the-native-preference-prepend",
+      "classification": "proposed policy",
+      "contract": "Leave 0x9A75D7/0x9A7EF8 and the ownership of the vector untouched. At 0x9A7FA0 entry capture the current weapon/target identities for stickiness. At **0x9A8130**, after the scheduled row reset/expired target clears and before the first candidate traversal at 0x9A8190, RSI=brain. Replay the 7-byte load and resume at 0x9A8137. Score the completed list including the actual squad preference. Stable-promote a decisive eligible winner by rotating borrowed 8-byte entries in place, keeping size and the order of the rest. Revalidate the weapon, ammo, owner and visibility after the base/revision updates. The root then sees the same head as assignment. Keep the stock subject rank bytes here because both assignment and root use vector order and the selector obtains reservation priority from weaponry+0x10. The alternate rebuild is called at **0x91B6E3** when the old head was suppressed. If this call is admitted, wrap it once and apply the same final-list policy after return. Recheck +0x6C for every candidate, including the prepended preference. Preserve all-suppressed/all-blocked lists and any call outside the serial autonomous scope exactly.",
+      "evidence_ids": [
+        "vehicle-brain-rebuild",
+        "vehicle-alternate-rebuild",
+        "alternate-vehicle-rebuild-caller",
+        "vehicle-assignment",
+        "vehicle-approach-and-detour-consumer",
+        "vehicle-row-rebuild",
+        "vehicle-weapon-ammo-selection"
+      ]
+    },
+    {
+      "id": "reserve-the-main-gun-at-native-pair-selection",
+      "classification": "proposed policy",
+      "contract": "At 0x9A9460, restricted to the 0x9A822D mode-0 call, R15=brain, R13=subject, RDI=row, RBX=ammo record, RBP=new rule, RSI=result, ECX=new nonnegative priority, R12D=mode. The displaced 0x9A9460 load and 0x9A9464 test occupy seven bytes. Stock resumes at 0x9A9467 with ZF from that test, then compares result.rule→+0x390 at 0x9A9469. It accepts at 0x9A9471 or advances ammo at 0x9A948C. Treat a soldier as isolated only when no second visible hostile lies within the largest supported effect radius of that shell. Use committed visible positions and leave unknown area effects to stock selection. For an isolated visible soldier compare `(effective MG tier, stock priority)` among already admitted rows. Identify coax/hull MG by the actual mounted place, mgun/small_arms weapon-ammo pair and available charge. Identify a conventional 75–88 mm main gun by shell/weapon tags and definition+0x1628 f32 calibre. Stock mg34_tank has filling mgun_ger ×150 and calibre 7.92. The 75mm_kwk40 and 88mm_kwk36 declare 75 and 88. Require the MG's own range, arc and readiness. Use the MG's own open result or current confirmed engagement. With one candidate, reuse only a matching scheduled result or confirmed current coverage. Without it, preserve the stock pair comparison. Use native accept/skip branches so the engine copies the winning location. After the successful 0x9A85CC setter, confirm the live MG kind and entity equal the accepted subject. Then record the place/subject pair privately for this call and veto additional large-shell pairs for that soldier on later passes. Apply the same row-local margin to protect an engaged main gun from lower-scoring challengers when its own incumbent remains eligible. A row used for approach/aim-only is insufficient proof of coverage. Use the original priority comparison within a tier and pass through unknown/dummy places and all-blocked/out-of-range cases. This retains AP/HE rule precedence inside a tier and allows an uncovered or different-class target its normal main-gun selection.",
+      "evidence_ids": [
+        "vehicle-weapon-ammo-selection",
+        "vehicle-assignment",
+        "vehicle-row-rebuild",
+        "native-weapon-priority-source",
+        "charged-and-ready-predicate",
+        "native-inventory-location-copy",
+        "native-inventory-location-release",
+        "ammunition-rule-selection"
+      ]
+    },
+    {
+      "id": "first-eligible-row-approach-and-detour",
+      "contract": "**Vehicle approach and detour.** 0x9A7FB6 resets +0x3D4 to −1. For the first successfully selected pair, distance ≥ current weapon range takes 0x9A832A/34/41, stores **f32 range** at +0x3D4, clears the +0x3D8 deadline and consumes the row. An in-range cached row can reuse its eTarget when +1 is set and +0x30 matches subject+0x18. The scheduled resolver at 0x9A83F2/0x9A8558 may fail. On the due, empty first trial with no existing deadline, 0x9A85ED–0x9A8647 arms +0x3D8 for now + uniform(2,4) seconds. That failed trial can leave the row free. Charge wait/aim-only branches can consume a row. A later successful trial can clear +0x3D8. The autonomous root at 0x9AEDA0 takes the vector head, uses 0.95 × +0x3D4 for approach and tests +0x3D8 at 0x9AF4D3 for detour. Put the known-open #2 first **before assignment and root traversal**, so its eligible row gets first opportunity. The native trial decides whether it can fire. If #2's own selected row is unknown or blocked, preserve native fallback. Never write either field or mark a row used from the scorer.",
+      "evidence_ids": [
+        "vehicle-assignment",
+        "vehicle-weapon-ammo-selection",
+        "firing-target-construction",
+        "vehicle-approach-and-detour-consumer"
+      ]
+    },
+    {
+      "id": "authority-and-replicating-output",
+      "contract": "Infantry proceeds through 0x96B430's WeaponFire construction and native child dispatch. Vehicle assignment uses 0x81F0C0 mode 2, 0x81FCB0 copies the native target, then the host can emit eWeaponTargetCommand (ID 0x0C, 0xAB4E0 → sender slot 1 at 0x151340, receiver 0xAB640). Keep engine ammo, transforms, movement, timers, orders and replication under these existing owners. Custom scoring is deterministic and takes zero engine RNG draws. Changing the winner can change how many trials or RNG draws the engine itself schedules. Runtime admission requires private host/client and `-no_server` role checks, command and checksum agreement, and observations of target retention, MG/main-gun selection, held-fire/manual orders, unseen enemies, four-ray cap and all-blocked detours. The verifier checks image data and instruction sites. Live ABI, aim success and multiplayer agreement remain untested.",
+      "evidence_ids": [
+        "native-infantry-attack-sequence",
+        "human-try-attack-result",
+        "weapon-target-setup",
+        "native-weapon-target-commit",
+        "emission-role",
+        "remote-role",
+        "quant-worker-predicate",
+        "serial-dispatch"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "shared-ranker",
+      "binary": "game",
+      "function_rva": "0x92bf20",
+      "instruction_rvas": [
+        "0x92bf20",
+        "0x92bf42",
+        "0x92bf76",
+        "0x92bfcd",
+        "0x92bfd0",
+        "0x92c032",
+        "0x92c035",
+        "0x92c03f",
+        "0x92c05a",
+        "0x92c082",
+        "0x92c08c",
+        "0x92c090",
+        "0x92c094",
+        "0x92c098",
+        "0x92c09b",
+        "0x92c09f",
+        "0x92c0a4",
+        "0x92c0e0",
+        "0x92c0f3",
+        "0x92c0f5",
+        "0x92c106",
+        "0x92c109",
+        "0x92c116",
+        "0x92c11b",
+        "0x92c178",
+        "0x92c1d9"
+      ]
+    },
+    {
+      "id": "profile-selection",
+      "binary": "game",
+      "function_rva": "0x931e70",
+      "instruction_rvas": [
+        "0x931e70",
+        "0x931eca",
+        "0x931f09",
+        "0x931f35",
+        "0x931f4a"
+      ]
+    },
+    {
+      "id": "group-application",
+      "binary": "game",
+      "function_rva": "0x9314b0",
+      "instruction_rvas": [
+        "0x9314b0",
+        "0x9314d8",
+        "0x931508",
+        "0x93153b",
+        "0x93154f"
+      ]
+    },
+    {
+      "id": "group-transfer",
+      "binary": "game",
+      "function_rva": "0x92e2b0",
+      "instruction_rvas": [
+        "0x92e2b0",
+        "0x92e2d6",
+        "0x92e2da",
+        "0x92e30d",
+        "0x92e38f"
+      ]
+    },
+    {
+      "id": "insertion-comparator",
+      "binary": "game",
+      "function_rva": "0x92f3d0",
+      "instruction_rvas": [
+        "0x92f3d0",
+        "0x92f3f8",
+        "0x92f486",
+        "0x92f4d1",
+        "0x92f4fb",
+        "0x92f62e"
+      ]
+    },
+    {
+      "id": "predicate-evaluator",
+      "binary": "game",
+      "function_rva": "0x9328f0",
+      "instruction_rvas": [
+        "0x9328f0",
+        "0x932924",
+        "0x932943",
+        "0x932a68",
+        "0x932a7c"
+      ]
+    },
+    {
+      "id": "eligibility",
+      "binary": "game",
+      "function_rva": "0x92b320",
+      "instruction_rvas": [
+        "0x92b320",
+        "0x92b32f",
+        "0x92b353",
+        "0x92b36c",
+        "0x92b386",
+        "0x92b390",
+        "0x92b3b2",
+        "0x92b3d0",
+        "0x92b3db",
+        "0x92b3e9",
+        "0x92b3f6",
+        "0x92b408",
+        "0x92b411",
+        "0x92b42c",
+        "0x92b442",
+        "0x92b449"
+      ]
+    },
+    {
+      "id": "firing-target-construction",
+      "binary": "game",
+      "function_rva": "0x92b5a0",
+      "instruction_rvas": [
+        "0x92b5a0",
+        "0x92b5b3",
+        "0x92b5c7",
+        "0x92b5da",
+        "0x92b631",
+        "0x92b652",
+        "0x92b6b2",
+        "0x92b6d4"
+      ]
+    },
+    {
+      "id": "squad-subject-query",
+      "binary": "game",
+      "function_rva": "0x91b890",
+      "instruction_rvas": [
+        "0x91b890",
+        "0x91b899",
+        "0x91b8a9",
+        "0x91b8b6",
+        "0x91b8bd",
+        "0x91b8e7",
+        "0x91b8ee",
+        "0x91b903",
+        "0x91b90c",
+        "0x91b912",
+        "0x91b917",
+        "0x91b927"
+      ]
+    },
+    {
+      "id": "human-refresh",
+      "binary": "game",
+      "function_rva": "0x95bee0",
+      "instruction_rvas": [
+        "0x95bee0",
+        "0x95bef8",
+        "0x95befd",
+        "0x95bf1b",
+        "0x95bf25",
+        "0x95bf41",
+        "0x95bf4d",
+        "0x95bf79",
+        "0x95bf80",
+        "0x95bf87",
+        "0x95bf8f",
+        "0x95bf96",
+        "0x95bfdf",
+        "0x95bfeb"
+      ]
+    },
+    {
+      "id": "human-picker",
+      "binary": "game",
+      "function_rva": "0x95c120",
+      "instruction_rvas": [
+        "0x95c120",
+        "0x95c154",
+        "0x95c15e",
+        "0x95c18c",
+        "0x95c1ab",
+        "0x95c1b2",
+        "0x95c1df",
+        "0x95c1f0",
+        "0x95c216",
+        "0x95c23c",
+        "0x95c422",
+        "0x95c42c",
+        "0x95c436",
+        "0x95c457",
+        "0x95c46b",
+        "0x95c474",
+        "0x95c484"
+      ]
+    },
+    {
+      "id": "cover-attack-fallback",
+      "binary": "game",
+      "function_rva": "0x960ae0",
+      "instruction_rvas": [
+        "0x960ae0",
+        "0x960ae5",
+        "0x960aea",
+        "0x960b15",
+        "0x960b1a",
+        "0x960b4d",
+        "0x960b6a",
+        "0x960b6f",
+        "0x960d0d",
+        "0x960ec7",
+        "0x960fe4",
+        "0x961027"
+      ]
+    },
+    {
+      "id": "cover-list-try",
+      "binary": "game",
+      "function_rva": "0x96bca0",
+      "instruction_rvas": [
+        "0x96bca0",
+        "0x96bcf2",
+        "0x96bd05",
+        "0x96bd0c",
+        "0x96bd0f",
+        "0x96bd39",
+        "0x96bd3c",
+        "0x96bd49",
+        "0x96bd69"
+      ]
+    },
+    {
+      "id": "outdoors-target-change-interrupt",
+      "binary": "game",
+      "function_rva": "0x962420",
+      "instruction_rvas": [
+        "0x962420",
+        "0x96243a",
+        "0x96244e",
+        "0x962490",
+        "0x9625a7",
+        "0x962614",
+        "0x96267d"
+      ]
+    },
+    {
+      "id": "outdoors-battle-interrupt",
+      "binary": "game",
+      "function_rva": "0x962990",
+      "instruction_rvas": [
+        "0x962990",
+        "0x96299c",
+        "0x9629a0",
+        "0x9629d7",
+        "0x962b8d",
+        "0x962d35"
+      ]
+    },
+    {
+      "id": "equipment-evaluator-constructor",
+      "binary": "game",
+      "function_rva": "0x970490",
+      "instruction_rvas": [
+        "0x970490",
+        "0x970497",
+        "0x9704a3",
+        "0x9704a7",
+        "0x9704ab",
+        "0x9704af",
+        "0x9704b3",
+        "0x9704b7",
+        "0x9704bb",
+        "0x9704bf",
+        "0x9704c3",
+        "0x9704c7",
+        "0x9704d3",
+        "0x9704d7"
+      ]
+    },
+    {
+      "id": "equipment-evaluator-setup",
+      "binary": "game",
+      "function_rva": "0x970580",
+      "instruction_rvas": [
+        "0x970580",
+        "0x970597"
+      ]
+    },
+    {
+      "id": "equipment-evaluation",
+      "binary": "game",
+      "function_rva": "0x9705f0",
+      "instruction_rvas": [
+        "0x9705f0",
+        "0x9705fd",
+        "0x97060a",
+        "0x970619",
+        "0x970621",
+        "0x970641",
+        "0x970646",
+        "0x970654",
+        "0x970668",
+        "0x970670",
+        "0x970694"
+      ]
+    },
+    {
+      "id": "carried-item-scan",
+      "binary": "game",
+      "function_rva": "0x9708f0",
+      "instruction_rvas": [
+        "0x9708f0",
+        "0x970909",
+        "0x97092c",
+        "0x97093a",
+        "0x970945",
+        "0x970974"
+      ]
+    },
+    {
+      "id": "equipment-item-evaluation",
+      "binary": "game",
+      "function_rva": "0x970990",
+      "instruction_rvas": [
+        "0x970990",
+        "0x9709bc",
+        "0x9709c3",
+        "0x9709ea",
+        "0x970a26",
+        "0x970a2f",
+        "0x970a57",
+        "0x970a72",
+        "0x970a79",
+        "0x970be4",
+        "0x970c38",
+        "0x970c3d",
+        "0x970c53",
+        "0x970c70",
+        "0x970c8d",
+        "0x970cbe",
+        "0x970cc6",
+        "0x970cd7",
+        "0x970cff",
+        "0x970ed3",
+        "0x970f0b",
+        "0x970f21"
+      ]
+    },
+    {
+      "id": "equipment-switch-trigger",
+      "binary": "game",
+      "function_rva": "0x95cea0",
+      "instruction_rvas": [
+        "0x95cea0",
+        "0x95cef0",
+        "0x95cfc5",
+        "0x95d0c6",
+        "0x95d127",
+        "0x95d13c",
+        "0x95d146",
+        "0x95d181",
+        "0x95d1b0",
+        "0x95d1c8",
+        "0x95d1d5",
+        "0x95d205",
+        "0x95d213",
+        "0x95d220",
+        "0x95d241"
+      ]
+    },
+    {
+      "id": "vehicle-brain-rebuild",
+      "binary": "game",
+      "function_rva": "0x9a74e0",
+      "instruction_rvas": [
+        "0x9a74e0",
+        "0x9a74f7",
+        "0x9a74ff",
+        "0x9a7506",
+        "0x9a750b",
+        "0x9a7533",
+        "0x9a757f",
+        "0x9a75cf",
+        "0x9a75d7",
+        "0x9a7645",
+        "0x9a7648",
+        "0x9a7655",
+        "0x9a7668",
+        "0x9a768a",
+        "0x9a76a7"
+      ]
+    },
+    {
+      "id": "vehicle-alternate-rebuild",
+      "binary": "game",
+      "function_rva": "0x9a7e20",
+      "instruction_rvas": [
+        "0x9a7e20",
+        "0x9a7ea0",
+        "0x9a7ef0",
+        "0x9a7ef8",
+        "0x9a7f57"
+      ]
+    },
+    {
+      "id": "vehicle-assignment",
+      "binary": "game",
+      "function_rva": "0x9a7fa0",
+      "instruction_rvas": [
+        "0x9a7fa0",
+        "0x9a7fb6",
+        "0x9a80e6",
+        "0x9a811b",
+        "0x9a8130",
+        "0x9a8137",
+        "0x9a8190",
+        "0x9a819a",
+        "0x9a81f4",
+        "0x9a8200",
+        "0x9a8214",
+        "0x9a821e",
+        "0x9a822d",
+        "0x9a8276",
+        "0x9a8287",
+        "0x9a82ac",
+        "0x9a8318",
+        "0x9a831a",
+        "0x9a831d",
+        "0x9a832a",
+        "0x9a8334",
+        "0x9a8341",
+        "0x9a83ce",
+        "0x9a83f2",
+        "0x9a8403",
+        "0x9a843e",
+        "0x9a8523",
+        "0x9a8558",
+        "0x9a855d",
+        "0x9a85cc",
+        "0x9a85d1",
+        "0x9a85ed",
+        "0x9a85f2",
+        "0x9a8640",
+        "0x9a8647",
+        "0x9a8662",
+        "0x9a86cb",
+        "0x9a87f2",
+        "0x9a88a5",
+        "0x9a89ad"
+      ]
+    },
+    {
+      "id": "vehicle-weapon-ammo-selection",
+      "binary": "game",
+      "function_rva": "0x9a90c0",
+      "instruction_rvas": [
+        "0x9a90c0",
+        "0x9a9105",
+        "0x9a9112",
+        "0x9a9136",
+        "0x9a9170",
+        "0x9a917d",
+        "0x9a9186",
+        "0x9a918d",
+        "0x9a9193",
+        "0x9a919b",
+        "0x9a91a0",
+        "0x9a91ad",
+        "0x9a91c7",
+        "0x9a9243",
+        "0x9a9299",
+        "0x9a92c3",
+        "0x9a9387",
+        "0x9a93a7",
+        "0x9a93b8",
+        "0x9a93c7",
+        "0x9a93db",
+        "0x9a93eb",
+        "0x9a9409",
+        "0x9a9422",
+        "0x9a9441",
+        "0x9a9449",
+        "0x9a9456",
+        "0x9a945e",
+        "0x9a9460",
+        "0x9a9464",
+        "0x9a9467",
+        "0x9a9469",
+        "0x9a946f",
+        "0x9a9471",
+        "0x9a947c",
+        "0x9a9480",
+        "0x9a9485",
+        "0x9a9489",
+        "0x9a948c",
+        "0x9a948f",
+        "0x9a9493",
+        "0x9a94ad",
+        "0x9a94bf",
+        "0x9a94f0"
+      ]
+    },
+    {
+      "id": "vehicle-row-rebuild",
+      "binary": "game",
+      "function_rva": "0x9a8a40",
+      "instruction_rvas": [
+        "0x9a8a40",
+        "0x9a8a59",
+        "0x9a8ab0",
+        "0x9a8b8c",
+        "0x9a8bbb",
+        "0x9a8be3",
+        "0x9a8c10",
+        "0x9a8c36",
+        "0x9a8ca0",
+        "0x9a8cb7",
+        "0x9a8cc3",
+        "0x9a8cd8",
+        "0x9a8d07",
+        "0x9a8d13",
+        "0x9a8d37",
+        "0x9a8dae",
+        "0x9a8de1",
+        "0x9a8e24",
+        "0x9a8e27",
+        "0x9a8e32",
+        "0x9a8e38",
+        "0x9a8e3d",
+        "0x9a8e41",
+        "0x9a8eb7"
+      ]
+    },
+    {
+      "id": "observed-equipment-and-pair-refresh",
+      "binary": "game",
+      "function_rva": "0x88ded0",
+      "instruction_rvas": [
+        "0x88ded0",
+        "0x88dedf",
+        "0x88def2",
+        "0x88df00",
+        "0x88df07",
+        "0x88df3f",
+        "0x88df56",
+        "0x88df5e",
+        "0x88df6d",
+        "0x88df75",
+        "0x88df88"
+      ]
+    },
+    {
+      "id": "sensor-commit",
+      "binary": "game",
+      "function_rva": "0x88e270",
+      "instruction_rvas": [
+        "0x88e270",
+        "0x88e31e",
+        "0x88e5a6",
+        "0x88e600",
+        "0x88e6eb",
+        "0x88e9d2",
+        "0x88e9d9",
+        "0x88ea15"
+      ]
+    },
+    {
+      "id": "transient-threat-writer",
+      "binary": "game",
+      "function_rva": "0x88d4b0",
+      "instruction_rvas": [
+        "0x88d4b0",
+        "0x88d58a",
+        "0x88d67f",
+        "0x88d69a",
+        "0x88d6b1",
+        "0x88d724",
+        "0x88d72e",
+        "0x88d73a",
+        "0x88d7c6",
+        "0x88d7d8",
+        "0x88d7de"
+      ]
+    },
+    {
+      "id": "detach",
+      "binary": "game",
+      "function_rva": "0x88fc80",
+      "instruction_rvas": [
+        "0x88fc80",
+        "0x88fc95",
+        "0x88fcb3",
+        "0x88fd25"
+      ]
+    },
+    {
+      "id": "selected-runtime-weapon",
+      "binary": "game",
+      "function_rva": "0x81b080",
+      "instruction_rvas": [
+        "0x81b080",
+        "0x81b08b",
+        "0x81b098",
+        "0x81b0a4",
+        "0x81b0a8"
+      ]
+    },
+    {
+      "id": "inventory-iterator-begin",
+      "binary": "game",
+      "function_rva": "0x7e1ce0",
+      "instruction_rvas": [
+        "0x7e1ce0"
+      ]
+    },
+    {
+      "id": "inventory-iterator-next",
+      "binary": "game",
+      "function_rva": "0x7e2220",
+      "instruction_rvas": [
+        "0x7e2220",
+        "0x7e2285",
+        "0x7e22a9",
+        "0x7e22cc",
+        "0x7e22db",
+        "0x7e2327"
+      ]
+    },
+    {
+      "id": "iterator-item",
+      "binary": "game",
+      "function_rva": "0x7e1f40",
+      "instruction_rvas": [
+        "0x7e1f40"
+      ]
+    },
+    {
+      "id": "inventory-access",
+      "binary": "game",
+      "function_rva": "0x7e0420",
+      "instruction_rvas": [
+        "0x7e0420",
+        "0x7e0425",
+        "0x7e042c",
+        "0x7e0435"
+      ]
+    },
+    {
+      "id": "target-assignment-support",
+      "binary": "game",
+      "function_rva": "0x853180",
+      "instruction_rvas": [
+        "0x853180"
+      ]
+    },
+    {
+      "id": "weapon-target-setup",
+      "binary": "game",
+      "function_rva": "0x81f0c0",
+      "instruction_rvas": [
+        "0x81f0c0",
+        "0x81f142",
+        "0x81f151",
+        "0x81f1ed",
+        "0x81f454"
+      ]
+    },
+    {
+      "id": "human-slot-35-and-target-change",
+      "binary": "game",
+      "function_rva": "0x95a680",
+      "instruction_rvas": [
+        "0x95a680",
+        "0x95a699",
+        "0x95a69e",
+        "0x95a6a5",
+        "0x95a6b1",
+        "0x95a6c3",
+        "0x95a6ff",
+        "0x95a934",
+        "0x95a9ab",
+        "0x95aa8c",
+        "0x95abd6"
+      ]
+    },
+    {
+      "id": "selection-change-bookkeeping",
+      "binary": "game",
+      "function_rva": "0x95c9f0",
+      "instruction_rvas": [
+        "0x95c9f0"
+      ]
+    },
+    {
+      "id": "cover-eligibility-predicate",
+      "binary": "game",
+      "function_rva": "0x95c040",
+      "instruction_rvas": [
+        "0x95c040",
+        "0x95c058",
+        "0x95c098"
+      ]
+    },
+    {
+      "id": "native-infantry-attack-sequence",
+      "binary": "game",
+      "function_rva": "0x96b430",
+      "instruction_rvas": [
+        "0x96b430",
+        "0x96b4d6",
+        "0x96ba95",
+        "0x96bab1",
+        "0x96bc3c"
+      ]
+    },
+    {
+      "id": "human-try-attack-result",
+      "binary": "game",
+      "function_rva": "0x95d360",
+      "instruction_rvas": [
+        "0x95d360",
+        "0x95d385",
+        "0x95d447",
+        "0x95d494",
+        "0x95d49c",
+        "0x95d53e",
+        "0x95d57a",
+        "0x95d592",
+        "0x95d5a2",
+        "0x95d5e6"
+      ]
+    },
+    {
+      "id": "body-facing-snapshot",
+      "binary": "game",
+      "function_rva": "0x96f6f0",
+      "instruction_rvas": [
+        "0x96f6f0",
+        "0x96f861",
+        "0x96f866",
+        "0x96f86b"
+      ]
+    },
+    {
+      "id": "subject-class",
+      "binary": "game",
+      "function_rva": "0x92c400",
+      "instruction_rvas": [
+        "0x92c400",
+        "0x92c405",
+        "0x92c414",
+        "0x92c41b"
+      ]
+    },
+    {
+      "id": "numeric-sort-key",
+      "binary": "game",
+      "function_rva": "0x932cf0",
+      "instruction_rvas": [
+        "0x932cf0",
+        "0x932e11",
+        "0x932e2d",
+        "0x932e3c"
+      ]
+    },
+    {
+      "id": "native-aim-estimate",
+      "binary": "game",
+      "function_rva": "0x833d80",
+      "instruction_rvas": [
+        "0x833d80",
+        "0x833db1",
+        "0x833ebf"
+      ]
+    },
+    {
+      "id": "motion-direction-update",
+      "binary": "game",
+      "function_rva": "0x824c90",
+      "instruction_rvas": [
+        "0x824c90",
+        "0x824cbc",
+        "0x824cca",
+        "0x824cda",
+        "0x824cf4",
+        "0x824d04"
+      ]
+    },
+    {
+      "id": "motion-direction-caller",
+      "binary": "game",
+      "function_rva": "0x81f760",
+      "instruction_rvas": [
+        "0x81f760",
+        "0x81f78f",
+        "0x81f794",
+        "0x81f7a9",
+        "0x81f7ad",
+        "0x81f7b9",
+        "0x81f831"
+      ]
+    },
+    {
+      "id": "box-index-lookup",
+      "binary": "game",
+      "function_rva": "0x7ee780",
+      "instruction_rvas": [
+        "0x7ee780",
+        "0x7ee784",
+        "0x7ee788"
+      ]
+    },
+    {
+      "id": "right-hand-definition",
+      "binary": "game",
+      "function_rva": "0x7e04e0",
+      "instruction_rvas": [
+        "0x7e04e0",
+        "0x7e0507",
+        "0x7e0525",
+        "0x7e052e"
+      ]
+    },
+    {
+      "id": "right-hand-holder",
+      "binary": "game",
+      "function_rva": "0x7e04b0",
+      "instruction_rvas": [
+        "0x7e04b0",
+        "0x7e04b5",
+        "0x7e04bc",
+        "0x7e04d3"
+      ]
+    },
+    {
+      "id": "synthetic-place-mutation",
+      "binary": "game",
+      "function_rva": "0x81b590",
+      "instruction_rvas": [
+        "0x81b590",
+        "0x81b5a0",
+        "0x81b679"
+      ]
+    },
+    {
+      "id": "tag-equality",
+      "binary": "game",
+      "function_rva": "0x565340",
+      "instruction_rvas": [
+        "0x565340"
+      ]
+    },
+    {
+      "id": "target-position",
+      "binary": "game",
+      "function_rva": "0x8527f0",
+      "instruction_rvas": [
+        "0x8527f0",
+        "0x8527f6",
+        "0x8527ff"
+      ]
+    },
+    {
+      "id": "native-target-copy",
+      "binary": "game",
+      "function_rva": "0x852910",
+      "instruction_rvas": [
+        "0x852910",
+        "0x85292e",
+        "0x852957",
+        "0x852966",
+        "0x85299f",
+        "0x852cb6"
+      ]
+    },
+    {
+      "id": "native-weapon-priority-source",
+      "binary": "game",
+      "function_rva": "0x81a8d0",
+      "instruction_rvas": [
+        "0x81a8d0"
+      ]
+    },
+    {
+      "id": "subject-insert",
+      "binary": "game",
+      "function_rva": "0x88ab50",
+      "instruction_rvas": [
+        "0x88ab50",
+        "0x88ab84",
+        "0x88ab9d",
+        "0x88abb5"
+      ]
+    },
+    {
+      "id": "subject-relationship-refresh",
+      "binary": "game",
+      "function_rva": "0x88dcf0",
+      "instruction_rvas": [
+        "0x88dcf0",
+        "0x88dcff",
+        "0x88dd11",
+        "0x88ddc0",
+        "0x88ddfe"
+      ]
+    },
+    {
+      "id": "subject-initialization",
+      "binary": "game",
+      "function_rva": "0x888a20",
+      "instruction_rvas": [
+        "0x888a20",
+        "0x888a3d",
+        "0x888a7c",
+        "0x888a80",
+        "0x888a8c",
+        "0x888a99",
+        "0x888aa6",
+        "0x888aae",
+        "0x888ab6",
+        "0x888aba",
+        "0x888abd",
+        "0x888ac0",
+        "0x888ac7",
+        "0x888acb",
+        "0x888ad3"
+      ]
+    },
+    {
+      "id": "cached-threat-channels",
+      "binary": "game",
+      "function_rva": "0x88c6f0",
+      "instruction_rvas": [
+        "0x88c6f0",
+        "0x88c713",
+        "0x88c722",
+        "0x88c72c",
+        "0x88c7b9",
+        "0x88c7c6"
+      ]
+    },
+    {
+      "id": "cached-hit-point-pair-producer",
+      "binary": "game",
+      "function_rva": "0x828430",
+      "instruction_rvas": [
+        "0x828430",
+        "0x8284de"
+      ]
+    },
+    {
+      "id": "serial-dispatch",
+      "binary": "game",
+      "function_rva": "0x804ac0",
+      "instruction_rvas": [
+        "0x804ac0",
+        "0x804b06",
+        "0x804c0b",
+        "0x804c57",
+        "0x804c96"
+      ]
+    },
+    {
+      "id": "dispatch-to-concrete-slot-35",
+      "binary": "game",
+      "function_rva": "0x91be00",
+      "instruction_rvas": [
+        "0x91be00",
+        "0x91be0d"
+      ]
+    },
+    {
+      "id": "entity-and-volume-firing-trial",
+      "binary": "game",
+      "function_rva": "0x92b6f0",
+      "instruction_rvas": [
+        "0x92b6f0",
+        "0x92b759",
+        "0x92b76d",
+        "0x92b795",
+        "0x92b7b0",
+        "0x92b7b4",
+        "0x92b7bb",
+        "0x92b7d6",
+        "0x92b945",
+        "0x92ba09"
+      ]
+    },
+    {
+      "id": "ground-firing-trial",
+      "binary": "game",
+      "function_rva": "0x92ba70",
+      "instruction_rvas": [
+        "0x92ba70",
+        "0x92babb",
+        "0x92bbb9",
+        "0x92bcc6"
+      ]
+    },
+    {
+      "id": "cached-group-predicate",
+      "binary": "game",
+      "function_rva": "0x92e090",
+      "instruction_rvas": [
+        "0x92e090",
+        "0x92e0ae",
+        "0x92e0c0",
+        "0x92e0ca",
+        "0x92e0e4",
+        "0x92e101"
+      ]
+    },
+    {
+      "id": "group-sort-dispatch",
+      "binary": "game",
+      "function_rva": "0x92e5c0",
+      "instruction_rvas": [
+        "0x92e5c0"
+      ]
+    },
+    {
+      "id": "replace-group-scratch-contents",
+      "binary": "game",
+      "function_rva": "0x92ea00",
+      "instruction_rvas": [
+        "0x92ea00"
+      ]
+    },
+    {
+      "id": "weapon-and-ammunition-tag-matching",
+      "binary": "game",
+      "function_rva": "0x565a50",
+      "instruction_rvas": [
+        "0x565a50",
+        "0x565a6a",
+        "0x565a74",
+        "0x565aa9",
+        "0x565ab2"
+      ]
+    },
+    {
+      "id": "tag-initialization",
+      "binary": "game",
+      "function_rva": "0x564da0",
+      "instruction_rvas": [
+        "0x564da0"
+      ]
+    },
+    {
+      "id": "hand-holder-lookup",
+      "binary": "game",
+      "function_rva": "0x7dd9c0",
+      "instruction_rvas": [
+        "0x7dd9c0",
+        "0x7dd9cf",
+        "0x7dd9d9",
+        "0x7dd9f6",
+        "0x7dd9fa"
+      ]
+    },
+    {
+      "id": "item-filling-definition-and-amount-assignment",
+      "binary": "game",
+      "function_rva": "0x7dc2e0",
+      "instruction_rvas": [
+        "0x7dc2e0",
+        "0x7dc353",
+        "0x7dc366",
+        "0x7dc36a"
+      ]
+    },
+    {
+      "id": "candidate-weapon-range",
+      "binary": "game",
+      "function_rva": "0x83f210",
+      "instruction_rvas": [
+        "0x83f210",
+        "0x83f233",
+        "0x83f23c",
+        "0x83f248",
+        "0x83f258",
+        "0x83f25f",
+        "0x83f266",
+        "0x83f270"
+      ]
+    },
+    {
+      "id": "native-weapon-target-commit",
+      "binary": "game",
+      "function_rva": "0x81fcb0",
+      "instruction_rvas": [
+        "0x81fcb0",
+        "0x81fcf4",
+        "0x81fcf9",
+        "0x81fd03",
+        "0x81fd47",
+        "0x81fd94",
+        "0x81fd9d",
+        "0x81fe07"
+      ]
+    },
+    {
+      "id": "segment-initialization",
+      "binary": "game",
+      "function_rva": "0xa409c0",
+      "instruction_rvas": [
+        "0xa409c0",
+        "0xa409d6",
+        "0xa409dd",
+        "0xa409e4",
+        "0xa409eb",
+        "0xa409ee",
+        "0xa409f2"
+      ]
+    },
+    {
+      "id": "segment-endpoints",
+      "binary": "game",
+      "function_rva": "0xa40a20",
+      "instruction_rvas": [
+        "0xa40a20",
+        "0xa40a30",
+        "0xa40a40",
+        "0xa40a50",
+        "0xa40a5b",
+        "0xa40aa2"
+      ]
+    },
+    {
+      "id": "segment-contacts",
+      "binary": "game",
+      "function_rva": "0xa40ac0",
+      "instruction_rvas": [
+        "0xa40ac0",
+        "0xa40b10",
+        "0xa40b16",
+        "0xa40bfa"
+      ]
+    },
+    {
+      "id": "native-fire-policy",
+      "binary": "game",
+      "function_rva": "0x91b2b0",
+      "instruction_rvas": [
+        "0x91b2b0",
+        "0x91b2c4"
+      ]
+    },
+    {
+      "id": "remote-role",
+      "binary": "game",
+      "function_rva": "0xc2b7a0",
+      "instruction_rvas": [
+        "0xc2b7a0",
+        "0xc2b7bf",
+        "0xc2b7e0",
+        "0xc2b7ea"
+      ]
+    },
+    {
+      "id": "emission-role",
+      "binary": "game",
+      "function_rva": "0xc2b740",
+      "instruction_rvas": [
+        "0xc2b740",
+        "0xc2b75f",
+        "0xc2b780",
+        "0xc2b78a"
+      ]
+    },
+    {
+      "id": "quant-worker-predicate",
+      "binary": "game",
+      "function_rva": "0xa7a80",
+      "instruction_rvas": [
+        "0xa7a80"
+      ]
+    },
+    {
+      "id": "ammunition-rule-input-construction",
+      "binary": "game",
+      "function_rva": "0x92c8e0",
+      "instruction_rvas": [
+        "0x92c8e0",
+        "0x92c8fa",
+        "0x92c905",
+        "0x92c91a",
+        "0x92c921",
+        "0x92c93a",
+        "0x92c948",
+        "0x92c958",
+        "0x92c961",
+        "0x92c98d"
+      ]
+    },
+    {
+      "id": "ammunition-rule-selection",
+      "binary": "game",
+      "function_rva": "0x92c9c0",
+      "instruction_rvas": [
+        "0x92c9c0",
+        "0x92c9e0",
+        "0x92ca23",
+        "0x92ca30",
+        "0x92ca55",
+        "0x92ca82",
+        "0x92ca86",
+        "0x92caa7",
+        "0x92caae",
+        "0x92cabb",
+        "0x92cade",
+        "0x92cbbe",
+        "0x92cbf8",
+        "0x92cbff",
+        "0x92cc13",
+        "0x92cc26",
+        "0x92cc40",
+        "0x92cc7a"
+      ]
+    },
+    {
+      "id": "ammo-set-class-and-rule-loader",
+      "binary": "game",
+      "function_rva": "0x92cd30",
+      "instruction_rvas": [
+        "0x92cd30",
+        "0x92ce0c",
+        "0x92d35c",
+        "0x92d5fb",
+        "0x92d633"
+      ]
+    },
+    {
+      "id": "aimer-target-commit-notification",
+      "binary": "game",
+      "function_rva": "0x834290",
+      "instruction_rvas": [
+        "0x834290"
+      ]
+    },
+    {
+      "id": "aimer-update",
+      "binary": "game",
+      "function_rva": "0x834020",
+      "instruction_rvas": [
+        "0x834020"
+      ]
+    },
+    {
+      "id": "runtime-weapon-clear-and-release",
+      "binary": "game",
+      "function_rva": "0x81f480",
+      "instruction_rvas": [
+        "0x81f480",
+        "0x81f4a2",
+        "0x81f4d6",
+        "0x81f4e6",
+        "0x81f522",
+        "0x81f596",
+        "0x81f5e8"
+      ]
+    },
+    {
+      "id": "bullet-blocking-contacts-and-query-cleanup",
+      "binary": "game",
+      "function_rva": "0x84f5a0",
+      "instruction_rvas": [
+        "0x84f5a0",
+        "0x84f6a5",
+        "0x84f6b5",
+        "0x84f6c3",
+        "0x84f6c8",
+        "0x84f9f6",
+        "0x84fa07",
+        "0x84fa15",
+        "0x84fa1a",
+        "0x84fa53",
+        "0x84fa70",
+        "0x84fa80",
+        "0x84fa86",
+        "0x84fa8c",
+        "0x84fa91",
+        "0x84fa93",
+        "0x84fa95",
+        "0x84fb32",
+        "0x84fb39",
+        "0x84fb3f",
+        "0x84fbf8"
+      ]
+    },
+    {
+      "id": "vehicle-approach-and-detour-consumer",
+      "binary": "game",
+      "function_rva": "0x9aeda0",
+      "instruction_rvas": [
+        "0x9aeda0",
+        "0x9aede3",
+        "0x9aedf3",
+        "0x9aee43",
+        "0x9aefe3",
+        "0x9af018",
+        "0x9af22e",
+        "0x9af4d3"
+      ]
+    },
+    {
+      "id": "human-broken-component-gate",
+      "binary": "game",
+      "function_rva": "0x8abb40",
+      "instruction_rvas": [
+        "0x8abb40",
+        "0x8abb8d"
+      ]
+    },
+    {
+      "id": "projectile-profile-lookup-for-range",
+      "binary": "game",
+      "function_rva": "0x83de90",
+      "instruction_rvas": [
+        "0x83de90",
+        "0x83deba",
+        "0x83debe",
+        "0x83ded6",
+        "0x83dedf",
+        "0x83deeb",
+        "0x83df04"
+      ]
+    },
+    {
+      "id": "equipped-projectile-profile",
+      "binary": "game",
+      "function_rva": "0x81ec40",
+      "instruction_rvas": [
+        "0x81ec40",
+        "0x81ec50",
+        "0x81ec66",
+        "0x81ec75",
+        "0x81ec84"
+      ]
+    },
+    {
+      "id": "current-charged-ammo-definition",
+      "binary": "game",
+      "function_rva": "0x820b50",
+      "instruction_rvas": [
+        "0x820b50",
+        "0x820b59",
+        "0x820b79"
+      ]
+    },
+    {
+      "id": "aimer-reads-active-target-and-writes-world-aim-xyz",
+      "binary": "game",
+      "function_rva": "0x832eb0",
+      "instruction_rvas": [
+        "0x832eb0",
+        "0x832ec5",
+        "0x832ec9",
+        "0x832eed",
+        "0x832f14",
+        "0x832f19",
+        "0x832f31",
+        "0x832f36",
+        "0x832f3f",
+        "0x832f49",
+        "0x832fa9",
+        "0x8330ad",
+        "0x83313c",
+        "0x833140",
+        "0x833556"
+      ]
+    },
+    {
+      "id": "aimer-reads-secondary-place-target",
+      "binary": "game",
+      "function_rva": "0x833780",
+      "instruction_rvas": [
+        "0x833780",
+        "0x833834",
+        "0x83383b",
+        "0x83387b",
+        "0x8338d8"
+      ]
+    },
+    {
+      "id": "bullet-aimer-slot-7-direction",
+      "binary": "game",
+      "function_rva": "0x83cbb0",
+      "instruction_rvas": [
+        "0x83cbb0"
+      ]
+    },
+    {
+      "id": "spread-sampler-direction-cache-reader",
+      "binary": "game",
+      "function_rva": "0x82d760",
+      "instruction_rvas": [
+        "0x82d760",
+        "0x82d775",
+        "0x82d843",
+        "0x82d848"
+      ]
+    },
+    {
+      "id": "charged-and-ready-predicate",
+      "binary": "game",
+      "function_rva": "0x81eda0",
+      "instruction_rvas": [
+        "0x81eda0",
+        "0x81eda7",
+        "0x81edad"
+      ]
+    },
+    {
+      "id": "charger-match-input",
+      "binary": "game",
+      "function_rva": "0x820ba0",
+      "instruction_rvas": [
+        "0x820ba0",
+        "0x820baf",
+        "0x820bcf"
+      ]
+    },
+    {
+      "id": "dummy-charger-predicate",
+      "binary": "game",
+      "function_rva": "0x820ce0",
+      "instruction_rvas": [
+        "0x820ce0"
+      ]
+    },
+    {
+      "id": "segment-volume-collection",
+      "binary": "game",
+      "function_rva": "0xa420e0",
+      "instruction_rvas": [
+        "0xa420e0",
+        "0xa42114",
+        "0xa4212e",
+        "0xa42138",
+        "0xa4215c",
+        "0xa422b0",
+        "0xa422bf",
+        "0xa422f7"
+      ]
+    },
+    {
+      "id": "volume-revision-and-transform-refresh",
+      "binary": "game",
+      "function_rva": "0x7a8410",
+      "instruction_rvas": [
+        "0x7a8410",
+        "0x7a8432",
+        "0x7a843f",
+        "0x7a8446",
+        "0x7a844a",
+        "0x7a844c",
+        "0x7a8450"
+      ]
+    },
+    {
+      "id": "alternate-vehicle-rebuild-caller",
+      "binary": "game",
+      "function_rva": "0x91b620",
+      "instruction_rvas": [
+        "0x91b620",
+        "0x91b650",
+        "0x91b69c",
+        "0x91b6c2",
+        "0x91b6c9",
+        "0x91b6e3"
+      ]
+    },
+    {
+      "id": "base-brain-tick-before-vehicle-assignment",
+      "binary": "game",
+      "function_rva": "0x91c350",
+      "instruction_rvas": [
+        "0x91c350"
+      ]
+    },
+    {
+      "id": "aim-point-resolution",
+      "binary": "game",
+      "function_rva": "0x852810",
+      "instruction_rvas": [
+        "0x852810",
+        "0x852816",
+        "0x85281f",
+        "0x852876"
+      ]
+    },
+    {
+      "id": "target-release",
+      "binary": "game",
+      "function_rva": "0x853240",
+      "instruction_rvas": [
+        "0x853240"
+      ]
+    },
+    {
+      "id": "human-equipment-evaluator-destructor",
+      "binary": "game",
+      "function_rva": "0x9704f0",
+      "instruction_rvas": [
+        "0x9704f0"
+      ]
+    },
+    {
+      "id": "native-inventory-location-copy",
+      "binary": "game",
+      "function_rva": "0x7e35e0",
+      "instruction_rvas": [
+        "0x7e35e0"
+      ]
+    },
+    {
+      "id": "native-inventory-location-release",
+      "binary": "game",
+      "function_rva": "0x7e1ec0",
+      "instruction_rvas": [
+        "0x7e1ec0"
+      ]
+    },
+    {
+      "id": "staffed-place-gate",
+      "binary": "game",
+      "function_rva": "0x81edc0",
+      "instruction_rvas": [
+        "0x81edc0",
+        "0x81edc6",
+        "0x81edd3",
+        "0x81edda"
+      ]
+    },
+    {
+      "id": "segment-broad-phase",
+      "binary": "game",
+      "function_rva": "0xa41640",
+      "instruction_rvas": [
+        "0xa41640",
+        "0xa41744",
+        "0xa41eef"
+      ]
+    },
+    {
+      "id": "segment-volume-filter",
+      "binary": "game",
+      "function_rva": "0xa41130",
+      "instruction_rvas": [
+        "0xa41130",
+        "0xa41140",
+        "0xa41149"
+      ]
+    },
+    {
+      "id": "segment-contact-conversion",
+      "binary": "game",
+      "function_rva": "0xa41360",
+      "instruction_rvas": [
+        "0xa41360",
+        "0xa413ac",
+        "0xa41421"
+      ]
+    },
+    {
+      "id": "attack-rate-pair-producer",
+      "binary": "game",
+      "function_rva": "0x828520",
+      "instruction_rvas": [
+        "0x828520",
+        "0x828541",
+        "0x828567"
+      ]
+    },
+    {
+      "id": "scheduled-weapon-range-cache-writer",
+      "binary": "game",
+      "function_rva": "0x91c950",
+      "instruction_rvas": [
+        "0x91c950",
+        "0x91c960",
+        "0x91c96a"
+      ]
+    },
+    {
+      "id": "human-slot-21-weapon-range",
+      "binary": "game",
+      "function_rva": "0x95cc60",
+      "instruction_rvas": [
+        "0x95cc60",
+        "0x95cc7f",
+        "0x95cc8f",
+        "0x95ccb0",
+        "0x95ccea",
+        "0x95cd1a",
+        "0x95cdec",
+        "0x95ce09"
+      ]
+    },
+    {
+      "id": "vehicle-slot-21-weapon-range",
+      "binary": "game",
+      "function_rva": "0x9a7980",
+      "instruction_rvas": [
+        "0x9a7980",
+        "0x9a79ca",
+        "0x9a79f1",
+        "0x9a7a02",
+        "0x9a7a0f",
+        "0x9a7a47",
+        "0x9a7a86",
+        "0x9a7a9a"
+      ]
+    },
+    {
+      "id": "bullet-aimer-slot-6-origin",
+      "binary": "game",
+      "function_rva": "0x8367d0",
+      "instruction_rvas": [
+        "0x8367d0",
+        "0x8367d6",
+        "0x8367df",
+        "0x8367e8",
+        "0x8367ed"
+      ]
+    }
+  ],
+  "byte_sequences": [
+    {
+      "id": "site-7a8432",
+      "binary": "game",
+      "rva": "0x7a8432",
+      "hex": "488b4148",
+      "instruction": "mov rax, qword ptr [rcx + 0x48]"
+    },
+    {
+      "id": "site-7a843f",
+      "binary": "game",
+      "rva": "0x7a843f",
+      "hex": "0fb780ec010000",
+      "instruction": "movzx eax, word ptr [rax + 0x1ec]"
+    },
+    {
+      "id": "site-7a8446",
+      "binary": "game",
+      "rva": "0x7a8446",
+      "hex": "66394108",
+      "instruction": "cmp word ptr [rcx + 8], ax"
+    },
+    {
+      "id": "site-7a844a",
+      "binary": "game",
+      "rva": "0x7a844a",
+      "hex": "7409",
+      "instruction": "je 0x7a8455"
+    },
+    {
+      "id": "site-7a844c",
+      "binary": "game",
+      "rva": "0x7a844c",
+      "hex": "66894108",
+      "instruction": "mov word ptr [rcx + 8], ax"
+    },
+    {
+      "id": "site-7a8450",
+      "binary": "game",
+      "rva": "0x7a8450",
+      "hex": "e83b080000",
+      "instruction": "call 0x7a8c90"
+    },
+    {
+      "id": "site-804c0b",
+      "binary": "game",
+      "rva": "0x804c0b",
+      "hex": "ff5068",
+      "instruction": "call qword ptr [rax + 0x68]"
+    },
+    {
+      "id": "site-804c57",
+      "binary": "game",
+      "rva": "0x804c57",
+      "hex": "e8a4711100",
+      "instruction": "call 0x91be00"
+    },
+    {
+      "id": "site-804c96",
+      "binary": "game",
+      "rva": "0x804c96",
+      "hex": "ff90c0000000",
+      "instruction": "call qword ptr [rax + 0xc0]"
+    },
+    {
+      "id": "site-832ec5",
+      "binary": "game",
+      "rva": "0x832ec5",
+      "hex": "488b4910",
+      "instruction": "mov rcx, qword ptr [rcx + 0x10]"
+    },
+    {
+      "id": "site-832eed",
+      "binary": "game",
+      "rva": "0x832eed",
+      "hex": "4881c1c8000000",
+      "instruction": "add rcx, 0xc8"
+    },
+    {
+      "id": "site-832f14",
+      "binary": "game",
+      "rva": "0x832f14",
+      "hex": "e8f7f80100",
+      "instruction": "call 0x852810"
+    },
+    {
+      "id": "site-832f19",
+      "binary": "game",
+      "rva": "0x832f19",
+      "hex": "4c8d7f60",
+      "instruction": "lea r15, [rdi + 0x60]"
+    },
+    {
+      "id": "site-832f31",
+      "binary": "game",
+      "rva": "0x832f31",
+      "hex": "f2410f1107",
+      "instruction": "movsd qword ptr [r15], xmm0"
+    },
+    {
+      "id": "site-832f36",
+      "binary": "game",
+      "rva": "0x832f36",
+      "hex": "f2410f114f08",
+      "instruction": "movsd qword ptr [r15 + 8], xmm1"
+    },
+    {
+      "id": "site-832f3f",
+      "binary": "game",
+      "rva": "0x832f3f",
+      "hex": "f2410f115710",
+      "instruction": "movsd qword ptr [r15 + 0x10], xmm2"
+    },
+    {
+      "id": "site-832f49",
+      "binary": "game",
+      "rva": "0x832f49",
+      "hex": "4883b8e000000000",
+      "instruction": "cmp qword ptr [rax + 0xe0], 0"
+    },
+    {
+      "id": "site-8367d6",
+      "binary": "game",
+      "rva": "0x8367d6",
+      "hex": "488b5920",
+      "instruction": "mov rbx, qword ptr [rcx + 0x20]"
+    },
+    {
+      "id": "site-8367df",
+      "binary": "game",
+      "rva": "0x8367df",
+      "hex": "f6431001",
+      "instruction": "test byte ptr [rbx + 0x10], 1"
+    },
+    {
+      "id": "site-8367e8",
+      "binary": "game",
+      "rva": "0x8367e8",
+      "hex": "e8b3a9d9ff",
+      "instruction": "call 0x5d11a0"
+    },
+    {
+      "id": "site-8367ed",
+      "binary": "game",
+      "rva": "0x8367ed",
+      "hex": "488d8320010000",
+      "instruction": "lea rax, [rbx + 0x120]"
+    },
+    {
+      "id": "site-84f6a5",
+      "binary": "game",
+      "rva": "0x84f6a5",
+      "hex": "e816131f00",
+      "instruction": "call 0xa409c0"
+    },
+    {
+      "id": "site-84f6b5",
+      "binary": "game",
+      "rva": "0x84f6b5",
+      "hex": "e866131f00",
+      "instruction": "call 0xa40a20"
+    },
+    {
+      "id": "site-84f6c3",
+      "binary": "game",
+      "rva": "0x84f6c3",
+      "hex": "e8f8131f00",
+      "instruction": "call 0xa40ac0"
+    },
+    {
+      "id": "site-84f6c8",
+      "binary": "game",
+      "rva": "0x84f6c8",
+      "hex": "488b4d40",
+      "instruction": "mov rcx, qword ptr [rbp + 0x40]"
+    },
+    {
+      "id": "site-84f9f6",
+      "binary": "game",
+      "rva": "0x84f9f6",
+      "hex": "e8c50f1f00",
+      "instruction": "call 0xa409c0"
+    },
+    {
+      "id": "site-84fa07",
+      "binary": "game",
+      "rva": "0x84fa07",
+      "hex": "e814101f00",
+      "instruction": "call 0xa40a20"
+    },
+    {
+      "id": "site-84fa15",
+      "binary": "game",
+      "rva": "0x84fa15",
+      "hex": "e8a6101f00",
+      "instruction": "call 0xa40ac0"
+    },
+    {
+      "id": "site-84fa1a",
+      "binary": "game",
+      "rva": "0x84fa1a",
+      "hex": "488b4d40",
+      "instruction": "mov rcx, qword ptr [rbp + 0x40]"
+    },
+    {
+      "id": "site-84fa53",
+      "binary": "game",
+      "rva": "0x84fa53",
+      "hex": "e8e0235500",
+      "instruction": "call 0xda1e38"
+    },
+    {
+      "id": "site-84fa70",
+      "binary": "game",
+      "rva": "0x84fa70",
+      "hex": "488b4b20",
+      "instruction": "mov rcx, qword ptr [rbx + 0x20]"
+    },
+    {
+      "id": "site-84fa80",
+      "binary": "game",
+      "rva": "0x84fa80",
+      "hex": "0fbae20e",
+      "instruction": "bt edx, 0xe"
+    },
+    {
+      "id": "site-84fa86",
+      "binary": "game",
+      "rva": "0x84fa86",
+      "hex": "f6412820",
+      "instruction": "test byte ptr [rcx + 0x28], 0x20"
+    },
+    {
+      "id": "site-84fa8c",
+      "binary": "game",
+      "rva": "0x84fa8c",
+      "hex": "8b410c",
+      "instruction": "mov eax, dword ptr [rcx + 0xc]"
+    },
+    {
+      "id": "site-84fa91",
+      "binary": "game",
+      "rva": "0x84fa91",
+      "hex": "a801",
+      "instruction": "test al, 1"
+    },
+    {
+      "id": "site-84fa93",
+      "binary": "game",
+      "rva": "0x84fa93",
+      "hex": "7522",
+      "instruction": "jne 0x84fab7"
+    },
+    {
+      "id": "site-84fa95",
+      "binary": "game",
+      "rva": "0x84fa95",
+      "hex": "0fbae217",
+      "instruction": "bt edx, 0x17"
+    },
+    {
+      "id": "site-84fb32",
+      "binary": "game",
+      "rva": "0x84fb32",
+      "hex": "8b03",
+      "instruction": "mov eax, dword ptr [rbx]"
+    },
+    {
+      "id": "site-84fb39",
+      "binary": "game",
+      "rva": "0x84fb39",
+      "hex": "0f86f6000000",
+      "instruction": "jbe 0x84fc35"
+    },
+    {
+      "id": "site-84fb3f",
+      "binary": "game",
+      "rva": "0x84fb3f",
+      "hex": "4883c348",
+      "instruction": "add rbx, 0x48"
+    },
+    {
+      "id": "site-84fbf8",
+      "binary": "game",
+      "rva": "0x84fbf8",
+      "hex": "e83b225500",
+      "instruction": "call 0xda1e38"
+    },
+    {
+      "id": "site-88e5a6",
+      "binary": "game",
+      "rva": "0x88e5a6",
+      "hex": "41814e1000000020",
+      "instruction": "or dword ptr [r14 + 0x10], 0x20000000"
+    },
+    {
+      "id": "site-88e600",
+      "binary": "game",
+      "rva": "0x88e600",
+      "hex": "41894660",
+      "instruction": "mov dword ptr [r14 + 0x60], eax"
+    },
+    {
+      "id": "site-88e6eb",
+      "binary": "game",
+      "rva": "0x88e6eb",
+      "hex": "41894664",
+      "instruction": "mov dword ptr [r14 + 0x64], eax"
+    },
+    {
+      "id": "site-88e9d2",
+      "binary": "game",
+      "rva": "0x88e9d2",
+      "hex": "41f6461480",
+      "instruction": "test byte ptr [r14 + 0x14], 0x80"
+    },
+    {
+      "id": "site-88e9d9",
+      "binary": "game",
+      "rva": "0x88e9d9",
+      "hex": "458b7668",
+      "instruction": "mov r14d, dword ptr [r14 + 0x68]"
+    },
+    {
+      "id": "site-88ea15",
+      "binary": "game",
+      "rva": "0x88ea15",
+      "hex": "8160147fffffff",
+      "instruction": "and dword ptr [rax + 0x14], 0xffffff7f"
+    },
+    {
+      "id": "site-91b6e3",
+      "binary": "game",
+      "rva": "0x91b6e3",
+      "hex": "e838c70800",
+      "instruction": "call 0x9a7e20"
+    },
+    {
+      "id": "site-91be0d",
+      "binary": "game",
+      "rva": "0x91be0d",
+      "hex": "48ffa018010000",
+      "instruction": "jmp qword ptr [rax + 0x118]"
+    },
+    {
+      "id": "site-91c960",
+      "binary": "game",
+      "rva": "0x91c960",
+      "hex": "ff90a8000000",
+      "instruction": "call qword ptr [rax + 0xa8]"
+    },
+    {
+      "id": "site-91c96a",
+      "binary": "game",
+      "rva": "0x91c96a",
+      "hex": "f30f11804c010000",
+      "instruction": "movss dword ptr [rax + 0x14c], xmm0"
+    },
+    {
+      "id": "site-92b408",
+      "binary": "game",
+      "rva": "0x92b408",
+      "hex": "e8a368b9ff",
+      "instruction": "call 0x4c1cb0"
+    },
+    {
+      "id": "site-92babb",
+      "binary": "game",
+      "rva": "0x92babb",
+      "hex": "e8c07bc3ff",
+      "instruction": "call 0x563680"
+    },
+    {
+      "id": "site-92bf42",
+      "binary": "game",
+      "rva": "0x92bf42",
+      "hex": "488b82c80d0000",
+      "instruction": "mov rax, qword ptr [rdx + 0xdc8]"
+    },
+    {
+      "id": "site-92bf76",
+      "binary": "game",
+      "rva": "0x92bf76",
+      "hex": "f30f10b04c010000",
+      "instruction": "movss xmm6, dword ptr [rax + 0x14c]"
+    },
+    {
+      "id": "site-92bfcd",
+      "binary": "game",
+      "rva": "0x92bfcd",
+      "hex": "0f2ff0",
+      "instruction": "comiss xmm6, xmm0"
+    },
+    {
+      "id": "site-92bfd0",
+      "binary": "game",
+      "rva": "0x92bfd0",
+      "hex": "770b",
+      "instruction": "ja 0x92bfdd"
+    },
+    {
+      "id": "site-92c032",
+      "binary": "game",
+      "rva": "0x92c032",
+      "hex": "0f2ff0",
+      "instruction": "comiss xmm6, xmm0"
+    },
+    {
+      "id": "site-92c035",
+      "binary": "game",
+      "rva": "0x92c035",
+      "hex": "763b",
+      "instruction": "jbe 0x92c072"
+    },
+    {
+      "id": "site-92c03f",
+      "binary": "game",
+      "rva": "0x92c03f",
+      "hex": "4c896dd8",
+      "instruction": "mov qword ptr [rbp - 0x28], r13"
+    },
+    {
+      "id": "site-92c05a",
+      "binary": "game",
+      "rva": "0x92c05a",
+      "hex": "488345a818",
+      "instruction": "add qword ptr [rbp - 0x58], 0x18"
+    },
+    {
+      "id": "site-92c082",
+      "binary": "game",
+      "rva": "0x92c082",
+      "hex": "e8e95d0000",
+      "instruction": "call 0x931e70"
+    },
+    {
+      "id": "site-92c08c",
+      "binary": "game",
+      "rva": "0x92c08c",
+      "hex": "4c8d4da0",
+      "instruction": "lea r9, [rbp - 0x60]"
+    },
+    {
+      "id": "site-92c090",
+      "binary": "game",
+      "rva": "0x92c090",
+      "hex": "4c897530",
+      "instruction": "mov qword ptr [rbp + 0x30], r14"
+    },
+    {
+      "id": "site-92c094",
+      "binary": "game",
+      "rva": "0x92c094",
+      "hex": "4c8d45b8",
+      "instruction": "lea r8, [rbp - 0x48]"
+    },
+    {
+      "id": "site-92c098",
+      "binary": "game",
+      "rva": "0x92c098",
+      "hex": "488bc8",
+      "instruction": "mov rcx, rax"
+    },
+    {
+      "id": "site-92c09b",
+      "binary": "game",
+      "rva": "0x92c09b",
+      "hex": "488d5530",
+      "instruction": "lea rdx, [rbp + 0x30]"
+    },
+    {
+      "id": "site-92c09f",
+      "binary": "game",
+      "rva": "0x92c09f",
+      "hex": "e80c540000",
+      "instruction": "call 0x9314b0"
+    },
+    {
+      "id": "site-92c0a4",
+      "binary": "game",
+      "rva": "0x92c0a4",
+      "hex": "488b07",
+      "instruction": "mov rax, qword ptr [rdi]"
+    },
+    {
+      "id": "site-92c0e0",
+      "binary": "game",
+      "rva": "0x92c0e0",
+      "hex": "ffc6",
+      "instruction": "inc esi"
+    },
+    {
+      "id": "site-92c0f3",
+      "binary": "game",
+      "rva": "0x92c0f3",
+      "hex": "ffce",
+      "instruction": "dec esi"
+    },
+    {
+      "id": "site-92c0f5",
+      "binary": "game",
+      "rva": "0x92c0f5",
+      "hex": "40887011",
+      "instruction": "mov byte ptr [rax + 0x11], sil"
+    },
+    {
+      "id": "site-92c106",
+      "binary": "game",
+      "rva": "0x92c106",
+      "hex": "488902",
+      "instruction": "mov qword ptr [rdx], rax"
+    },
+    {
+      "id": "site-92c109",
+      "binary": "game",
+      "rva": "0x92c109",
+      "hex": "4883470808",
+      "instruction": "add qword ptr [rdi + 8], 8"
+    },
+    {
+      "id": "site-92c116",
+      "binary": "game",
+      "rva": "0x92c116",
+      "hex": "e8c56079ff",
+      "instruction": "call 0xc21e0"
+    },
+    {
+      "id": "site-92c11b",
+      "binary": "game",
+      "rva": "0x92c11b",
+      "hex": "4883c318",
+      "instruction": "add rbx, 0x18"
+    },
+    {
+      "id": "site-92c178",
+      "binary": "game",
+      "rva": "0x92c178",
+      "hex": "e8bb5c4700",
+      "instruction": "call 0xda1e38"
+    },
+    {
+      "id": "site-92c1d9",
+      "binary": "game",
+      "rva": "0x92c1d9",
+      "hex": "e85a5c4700",
+      "instruction": "call 0xda1e38"
+    },
+    {
+      "id": "site-92c405",
+      "binary": "game",
+      "rva": "0x92c405",
+      "hex": "f6411401",
+      "instruction": "test byte ptr [rcx + 0x14], 1"
+    },
+    {
+      "id": "site-92c414",
+      "binary": "game",
+      "rva": "0x92c414",
+      "hex": "4805e80d0000",
+      "instruction": "add rax, 0xde8"
+    },
+    {
+      "id": "site-92c41b",
+      "binary": "game",
+      "rva": "0x92c41b",
+      "hex": "f7411000000010",
+      "instruction": "test dword ptr [rcx + 0x10], 0x10000000"
+    },
+    {
+      "id": "site-92cabb",
+      "binary": "game",
+      "rva": "0x92cabb",
+      "hex": "0fb69794030000",
+      "instruction": "movzx edx, byte ptr [rdi + 0x394]"
+    },
+    {
+      "id": "site-92cbbe",
+      "binary": "game",
+      "rva": "0x92cbbe",
+      "hex": "0fb68794030000",
+      "instruction": "movzx eax, byte ptr [rdi + 0x394]"
+    },
+    {
+      "id": "site-92cc40",
+      "binary": "game",
+      "rva": "0x92cc40",
+      "hex": "488d9730030000",
+      "instruction": "lea rdx, [rdi + 0x330]"
+    },
+    {
+      "id": "site-92d35c",
+      "binary": "game",
+      "rva": "0x92d35c",
+      "hex": "4180a794030000e3",
+      "instruction": "and byte ptr [r15 + 0x394], 0xe3"
+    },
+    {
+      "id": "site-92d5fb",
+      "binary": "game",
+      "rva": "0x92d5fb",
+      "hex": "44898090030000",
+      "instruction": "mov dword ptr [rax + 0x390], r8d"
+    },
+    {
+      "id": "site-92d633",
+      "binary": "game",
+      "rva": "0x92d633",
+      "hex": "c78550040000ffffffff",
+      "instruction": "mov dword ptr [rbp + 0x450], 0xffffffff"
+    },
+    {
+      "id": "site-931eca",
+      "binary": "game",
+      "rva": "0x931eca",
+      "hex": "e8b191eeff",
+      "instruction": "call 0x81b080"
+    },
+    {
+      "id": "site-931f09",
+      "binary": "game",
+      "rva": "0x931f09",
+      "hex": "e8423bc3ff",
+      "instruction": "call 0x565a50"
+    },
+    {
+      "id": "site-931f35",
+      "binary": "game",
+      "rva": "0x931f35",
+      "hex": "e8163bc3ff",
+      "instruction": "call 0x565a50"
+    },
+    {
+      "id": "site-931f4a",
+      "binary": "game",
+      "rva": "0x931f4a",
+      "hex": "e8f133c3ff",
+      "instruction": "call 0x565340"
+    },
+    {
+      "id": "site-95a699",
+      "binary": "game",
+      "rva": "0x95a699",
+      "hex": "e842180000",
+      "instruction": "call 0x95bee0"
+    },
+    {
+      "id": "site-95a69e",
+      "binary": "game",
+      "rva": "0x95a69e",
+      "hex": "488b8eb0030000",
+      "instruction": "mov rcx, qword ptr [rsi + 0x3b0]"
+    },
+    {
+      "id": "site-95a6a5",
+      "binary": "game",
+      "rva": "0x95a6a5",
+      "hex": "483b8eb8030000",
+      "instruction": "cmp rcx, qword ptr [rsi + 0x3b8]"
+    },
+    {
+      "id": "site-95a6b1",
+      "binary": "game",
+      "rva": "0x95a6b1",
+      "hex": "e83a230000",
+      "instruction": "call 0x95c9f0"
+    },
+    {
+      "id": "site-95a6c3",
+      "binary": "game",
+      "rva": "0x95a6c3",
+      "hex": "8886da030000",
+      "instruction": "mov byte ptr [rsi + 0x3da], al"
+    },
+    {
+      "id": "site-95a6ff",
+      "binary": "game",
+      "rva": "0x95a6ff",
+      "hex": "4c89beb0030000",
+      "instruction": "mov qword ptr [rsi + 0x3b0], r15"
+    },
+    {
+      "id": "site-95bef8",
+      "binary": "game",
+      "rva": "0x95bef8",
+      "hex": "e893f9fbff",
+      "instruction": "call 0x91b890"
+    },
+    {
+      "id": "site-95bf1b",
+      "binary": "game",
+      "rva": "0x95bf1b",
+      "hex": "f00fc14108",
+      "instruction": "lock xadd dword ptr [rcx + 8], eax"
+    },
+    {
+      "id": "site-95bf41",
+      "binary": "game",
+      "rva": "0x95bf41",
+      "hex": "48899fd0030000",
+      "instruction": "mov qword ptr [rdi + 0x3d0], rbx"
+    },
+    {
+      "id": "site-95bf4d",
+      "binary": "game",
+      "rva": "0x95bf4d",
+      "hex": "f0ff4308",
+      "instruction": "lock inc dword ptr [rbx + 8]"
+    },
+    {
+      "id": "site-95bf87",
+      "binary": "game",
+      "rva": "0x95bf87",
+      "hex": "e834370000",
+      "instruction": "call 0x95f6c0"
+    },
+    {
+      "id": "site-95bf96",
+      "binary": "game",
+      "rva": "0x95bf96",
+      "hex": "e885010000",
+      "instruction": "call 0x95c120"
+    },
+    {
+      "id": "site-95bfdf",
+      "binary": "game",
+      "rva": "0x95bfdf",
+      "hex": "48899fb8030000",
+      "instruction": "mov qword ptr [rdi + 0x3b8], rbx"
+    },
+    {
+      "id": "site-95bfeb",
+      "binary": "game",
+      "rva": "0x95bfeb",
+      "hex": "f0ff4308",
+      "instruction": "lock inc dword ptr [rbx + 8]"
+    },
+    {
+      "id": "site-95c154",
+      "binary": "game",
+      "rva": "0x95c154",
+      "hex": "498b87d0030000",
+      "instruction": "mov rax, qword ptr [r15 + 0x3d0]"
+    },
+    {
+      "id": "site-95c15e",
+      "binary": "game",
+      "rva": "0x95c15e",
+      "hex": "0f85a9030000",
+      "instruction": "jne 0x95c50d"
+    },
+    {
+      "id": "site-95c422",
+      "binary": "game",
+      "rva": "0x95c422",
+      "hex": "498bbfd0030000",
+      "instruction": "mov rdi, qword ptr [r15 + 0x3d0]"
+    },
+    {
+      "id": "site-95c42c",
+      "binary": "game",
+      "rva": "0x95c42c",
+      "hex": "7572",
+      "instruction": "jne 0x95c4a0"
+    },
+    {
+      "id": "site-95c436",
+      "binary": "game",
+      "rva": "0x95c436",
+      "hex": "e8e5fafcff",
+      "instruction": "call 0x92bf20"
+    },
+    {
+      "id": "site-95d0c6",
+      "binary": "game",
+      "rva": "0x95d0c6",
+      "hex": "39b77c040000",
+      "instruction": "cmp dword ptr [rdi + 0x47c], esi"
+    },
+    {
+      "id": "site-95d181",
+      "binary": "game",
+      "rva": "0x95d181",
+      "hex": "e83a18f4ff",
+      "instruction": "call 0x89e9c0"
+    },
+    {
+      "id": "site-95d1b0",
+      "binary": "game",
+      "rva": "0x95d1b0",
+      "hex": "e81be9f8ff",
+      "instruction": "call 0x8ebad0"
+    },
+    {
+      "id": "site-95d1d5",
+      "binary": "game",
+      "rva": "0x95d1d5",
+      "hex": "488d8f7c040000",
+      "instruction": "lea rcx, [rdi + 0x47c]"
+    },
+    {
+      "id": "site-95d592",
+      "binary": "game",
+      "rva": "0x95d592",
+      "hex": "488d8fe8030000",
+      "instruction": "lea rcx, [rdi + 0x3e8]"
+    },
+    {
+      "id": "site-95d5a2",
+      "binary": "game",
+      "rva": "0x95d5a2",
+      "hex": "e86953efff",
+      "instruction": "call 0x852910"
+    },
+    {
+      "id": "site-960ae5",
+      "binary": "game",
+      "rva": "0x960ae5",
+      "hex": "4489442418",
+      "instruction": "mov dword ptr [rsp + 0x18], r8d"
+    },
+    {
+      "id": "site-960aea",
+      "binary": "game",
+      "rva": "0x960aea",
+      "hex": "4889542410",
+      "instruction": "mov qword ptr [rsp + 0x10], rdx"
+    },
+    {
+      "id": "site-960b15",
+      "binary": "game",
+      "rva": "0x960b15",
+      "hex": "e816a90000",
+      "instruction": "call 0x96b430"
+    },
+    {
+      "id": "site-960b1a",
+      "binary": "game",
+      "rva": "0x960b1a",
+      "hex": "85c0",
+      "instruction": "test eax, eax"
+    },
+    {
+      "id": "site-960b4d",
+      "binary": "game",
+      "rva": "0x960b4d",
+      "hex": "4c8bbad0030000",
+      "instruction": "mov r15, qword ptr [rdx + 0x3d0]"
+    },
+    {
+      "id": "site-960b6a",
+      "binary": "game",
+      "rva": "0x960b6a",
+      "hex": "e831adf5ff",
+      "instruction": "call 0x8bb8a0"
+    },
+    {
+      "id": "site-960b6f",
+      "binary": "game",
+      "rva": "0x960b6f",
+      "hex": "85c6",
+      "instruction": "test esi, eax"
+    },
+    {
+      "id": "site-960ec7",
+      "binary": "game",
+      "rva": "0x960ec7",
+      "hex": "e8d4ad0000",
+      "instruction": "call 0x96bca0"
+    },
+    {
+      "id": "site-960fe4",
+      "binary": "game",
+      "rva": "0x960fe4",
+      "hex": "e89721efff",
+      "instruction": "call 0x853180"
+    },
+    {
+      "id": "site-96243a",
+      "binary": "game",
+      "rva": "0x96243a",
+      "hex": "488b81d8030000",
+      "instruction": "mov rax, qword ptr [rcx + 0x3d8]"
+    },
+    {
+      "id": "site-96244e",
+      "binary": "game",
+      "rva": "0x96244e",
+      "hex": "83b8e001000001",
+      "instruction": "cmp dword ptr [rax + 0x1e0], 1"
+    },
+    {
+      "id": "site-962490",
+      "binary": "game",
+      "rva": "0x962490",
+      "hex": "0fb692da030000",
+      "instruction": "movzx edx, byte ptr [rdx + 0x3da]"
+    },
+    {
+      "id": "site-9625a7",
+      "binary": "game",
+      "rva": "0x9625a7",
+      "hex": "488b98b8030000",
+      "instruction": "mov rbx, qword ptr [rax + 0x3b8]"
+    },
+    {
+      "id": "site-96ba95",
+      "binary": "game",
+      "rva": "0x96ba95",
+      "hex": "e826fff7ff",
+      "instruction": "call 0x8eb9c0"
+    },
+    {
+      "id": "site-96bab1",
+      "binary": "game",
+      "rva": "0x96bab1",
+      "hex": "e8bad7faff",
+      "instruction": "call 0x919270"
+    },
+    {
+      "id": "site-96bcf2",
+      "binary": "game",
+      "rva": "0x96bcf2",
+      "hex": "e82902fcff",
+      "instruction": "call 0x92bf20"
+    },
+    {
+      "id": "site-96bd05",
+      "binary": "game",
+      "rva": "0x96bd05",
+      "hex": "488b88d0030000",
+      "instruction": "mov rcx, qword ptr [rax + 0x3d0]"
+    },
+    {
+      "id": "site-96bd0c",
+      "binary": "game",
+      "rva": "0x96bd0c",
+      "hex": "4885c9",
+      "instruction": "test rcx, rcx"
+    },
+    {
+      "id": "site-96bd0f",
+      "binary": "game",
+      "rva": "0x96bd0f",
+      "hex": "7438",
+      "instruction": "je 0x96bd49"
+    },
+    {
+      "id": "site-96bd39",
+      "binary": "game",
+      "rva": "0x96bd39",
+      "hex": "488903",
+      "instruction": "mov qword ptr [rbx], rax"
+    },
+    {
+      "id": "site-96bd3c",
+      "binary": "game",
+      "rva": "0x96bd3c",
+      "hex": "48890a",
+      "instruction": "mov qword ptr [rdx], rcx"
+    },
+    {
+      "id": "site-96bd49",
+      "binary": "game",
+      "rva": "0x96bd49",
+      "hex": "4889742458",
+      "instruction": "mov qword ptr [rsp + 0x58], rsi"
+    },
+    {
+      "id": "site-96bd69",
+      "binary": "game",
+      "rva": "0x96bd69",
+      "hex": "e8c2f6ffff",
+      "instruction": "call 0x96b430"
+    },
+    {
+      "id": "site-96f861",
+      "binary": "game",
+      "rva": "0x96f861",
+      "hex": "f30f104050",
+      "instruction": "movss xmm0, dword ptr [rax + 0x50]"
+    },
+    {
+      "id": "site-96f866",
+      "binary": "game",
+      "rva": "0x96f866",
+      "hex": "f30f104854",
+      "instruction": "movss xmm1, dword ptr [rax + 0x54]"
+    },
+    {
+      "id": "site-96f86b",
+      "binary": "game",
+      "rva": "0x96f86b",
+      "hex": "f30f105858",
+      "instruction": "movss xmm3, dword ptr [rax + 0x58]"
+    },
+    {
+      "id": "site-970be4",
+      "binary": "game",
+      "rva": "0x970be4",
+      "hex": "4489bfa8030000",
+      "instruction": "mov dword ptr [rdi + 0x3a8], r15d"
+    },
+    {
+      "id": "site-970ed3",
+      "binary": "game",
+      "rva": "0x970ed3",
+      "hex": "e8b8a6eaff",
+      "instruction": "call 0x81b590"
+    },
+    {
+      "id": "site-9a75cf",
+      "binary": "game",
+      "rva": "0x9a75cf",
+      "hex": "e84c49f8ff",
+      "instruction": "call 0x92bf20"
+    },
+    {
+      "id": "site-9a75d7",
+      "binary": "game",
+      "rva": "0x9a75d7",
+      "hex": "e8b442f7ff",
+      "instruction": "call 0x91b890"
+    },
+    {
+      "id": "site-9a7645",
+      "binary": "game",
+      "rva": "0x9a7645",
+      "hex": "488bcd",
+      "instruction": "mov rcx, rbp"
+    },
+    {
+      "id": "site-9a7648",
+      "binary": "game",
+      "rva": "0x9a7648",
+      "hex": "e8034df7ff",
+      "instruction": "call 0x91c350"
+    },
+    {
+      "id": "site-9a7655",
+      "binary": "game",
+      "rva": "0x9a7655",
+      "hex": "663985d0030000",
+      "instruction": "cmp word ptr [rbp + 0x3d0], ax"
+    },
+    {
+      "id": "site-9a7668",
+      "binary": "game",
+      "rva": "0x9a7668",
+      "hex": "e8d3130000",
+      "instruction": "call 0x9a8a40"
+    },
+    {
+      "id": "site-9a768a",
+      "binary": "game",
+      "rva": "0x9a768a",
+      "hex": "e8213cf7ff",
+      "instruction": "call 0x91b2b0"
+    },
+    {
+      "id": "site-9a76a7",
+      "binary": "game",
+      "rva": "0x9a76a7",
+      "hex": "e9f4080000",
+      "instruction": "jmp 0x9a7fa0"
+    },
+    {
+      "id": "site-9a7ea0",
+      "binary": "game",
+      "rva": "0x9a7ea0",
+      "hex": "e87b34f8ff",
+      "instruction": "call 0x92b320"
+    },
+    {
+      "id": "site-9a7ef0",
+      "binary": "game",
+      "rva": "0x9a7ef0",
+      "hex": "e82b40f8ff",
+      "instruction": "call 0x92bf20"
+    },
+    {
+      "id": "site-9a7ef8",
+      "binary": "game",
+      "rva": "0x9a7ef8",
+      "hex": "e89339f7ff",
+      "instruction": "call 0x91b890"
+    },
+    {
+      "id": "site-9a7f57",
+      "binary": "game",
+      "rva": "0x9a7f57",
+      "hex": "48891f",
+      "instruction": "mov qword ptr [rdi], rbx"
+    },
+    {
+      "id": "site-9a7fb6",
+      "binary": "game",
+      "rva": "0x9a7fb6",
+      "hex": "c781d4030000000080bf",
+      "instruction": "mov dword ptr [rcx + 0x3d4], 0xbf800000"
+    },
+    {
+      "id": "site-9a80e6",
+      "binary": "game",
+      "rva": "0x9a80e6",
+      "hex": "894710",
+      "instruction": "mov dword ptr [rdi + 0x10], eax"
+    },
+    {
+      "id": "site-9a811b",
+      "binary": "game",
+      "rva": "0x9a811b",
+      "hex": "e86073e7ff",
+      "instruction": "call 0x81f480"
+    },
+    {
+      "id": "site-9a8130",
+      "binary": "game",
+      "rva": "0x9a8130",
+      "hex": "488b8ec0030000",
+      "instruction": "mov rcx, qword ptr [rsi + 0x3c0]"
+    },
+    {
+      "id": "site-9a8137",
+      "binary": "game",
+      "rva": "0x9a8137",
+      "hex": "48b805794a90a704794a",
+      "instruction": "movabs rax, 0x4a7904a7904a7905"
+    },
+    {
+      "id": "site-9a8190",
+      "binary": "game",
+      "rva": "0x9a8190",
+      "hex": "488b8ea8030000",
+      "instruction": "mov rcx, qword ptr [rsi + 0x3a8]"
+    },
+    {
+      "id": "site-9a819a",
+      "binary": "game",
+      "rva": "0x9a819a",
+      "hex": "488b86a0030000",
+      "instruction": "mov rax, qword ptr [rsi + 0x3a0]"
+    },
+    {
+      "id": "site-9a8214",
+      "binary": "game",
+      "rva": "0x9a8214",
+      "hex": "e8b726e7ff",
+      "instruction": "call 0x81a8d0"
+    },
+    {
+      "id": "site-9a821e",
+      "binary": "game",
+      "rva": "0x9a821e",
+      "hex": "4489642420",
+      "instruction": "mov dword ptr [rsp + 0x20], r12d"
+    },
+    {
+      "id": "site-9a822d",
+      "binary": "game",
+      "rva": "0x9a822d",
+      "hex": "e88e0e0000",
+      "instruction": "call 0x9a90c0"
+    },
+    {
+      "id": "site-9a8318",
+      "binary": "game",
+      "rva": "0x9a8318",
+      "hex": "742f",
+      "instruction": "je 0x9a8349"
+    },
+    {
+      "id": "site-9a831a",
+      "binary": "game",
+      "rva": "0x9a831a",
+      "hex": "0f2fc6",
+      "instruction": "comiss xmm0, xmm6"
+    },
+    {
+      "id": "site-9a831d",
+      "binary": "game",
+      "rva": "0x9a831d",
+      "hex": "722a",
+      "instruction": "jb 0x9a8349"
+    },
+    {
+      "id": "site-9a832a",
+      "binary": "game",
+      "rva": "0x9a832a",
+      "hex": "f30f11b6d4030000",
+      "instruction": "movss dword ptr [rsi + 0x3d4], xmm6"
+    },
+    {
+      "id": "site-9a8334",
+      "binary": "game",
+      "rva": "0x9a8334",
+      "hex": "4489a6d8030000",
+      "instruction": "mov dword ptr [rsi + 0x3d8], r12d"
+    },
+    {
+      "id": "site-9a8341",
+      "binary": "game",
+      "rva": "0x9a8341",
+      "hex": "c60001",
+      "instruction": "mov byte ptr [rax], 1"
+    },
+    {
+      "id": "site-9a83f2",
+      "binary": "game",
+      "rva": "0x9a83f2",
+      "hex": "e8a931f8ff",
+      "instruction": "call 0x92b5a0"
+    },
+    {
+      "id": "site-9a8403",
+      "binary": "game",
+      "rva": "0x9a8403",
+      "hex": "884801",
+      "instruction": "mov byte ptr [rax + 1], cl"
+    },
+    {
+      "id": "site-9a8558",
+      "binary": "game",
+      "rva": "0x9a8558",
+      "hex": "e84330f8ff",
+      "instruction": "call 0x92b5a0"
+    },
+    {
+      "id": "site-9a855d",
+      "binary": "game",
+      "rva": "0x9a855d",
+      "hex": "e81eb1bbff",
+      "instruction": "call 0x563680"
+    },
+    {
+      "id": "site-9a85cc",
+      "binary": "game",
+      "rva": "0x9a85cc",
+      "hex": "e8ef6ae7ff",
+      "instruction": "call 0x81f0c0"
+    },
+    {
+      "id": "site-9a85d1",
+      "binary": "game",
+      "rva": "0x9a85d1",
+      "hex": "899ed8030000",
+      "instruction": "mov dword ptr [rsi + 0x3d8], ebx"
+    },
+    {
+      "id": "site-9a85ed",
+      "binary": "game",
+      "rva": "0x9a85ed",
+      "hex": "4584ff",
+      "instruction": "test r15b, r15b"
+    },
+    {
+      "id": "site-9a85f2",
+      "binary": "game",
+      "rva": "0x9a85f2",
+      "hex": "399ed8030000",
+      "instruction": "cmp dword ptr [rsi + 0x3d8], ebx"
+    },
+    {
+      "id": "site-9a8640",
+      "binary": "game",
+      "rva": "0x9a8640",
+      "hex": "e86b61ccff",
+      "instruction": "call 0x66e7b0"
+    },
+    {
+      "id": "site-9a8647",
+      "binary": "game",
+      "rva": "0x9a8647",
+      "hex": "8986d8030000",
+      "instruction": "mov dword ptr [rsi + 0x3d8], eax"
+    },
+    {
+      "id": "site-9a86cb",
+      "binary": "game",
+      "rva": "0x9a86cb",
+      "hex": "c60001",
+      "instruction": "mov byte ptr [rax], 1"
+    },
+    {
+      "id": "site-9a87f2",
+      "binary": "game",
+      "rva": "0x9a87f2",
+      "hex": "c60001",
+      "instruction": "mov byte ptr [rax], 1"
+    },
+    {
+      "id": "site-9a88a5",
+      "binary": "game",
+      "rva": "0x9a88a5",
+      "hex": "483b88e0000000",
+      "instruction": "cmp rcx, qword ptr [rax + 0xe0]"
+    },
+    {
+      "id": "site-9a89ad",
+      "binary": "game",
+      "rva": "0x9a89ad",
+      "hex": "4881c2c8000000",
+      "instruction": "add rdx, 0xc8"
+    },
+    {
+      "id": "site-9a8be3",
+      "binary": "game",
+      "rva": "0x9a8be3",
+      "hex": "f680300d000040",
+      "instruction": "test byte ptr [rax + 0xd30], 0x40"
+    },
+    {
+      "id": "site-9a8e24",
+      "binary": "game",
+      "rva": "0x9a8e24",
+      "hex": "8b4310",
+      "instruction": "mov eax, dword ptr [rbx + 0x10]"
+    },
+    {
+      "id": "site-9a8e27",
+      "binary": "game",
+      "rva": "0x9a8e27",
+      "hex": "488d5318",
+      "instruction": "lea rdx, [rbx + 0x18]"
+    },
+    {
+      "id": "site-9a8e32",
+      "binary": "game",
+      "rva": "0x9a8e32",
+      "hex": "898758feffff",
+      "instruction": "mov dword ptr [rdi - 0x1a8], eax"
+    },
+    {
+      "id": "site-9a8e38",
+      "binary": "game",
+      "rva": "0x9a8e38",
+      "hex": "e8d39aeaff",
+      "instruction": "call 0x852910"
+    },
+    {
+      "id": "site-9a8e3d",
+      "binary": "game",
+      "rva": "0x9a8e3d",
+      "hex": "0fb64301",
+      "instruction": "movzx eax, byte ptr [rbx + 1]"
+    },
+    {
+      "id": "site-9a8e41",
+      "binary": "game",
+      "rva": "0x9a8e41",
+      "hex": "888749feffff",
+      "instruction": "mov byte ptr [rdi - 0x1b7], al"
+    },
+    {
+      "id": "site-9a9136",
+      "binary": "game",
+      "rva": "0x9a9136",
+      "hex": "448ba424b0010000",
+      "instruction": "mov r12d, dword ptr [rsp + 0x1b0]"
+    },
+    {
+      "id": "site-9a9170",
+      "binary": "game",
+      "rva": "0x9a9170",
+      "hex": "803f00",
+      "instruction": "cmp byte ptr [rdi], 0"
+    },
+    {
+      "id": "site-9a917d",
+      "binary": "game",
+      "rva": "0x9a917d",
+      "hex": "83b9d000000000",
+      "instruction": "cmp dword ptr [rcx + 0xd0], 0"
+    },
+    {
+      "id": "site-9a9186",
+      "binary": "game",
+      "rva": "0x9a9186",
+      "hex": "66399914020000",
+      "instruction": "cmp word ptr [rcx + 0x214], bx"
+    },
+    {
+      "id": "site-9a918d",
+      "binary": "game",
+      "rva": "0x9a918d",
+      "hex": "0f8c1a030000",
+      "instruction": "jl 0x9a94ad"
+    },
+    {
+      "id": "site-9a9193",
+      "binary": "game",
+      "rva": "0x9a9193",
+      "hex": "8b8108020000",
+      "instruction": "mov eax, dword ptr [rcx + 0x208]"
+    },
+    {
+      "id": "site-9a919b",
+      "binary": "game",
+      "rva": "0x9a919b",
+      "hex": "a9fdffffff",
+      "instruction": "test eax, 0xfffffffd"
+    },
+    {
+      "id": "site-9a91a0",
+      "binary": "game",
+      "rva": "0x9a91a0",
+      "hex": "0f84ff020000",
+      "instruction": "je 0x9a94a5"
+    },
+    {
+      "id": "site-9a91c7",
+      "binary": "game",
+      "rva": "0x9a91c7",
+      "hex": "f3440f104824",
+      "instruction": "movss xmm9, dword ptr [rax + 0x24]"
+    },
+    {
+      "id": "site-9a9243",
+      "binary": "game",
+      "rva": "0x9a9243",
+      "hex": "f3440f104828",
+      "instruction": "movss xmm9, dword ptr [rax + 0x28]"
+    },
+    {
+      "id": "site-9a9299",
+      "binary": "game",
+      "rva": "0x9a9299",
+      "hex": "4183fc01",
+      "instruction": "cmp r12d, 1"
+    },
+    {
+      "id": "site-9a92c3",
+      "binary": "game",
+      "rva": "0x9a92c3",
+      "hex": "4538a720040000",
+      "instruction": "cmp byte ptr [r15 + 0x420], r12b"
+    },
+    {
+      "id": "site-9a93a7",
+      "binary": "game",
+      "rva": "0x9a93a7",
+      "hex": "e8d4a9e8ff",
+      "instruction": "call 0x833d80"
+    },
+    {
+      "id": "site-9a93c7",
+      "binary": "game",
+      "rva": "0x9a93c7",
+      "hex": "83fb06",
+      "instruction": "cmp ebx, 6"
+    },
+    {
+      "id": "site-9a93db",
+      "binary": "game",
+      "rva": "0x9a93db",
+      "hex": "e80079e7ff",
+      "instruction": "call 0x820ce0"
+    },
+    {
+      "id": "site-9a93eb",
+      "binary": "game",
+      "rva": "0x9a93eb",
+      "hex": "488d9f98000000",
+      "instruction": "lea rbx, [rdi + 0x98]"
+    },
+    {
+      "id": "site-9a9409",
+      "binary": "game",
+      "rva": "0x9a9409",
+      "hex": "e84277e7ff",
+      "instruction": "call 0x820b50"
+    },
+    {
+      "id": "site-9a9422",
+      "binary": "game",
+      "rva": "0x9a9422",
+      "hex": "7468",
+      "instruction": "je 0x9a948c"
+    },
+    {
+      "id": "site-9a9441",
+      "binary": "game",
+      "rva": "0x9a9441",
+      "hex": "e89a34f8ff",
+      "instruction": "call 0x92c8e0"
+    },
+    {
+      "id": "site-9a9449",
+      "binary": "game",
+      "rva": "0x9a9449",
+      "hex": "e87235f8ff",
+      "instruction": "call 0x92c9c0"
+    },
+    {
+      "id": "site-9a9456",
+      "binary": "game",
+      "rva": "0x9a9456",
+      "hex": "8b8890030000",
+      "instruction": "mov ecx, dword ptr [rax + 0x390]"
+    },
+    {
+      "id": "site-9a945e",
+      "binary": "game",
+      "rva": "0x9a945e",
+      "hex": "782c",
+      "instruction": "js 0x9a948c"
+    },
+    {
+      "id": "site-9a9460",
+      "binary": "game",
+      "rva": "0x9a9460",
+      "hex": "488b4608",
+      "instruction": "mov rax, qword ptr [rsi + 8]"
+    },
+    {
+      "id": "site-9a9464",
+      "binary": "game",
+      "rva": "0x9a9464",
+      "hex": "4885c0",
+      "instruction": "test rax, rax"
+    },
+    {
+      "id": "site-9a9467",
+      "binary": "game",
+      "rva": "0x9a9467",
+      "hex": "7408",
+      "instruction": "je 0x9a9471"
+    },
+    {
+      "id": "site-9a9469",
+      "binary": "game",
+      "rva": "0x9a9469",
+      "hex": "398890030000",
+      "instruction": "cmp dword ptr [rax + 0x390], ecx"
+    },
+    {
+      "id": "site-9a946f",
+      "binary": "game",
+      "rva": "0x9a946f",
+      "hex": "7d1b",
+      "instruction": "jge 0x9a948c"
+    },
+    {
+      "id": "site-9a9471",
+      "binary": "game",
+      "rva": "0x9a9471",
+      "hex": "488b03",
+      "instruction": "mov rax, qword ptr [rbx]"
+    },
+    {
+      "id": "site-9a947c",
+      "binary": "game",
+      "rva": "0x9a947c",
+      "hex": "48894610",
+      "instruction": "mov qword ptr [rsi + 0x10], rax"
+    },
+    {
+      "id": "site-9a9480",
+      "binary": "game",
+      "rva": "0x9a9480",
+      "hex": "e85ba1e3ff",
+      "instruction": "call 0x7e35e0"
+    },
+    {
+      "id": "site-9a9485",
+      "binary": "game",
+      "rva": "0x9a9485",
+      "hex": "48896e08",
+      "instruction": "mov qword ptr [rsi + 8], rbp"
+    },
+    {
+      "id": "site-9a9489",
+      "binary": "game",
+      "rva": "0x9a9489",
+      "hex": "48893e",
+      "instruction": "mov qword ptr [rsi], rdi"
+    },
+    {
+      "id": "site-9a948c",
+      "binary": "game",
+      "rva": "0x9a948c",
+      "hex": "49ffc6",
+      "instruction": "inc r14"
+    },
+    {
+      "id": "site-9a948f",
+      "binary": "game",
+      "rva": "0x9a948f",
+      "hex": "4883c348",
+      "instruction": "add rbx, 0x48"
+    },
+    {
+      "id": "site-9a9493",
+      "binary": "game",
+      "rva": "0x9a9493",
+      "hex": "4983fe04",
+      "instruction": "cmp r14, 4"
+    },
+    {
+      "id": "site-9a94ad",
+      "binary": "game",
+      "rva": "0x9a94ad",
+      "hex": "4881c7b8010000",
+      "instruction": "add rdi, 0x1b8"
+    },
+    {
+      "id": "site-9a94bf",
+      "binary": "game",
+      "rva": "0x9a94bf",
+      "hex": "48893e",
+      "instruction": "mov qword ptr [rsi], rdi"
+    },
+    {
+      "id": "site-9a94f0",
+      "binary": "game",
+      "rva": "0x9a94f0",
+      "hex": "0f95c0",
+      "instruction": "setne al"
+    },
+    {
+      "id": "site-9aede3",
+      "binary": "game",
+      "rva": "0x9aede3",
+      "hex": "4c8ba1a0030000",
+      "instruction": "mov r12, qword ptr [rcx + 0x3a0]"
+    },
+    {
+      "id": "site-9aedf3",
+      "binary": "game",
+      "rva": "0x9aedf3",
+      "hex": "4d8b2424",
+      "instruction": "mov r12, qword ptr [r12]"
+    },
+    {
+      "id": "site-9af22e",
+      "binary": "game",
+      "rva": "0x9af22e",
+      "hex": "f30f1081d4030000",
+      "instruction": "movss xmm0, dword ptr [rcx + 0x3d4]"
+    },
+    {
+      "id": "site-9af4d3",
+      "binary": "game",
+      "rva": "0x9af4d3",
+      "hex": "e828c5e7ff",
+      "instruction": "call 0x82ba00"
+    },
+    {
+      "id": "site-a41744",
+      "binary": "game",
+      "rva": "0xa41744",
+      "hex": "41b8c0420000",
+      "instruction": "mov r8d, 0x42c0"
+    },
+    {
+      "id": "site-c2b75f",
+      "binary": "game",
+      "rva": "0xc2b75f",
+      "hex": "8b5210",
+      "instruction": "mov edx, dword ptr [rdx + 0x10]"
+    },
+    {
+      "id": "site-c2b780",
+      "binary": "game",
+      "rva": "0xc2b780",
+      "hex": "ff90c8000000",
+      "instruction": "call qword ptr [rax + 0xc8]"
+    },
+    {
+      "id": "site-c2b78a",
+      "binary": "game",
+      "rva": "0xc2b78a",
+      "hex": "b001",
+      "instruction": "mov al, 1"
+    },
+    {
+      "id": "site-c2b7bf",
+      "binary": "game",
+      "rva": "0xc2b7bf",
+      "hex": "8b5210",
+      "instruction": "mov edx, dword ptr [rdx + 0x10]"
+    },
+    {
+      "id": "site-c2b7e0",
+      "binary": "game",
+      "rva": "0xc2b7e0",
+      "hex": "ff90c8000000",
+      "instruction": "call qword ptr [rax + 0xc8]"
+    },
+    {
+      "id": "site-c2b7ea",
+      "binary": "game",
+      "rva": "0xc2b7ea",
+      "hex": "b001",
+      "instruction": "mov al, 1"
+    }
+  ],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHumanBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x110ff88",
+      "methods": {
+        "24": "0x91df50",
+        "35": "0x95a680",
+        "21": "0x95cc60"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHumanBrainClient@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x1020020",
+      "methods": {
+        "24": "0x91df50"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeVehicleBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x101fd68",
+      "methods": {
+        "24": "0x9a76c0",
+        "35": "0x9a74e0",
+        "21": "0x9a7980"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeVehicleBrainClient@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x1020178",
+      "methods": {
+        "24": "0x9a76c0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAttack@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110c018",
+      "methods": {
+        "19": "0x905290",
+        "20": "0x905240"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeWeaponFire@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110a6e0",
+      "methods": {
+        "19": "0x8ecbf0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeWeaponTargetCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x1023138",
+      "methods": {
+        "1": "0x151340",
+        "3": "0xab640"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeBulletAimer@Weapon@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x11032f8",
+      "methods": {
+        "6": "0x8367d0",
+        "7": "0x83cbb0",
+        "9": "0x832eb0",
+        "13": "0x834290"
+      }
+    }
+  ],
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/ammo.set",
+      "size": 33555,
+      "sha256": "56d6b3196980145a49ba1d3d5affc4e30abba95b54a120a1a50fe4edd67e281b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/select.set",
+      "size": 642,
+      "sha256": "c36e2e0d957c036bc9dfec1d52c74cf6fa5ce0ac1737c994cbb5e649e49519c9"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_bullet.inc",
+      "size": 815,
+      "sha256": "59924edcfbba2435a611d3c8596e4868e39b4a4fdd56a80ff70f0e31e34a19fc"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_ap.inc",
+      "size": 1102,
+      "sha256": "b222d1853c0ad5b301b9f736bbc3d719f8681bcdffe0892942e36e5be97f7c83"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_fg.inc",
+      "size": 423,
+      "sha256": "1e84e13799c23a92b15b1a74ba87adc900bd2d7e6d207b11a579f5c4ef3d4350"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_heavy.inc",
+      "size": 1065,
+      "sha256": "64525645eb08f5916a338daa1c023a2e093c14d96c0a75c3c488f65de87b636b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_big.inc",
+      "size": 1060,
+      "sha256": "d58a90d2505ce83d5a7a1401a000189a956b3e96cf7ba13e879344ef70188af4"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_spg.inc",
+      "size": 1029,
+      "sha256": "82b7b6dad0c33db1c48315937ca053e3ef3a91ccc0c0a9857f272d826d61a46b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_howitzer.inc",
+      "size": 799,
+      "sha256": "7290584c5aa63971693359a3c427fce84e9cfe1dc1fcb93c773154e3285e745c"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_bullet.inc",
+      "size": 692,
+      "sha256": "2c16abb4233f24c5ce750f5acfaeb7a7b1db2ed7ad308e2126edfc73d1e4d46a"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_medium.inc",
+      "size": 1283,
+      "sha256": "d77c7e474694c3604af2ce33e79af81dfb49a7f05e3248d7b09d859c0969a037"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/searchlight.inc",
+      "size": 487,
+      "sha256": "a10e67a376e5090e62fe795cf019603ee5fa1a665dc424c943011832a9457d2a"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/bazooka/rpg_weapon.pattern",
+      "size": 1056,
+      "sha256": "24ecac3213c7ec57928bdade2466aa986267bcbeab7073a39c4aea32416b15d7"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mgun/mgun_generic.pattern",
+      "size": 892,
+      "sha256": "f508d15f3134d19bc30e6648a35ba184c51fc9b37786ff300712d88b85166c1e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mgun/mgun.pattern",
+      "size": 51,
+      "sha256": "dd473ef328e326c08830bd2cb8e3fb4baac8ea3c496f461ddb9f5e093f2ae820"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mgun/mg34_tank",
+      "size": 373,
+      "sha256": "4b3531eba48f50bad04ee684e972ad2c6c4adc59caef68886856381e44c3edf3"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/gun/75mm_kwk40",
+      "size": 1251,
+      "sha256": "c28d94a90f46541585be3b9594edadff13dd5059b8aa73867b7fd0593c6b8a76"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/gun/88mm_kwk36",
+      "size": 1012,
+      "sha256": "7fad1fc8f216b33442165fab2f0d11e8b931706a70441e224a540b6a07796d68"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/smg/smg.pattern",
+      "size": 777,
+      "sha256": "f1b2bad806abc18865d2e19a2cc1517b40f2f497b73874cc7ff41db0139dcbdc"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-tank.pattern",
+      "size": 170,
+      "sha256": "b175fd43f73f04877e4af18207caacce421af2af932e365fde2925e1785c5537"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-personnel.pattern",
+      "size": 458,
+      "sha256": "e1ab881dbb642f3144d1e8d689100b5de2185cb304d3e39bd90699ed013b5835"
+    }
+  ],
+  "stable_decision_parameters": {
+    "classification": "proposed, untested",
+    "unique_subject_threshold_for_rays": 2,
+    "max_rays_per_serial_actor_decision": 4,
+    "ordinary_bullet_query_mask": "0x86803",
+    "required_visible_mask_before_enemy_live_reads": "0x20000000",
+    "null_volume_blocking_kinds": [
+      1,
+      2
+    ],
+    "volume_blocking_test": "((u8(volume+0x28) & 0x20) == 0) && ((u32(volume+0x0c) & 2) != 0)",
+    "scoring_weights": {
+      "danger": 0.4,
+      "proximity": 0.35,
+      "alignment": 0.25
+    },
+    "incumbent_margin": 0.2,
+    "slow_turret_margin": 0.3,
+    "all_top_blocked_out_of_range_or_unknown": "native order including squad preference, native row selection, native approach and detour",
+    "disabled_while_unverified": true
+  }
+}

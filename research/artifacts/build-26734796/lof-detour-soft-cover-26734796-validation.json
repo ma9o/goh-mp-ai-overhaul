@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "fine_map_sha256": "9f8de7c10ee978617a046ea9b1fea1d1a397cf138008a1077d1da19ee4f74377",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "export_report_sha256": "2fc6d744f442f2074ec80441dd891610aa2fd021262924f6639140b4ea005fbc",
+      "exact_candidates": 22,
+      "exported_functions": 22,
+      "exported_basic_blocks": 712,
+      "checked_enums": 0,
+      "checked_constants": 3,
+      "checked_method_entries": 22,
+      "checked_instruction_locations": 68,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 16,
+      "checked_byte_sequences": 266
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/material.set",
+      "size": 8969,
+      "sha256": "f5b769cbc508dd519b45c24e4b56ee1084ebe4da903bfacce7da888d6a275b5f"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/construction/fence.inc",
+      "size": 2891,
+      "sha256": "54ae5c47754e634ec03f8766b760ec6db38a51551d62b8c28f188b7350b09158"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/flora.inc",
+      "size": 18041,
+      "sha256": "67752a1a60e9b19729214f563de1f4cce4e2d5dcc641915ea0b20dca95713064"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/shell/he.pattern",
+      "size": 108,
+      "sha256": "b3c7b8027480f8b073aa65873530264a2d4441deb70ad7ce2f996cf635453b92"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/shell/bullet_105x764.he.ammo",
+      "size": 268,
+      "sha256": "088463a3d537e993b923278f460a372d3a4542fcd87df51e2ba1c4ee38dd51b8"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/blast.inc",
+      "size": 12299,
+      "sha256": "667d1ec8314c7c9a6e48a0286a9a9fb838ddfdd9a36aa77860d7ae9a4b3eadec"
+    }
+  ],
+  "status": "passed",
+  "runtime_allowed": false,
+  "verifier": "research/scripts/verify_fine_map.py",
+  "static_note_sha256": "49fbd0773487154f07c7e12aff565502c86b082911e4a12c5f11b117252678a6",
+  "supplemental_static_checks": {
+    "focused_exports": {
+      "ammo": {
+        "export_sha256": "a8a98e6e411c99d73b277b5035555866dcbe368a52f4bbdd852e9589a1d3366e",
+        "functions_with_checked_sites": 1,
+        "checked_instruction_starts": 2
+      },
+      "ammo_gate": {
+        "export_sha256": "737f3b200d914c31bd1737542d556768479deecfb66021e6f9e7ac3acf658e0c",
+        "functions_with_checked_sites": 1,
+        "checked_instruction_starts": 5
+      },
+      "boundaries": {
+        "export_sha256": "463d766675650585bcf6b2f6914dd86640b9c8fcf9b41bfae4100dbf189c22ee",
+        "functions_with_checked_sites": 7,
+        "checked_instruction_starts": 19
+      },
+      "checks": {
+        "export_sha256": "968cd0a827f1b35051d6471d2cb42f33a44d66b47ed79835214dd1709f6e9108",
+        "functions_with_checked_sites": 4,
+        "checked_instruction_starts": 5
+      },
+      "damage": {
+        "export_sha256": "f3553dcf67902d625bbae8e5fdf28519a46709c8ec883647a926ec4ce653e264",
+        "functions_with_checked_sites": 3,
+        "checked_instruction_starts": 15
+      },
+      "faces": {
+        "export_sha256": "9be4a485b56ec1f34f3778ab40ca8f5e1e77fd96fdc8464f6f0f7404d8b9f370",
+        "functions_with_checked_sites": 1,
+        "checked_instruction_starts": 1
+      },
+      "firing": {
+        "export_sha256": "e12909342efd3559cae3e7b1bb622fccf423bcc4fa0bfeaf728a5751cd140ba8",
+        "functions_with_checked_sites": 2,
+        "checked_instruction_starts": 2
+      },
+      "hit": {
+        "export_sha256": "334b3af49f1a7ae9fad0b3d92f212982ba868872d7323db916c772ca80909a16",
+        "functions_with_checked_sites": 2,
+        "checked_instruction_starts": 4
+      },
+      "inputs": {
+        "export_sha256": "d2f0d57c31f59f9e1ab893554f270383c22fc487dab5ee45b98cb79a29edeea9",
+        "functions_with_checked_sites": 6,
+        "checked_instruction_starts": 20
+      },
+      "orders": {
+        "export_sha256": "2fc6d744f442f2074ec80441dd891610aa2fd021262924f6639140b4ea005fbc",
+        "functions_with_checked_sites": 13,
+        "checked_instruction_starts": 68
+      },
+      "phase": {
+        "export_sha256": "ba496509ea9256c8348064bbe6714162b3617058bcf4ca579e81709ab65e8b78",
+        "functions_with_checked_sites": 4,
+        "checked_instruction_starts": 6
+      },
+      "queries": {
+        "export_sha256": "3cbebe71ae800c69bb1181d8650d4da45ecb2433c10d149029c0fff578e9acbb",
+        "functions_with_checked_sites": 5,
+        "checked_instruction_starts": 9
+      },
+      "soft": {
+        "export_sha256": "529c317ea232cb38f05e7196b04f997002ea08c7478bcbccb9e6d0ff71c33ca4",
+        "functions_with_checked_sites": 16,
+        "checked_instruction_starts": 100
+      }
+    },
+    "checked_instruction_starts": 256,
+    "checked_direct_transfer_destinations": 88,
+    "checked_property_bindings": 5,
+    "disassembler": "Capstone x86-64, matching focused Ghidra instruction starts",
+    "negative_control": "Rejected a one-byte alteration of the collect-all flag test at 0x84fb23."
+  },
+  "general_compatibility_audit": {
+    "baseline_build_id": "25492057",
+    "target_build_id": "26734796",
+    "exit_code": 1,
+    "counts": {
+      "RELOCATED": 271,
+      "CONTRACT_CHANGED": 22,
+      "NOT_CHECKED": 200,
+      "UNRESOLVED": 14,
+      "AMBIGUOUS": 8,
+      "UNCHANGED": 7
+    },
+    "report_sha256": "fbb7ef85fd3e0e27d937fa76593ed50bb579aae9254bc2951e32c0ac9b47c352",
+    "required_checks_passed": false
+  }
+}

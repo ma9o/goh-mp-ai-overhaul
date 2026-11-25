@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "scope": "Static PE and read-only member checks",
+  "manifest_sha256": "759730e73b47ee9459cdae1a22b3b1e3e7ab3cfd541423227ca9084c1fa5e8e0",
+  "builds": {
+    "25492057": {
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "code_spans": 140,
+      "distinct_instruction_starts": 2638,
+      "references": 75,
+      "typed_data_checks": 26,
+      "rtti_tables": 16,
+      "vtable_slots": 41,
+      "resource_member_hashes": 0
+    },
+    "26734796": {
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "code_spans": 146,
+      "distinct_instruction_starts": 2738,
+      "references": 79,
+      "typed_data_checks": 28,
+      "rtti_tables": 16,
+      "vtable_slots": 42,
+      "resource_member_hashes": 4
+    }
+  },
+  "runtime_verified": false,
+  "runtime_allowed": false
+}

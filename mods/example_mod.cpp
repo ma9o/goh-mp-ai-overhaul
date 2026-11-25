@@ -46,6 +46,11 @@ static struct {
 
 static FILE* g_ModLog = nullptr;
 
+#if defined(__MINGW_PRINTF_FORMAT)
+__attribute__((format(__MINGW_PRINTF_FORMAT, 1, 2)))
+#elif defined(__GNUC__) || defined(__clang__)
+__attribute__((format(printf, 1, 2)))
+#endif
 void ModLog(const char* format, ...) {
     if (!g_ModLog) return;
     va_list args;
@@ -69,13 +74,13 @@ void ModLog(const char* format, ...) {
  */
 static int LuaFunc_ExampleFunction(lua_State* L) {
     if (!g_Lua) return 0;
-    
+
     // Read arguments from Lua stack (1-indexed)
     int arg1 = (int)g_Lua->lua_tointeger(L, 1);
     const char* arg2 = g_Lua->lua_tostring(L, 2);
-    
+
     ModLog("ExampleFunction called! arg1=%d, arg2=%s", arg1, arg2 ? arg2 : "(null)");
-    
+
     // Return nothing
     return 0;
 }
@@ -87,13 +92,13 @@ static int LuaFunc_ExampleFunction(lua_State* L) {
  */
 static int LuaFunc_AddNumbers(lua_State* L) {
     if (!g_Lua) return 0;
-    
+
     lua_Number a = g_Lua->lua_tonumber(L, 1);
     lua_Number b = g_Lua->lua_tonumber(L, 2);
     lua_Number result = a + b;
-    
+
     ModLog("AddNumbers(%f, %f) = %f", a, b, result);
-    
+
     // Push result onto stack and return 1 (number of return values)
     g_Lua->lua_pushnumber(L, result);
     return 1;
@@ -106,10 +111,10 @@ static int LuaFunc_AddNumbers(lua_State* L) {
  */
 static int LuaFunc_MultiplyDamage(lua_State* L) {
     if (!g_Lua) return 0;
-    
+
     lua_Number damage = g_Lua->lua_tonumber(L, 1);
     lua_Number result = damage * g_Config.damageMultiplier;
-    
+
     g_Lua->lua_pushnumber(L, result);
     return 1;
 }
@@ -121,10 +126,10 @@ static int LuaFunc_MultiplyDamage(lua_State* L) {
  */
 static int LuaFunc_SetDamageMultiplier(lua_State* L) {
     if (!g_Lua) return 0;
-    
+
     g_Config.damageMultiplier = (float)g_Lua->lua_tonumber(L, 1);
     ModLog("Damage multiplier set to %f", g_Config.damageMultiplier);
-    
+
     return 0;
 }
 
@@ -135,7 +140,7 @@ static int LuaFunc_SetDamageMultiplier(lua_State* L) {
  */
 static int LuaFunc_GetDamageMultiplier(lua_State* L) {
     if (!g_Lua) return 0;
-    
+
     g_Lua->lua_pushnumber(L, g_Config.damageMultiplier);
     return 1;
 }
@@ -147,7 +152,7 @@ static int LuaFunc_GetDamageMultiplier(lua_State* L) {
  */
 static int LuaFunc_GetModVersion(lua_State* L) {
     if (!g_Lua) return 0;
-    
+
     g_Lua->lua_pushstring(L, "1.0.0");
     return 1;
 }
@@ -160,22 +165,22 @@ static int LuaFunc_GetModVersion(lua_State* L) {
  */
 static int LuaFunc_GetConfig(lua_State* L) {
     if (!g_Lua) return 0;
-    
+
     // Create a table
     g_Lua->lua_createtable(L, 0, 3);
-    
+
     // table.damageMultiplier = value
     g_Lua->lua_pushnumber(L, g_Config.damageMultiplier);
     g_Lua->lua_setfield(L, -2, "damageMultiplier");
-    
+
     // table.accuracyBonus = value
     g_Lua->lua_pushnumber(L, g_Config.accuracyBonus);
     g_Lua->lua_setfield(L, -2, "accuracyBonus");
-    
+
     // table.logDamage = value
     g_Lua->lua_pushboolean(L, g_Config.logDamage ? 1 : 0);
     g_Lua->lua_setfield(L, -2, "logDamage");
-    
+
     // Table is at top of stack, return 1 value
     return 1;
 }
@@ -187,10 +192,10 @@ static int LuaFunc_GetConfig(lua_State* L) {
 /**
  * Called every game tick.
  */
-static bool OnTick(const COA_EventData* data) {
+static bool OnTick(const COA_EventData* /*data*/) {
     // data->tick.deltaTime has the frame delta time
     // We could do something every frame here
-    return true;  // Continue processing
+    return true; // Continue processing
 }
 
 /**
@@ -256,19 +261,19 @@ extern "C" {
 __declspec(dllexport) bool ModInit(const COA_PluginAPI* api) {
     // Store the API for later use
     g_API = api;
-    
+
     // Get game base
     g_GameBase = api->GetGameBase();
-    
+
     // Get the Lua API
     g_Lua = api->GetLuaAPI();
-    
+
     // Open log file
     char logPath[MAX_PATH];
     GetModuleFileNameA(nullptr, logPath, MAX_PATH);
     char* slash = strrchr(logPath, '\\');
     if (slash) strcpy(slash + 1, "mods\\example_mod.log");
-    
+
     g_ModLog = fopen(logPath, "w");
     if (g_ModLog) {
         ModLog("=== Example Mod Init ===");
@@ -276,50 +281,50 @@ __declspec(dllexport) bool ModInit(const COA_PluginAPI* api) {
         ModLog("Plugin API: v%u, size=%u", api->version, api->size);
         ModLog("Lua API: %p", g_Lua);
     }
-    
+
     //=========================================================================
     // REGISTER LUA FUNCTIONS
     // These will be accessible from Lua scripts!
     //=========================================================================
-    
+
     // Functions in COA_Extender (global namespace)
     api->RegisterLuaFunction("ExampleFunction", LuaFunc_ExampleFunction);
     api->RegisterLuaFunction("AddNumbers", LuaFunc_AddNumbers);
     api->RegisterLuaFunction("MultiplyDamage", LuaFunc_MultiplyDamage);
     api->RegisterLuaFunction("SetDamageMultiplier", LuaFunc_SetDamageMultiplier);
     api->RegisterLuaFunction("GetDamageMultiplier", LuaFunc_GetDamageMultiplier);
-    
+
     // Namespaced functions in COA_Plugins.ExampleMod
     api->RegisterNamespacedFunction("ExampleMod", "GetModVersion", LuaFunc_GetModVersion);
     api->RegisterNamespacedFunction("ExampleMod", "GetConfig", LuaFunc_GetConfig);
-    
+
     ModLog("Registered 7 Lua functions");
-    
+
     //=========================================================================
     // SUBSCRIBE TO EVENTS
     //=========================================================================
-    
+
     api->SubscribeEvent(COA_EVENT_TICK, OnTick);
     api->SubscribeEvent(COA_EVENT_LUA_LOADED, OnLuaLoaded);
-    
+
     ModLog("Subscribed to 2 events");
-    
+
     //=========================================================================
     // INSTALL HOOKS (Optional - for direct game function hooking)
     //=========================================================================
-    
+
     MH_STATUS status = MH_Initialize();
     if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED) {
         ModLog("MinHook init failed: %d", status);
         return false;
     }
-    
+
     // These hooks are examples - enable if you know the offsets are correct
     // InstallHook(COA::Hooks::PARSE_DAMAGE_STATS, (void*)HookedParseDamageStats,
     //             (void**)&OriginalParseDamageStats, "ParseDamageStats");
     // InstallHook(COA::Hooks::AI_UPDATE, (void*)HookedAIUpdate,
     //             (void**)&OriginalAIUpdate, "AIUpdate");
-    
+
     ModLog("Example Mod initialized successfully!");
     return true;
 }
@@ -329,44 +334,41 @@ __declspec(dllexport) bool ModInit(const COA_PluginAPI* api) {
  */
 __declspec(dllexport) void ModShutdown() {
     ModLog("=== Example Mod Shutdown ===");
-    
-    if (OriginalParseDamageStats) 
-        MH_DisableHook((void*)(g_GameBase + COA::Hooks::PARSE_DAMAGE_STATS));
-    if (OriginalAIUpdate) 
-        MH_DisableHook((void*)(g_GameBase + COA::Hooks::AI_UPDATE));
-    
-    if (g_ModLog) { 
-        fclose(g_ModLog); 
-        g_ModLog = nullptr; 
+
+    if (OriginalParseDamageStats) MH_DisableHook((void*)(g_GameBase + COA::Hooks::PARSE_DAMAGE_STATS));
+    if (OriginalAIUpdate) MH_DisableHook((void*)(g_GameBase + COA::Hooks::AI_UPDATE));
+
+    if (g_ModLog) {
+        fclose(g_ModLog);
+        g_ModLog = nullptr;
     }
 }
 
 /**
  * Called every game tick.
  */
-__declspec(dllexport) void ModTick(float dt) {
+__declspec(dllexport) void ModTick(float /*dt*/) {
     // Can do per-frame updates here
 }
 
 /**
  * Returns the mod name.
  */
-__declspec(dllexport) const char* ModGetName() { 
-    return "Example Mod"; 
+__declspec(dllexport) const char* ModGetName() {
+    return "Example Mod";
 }
 
 /**
  * Returns the mod version.
  */
-__declspec(dllexport) const char* ModGetVersion() { 
-    return "1.0.0"; 
+__declspec(dllexport) const char* ModGetVersion() {
+    return "1.0.0";
 }
 
 /**
  * Returns the mod author.
  */
-__declspec(dllexport) const char* ModGetAuthor() { 
-    return "COA Script Extender"; 
+__declspec(dllexport) const char* ModGetAuthor() {
+    return "COA Script Extender";
 }
-
 }

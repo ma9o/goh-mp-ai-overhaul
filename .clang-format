@@ -1,0 +1,39 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+Standard: c++17
+
+IndentWidth: 4
+TabWidth: 4
+ContinuationIndentWidth: 4
+UseTab: Never
+ColumnLimit: 120
+
+BreakBeforeBraces: Attach
+AccessModifierOffset: -4
+NamespaceIndentation: None
+FixNamespaceComments: true
+IndentCaseLabels: true
+IndentPPDirectives: None
+
+PointerAlignment: Left
+ReferenceAlignment: Left
+SpaceAfterCStyleCast: false
+
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortEnumsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Empty
+
+AlignConsecutiveAssignments: None
+AlignConsecutiveMacros: None
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+ReflowComments: false
+
+# Windows headers (<windows.h>, _WINVER_, WIN32_LEAN_AND_MEAN, intrin.h)
+# are order- and macro-sensitive; never auto-reorder includes.
+SortIncludes: Never
+...

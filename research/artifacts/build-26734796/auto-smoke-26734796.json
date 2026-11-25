@@ -1,0 +1,3981 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "title": "Host Auto-Smoke static contracts",
+  "runtime_allowed": false,
+  "runtime_verified": false,
+  "export_suffix": "-auto-smoke",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "image_base": "0x140000000"
+    }
+  },
+  "contracts": {
+    "scope": "Stock-only, serial emitting host. C-BATTLE, C-OUTPUTS, I-S, I-THREATENING, I-ATTACKING and C-IDLE.",
+    "rng": "C++ makes no engine RNG draws during admission, item search, scoring or trajectory checking. Native attempted and accepted actions may draw.",
+    "pure_grenade_keys": [
+      "grenade anm8_smoke",
+      "grenade m24_smoke",
+      "grenade m43_smoke",
+      "grenade rdg1_smoke",
+      "grenade svkkr_pm",
+      "grenade nbk39",
+      "grenade nbks",
+      "grenade no8_smoke"
+    ],
+    "vehicle": "Local-player or registered active master-controlled bot vehicle, exact smoke extender, first ready charge and positive stock model program. Actor-addressed class-1 action 0x11 rides frame network message 0x31, replays the native extender on peers, and produces host ID 0x44 synchronized spawns. A stock non-WP charge can still have the 2in_wp launcher program.",
+    "infantry": "eWeaponShot(positive key, 1, fixed point) selects equipment. 0x0D subtype 2 wire vectors and native release both derive the actual grenade from the current hand. Guard the sampled launch before sending.",
+    "lifetime": "Native queue/slot owns eOrder; no retain after transfer. Preserve live player tasks, native AvoidGrenade and active treatment locks.",
+    "spatial": "Before factory/dispatch reserve 25 simulation seconds keyed by vehicle or squad, allied 20 m fallback for ungrouped soldiers. An 8-second infantry release lease checks the same reservation ticket, live member, current authority and geometry; accepted release extends the cooldown. Active cloud presence outside this cache is unknown.",
+    "acceptance": "Structural verification is not a smoke-test or runtime authorization."
+  },
+  "native_abi": [
+    {
+      "rva": "0x91be00",
+      "function": "decision dispatch",
+      "win64": "RCX=brain, void",
+      "sites": "0x804c50, 0x804c57 \u2192 slot 35",
+      "minhook_target": true,
+      "whole_prefix_bytes": 13,
+      "prefix": "mov rax, qword ptr [rcx] / and dword ptr [rcx + 0x39c], 0xfdffffff",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0xc2b740",
+      "function": "can emit",
+      "win64": "no arguments, AL",
+      "sites": "0x804b06, 0x8319f2",
+      "minhook_target": false,
+      "whole_prefix_bytes": 6,
+      "prefix": "push rbx / sub rsp, 0x20",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0xc2b7a0",
+      "function": "remote client",
+      "win64": "no arguments, AL",
+      "sites": "0x8313bc, 0x766021",
+      "minhook_target": false,
+      "whole_prefix_bytes": 6,
+      "prefix": "push rbx / sub rsp, 0x20",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0xa7a80",
+      "function": "quant worker",
+      "win64": "no arguments, AL",
+      "sites": "thread category == 3; 0xa7ab9",
+      "minhook_target": false,
+      "whole_prefix_bytes": 9,
+      "prefix": "sub rsp, 0x28 / call 0xf6d43c",
+      "relocation": "relative CALL relocated"
+    },
+    {
+      "rva": "0xb9a260",
+      "function": "smoke control replay",
+      "win64": "RCX=decoded Interface::eControl, void",
+      "sites": "0xb9a26a..0xb9a2ad, action registration 0x14b3760",
+      "minhook_target": true,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov rax, rsp / push rbx / push rbp",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x781240",
+      "function": "named interaction dispatch",
+      "win64": "RCX=event context, RDX=event tag, void",
+      "sites": "0x127547..0x127554, 0x78124b..0x7812be",
+      "minhook_target": true,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 0x18], rsi",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x7657d0",
+      "function": "stock delay execution",
+      "win64": "RCX=compiled delay, RDX=live event context, void",
+      "sites": "0x77a4d4/0x77a517 call delay slot 3; children at 0x7657f9..0x765823",
+      "minhook_target": true,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x765fb0",
+      "function": "interaction entity spawn",
+      "win64": "RCX=compiled spawn action, RDX=event context, void",
+      "sites": "0x765fd0..0x765ffb, 0x76600a..0x766028, 0x766839, 0x76698f",
+      "minhook_target": true,
+      "whole_prefix_bytes": 7,
+      "prefix": "mov rax, rsp / mov qword ptr [rax + 0x10], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x765690",
+      "function": "stock delay scheduling",
+      "win64": "RCX=delay template, RDX=event context, void",
+      "sites": "0x7656a4..0x7656c7, 0x779b00",
+      "minhook_target": true,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0xb98c50",
+      "function": "control defaults",
+      "win64": "RCX=stack Interface::eControl, void",
+      "sites": "0xb5fe21..0xb5fe48, 0xb98c50..0xb98c9b",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 0x10], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x68c630",
+      "function": "construct input stream",
+      "win64": "RCX=stream, EDX=capacity, R8D=flags, RAX=this",
+      "sites": "0xb97b5a..0xb97b74, 0x68c630..0x68c64e",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x68c6a0",
+      "function": "destroy input stream",
+      "win64": "RCX=stream, void",
+      "sites": "0x68c6a0..0x68c6db, engine free 0xda2420",
+      "minhook_target": false,
+      "whole_prefix_bytes": 6,
+      "prefix": "push rbx / sub rsp, 0x20",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0xb98f20",
+      "function": "serialize one control",
+      "win64": "RCX=eControl, RDX=stream, void",
+      "sites": "0xb97b74..0xb97b82, 0xb98f3f..0xb98fa3",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 0x20], rsi",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x534150",
+      "function": "bot input frame send",
+      "win64": "RCX=callback capture with bot client at +8, RDX=interface envelope, void",
+      "sites": "0x52fb9b..0x52fba0, 0x53418f, 0x5341c1..0x5341d6",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0xc94280",
+      "function": "master input frame send",
+      "win64": "RCX=callback, RDX=interface envelope, void",
+      "sites": "0xc94294..0xc942e6; slot 22 of master accepts 0x31",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x804ac0",
+      "function": "existing actor quant trampoline",
+      "win64": "RCX=actor, void",
+      "sites": "existing Hook_ActorSlot23 shares the admitted actor scope; 0x804c50..0x804c96",
+      "minhook_target": false,
+      "whole_prefix_bytes": 6,
+      "prefix": "push rbx / sub rsp, 0x20",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x1274c0",
+      "function": "native replay of deploy smoke",
+      "win64": "RCX=extender, void",
+      "sites": "slot 10 of exact 0x1031c48; rechecks slot 9",
+      "minhook_target": false,
+      "whole_prefix_bytes": 9,
+      "prefix": "push rdi / sub rsp, 0x220",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x379260",
+      "function": "revivable personage",
+      "win64": "RCX=actor, AL",
+      "sites": "0x1c6d6d; reads only human bit/personage/vitality/link",
+      "minhook_target": false,
+      "whole_prefix_bytes": 6,
+      "prefix": "mov r8, rcx / test rcx, rcx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0xa62620",
+      "function": "terrain class",
+      "win64": "RCX=uint16 output, RDX=XY pointer, RAX=output",
+      "sites": "0xa62639, 0xa62642, 0xa6270c",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0xa5d440",
+      "function": "terrain height",
+      "win64": "RCX=terrain, RDX=XY pointer, R8D=level, XMM0=f32",
+      "sites": "0xa5d458, 0xa5d45c, 0xa5d467, 0xa5d5d4",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x901600",
+      "function": "WeaponShot factory",
+      "win64": "RCX=exact tag set, EDX=shot count, R8=point accessor, RAX=unique order",
+      "sites": "0xb923d6, 0x901644, 0x90164d, 0x901656",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x919270",
+      "function": "sequence insertion",
+      "win64": "RCX=sequence, RDX=new order, R8D=layer from tail, R9B=stop, RAX=sequence",
+      "sites": "0x919282, 0x919285, 0x9192c7, 0x91930e",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 0x18], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x91db30",
+      "function": "brain set current",
+      "win64": "RCX=brain, RDX=new order, void",
+      "sites": "0x91db44, 0x91dbab, 0x91dbf1",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x96f2f0",
+      "function": "root suspend/install",
+      "win64": "RCX=soldier root, RDX=new order, R8B=save position, void",
+      "sites": "0x96f305, 0x96f307, 0x96f327",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "test rdx, rdx / je 0x96f334",
+      "relocation": "external conditional branch relocated"
+    },
+    {
+      "rva": "0x81b080",
+      "function": "selected weapon",
+      "win64": "RCX=weaponry, RAX=borrowed weapon or null",
+      "sites": "0x8ecc23; signed place index at +0x4c",
+      "minhook_target": false,
+      "whole_prefix_bytes": 6,
+      "prefix": "movsxd rax, dword ptr [rcx + 0x4c] / test eax, eax",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x84f1b0",
+      "function": "trajectory constructor",
+      "win64": "RCX=context, RDX=actor, R8=hits, R9=origin, [entry RSP+0x28]=velocity, RAX=context",
+      "sites": "0x831b88, 0x831b90, 0x831bd7, 0x84f210",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "xor eax, eax / mov dword ptr [rcx + 8], eax",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x84f260",
+      "function": "trajectory flags",
+      "win64": "RCX=context, EDX=mask, RAX=context",
+      "sites": "0x831be1, 0x84f263..26f",
+      "minhook_target": false,
+      "whole_prefix_bytes": 6,
+      "prefix": "mov rax, rcx / test dl, 3",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x84f280",
+      "function": "trajectory simulation",
+      "win64": "RCX=context, return unused",
+      "sites": "0x831bfa, 0x84f286, 0x84f2e3",
+      "minhook_target": false,
+      "whole_prefix_bytes": 6,
+      "prefix": "push rbx / sub rsp, 0x30",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0xda1e38",
+      "function": "release engine allocation",
+      "win64": "RCX=base pointer, void; thunk to 0x373680 ignores size",
+      "sites": "0x84fbcf..0x84fbf8; large buffers use preceding allocation pointer",
+      "minhook_target": false,
+      "whole_prefix_bytes": 5,
+      "prefix": "jmp 0x373680",
+      "relocation": "terminal relative JMP relocated"
+    },
+    {
+      "rva": "0x903fe0",
+      "function": "WeaponShot Exec",
+      "win64": "RCX=order, EDX=phase, EAX=status",
+      "sites": "0x919fa9..fd4; 0x904070..7b",
+      "minhook_target": true,
+      "whole_prefix_bytes": 6,
+      "prefix": "push rdi / sub rsp, 0x20",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x8ecbf0",
+      "function": "WeaponFire Exec",
+      "win64": "RCX=order, EDX=phase, EAX=status",
+      "sites": "0x8ecc04..28, 0x8ecc7d, 0x8ece0e",
+      "minhook_target": true,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 0x10], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x906480",
+      "function": "WeaponShot scalar deleting destructor",
+      "win64": "RCX=order, EDX=deletion flags, RAX=this",
+      "sites": "0x906496, 0x90649c",
+      "minhook_target": true,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x832550",
+      "function": "thrower scalar deleting destructor",
+      "win64": "RCX=shooter, EDX=deletion flags, RAX=this",
+      "sites": "concrete thrower vtable slot 0",
+      "minhook_target": true,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x831c40",
+      "function": "thrower Firing",
+      "win64": "RCX=shooter, DL=on, void",
+      "sites": "0x831c50..0x831c75, 0x831cca, 0x831d87",
+      "minhook_target": true,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 8], rbx",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x8313b0",
+      "function": "thrower launch",
+      "win64": "RCX=shooter, void",
+      "sites": "0x831d87, 0x8319f2..0x831aae",
+      "minhook_target": true,
+      "whole_prefix_bytes": 9,
+      "prefix": "push rdi / sub rsp, 0x170",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x151340",
+      "function": "wire sender",
+      "win64": "RCX=command, void",
+      "sites": "0x15134a, 0x151387, 0x1513ae; virtual slot 1",
+      "minhook_target": true,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 0x18], rsi",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x831fd0",
+      "function": "local grenade spawn",
+      "win64": "RCX=thrower, RDX=origin*, R8=velocity*, R9=spin*, void",
+      "sites": "0x831a90..0x831aae, 0xabc33",
+      "minhook_target": true,
+      "whole_prefix_bytes": 5,
+      "prefix": "mov qword ptr [rsp + 0x20], r9",
+      "relocation": "copy straight-line prefix"
+    },
+    {
+      "rva": "0x831db0",
+      "function": "thrower hand reservations",
+      "win64": "RCX=shooter, DL=reserve, void",
+      "sites": "0x831d5e..0x831d63, 0x831de2",
+      "minhook_target": false,
+      "whole_prefix_bytes": 7,
+      "prefix": "mov rax, rsp / mov qword ptr [rax + 0x10], rbx",
+      "relocation": "copy straight-line prefix"
+    }
+  ],
+  "enums": [
+    {
+      "id": "control",
+      "table_rvas": {
+        "game": "0x110db60"
+      },
+      "values": {
+        "AI": 0,
+        "user": 1
+      }
+    },
+    {
+      "id": "fire-mode",
+      "table_rvas": {
+        "game": "0x110daa0"
+      },
+      "values": {
+        "hold": 1,
+        "return": 2,
+        "open": 0
+      }
+    },
+    {
+      "id": "movement-policy",
+      "table_rvas": {
+        "game": "0x110daf0"
+      },
+      "values": {
+        "hold": 1,
+        "zone": 2,
+        "free": 0
+      }
+    },
+    {
+      "id": "vehicle-component-state",
+      "table_rvas": {
+        "game": "0x1108410"
+      },
+      "values": {
+        "work": 0,
+        "broken": 1,
+        "destroyed": 2
+      }
+    }
+  ],
+  "methods": [
+    {
+      "id": "serial decision site",
+      "entry_rvas": {
+        "game": "0x91be00"
+      }
+    },
+    {
+      "id": "sensor commit before decision",
+      "entry_rvas": {
+        "game": "0x804ac0"
+      }
+    },
+    {
+      "id": "threat and injury observations",
+      "entry_rvas": {
+        "game": "0x88d4b0"
+      }
+    },
+    {
+      "id": "live squad members",
+      "entry_rvas": {
+        "game": "0x8e7dc0"
+      }
+    },
+    {
+      "id": "downed patient eligibility",
+      "entry_rvas": {
+        "game": "0x379260"
+      }
+    },
+    {
+      "id": "medic patient",
+      "entry_rvas": {
+        "game": "0x378710"
+      }
+    },
+    {
+      "id": "morale loss deadline",
+      "entry_rvas": {
+        "game": "0x95d990"
+      }
+    },
+    {
+      "id": "user throw action",
+      "entry_rvas": {
+        "game": "0xb922d0"
+      }
+    },
+    {
+      "id": "weapon shot factory",
+      "entry_rvas": {
+        "game": "0x901600"
+      }
+    },
+    {
+      "id": "held item check",
+      "entry_rvas": {
+        "game": "0x903c70"
+      }
+    },
+    {
+      "id": "thrower launch and synchronization",
+      "entry_rvas": {
+        "game": "0x8313b0"
+      }
+    },
+    {
+      "id": "item release",
+      "entry_rvas": {
+        "game": "0x831fd0"
+      }
+    },
+    {
+      "id": "throw command receiver",
+      "entry_rvas": {
+        "game": "0xabae0"
+      }
+    },
+    {
+      "id": "decoy lookup",
+      "entry_rvas": {
+        "game": "0x128520"
+      }
+    },
+    {
+      "id": "decoy ready",
+      "entry_rvas": {
+        "game": "0x127450"
+      }
+    },
+    {
+      "id": "decoy deploy",
+      "entry_rvas": {
+        "game": "0x1274c0"
+      }
+    },
+    {
+      "id": "spawn and replicate",
+      "entry_rvas": {
+        "game": "0x765fb0"
+      }
+    },
+    {
+      "id": "spawn receiver",
+      "entry_rvas": {
+        "game": "0x158f30"
+      }
+    },
+    {
+      "id": "impulse action",
+      "entry_rvas": {
+        "game": "0x75d8a0"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "throw-b922d0",
+      "binary": "game",
+      "function_rva": "0xb922d0",
+      "instruction_rvas": [
+        "0xb923d6",
+        "0xb923db",
+        "0xb923de",
+        "0xb923e5",
+        "0xb923ea",
+        "0xb923fd"
+      ]
+    },
+    {
+      "id": "throw-901600",
+      "binary": "game",
+      "function_rva": "0x901600",
+      "instruction_rvas": [
+        "0x90161a",
+        "0x901621",
+        "0x90162e",
+        "0x901644",
+        "0x90164d",
+        "0x901656"
+      ]
+    },
+    {
+      "id": "throw-903c70",
+      "binary": "game",
+      "function_rva": "0x903c70",
+      "instruction_rvas": [
+        "0x903ca3",
+        "0x903cbb",
+        "0x903cd1",
+        "0x903d03",
+        "0x903d0e"
+      ]
+    },
+    {
+      "id": "throw-8313b0",
+      "binary": "game",
+      "function_rva": "0x8313b0",
+      "instruction_rvas": [
+        "0x8313bc",
+        "0x831599",
+        "0x831916",
+        "0x831952",
+        "0x831998",
+        "0x8319f2",
+        "0x831a73",
+        "0x831a8d",
+        "0x831a9a",
+        "0x831aae"
+      ]
+    },
+    {
+      "id": "throw-831fd0",
+      "binary": "game",
+      "function_rva": "0x831fd0",
+      "instruction_rvas": [
+        "0x831ffe",
+        "0x83200b",
+        "0x832015",
+        "0x83206a",
+        "0x8320d5",
+        "0x8320e5",
+        "0x832134",
+        "0x832180",
+        "0x832192",
+        "0x8321bd",
+        "0x8323ed"
+      ]
+    },
+    {
+      "id": "throw-abae0",
+      "binary": "game",
+      "function_rva": "0xabae0",
+      "instruction_rvas": [
+        "0xabb84",
+        "0xabbd2",
+        "0xabbef",
+        "0xabc07",
+        "0xabc13",
+        "0xabc1f",
+        "0xabc33"
+      ]
+    },
+    {
+      "id": "authority-phase",
+      "binary": "game",
+      "function_rva": "0x804ac0",
+      "instruction_rvas": [
+        "0x804ae9",
+        "0x804c0b",
+        "0x804c50",
+        "0x804c57",
+        "0x804c96"
+      ]
+    },
+    {
+      "id": "slot35",
+      "binary": "game",
+      "function_rva": "0x91be00",
+      "instruction_rvas": [
+        "0x91be00",
+        "0x91be03",
+        "0x91be0d"
+      ]
+    },
+    {
+      "id": "damage-observation",
+      "binary": "game",
+      "function_rva": "0x88d4b0",
+      "instruction_rvas": [
+        "0x88d724",
+        "0x88d72e",
+        "0x88d732",
+        "0x88d764",
+        "0x88d782",
+        "0x88d78a",
+        "0x88d842"
+      ]
+    },
+    {
+      "id": "squad",
+      "binary": "game",
+      "function_rva": "0x8e7dc0",
+      "instruction_rvas": [
+        "0x8e7e17",
+        "0x8e7e1e",
+        "0x8e7e25",
+        "0x8e7e40",
+        "0x8e7e4f"
+      ]
+    },
+    {
+      "id": "morale",
+      "binary": "game",
+      "function_rva": "0x95d990",
+      "instruction_rvas": [
+        "0x95d9a1",
+        "0x95d9e7",
+        "0x95d9ed",
+        "0x95d9fc",
+        "0x95da0f"
+      ]
+    },
+    {
+      "id": "patient",
+      "binary": "game",
+      "function_rva": "0x379260",
+      "instruction_rvas": [
+        "0x379268",
+        "0x379287",
+        "0x3792a4",
+        "0x3792a8",
+        "0x3792b2",
+        "0x3792b9",
+        "0x3792c5"
+      ]
+    },
+    {
+      "id": "medic",
+      "binary": "game",
+      "function_rva": "0x378710",
+      "instruction_rvas": [
+        "0x378773",
+        "0x37877c",
+        "0x378ad1",
+        "0x378fc1"
+      ]
+    },
+    {
+      "id": "smoke-ext",
+      "binary": "game",
+      "function_rva": "0x128520",
+      "instruction_rvas": [
+        "0x128520"
+      ]
+    },
+    {
+      "id": "smoke-ready",
+      "binary": "game",
+      "function_rva": "0x127450",
+      "instruction_rvas": [
+        "0x127450"
+      ]
+    },
+    {
+      "id": "smoke-deploy",
+      "binary": "game",
+      "function_rva": "0x1274c0",
+      "instruction_rvas": [
+        "0x1274cf",
+        "0x1274e9",
+        "0x127502",
+        "0x12750a",
+        "0x127525",
+        "0x12754f",
+        "0x127571"
+      ]
+    },
+    {
+      "id": "spawn-emission",
+      "binary": "game",
+      "function_rva": "0x765fb0",
+      "instruction_rvas": [
+        "0x766021",
+        "0x766839",
+        "0x76698f"
+      ]
+    },
+    {
+      "id": "spawn-receive",
+      "binary": "game",
+      "function_rva": "0x158f30",
+      "instruction_rvas": [
+        "0x159019"
+      ]
+    },
+    {
+      "id": "stock-impulse",
+      "binary": "game",
+      "function_rva": "0x75d8a0",
+      "instruction_rvas": [
+        "0x75dc0f",
+        "0x75dc4c",
+        "0x75dc88"
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "id": "role-phase",
+      "evidence_ids": [
+        "authority-phase",
+        "slot35"
+      ]
+    },
+    {
+      "id": "threat-morale",
+      "evidence_ids": [
+        "damage-observation",
+        "morale"
+      ]
+    },
+    {
+      "id": "squad-patient",
+      "evidence_ids": [
+        "squad",
+        "patient",
+        "medic"
+      ]
+    },
+    {
+      "id": "ext-charge",
+      "evidence_ids": [
+        "smoke-ext",
+        "smoke-ready",
+        "smoke-deploy"
+      ]
+    }
+  ],
+  "inline_regions": [],
+  "float_constants": [
+    {
+      "id": "negative-morale-recovery-seconds",
+      "rva": "0x1024cb4",
+      "value": 10.0,
+      "binary": "game"
+    },
+    {
+      "id": "normal-morale-recovery-seconds",
+      "rva": "0x1023908",
+      "value": 0.5,
+      "binary": "game"
+    }
+  ],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHumanBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x110ff88",
+      "methods": {
+        "24": "0x91df50",
+        "35": "0x95a680"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeVehicleBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x101fd68",
+      "methods": {
+        "35": "0x9a74e0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeSquad@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x110f3a0",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHolderHandRight@Inventory@@",
+      "subobject_offset": 0,
+      "rva": "0x10ff210",
+      "methods": {
+        "3": "0x7e49c0",
+        "6": "0x7e48e0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeSmokeScreenExtender@Entity@@",
+      "rva": "0x1031c48",
+      "subobject_offset": 0,
+      "methods": {
+        "9": "0x127450",
+        "10": "0x1274c0",
+        "11": "0x1275a0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeIASpawnCommand@@",
+      "rva": "0x1037588",
+      "subobject_offset": 0,
+      "methods": {
+        "1": "0x151340",
+        "3": "0x158c60",
+        "4": "0x158f30",
+        "7": "0x15c760"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeSmokeDecoySpawnCommand@@",
+      "rva": "0x1037380",
+      "subobject_offset": 0,
+      "methods": {
+        "1": "0x151340",
+        "4": "0x158290"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAction_Spawn@Interaction@@",
+      "rva": "0x10f7558",
+      "subobject_offset": 0,
+      "methods": {
+        "1": "0x765fb0",
+        "2": "0x1b6a20",
+        "6": "0x765f70",
+        "7": "0x765f60",
+        "8": "0x324300"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAction_Impulse@Interaction@@",
+      "rva": "0x10f6350",
+      "subobject_offset": 0,
+      "methods": {
+        "1": "0x75d8a0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeComponentGeneric@Actor@@",
+      "rva": "0x11085a0",
+      "subobject_offset": 0,
+      "methods": {
+        "0": "0x8ad6c0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHS_RootSoldier@Human@@",
+      "rva": "0x1110cd0",
+      "subobject_offset": 0,
+      "methods": {
+        "4": "0x96fb50"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeComplexOrder@@",
+      "rva": "0x110d490",
+      "subobject_offset": 0,
+      "methods": {
+        "3": "0x9189b0",
+        "4": "0x918fc0",
+        "16": "0x919740"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeMedic@Order@@",
+      "rva": "0x1080638",
+      "subobject_offset": 0,
+      "methods": {
+        "3": "0x919f60",
+        "4": "0x91a0e0",
+        "19": "0x378710"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeHeal@Order@@",
+      "rva": "0x10223f0",
+      "subobject_offset": 0,
+      "methods": {
+        "3": "0x919f60",
+        "4": "0x91a0e0",
+        "19": "0x912840"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAvoidGrenade@Order@@",
+      "rva": "0x110d278",
+      "subobject_offset": 0,
+      "methods": {
+        "3": "0x919f60",
+        "4": "0x91a0e0",
+        "19": "0x916100"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeControl@Interface@@",
+      "rva": "0x10461b0",
+      "subobject_offset": 0,
+      "methods": {
+        "0": "0xb98ba0",
+        "2": "0x1f3630",
+        "4": "0xb98f20",
+        "5": "0xb99120",
+        "6": "0x1f3620",
+        "8": "0x1f2dd0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeRouter@Interface@@",
+      "rva": "0x1146ff8",
+      "subobject_offset": 0,
+      "methods": {
+        "0": "0xb988b0",
+        "1": "0xb98050"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeMasterGameClient@Multiplayer@@",
+      "rva": "0x1093938",
+      "subobject_offset": 0,
+      "methods": {
+        "8": "0x442eb0",
+        "9": "0x442510",
+        "22": "0x4427d0",
+        "24": "0x443340",
+        "25": "0x443330",
+        "3": "0x442670"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeGameServer@Multiplayer@@",
+      "rva": "0x1161690",
+      "subobject_offset": 0,
+      "methods": {
+        "7": "0xc96f10",
+        "9": "0xc96170",
+        "15": "0xc96cf0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeSteamGameServer@Multiplayer@@",
+      "rva": "0x10d96c8",
+      "subobject_offset": 0,
+      "methods": {
+        "7": "0xc96f10",
+        "9": "0x547f80",
+        "15": "0xc96cf0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAction_Delay@Interaction@@",
+      "rva": "0x10f7288",
+      "subobject_offset": 0,
+      "methods": {
+        "1": "0x765690",
+        "3": "0x7657d0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAction_ProcessBone@Interaction@@",
+      "rva": "0x10f8ae8",
+      "subobject_offset": 0,
+      "methods": {
+        "1": "0x770920"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeFlareExtender@Entity@@",
+      "rva": "0x1031d20",
+      "subobject_offset": 0,
+      "methods": {
+        "9": "0x127de0",
+        "10": "0x127df0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeBotsManagerService@Multiplayer@@",
+      "subobject_offset": 0,
+      "rva": "0x10d86e8",
+      "methods": {
+        "2": "0xc7bde0",
+        "3": "0x52f7b0",
+        "4": "0x52f980",
+        "11": "0x536a70"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeBotsManagerService@Multiplayer@@",
+      "subobject_offset": 56,
+      "rva": "0x10d8768",
+      "methods": {
+        "1": "0x52fa10"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeBotGameClient@Multiplayer@@",
+      "subobject_offset": 0,
+      "rva": "0x10d87c0",
+      "methods": {
+        "0": "0x5368d0",
+        "1": "0x536ba0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeBotCommandRouter@BotCommands@@",
+      "subobject_offset": 0,
+      "rva": "0x10d86d0",
+      "methods": {
+        "1": "0x537410"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeBotControl@BotCommands@@",
+      "subobject_offset": 0,
+      "rva": "0x1071548",
+      "methods": {
+        "0": "0xb98ba0",
+        "2": "0x1f3630",
+        "4": "0xb98f20",
+        "5": "0xb99120"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AV?$_Func_impl_no_alloc@V<lambda_d12937985d213a37ac583b0b43ff245a>@@XAEBVeInterfaceCommand@@@std@@",
+      "subobject_offset": 0,
+      "rva": "0x10d8db0",
+      "methods": {
+        "2": "0x534150"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeInventoryTransferCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x108a810",
+      "methods": {
+        "1": "0x151340",
+        "2": "0x3e1db0",
+        "3": "0x3e1e20"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeTakeItem@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110bc18",
+      "methods": {
+        "19": "0x901be0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeWeaponShot@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110bf68",
+      "methods": {
+        "19": "0x903fe0",
+        "20": "0x903f20",
+        "0": "0x906480",
+        "3": "0x919f60",
+        "4": "0x91a0e0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeThrowingShooter@Weapon@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x1102f20",
+      "methods": {
+        "1": "0x831c40",
+        "3": "0x831ad0",
+        "11": "0x8313b0",
+        "0": "0x832550"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeThrowable@Stuff@@",
+      "subobject_offset": 0,
+      "rva": "0x1100908",
+      "methods": {
+        "7": "0x7fa490"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeWeaponThrowerShootingCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x10231c0",
+      "methods": {
+        "1": "0x151340",
+        "2": "0xabcb0",
+        "3": "0xabae0",
+        "7": "0xb6dd0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeWeaponFire@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110a6e0",
+      "methods": {
+        "3": "0x919f60",
+        "4": "0x91a0e0",
+        "19": "0x8ecbf0"
+      }
+    }
+  ],
+  "byte_sequences": [
+    {
+      "id": "smoke-box-resolve",
+      "binary": "game",
+      "rva": "0x7e0771",
+      "hex": "488b8178050000488b48284885c97507488d0dd865dc00488b91a00000004885d2"
+    },
+    {
+      "id": "smoke-box-owner",
+      "binary": "game",
+      "rva": "0x7e1d24",
+      "hex": "488b5350e8637a8dff"
+    },
+    {
+      "id": "smoke-box-item-by-index",
+      "binary": "game",
+      "rva": "0x7ee780",
+      "hex": "85d2781c4c8b4110488b4118492bc04c63ca48c1f8034c3bc873054b8b04c8c3"
+    },
+    {
+      "id": "smoke-item-box-owner",
+      "binary": "game",
+      "rva": "0x7e1aea",
+      "hex": "488b5230488953284885d27450488b5250"
+    },
+    {
+      "id": "smoke-item-count",
+      "binary": "game",
+      "rva": "0x7e231f",
+      "hex": "0fb74729668943308b4748894334"
+    },
+    {
+      "id": "smoke-item-def-lookup",
+      "binary": "game",
+      "rva": "0x7e22a9",
+      "hex": "488b48404885c9751a"
+    },
+    {
+      "id": "smoke-item-key-display",
+      "binary": "game",
+      "rva": "0x7f700c",
+      "hex": "488b094885c90f843b0100004881c168080000488d54242041b020e884fdd6ff"
+    },
+    {
+      "id": "smoke-item-filling-key",
+      "binary": "game",
+      "rva": "0x7f7082",
+      "hex": "488b4e104885c90f84c40000004881c168080000"
+    },
+    {
+      "id": "smoke-stuff-sets",
+      "binary": "game",
+      "rva": "0x7f4f8f",
+      "hex": "488d8f68080000e89508d7ff488d8f980b0000e88908d7ff488d8fc80e0000e87d08d7ff"
+    },
+    {
+      "id": "smoke-set-key",
+      "binary": "game",
+      "rva": "0x7f8136",
+      "hex": "488d8b68080000498bd6e84bdad6ff488b03488d542470488bcbff5020"
+    },
+    {
+      "id": "smoke-join-key-and-tags",
+      "binary": "game",
+      "rva": "0x7f5bd5",
+      "hex": "488d91680800004881c1c80e0000e84801d7ff488d97980b0000488d8fc80e0000e895ffd6ff"
+    },
+    {
+      "id": "smoke-key-row-bounds",
+      "binary": "game",
+      "rva": "0x7f7b50",
+      "hex": "498bb7800b0000498b8f880b0000482bce"
+    },
+    {
+      "id": "smoke-key-stride",
+      "binary": "game",
+      "rva": "0x7f7bb0",
+      "hex": "498bd6488bcee885d7d6ff84c00f84d70000004883c6604983c660493bf775e0"
+    },
+    {
+      "id": "smoke-tag-text",
+      "binary": "game",
+      "rva": "0x566e89",
+      "hex": "48837b580f4c8d4b4076034d8b09"
+    },
+    {
+      "id": "smoke-tag-hash",
+      "binary": "game",
+      "rva": "0x564faf",
+      "hex": "48837b580f488d4b407603488b09488b5350e86a97ffff488903"
+    },
+    {
+      "id": "smoke-tag-inclusion",
+      "binary": "game",
+      "rva": "0x565aa3",
+      "hex": "488bd3488bcee892f8ffff84c0750d4883c660483bf575e832c0eb0b4883c360483bdf75c8b001"
+    },
+    {
+      "id": "smoke-item-effects",
+      "binary": "game",
+      "rva": "0x7f588e",
+      "hex": "488b9980040000483b99880400007430"
+    },
+    {
+      "id": "smoke-filename-split",
+      "binary": "game",
+      "rva": "0x7f8a5b",
+      "hex": "488d1d1aa98400"
+    },
+    {
+      "id": "smoke-filename-delimiter",
+      "binary": "game",
+      "rva": "0x104337c",
+      "hex": "2e00"
+    },
+    {
+      "id": "smoke-filename-token",
+      "binary": "game",
+      "rva": "0x7f8b8a",
+      "hex": "48895dc0480f474598488945b8e86400d7ff"
+    },
+    {
+      "id": "smoke-filename-loader",
+      "binary": "game",
+      "rva": "0x7f8d90",
+      "hex": "488d9330030000488bcbe891f1ffff"
+    },
+    {
+      "id": "smoke-hash-tail",
+      "binary": "game",
+      "rva": "0x55e7b0",
+      "hex": "418bc0c1e80d4133c069c095e9d15b8bc848c1e80f4833c1c3"
+    },
+    {
+      "id": "smoke-right-owner",
+      "binary": "game",
+      "rva": "0x7e1be3",
+      "hex": "488b92d0030000e8a17b8dff"
+    },
+    {
+      "id": "smoke-right-item",
+      "binary": "game",
+      "rva": "0x7e49c0",
+      "hex": "488b81d8030000c3"
+    },
+    {
+      "id": "smoke-right-valid-item",
+      "binary": "game",
+      "rva": "0x7e48e0",
+      "hex": "488b81d80300004885c074104883784000740983784800740332"
+    },
+    {
+      "id": "smoke-holder-list",
+      "binary": "game",
+      "rva": "0x7deaff",
+      "hex": "488b9988000000483b9990000000"
+    },
+    {
+      "id": "smoke-holder-list-stride",
+      "binary": "game",
+      "rva": "0x7deb20",
+      "hex": "488b0b488b01ff50384883c308483bdf75ee"
+    },
+    {
+      "id": "vehicle-extender-list",
+      "binary": "game",
+      "rva": "0x7ac584",
+      "hex": "488b19488bea488b7908483bdf"
+    },
+    {
+      "id": "vehicle-extender-step",
+      "binary": "game",
+      "rva": "0x7ac5a0",
+      "hex": "488b33488bcd488d5620e8918ddbff84c075204883c308483bdf"
+    },
+    {
+      "id": "vehicle-panel-trigger",
+      "binary": "game",
+      "rva": "0xb9a294",
+      "hex": "488b3b488bcfe881e258ff4885c0744b488b10488bc8ff5250"
+    },
+    {
+      "id": "vehicle-ready-weapon",
+      "binary": "game",
+      "rva": "0x127459",
+      "hex": "488b49184885c97406f6413002750233c9488b89d80d0000e84a3c6f00488983880400004885c07429"
+    },
+    {
+      "id": "vehicle-ready-crew",
+      "binary": "game",
+      "rva": "0x127482",
+      "hex": "488b4318488b8868050000488b4118483941107414488bcbe8d1fbffff84c07408b001"
+    },
+    {
+      "id": "vehicle-weapon-first-mount",
+      "binary": "game",
+      "rva": "0x81b0c0",
+      "hex": "488b4118483b41207414488b004885c0740c488b80b80200004885c07510488b4130483b4138750333c0c3488b00c3"
+    },
+    {
+      "id": "vehicle-search-assign",
+      "binary": "game",
+      "rva": "0x127085",
+      "hex": "488b4918e892936b00488bd0488d4c2420e845ac6b00488d542420488d8f10010000e834c56b00488d4c2420e80aae6b00488b07488d542460488bcfff50584c8d4c242048c744245800000000488bd0488d8f100100004533c0e83cb16b00"
+    },
+    {
+      "id": "vehicle-search-deadline",
+      "binary": "game",
+      "rva": "0x12712b",
+      "hex": "83bf5401000000741fe8777654008b8f540100002bc88b05c1d345013bc80f4cc83bc80f94c0"
+    },
+    {
+      "id": "vehicle-itemtags-parse",
+      "binary": "game",
+      "rva": "0x1273c8",
+      "hex": "8178308e000000751a488bcbe8c77f5500488bd0488d8e5001000041b020e885f74300"
+    },
+    {
+      "id": "vehicle-itemtags-check",
+      "binary": "game",
+      "rva": "0x1275b5",
+      "hex": "488b81780400004533c0488bf2483981700400000f85b0010000488d91c800000048837a180f7603488b12"
+    },
+    {
+      "id": "vehicle-mask-slot",
+      "binary": "game",
+      "rva": "0x12777f",
+      "hex": "488d9158010000488d8d70020000e87ee14300488bd0488bcee873e14300"
+    },
+    {
+      "id": "vehicle-search-first-slot",
+      "binary": "game",
+      "rva": "0x7e227b",
+      "hex": "488b4b28eb0233c98bd0e8f6c40000ff4338488bf84885c00f84b5000000"
+    },
+    {
+      "id": "vehicle-search-mask-read",
+      "binary": "game",
+      "rva": "0x7e2299",
+      "hex": "488b8d2003000048398d18030000744b488b48404885c9751a"
+    },
+    {
+      "id": "vehicle-search-mask-test",
+      "binary": "game",
+      "rva": "0x7e22cc",
+      "hex": "4881c1c80e00004585f6750a488bd5e87037d8ffeb0e"
+    },
+    {
+      "id": "vehicle-search-all-tags",
+      "binary": "game",
+      "rva": "0x565a90",
+      "hex": "498bae20030000498bb618030000483bf57418488bd3488bcee892f8ffff84c0750d4883c660483bf575e832c0eb0b4883c360483bdf75c8"
+    },
+    {
+      "id": "vehicle-trigger-entry",
+      "binary": "game",
+      "rva": "0x1274c0",
+      "hex": "40574881ec20020000488b01488bf9ff504884c00f84ac000000"
+    },
+    {
+      "id": "vehicle-consume-one",
+      "binary": "game",
+      "rva": "0x1274ee",
+      "hex": "488d8f10010000488b104889542420488d542420c744242801000000e801b56b004885c0"
+    },
+    {
+      "id": "vehicle-event-cooldown",
+      "binary": "game",
+      "rva": "0x127525",
+      "hex": "488d154ca9f000488d4c2430e80ad94300488b5718488d8c2490000000e819996500488bc8488d542430e8ec9c6500488d8c2490000000e88f996500488d4c2430e8a5da43008b9f50010000e83a72540003c3488b9c2430020000898754010000"
+    },
+    {
+      "id": "vehicle-spawn-role",
+      "binary": "game",
+      "rva": "0x766013",
+      "hex": "8885e0030000440fb6e084c0750de87a574c0084c00f85040a0000"
+    },
+    {
+      "id": "vehicle-spawn-emit",
+      "binary": "game",
+      "rva": "0x766827",
+      "hex": "4584e40f85b2010000488d4d88e807ad9effe8024f4c0084c00f8493010000"
+    },
+    {
+      "id": "vehicle-spawn-type",
+      "binary": "game",
+      "rva": "0x7668ac",
+      "hex": "c78558010000440000004c2b3d9b89e300488d05c40c8d0049c1ff0348c785600100000000000048898550010000"
+    },
+    {
+      "id": "vehicle-spawn-send",
+      "binary": "game",
+      "rva": "0x766960",
+      "hex": "488b8550010000488d8d50010000498bd5c78568030000030000004489bd6c030000ff5038488b08488b5108488bc8ffd2"
+    },
+    {
+      "id": "vehicle-spawn-receive",
+      "binary": "game",
+      "rva": "0x159014",
+      "hex": "488d4c2420e8e2fa5b00488bd8f6403a01"
+    },
+    {
+      "id": "vehicle-impulse-stream",
+      "binary": "game",
+      "rva": "0x75d8ef",
+      "hex": "f6403a017407e8a617fbffeb05e86f16fbff488bc8e8075fe0ff"
+    },
+    {
+      "id": "vehicle-impulse-draw",
+      "binary": "game",
+      "rva": "0x75dc08",
+      "hex": "694808eda3f87fff400c81c1311da02a894808"
+    },
+    {
+      "id": "vehicle-stream-names",
+      "binary": "game",
+      "rva": "0x10f2458",
+      "hex": "656e746974795f6c6f63616c0000000073796e6365645f676c6f62616c00"
+    },
+    {
+      "id": "vehicle-unused-command",
+      "binary": "game",
+      "rva": "0x15db34",
+      "hex": "488d054598ed00488903c7430841000000"
+    },
+    {
+      "id": "vehicle-actor-props",
+      "binary": "game",
+      "rva": "0x9abe43",
+      "hex": "488b9b48050000488bbb38030000488b9b30030000"
+    },
+    {
+      "id": "vehicle-actor-dynamic-tags",
+      "binary": "game",
+      "rva": "0x769a8a",
+      "hex": "488b1a488bbbf0040000488b9be8040000"
+    },
+    {
+      "id": "vehicle-component-list",
+      "binary": "game",
+      "rva": "0x8abb63",
+      "hex": "488b99900b0000488bb9980b0000483bdf745b"
+    },
+    {
+      "id": "vehicle-component-name",
+      "binary": "game",
+      "rva": "0x8abb80",
+      "hex": "488b03488bd6488b8828030000e8ae97cbff84c07432"
+    },
+    {
+      "id": "vehicle-component-step",
+      "binary": "game",
+      "rva": "0x8abbc8",
+      "hex": "4883c328483bdf75af"
+    },
+    {
+      "id": "vehicle-component-owner",
+      "binary": "game",
+      "rva": "0x8abac0",
+      "hex": "488b4108488b48e0"
+    },
+    {
+      "id": "vehicle-component-health",
+      "binary": "game",
+      "rva": "0x8aacf0",
+      "hex": "807924007543f30f10491c0f57c00f2fc87636f30f1041140f2fc8762c"
+    },
+    {
+      "id": "vehicle-component-state",
+      "binary": "game",
+      "rva": "0x8aae8a",
+      "hex": "80492502488bd9885124"
+    },
+    {
+      "id": "vehicle-component-health-work",
+      "binary": "game",
+      "rva": "0x8ab04a",
+      "hex": "8b431c894314"
+    },
+    {
+      "id": "vehicle-component-health-broken",
+      "binary": "game",
+      "rva": "0x8ab070",
+      "hex": "897b14"
+    },
+    {
+      "id": "vehicle-component-health-destroyed",
+      "binary": "game",
+      "rva": "0x8ab08f",
+      "hex": "48897b14"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-complex-insert-entry",
+      "rva": "0x919270",
+      "hex": "48895c24184889542410565741564883ec504963f0450fb6f1488bfa488bd94885d2"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-complex-bind-insert-front",
+      "rva": "0x9192bb",
+      "hex": "488b53084885d27408488bcfe8a4eaffff483973480f82d8000000488b43284c8d4c247848894424204c8d442420488b4340488d542438482bc648896c247048034348488d4b2833ed488944243048896c2428e80d060000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-complex-mark-previous",
+      "rva": "0x919352",
+      "hex": "488b3cf88b47180fbae01073360fbae013723048837b5000741e41b90100ad0b4c8d0507427f00ba4a000000488d0dbb417f00e806bacdff48897b50814f1800000800488b6c2470"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-complex-pending-end",
+      "rva": "0x9189db",
+      "hex": "83c901894b20488b4b504885c9740a488b01ff502048896b50396b480f8ea3000000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-complex-ring-front",
+      "rva": "0x918a02",
+      "hex": "488b5340488b4338488bca48ffc848d1e94823c823d6488b4330488b04c8488b0cd0488b01ff5018"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-complex-delete-consumed",
+      "rva": "0x918a57",
+      "hex": "488d3cd04885c97418488b01ff5020488b0f4885c97407488b018bd6ff1048892f488b4348482bc648894348750648896b40eb04"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-single-tick-start",
+      "rva": "0x919f9f",
+      "hex": "488b030fbae110488bcb4c8b8098000000721d33d241ffd0488b4b10"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-single-end-clean-child",
+      "rva": "0x91a0e0",
+      "hex": "40534883ec208b4118488bd90fbae010734b0fbae012730e488b01ba02000000ff9098000000488b4b304885c97421488b01ff5020488b4b304885c9740a488b01ba01000000ff1048c7433000000000816318fffff6ff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-brain-set-entry",
+      "rva": "0x91db30",
+      "hex": "48895c24084889742410574883ec20488bd933f6488b89f0000000488bfa4885c97438f7839c03000000000001740981491800004000eb1c"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-brain-set-owns",
+      "rva": "0x91db68",
+      "hex": "488b01ff5020488b8bf00000004885c9740a488b01ba01000000ff104889b3f00000008b8b9c0300004889b3080100004885ff7459488b8310010000488983080100004889bbf0000000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-brain-set-parent",
+      "rva": "0x91dbcd",
+      "hex": "488b4338488bcf4885c0488d90f00a0000480f44d6488b5c2430488b7424384883c4205fe97aa1ffff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-brain-tick-role",
+      "rva": "0x91dfc3",
+      "hex": "488bbbf0000000818b9c03000000000001488bcf488b07ff501881a39c030000fffffffe"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-brain-default-queue",
+      "rva": "0x91e045",
+      "hex": "488bb398000000483bb3a00000000f84d6000000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-default-start",
+      "rva": "0x91e14e",
+      "hex": "0fbae10c731c488b4340488d4b40ff501883bb88000000007e08"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-root-interrupt-entry",
+      "rva": "0x96f2f0",
+      "hex": "4885d2743f48895c2408574883ec20488bda488bf9b201e8e4030000488bcfe88cb7fbff488b4f30483b99f00000007409488b01488bd3ff5068"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-root-take-current",
+      "rva": "0x96f6fa",
+      "hex": "83b9c004000000410fb6f8488bd90f859a0100004883b968050000000f858c010000488b4130488b88f00000004885c9742084d2741c48898b68050000488b01ff5020488b433048c780f0000000000000004084ff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-root-priority-gate",
+      "rva": "0x96e272",
+      "hex": "488d15af2a7a00488bf9e87fc7fbff84c00f84f10e0000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-root-restore-or-discard",
+      "rva": "0x96e289",
+      "hex": "488b97680500004889b4243804000033f64885d2746a39b7c00400007562488b4f3039b1880000007f21488b81a0000000483981980000007511483b91f00000007436488b01ff5068eb2e89b7c0040000488b8f680500004885c97423488b01ff5020488b8f680500004885c9740a488b01ba01000000ff104889b768050000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-medic-new-phase",
+      "rva": "0x379350",
+      "hex": "814b1800000400488943484889435066894364488bc3c743440100000048c7435cffffffff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-medic-child-null-success",
+      "rva": "0x379d5b",
+      "hex": "488b742438b8010000004883c4205f"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-medic-release-treatment",
+      "rva": "0x37898b",
+      "hex": "4885c074204488b0ba120000488b4e48488b89b80d0000e899824900488b4e48e8d0815d00"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-medic-phase-state",
+      "rva": "0x378b7a",
+      "hex": "488b46084885c0488d8810f5ffff490f44cee81f7a460084c00f855603000033d244897658488bcee8190a000033c0897e44e971050000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-heal-restart",
+      "rva": "0x912a38",
+      "hex": "8883a6000000488b43084885c048897b3889bbb00000004088bbb4000000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-heal-consumer-stages",
+      "rva": "0x912b7f",
+      "hex": "8b493c0f2978c8440f2940b8440f2948a8f30f5e35c0bbb80085c90f84b802000083e9010f84a805000083f9010f8558020000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-smoke-ui-control",
+      "rva": "0xb5fe21",
+      "hex": "488d05f836950066c744242811004889442430488d3d75634e00b8ffffffff48897c24200f57c0"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-smoke-ui-submit",
+      "rva": "0xb5fe8a",
+      "hex": "e8c18d0300488d4c2420e8178e0300488b442420488d4c2420ff10"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-defaults-entry",
+      "rva": "0xb98c50",
+      "hex": "48895c2410574883ec2033ff488bd9668979184889794840887942488d4c2430e8ebc3ecff0fb610885343"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-default-tail",
+      "rva": "0xb98c7b",
+      "hex": "48c74338ffffffff4088bbf800000089bbfc000000488b5c24384883c4205fc3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-ui-owner-bail",
+      "rva": "0xb98d14",
+      "hex": "4584e47410488bc8e84f64c7ff84c00f84d3010000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-local-player",
+      "rva": "0x80f17e",
+      "hex": "0fb699a80d0000488d4c2430e8d15e25003a18488b5c24207507b0014883c428c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-player-source",
+      "rva": "0xa65060",
+      "hex": "0fb605d19ea4008801488bc1c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-zero-option",
+      "rva": "0xb98ba0",
+      "hex": "40534883ec20488bd9488b49484885c9744c"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-submit-tail",
+      "rva": "0xb98bfe",
+      "hex": "488b4b10488bd34883c4205be9f1eeffff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-snapshot-entry",
+      "rva": "0xb97b00",
+      "hex": "488974242041564881ec80000000488b024c8bf1488bca488bf2ff504084c00f8420010000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-snapshot-encode",
+      "rva": "0xb97b43",
+      "hex": "ff50080fb608488b06884c2420488bceff5010884424214533c00fb64608488d4c2428ba0001000088442422e8bc4aafff488b06488d542428488bceff5020"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-commit-bytes",
+      "rva": "0xb97be7",
+      "hex": "e8941cafff488bd0498d4e08448bc3e8b51fafff41c786f800000001000000e8953b0900"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-class-one",
+      "rva": "0x1f3630",
+      "hex": "b801000000c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-flag-getter",
+      "rva": "0x1f3620",
+      "hex": "0fb74118c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-always-serializable",
+      "rva": "0x1f2dd0",
+      "hex": "b001c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-wire-owner",
+      "rva": "0xb98f3f",
+      "hex": "e82cf1ffff0fb65f43ba01000000488bcee8bb13afff8818488b6f284c8b7720"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-wire-actor-ids",
+      "rva": "0xb98f64",
+      "hex": "498b06ba02000000488bce0fb798aa0d0000e89513afff4983c6086689184c3bf575ddba02000000488bcee87c13afff4c8b74247033c9488b6c2468668908"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-game-drain",
+      "rva": "0x66f506",
+      "hex": "488d0d5396f500e8feb03e0084c0740c488d0d0340e400e8de835200"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-frame-flush",
+      "rva": "0xc93a34",
+      "hex": "488d05e5db4c0048895c24284889442420488d542420488d442420488d0dcafa81004889442458e8b043f0ff33d2488d0db7fa81004883c4605be92d43f0ff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-mp-message",
+      "rva": "0xc9429a",
+      "hex": "e811a59dffb231488d4c24208bd8e8e3340700ba40000000488bc8488bf88048060289580ce89c3c0700488bd0488bcee81140f0ff488b4d084533c0488b114c8b8ab0000000488bd741ffd1"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-peer-message",
+      "rva": "0x53416d",
+      "hex": "b231488d4c2450e817367d00ba40000000488bc8488bf0e8d73d7d00488bd0488bcbe84c416600"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-frame-switch",
+      "rva": "0xc90097",
+      "hex": "0fb60683c0de83f8570f87ff080000488d1553ff36ff4c89a424e000000048980fb68402400ac9008b8c82d409c9004803caffe1"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-frame-map-31",
+      "rva": "0xc90a4f",
+      "hex": "0b"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-frame-jump-31",
+      "rva": "0xc90a00",
+      "hex": "7702c900"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-frame-payload",
+      "rva": "0xc90277",
+      "hex": "488b5628488d0d9e3282004533c0e8d679f0ff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-append-received",
+      "rva": "0xb97c60",
+      "hex": "40534883ec20488bd94883c108e83e1fafffc783f8000000020000004883c4205bc3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-received-replay",
+      "rva": "0xb97987",
+      "hex": "c783f80000000000000033d2488d4c2420e8e31eafff488bd04533c0488bcbe895050000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-router-apply-control",
+      "rva": "0xb97fff",
+      "hex": "488b07488d942498000000488bcfff5008440fb6c6488d4c2420488bd0e8df030000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-class-1-gate",
+      "rva": "0xb98415",
+      "hex": "80790102488bd975190fb602380175124584c0750de87133090084c00f85940300004889b424d0010000488d4b084533c04889bc24d801000033d2e82b14afff0fb64b0183e901"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-class-1-selector",
+      "rva": "0xb98455",
+      "hex": "0fb64b0183e9010f8414020000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-read-then-execute",
+      "rva": "0xb986ed",
+      "hex": "488d5308488d4da0e8260a00000fb603488d4da08845a9e817050000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-lookup-actor-id",
+      "rva": "0xb99165",
+      "hex": "e83611afff0fb70866894c24706685c9745f660f1f840000000000488d4c2470e80638eeff48898424800000004885c07425488b5328483b5330740a4889024883432808eb11"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-selector-row",
+      "rva": "0x14b3760",
+      "hex": "60a2b9400100000011"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-lookup-action",
+      "rva": "0xb98c20",
+      "hex": "40534883ec200fb65108488bd9488d0d3caa9100e8e7f4ffff488bcb4883c4205b48ffe0"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-selected-smoke",
+      "rva": "0xb9a294",
+      "hex": "488b3b488bcfe881e258ff4885c0744b488b10488bc8ff5250807d4201753c"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-named-extender-priority",
+      "rva": "0x128532",
+      "hex": "488d05cf97f000488bf14889442430488d5c2430488d059398f0004889442438488b13488d4c2440e8e1c84300"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-named-extender-match",
+      "rva": "0x7ac5a0",
+      "hex": "488b33488bcd488d5620e8918ddbff84c075204883c308483bdf75e4"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-named-extender-id-compare",
+      "rva": "0x565340",
+      "hex": "488b024839010f94c0c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-master-manager-storage",
+      "rva": "0xc85e6f",
+      "hex": "390543ce94007f0c488d0512cd94004883c428c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-master-service-read",
+      "rva": "0xc85f46",
+      "hex": "e805ffffff488b58504885db742f807b11007529"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-master-emit-role",
+      "rva": "0x443330",
+      "hex": "b001c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-master-generic-flush-gate",
+      "rva": "0x443340",
+      "hex": "b001c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-generic-flush-skip",
+      "rva": "0xc93a1d",
+      "hex": "488b01ff90c000000084c0753648833d2e0b8f0000752c"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-master-packet-dispatch",
+      "rva": "0x4427df",
+      "hex": "488bdac744242000000000488bf14c8d0dc4990c01488b49184c8d05819a090133d2e8927daf00440fb603488bf84183c0dd4183f8567744488d05e2d7bbff4963d00fb68c10742844008b94886c2844004803d0ffe2"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-master-accepts-31-byte",
+      "rva": "0x442882",
+      "hex": "00"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-master-accepts-31-jump",
+      "rva": "0x44286c",
+      "hex": "35284400"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-master-forward-to-server",
+      "rva": "0x442835",
+      "hex": "488b4b284885c9740a4533c033d2e838702400488b074c8d86d0020000488bd3488bcfff5048"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-master-replay-to-vanilla",
+      "rva": "0x442644",
+      "hex": "4d8bc7488bd7488bcee81ed88400"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-reject-closed",
+      "rva": "0xc60df0",
+      "hex": "4883b938020000000f95c0c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-clocked-input",
+      "rva": "0xc9619d",
+      "hex": "0fb6c1240280fa790f84d3040000498bd6488bce84c074124881c4b0000000415e5f5e5b5de969120000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-control-decode",
+      "rva": "0xc97446",
+      "hex": "488b8998000000e89e99fcff84c00f855e0300004883bfb0000000000f84500300004883bfb80000000048899c24b80000000f84e20000000fb60e83e92c744883e901744383f9040f85cc000000488b5628488d4dd7e89f0df0ff0fb64dd883e901"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-action-11-normal",
+      "rva": "0xc97537",
+      "hex": "0fb645d9ffc883f80e77154898488d0db58a36ff8b8481fc77c9004803c1ffe0488d4ddfe840519fff488b8fb0000000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-schedule-frame",
+      "rva": "0xc9772a",
+      "hex": "488bd6488d4dd7e8da000700488d5567488bf0804806028b4d6789480c488d8fa0000000e87d260000488bd8488b4008483b43107412488bd6488bc8e8a50007004883430830"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-drain-records",
+      "rva": "0xc989d0",
+      "hex": "488b9ea0000000488b1b44396b200f83a2000000488b7b28488b6b30483bfd745f803f2b7451"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-frame-callback",
+      "rva": "0xc98a1a",
+      "hex": "488bcfe89ef106000186c0000000498b4f384885c90f84b3000000488b01488bd7ff50100fb6072c33a8fd745f"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-frame-drain-call",
+      "rva": "0xc96dfb",
+      "hex": "4c8d44246089742450488d542440488bcd48890348896b08897b1044897b14e8511b0000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-broadcast-callback",
+      "rva": "0xc99750",
+      "hex": "4883ec288b41104c8d442430448b4914488b490889442430e80374feff4883c428c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-peer-broadcast",
+      "rva": "0xc80bb0",
+      "hex": "488b13488d4c2430418b06894424604c8d4208488b12488b92f8000000e81ed008004c8d4c2460896c24204d8bc7488d542430488bcee8d5baffff488d4c2430e8cbd108004883c308483bdf75b2"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-server-peer-broadcast-second",
+      "rva": "0xc80c32",
+      "hex": "4c8d4c2460896c24204d8bc7488d542430488bcee875baffff488d4c2430e86bd108004883c308483bdf75b2"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-sender-entry",
+      "rva": "0xc94280",
+      "hex": "48895c240848896c24104889742418574883ec50488bf2488be9e811a59dff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-stream-allocate-entry",
+      "rva": "0x68c630",
+      "hex": "48895c24084889742410574883ec208bfa418bd833d2488bf1e8e2cdffff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-stream-release-entry",
+      "rva": "0x68c6a0",
+      "hex": "40534883ec20488d05ebc3a500488bd9488901488b49084885c97405e85f5d7100"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-serializer-entry",
+      "rva": "0xb98f20",
+      "hex": "4889742420574883ec5048895c2460488bf248896c2468488bf94c89742470"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-stream-frame-codec",
+      "rva": "0xb982e0",
+      "hex": "48895c24084889742410574883ec200fb619488bf2488bf9ba01000000488bcee80b20afffba01000000488bce8818"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-marker-float-write",
+      "rva": "0xb990aa",
+      "hex": "488b5c2460b8000100006685471874230f29742440ba04000000f30f10b7fc000000488bcee83c12affff30f11300f28742440"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-marker-float-read",
+      "rva": "0xb992dc",
+      "hex": "b800010000668543187419ba04000000488bcee8ac0faffff30f1000f30f1183fc000000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-marker-byte-write",
+      "rva": "0xb98fd5",
+      "hex": "f647184074130fb65f42ba01000000488bcee82413afff8818"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-marker-byte-read",
+      "rva": "0xb99208",
+      "hex": "f64318407413ba01000000488bcee88510afff0fb608884b42"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-control-handler-hook",
+      "rva": "0xb9a260",
+      "hex": "488bc45355564883ec60488b7128488be9488b5920483bde0f8492000000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-native-actor-lookup",
+      "rva": "0xa7c9b0",
+      "hex": "663950207306488b4010eb06488bc8488b008078190074e8807919007510663b5120720a493bc87405488b4128c333c0c3"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-named-event-hook",
+      "rva": "0x781240",
+      "hex": "488974241841564883ec20803dcf6ae40000488bf24c8bf17573488b01"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-named-event-dispatch",
+      "rva": "0x78129a",
+      "hex": "0fb75360b8ffff0000663bd0741b498b0e4885c97413488b89480500004d8bc6488b4910e8adcaffff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-delay-schedule-hook",
+      "rva": "0x765690",
+      "hex": "48895c24084889742410574883ec400f29742430488bf2488bd9e871e6e8ff488bc8488d15171c9900e8c2e996ff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-delay-timer-call",
+      "rva": "0x765785",
+      "hex": "0fb683a8000000488d4b40884424280f28de48894c24204c8bc7488b8e40050000488bd3e852430100"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-timer-live-template-key",
+      "rva": "0x779b40",
+      "hex": "48397b28750980bb9800000000740f4881c3a0000000483bd875e5488bd8440fb6b42418010000483b9990000000743a4584f67535"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-delay-template-children",
+      "rva": "0x7657f9",
+      "hex": "488b7b30488b5b28483bdf741f66660f1f840000000000488b0b488bd6488b01ff50104883c308483bdf75eb"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-timer-due-entry",
+      "rva": "0x7657d0",
+      "hex": "48895c24084889742410574883ec20488bf2488bd9"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-physical-suppression-hook",
+      "rva": "0x765fb0",
+      "hex": "488bc4488958105556574154415541564157488da828fcffff4881eca00400000f2970b84c8bf20f2978a8488bf9"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-compiled-spawn-key",
+      "rva": "0x766ad5",
+      "hex": "4c8bf1488d5150498bcce86c05f2ff"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-spawn-template-lookup",
+      "rva": "0x765ff2",
+      "hex": "488d4f50e88516fbff4c8bf8"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-spawn-key-selector-length",
+      "rva": "0x7176aa",
+      "hex": "4c8b77104d85f60f84c5020000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-spawn-key-layout",
+      "rva": "0x7176e3",
+      "hex": "4c8b6718488bd74983fc0f7603488b1748837b380f488d4b207604488b4b204c8b7b304d3bf74d8bc74d0f42c6e8fb678b00"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-spawn-locality-conditions",
+      "rva": "0x765f70",
+      "hex": "4883ec28807948007529488b024885c07406f6403a01751b4883c150e8ef16fbff4885c07406f6403a01750732c04883c428c3b0014883c428"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-spawn-vanilla-host-branch",
+      "rva": "0x1b6a79",
+      "hex": "e8224da70084c00f8540010000488b03488bcbff504084c00f8423010000e8a44ca70084c00f8416010000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-timer-nonunique-replacement",
+      "rva": "0x779b67",
+      "hex": "483b9990000000743a4584f67535488b942410010000488d4b38e8bab7deff488bcbe8d21e00000f28c64c897b30e8464cefff8bf8e80f4cefff03c78903"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-stored-due-context",
+      "rva": "0x77a4ca",
+      "hex": "488b4ff8488b17488b01ff5018"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-delay-native-due",
+      "rva": "0x77a4fd",
+      "hex": "488b5540488d4c2420e855690000488b4ff8488d542420488b01ff5018488d4c2420e8cc690000"
+    },
+    {
+      "binary": "game",
+      "id": "auto-smoke-unknown-flare-path",
+      "rva": "0x127df0",
+      "hex": "41564883ec40488b014c8bf1ff504884c00f8430010000"
+    },
+    {
+      "id": "auto-smoke-master-init-call",
+      "binary": "game",
+      "rva": "0x442676",
+      "hex": "8b5138488bd9488d0d8514c500e8d871c9ff488bcbe880ca8400"
+    },
+    {
+      "id": "auto-smoke-master-service-created",
+      "binary": "game",
+      "rva": "0xc8f1e8",
+      "hex": "488bd7488bc8e85d058aff488bd8"
+    },
+    {
+      "id": "auto-smoke-master-service-stored",
+      "binary": "game",
+      "rva": "0xc8f1fa",
+      "hex": "488b03488bcbff5010488bd748899f78020000488bcbe80bd3feff"
+    },
+    {
+      "id": "auto-smoke-service-concrete-tables",
+      "binary": "game",
+      "rva": "0x52f76a",
+      "hex": "488d05778fba00488907488d05ed8fba0048894738"
+    },
+    {
+      "id": "auto-smoke-service-limit-master",
+      "binary": "game",
+      "rva": "0x52f781",
+      "hex": "488947484889475048894758488bc748895f60"
+    },
+    {
+      "id": "auto-smoke-service-index-determined",
+      "binary": "game",
+      "rva": "0xc7be96",
+      "hex": "488b07488d9424c0000000488bcfff50588b08894f0c488bd7488bcee8399f0000"
+    },
+    {
+      "id": "auto-smoke-service-id",
+      "binary": "game",
+      "rva": "0x536a70",
+      "hex": "c7021d000000488bc2c3"
+    },
+    {
+      "id": "auto-smoke-service-registered",
+      "binary": "game",
+      "rva": "0xc85e2a",
+      "hex": "4863430c83f820770548895cc708"
+    },
+    {
+      "id": "auto-smoke-service-stopping",
+      "binary": "game",
+      "rva": "0xc7c418",
+      "hex": "740448894728c6471101"
+    },
+    {
+      "id": "auto-smoke-master-service-stopped",
+      "binary": "game",
+      "rva": "0xc8f24a",
+      "hex": "488bf9488b89780200004885c9740b807911007505e83cd0feff"
+    },
+    {
+      "id": "auto-smoke-lobby-bot-filter",
+      "binary": "game",
+      "rva": "0x52f810",
+      "hex": "488b1f837b08020f85150100008b5b0ce89bc47f00488bc88bd3e841997f00b9900000004c8bf0"
+    },
+    {
+      "id": "auto-smoke-bot-vtable",
+      "binary": "game",
+      "rva": "0x52f7f4",
+      "hex": "4c8d2dc58fba00"
+    },
+    {
+      "id": "auto-smoke-bot-registered-type",
+      "binary": "game",
+      "rva": "0x52f8d9",
+      "hex": "4c892b4c897b60"
+    },
+    {
+      "id": "auto-smoke-bot-service-and-player",
+      "binary": "game",
+      "rva": "0x52f8fa",
+      "hex": "488973484c89735044887b58"
+    },
+    {
+      "id": "auto-smoke-bot-register",
+      "binary": "game",
+      "rva": "0x52f90b",
+      "hex": "488b5650488d4e4848895c2458483b5110740a48891a4883410808"
+    },
+    {
+      "id": "auto-smoke-bot-identity-from-actor",
+      "binary": "game",
+      "rva": "0x52fa36",
+      "hex": "450fb681a80d000048897c2460488b38488b4f50443841047413"
+    },
+    {
+      "id": "auto-smoke-bot-identity-search",
+      "binary": "game",
+      "rva": "0x52ff60",
+      "hex": "488b41484c8b4150493bc0741a440fb60a488b10488b4a5044384904740c4883c008493bc075ea33c0c3488bc2c3"
+    },
+    {
+      "id": "auto-smoke-bot-router-owner",
+      "binary": "game",
+      "rva": "0x5301cc",
+      "hex": "0fb65b04488bc8e8b8766600488d05f184ba00488907889f00010000"
+    },
+    {
+      "id": "auto-smoke-bot-router-installed",
+      "binary": "game",
+      "rva": "0x5301ed",
+      "hex": "498b4e6849897e68"
+    },
+    {
+      "id": "auto-smoke-bot-router-read-owner",
+      "binary": "game",
+      "rva": "0x537410",
+      "hex": "0fb681000100008802488bc2c3"
+    },
+    {
+      "id": "auto-smoke-bot-control-router-and-owner",
+      "binary": "game",
+      "rva": "0x545353",
+      "hex": "488b7b68488b5b500fb65b04e84c19deff"
+    },
+    {
+      "id": "auto-smoke-bot-control-install-router-owner",
+      "binary": "game",
+      "rva": "0x54536f",
+      "hex": "488d482048897810885843"
+    },
+    {
+      "id": "auto-smoke-bot-control-envelope-owner",
+      "binary": "game",
+      "rva": "0xb97b43",
+      "hex": "ff50080fb608488b06884c2420488bce"
+    },
+    {
+      "id": "auto-smoke-bot-control-owner-always-encoded",
+      "binary": "game",
+      "rva": "0xb98f44",
+      "hex": "0fb65f43ba01000000488bcee8bb13afff8818"
+    },
+    {
+      "id": "auto-smoke-bot-control-owner-read",
+      "binary": "game",
+      "rva": "0xb9913a",
+      "hex": "ba01000000488bcee85911afff440fb60044884343"
+    },
+    {
+      "id": "auto-smoke-bot-replay-envelope-owner",
+      "binary": "game",
+      "rva": "0xb986fa",
+      "hex": "0fb603488d4da08845a9e817050000"
+    },
+    {
+      "id": "auto-smoke-service-bot-table",
+      "binary": "game",
+      "rva": "0x52fb02",
+      "hex": "488b6b50488b5b48483bdd"
+    },
+    {
+      "id": "auto-smoke-service-callback-vtable",
+      "binary": "game",
+      "rva": "0x52fb23",
+      "hex": "4c8d358692ba00"
+    },
+    {
+      "id": "auto-smoke-service-active-bot-filter",
+      "binary": "game",
+      "rva": "0x52fb32",
+      "hex": "488b33807e58007475"
+    },
+    {
+      "id": "auto-smoke-service-bot-send-capture",
+      "binary": "game",
+      "rva": "0x52fb87",
+      "hex": "488d4424304c89742430488d54243048894424684889742438e86b826600"
+    },
+    {
+      "id": "auto-smoke-bot-passes-envelope-by-ref",
+      "binary": "game",
+      "rva": "0xb97ed4",
+      "hex": "488b4f384885c97450488b01488d542420ff5010"
+    },
+    {
+      "id": "auto-smoke-bot-input-function-abi",
+      "binary": "game",
+      "rva": "0x534150",
+      "hex": "48895c240848896c24104889742418574881ec80000000488bda488bf9"
+    },
+    {
+      "id": "auto-smoke-bot-input-encode",
+      "binary": "game",
+      "rva": "0x53416d",
+      "hex": "b231488d4c2450e817367d00ba40000000488bc8488bf0e8d73d7d00488bd0488bcbe84c416600"
+    },
+    {
+      "id": "auto-smoke-bot-input-live-gate",
+      "binary": "game",
+      "rva": "0x534194",
+      "hex": "488b6f08bfffffffff807d58007466"
+    },
+    {
+      "id": "auto-smoke-bot-frame-tick-and-send",
+      "binary": "game",
+      "rva": "0x5341b7",
+      "hex": "4533c08048060289580c488b4d48488b4960488b114c8b8ab0000000488bd041ffd1"
+    },
+    {
+      "id": "auto-smoke-bot-sender-void-return",
+      "binary": "game",
+      "rva": "0x534237",
+      "hex": "4c8d9c2480000000498b5b10498b6b18498b7320498be35fc3"
+    },
+    {
+      "id": "auto-smoke-bot-disabled-before-router-release",
+      "binary": "game",
+      "rva": "0x532635",
+      "hex": "488bcfe8c34c0000c6475800"
+    },
+    {
+      "id": "auto-smoke-bot-unregistered-on-stop",
+      "binary": "game",
+      "rva": "0x52f9d2",
+      "hex": "488b4748488b742440488b5c2430483b4750740448894750"
+    },
+    {
+      "id": "throw-point-argument-kind-and-xyz",
+      "binary": "game",
+      "rva": "0x852b75",
+      "hex": "48896b18c7430802000000f20f10470cf20f11018b4714894108"
+    },
+    {
+      "id": "throw-point-argument-tail-copy",
+      "binary": "game",
+      "rva": "0x852cbb",
+      "hex": "f20f10470c4c8d9c24e0000000498b6b48f20f11430c8b4714894314"
+    },
+    {
+      "id": "throw-right-hand-positive-definition",
+      "binary": "game",
+      "rva": "0x7e0511",
+      "hex": "488b08488b5118488bc8ffd2488bc84885c0740f488b40404885c0740683794800750233c0"
+    },
+    {
+      "id": "throw-right-hand-current-item",
+      "binary": "game",
+      "rva": "0x7e49c0",
+      "hex": "488b81d8030000c3"
+    },
+    {
+      "id": "throw-weaponshot-key-check-and-take-install",
+      "binary": "game",
+      "rva": "0x90409f",
+      "hex": "e83cc4edff4885c0742e488d88c80e0000488d97f0000000e89419c6ff84c07417488b"
+    },
+    {
+      "id": "throw-weaponshot-build-fire-child",
+      "binary": "game",
+      "rva": "0x903f32",
+      "hex": "4533c04883c1408b9620040000e87c7afeff488bd0488bcee831620100"
+    },
+    {
+      "id": "throw-weaponshot-take-retry",
+      "binary": "game",
+      "rva": "0x9040fb",
+      "hex": "488d8ff0000000c7473801000000e812d3ffff488bd0488bcfe867600100"
+    },
+    {
+      "id": "throw-try-then-weaponshot-virtual20",
+      "binary": "game",
+      "rva": "0x9036e7",
+      "hex": "488b07488bcfc7473806000000ff90a000000033c0"
+    },
+    {
+      "id": "throw-active-weapon-fire-phase0",
+      "binary": "game",
+      "rva": "0x8ecdd3",
+      "hex": "488b4708ba020000004885c0488d88e8020000480f44cd488b09e8aef9f2ff448b87b8000000488d573841b903000000c7442420ffffffff488bcbe8ad22f3ff"
+    },
+    {
+      "id": "throw-weapon-fire-end",
+      "binary": "game",
+      "rva": "0x8ecc6a",
+      "hex": "83ee01741783fe010f85080200008bd6488bcbe8fe27f3ff33c0"
+    },
+    {
+      "id": "throw-end-stop-shooter",
+      "binary": "game",
+      "rva": "0x81f585",
+      "hex": "85ed0f84b4000000488b8bb800000033c04889830802000033d2898310020000b8e5ff000066218364020000488b01ff5008"
+    },
+    {
+      "id": "throw-throw-firing-remote-and-emit-gates",
+      "binary": "game",
+      "rva": "0x831c53",
+      "hex": "385114744de8439b3f0084c0754440887b14e8d69a3f0084c07437440fb64314488d4c2430488b5308e8af9d87ff488b4b"
+    },
+    {
+      "id": "throw-throw-pending-end",
+      "binary": "game",
+      "rva": "0x831cc1",
+      "hex": "4084ff750a40387b150f84c5000000e80be8faff488b"
+    },
+    {
+      "id": "throw-throw-animation-result-and-disarm",
+      "binary": "game",
+      "rva": "0x831d55",
+      "hex": "e856edfdff84c0743733d2488bcbe848000000e8339a3f0084c07524"
+    },
+    {
+      "id": "throw-throw-release-slot11",
+      "binary": "game",
+      "rva": "0x831d71",
+      "hex": "488b03488bcb488b9c24900000004881c4800000005f48ff6058"
+    },
+    {
+      "id": "throw-throw-hand-registration",
+      "binary": "game",
+      "rva": "0x831dde",
+      "hex": "488b4108885115488b8890000000e8bfe6fa"
+    },
+    {
+      "id": "throw-throw-command-constructor",
+      "binary": "game",
+      "rva": "0xaba70",
+      "hex": "c741080d000000488d054277f70048890148c741100000000048895118c7412002000000f2410f1000"
+    },
+    {
+      "id": "throw-throw-command-binds-actor",
+      "binary": "game",
+      "rva": "0xb6dd0",
+      "hex": "48895110488bc1c3"
+    },
+    {
+      "id": "throw-launch-position-and-velocity-and-spin",
+      "binary": "game",
+      "rva": "0xaba94",
+      "hex": "f2410f1000f20f114124418b400889412cf2410f1001f20f114130418b4108894138488b442428f20f1000f20f11413c8b4008894144488bc1"
+    },
+    {
+      "id": "throw-throw-encode-three-vectors",
+      "binary": "game",
+      "rva": "0xabd8e",
+      "hex": "837e2002752e488d562448897c2450488bcde8abb20000488bc8488d5630e89fb20000488bc8488d563ce893b20000488b7c"
+    },
+    {
+      "id": "throw-throw-sender-slot1-serialization",
+      "binary": "game",
+      "rva": "0x1513a4",
+      "hex": "488b06488bce488b5328ff5010"
+    },
+    {
+      "id": "throw-throw-wire-final-pair",
+      "binary": "game",
+      "rva": "0x831a78",
+      "hex": "488b4f08488b9190000000488b084c8b4138488bc841ffd0488b08488b5108488bc8ffd24c8d4c2458488bcf4c8d442468488d542478e81d050000"
+    },
+    {
+      "id": "throw-throw-host-spin-rng",
+      "binary": "game",
+      "rva": "0x83190f",
+      "hex": "694808eda3f87fff400c81c1311da02a894808c1e9"
+    },
+    {
+      "id": "throw-throw-receiver-subtype",
+      "binary": "game",
+      "rva": "0xabbef",
+      "hex": "89562085d2744a83ea01743f83fa017544488d5624498bcee894b30000488bc8488d5630e888b30000488bc8488d563ce87cb300004c8d4e3c488bcd4c8d4630488d5624e898637800eb"
+    },
+    {
+      "id": "throw-throwable-range-token",
+      "binary": "game",
+      "rva": "0x57320",
+      "hex": "41b91a0000004c8d058f940a01488d15941e5501488d0de5205501"
+    },
+    {
+      "id": "throw-throwable-range-parse",
+      "binary": "game",
+      "rva": "0x7fa66f",
+      "hex": "488bcbe8094fe8fff30f5905d140ca00f30f114710"
+    },
+    {
+      "id": "throw-throwable-range-consume",
+      "binary": "game",
+      "rva": "0x831eb4",
+      "hex": "488b80d00700000f28ce488b4b18488b5320f30f104010f30f5ec8"
+    },
+    {
+      "id": "throw-thrower-preview-store-gravity",
+      "binary": "game",
+      "rva": "0x831bd0",
+      "hex": "488b9090000000e8d4d50100488bc88bd7e87ad60100488bc84c897058f30f1005eb38d400f30f11400ce881d60100"
+    },
+    {
+      "id": "throw-thrower-preview-prepares-query-mask",
+      "binary": "game",
+      "rva": "0x831af3",
+      "hex": "4d8bf10fbaef120f2970e8488b4108488bf2488be983b80802000001488b020f45bc24f0000000"
+    },
+    {
+      "id": "throw-thrower-preview-throws-mask",
+      "binary": "game",
+      "rva": "0x831b95",
+      "hex": "488d4c244881cf00009000"
+    },
+    {
+      "id": "throw-generic-trajectory-default-flags",
+      "binary": "game",
+      "rva": "0x84f1e7",
+      "hex": "4c894150c7411403600000"
+    },
+    {
+      "id": "throw-generic-trajectory-apply-flags",
+      "binary": "game",
+      "rva": "0x84f260",
+      "hex": "488bc1f6c2037404895114c3095114c3"
+    },
+    {
+      "id": "throw-trajectory-sampled-segment-query",
+      "binary": "game",
+      "rva": "0x84f689",
+      "hex": "8b5714488d4db041b9ffffffff488944244848895c243848895c2440e816131f004d8bc7488d5738488d4db0e866131f00488d542438488d4db0e8f8131f00488b"
+    },
+    {
+      "id": "throw-trajectory-stop-on-blocker",
+      "binary": "game",
+      "rva": "0x84fb23",
+      "hex": "f74714000040000f84cd010000eb0d8b03ffc883f8010f86f6000000"
+    },
+    {
+      "id": "throw-trajectory-terrain-kind",
+      "binary": "game",
+      "rva": "0x84fc91",
+      "hex": "48c74424600100000089459cc745a0ffffffff"
+    },
+    {
+      "id": "throw-trajectory-sized-free",
+      "binary": "game",
+      "rva": "0x84fbcf",
+      "hex": "48c1e2034881fa0010000072194d8b40f84883c227492bc04883c0f84883f81f0f870f010000498bc8e83b225500"
+    },
+    {
+      "id": "throw-game-allocator-free-entry",
+      "binary": "game",
+      "rva": "0x373680",
+      "hex": "488bd1f048ff05e5371f01488b0dbe371f01488b0148ff6030"
+    },
+    {
+      "id": "throw-terrain-cls",
+      "binary": "game",
+      "rva": "0xa626bd",
+      "hex": "410fb64c9002410fb744900280e10f66c1e804247f884c241880e9038844241980f902"
+    },
+    {
+      "id": "throw-take-item-held-all-tags",
+      "binary": "game",
+      "rva": "0x901cb0",
+      "hex": "e82be8edff4885c0741e488d88c80e0000488d5338e8863dc6ff84c0"
+    },
+    {
+      "id": "throw-take-right-location-and-submit",
+      "binary": "game",
+      "rva": "0x901d2c",
+      "hex": "488d15fdcf7f00488d8c24a0000000e8d0dbedff488bc8488d542420e893e1edff488bc8488d9424b8010000e893deedff"
+    },
+    {
+      "id": "throw-take-to-right-literal",
+      "binary": "game",
+      "rva": "0x10fed30",
+      "hex": "54616b65546f526967687400"
+    },
+    {
+      "id": "throw-equipment-enqueue-and-host-gate",
+      "binary": "game",
+      "rva": "0x7dfd1f",
+      "hex": "e89cdfffff83bc2480020000ff746ae80dba440084c07461"
+    },
+    {
+      "id": "throw-equipment-transfer-wire",
+      "binary": "game",
+      "rva": "0x7dfd5c",
+      "hex": "488d05adaa8a0048c7442448100000004889442440896c246448896c245048896c2458c7442460ffffffffe80420c0ff488b08488b5108488bc8ffd2"
+    },
+    {
+      "id": "throw-transfer-client-forced-replay",
+      "binary": "game",
+      "rva": "0x3e1e9b",
+      "hex": "8b4720488d942430010000488d4c2420898424e4000000c68424e000000001e831dd3f00"
+    },
+    {
+      "id": "throw-put-vector",
+      "binary": "game",
+      "rva": "0xb7073",
+      "hex": "ba04000000488bcff30f1130f30f107304e887325d00ba04000000488bcff30f1130f30f107308e871325d00488b5c2440f3"
+    },
+    {
+      "id": "throw-get-vector",
+      "binary": "game",
+      "rva": "0xb6fb0",
+      "hex": "ba04000000e8e6325d00ba04000000488bcf448b00448903e8d3325d00ba04000000488bcf448b0044894304e8bf325d008b08488bc7894b08"
+    },
+    {
+      "id": "throw-return-completed-if-no-child",
+      "binary": "game",
+      "rva": "0x904070",
+      "hex": "837f38067510488b5c2430b8010000004883c4205fc3"
+    },
+    {
+      "id": "throw-entry-shot-factory",
+      "binary": "game",
+      "rva": "0x901600",
+      "hex": "48895c240848896c2410"
+    },
+    {
+      "id": "throw-entry-throw-firing",
+      "binary": "game",
+      "rva": "0x8313b0",
+      "hex": "40574881ec70010000"
+    },
+    {
+      "id": "throw-entry-wire-dispatch",
+      "binary": "game",
+      "rva": "0x151340",
+      "hex": "4889742418574883ec20"
+    },
+    {
+      "id": "throw-entry-spawn-consumption",
+      "binary": "game",
+      "rva": "0x831fd0",
+      "hex": "4c894c24204c89442418"
+    },
+    {
+      "id": "throw-entry-weaponfire-exec",
+      "binary": "game",
+      "rva": "0x8ecbf0",
+      "hex": "48895c241048896c2418"
+    },
+    {
+      "id": "throw-entry-trajectory-constructor",
+      "binary": "game",
+      "rva": "0x84f1b0",
+      "hex": "33c0894108f30f10052363d200"
+    },
+    {
+      "id": "throw-entry-trajectory-runner",
+      "binary": "game",
+      "rva": "0x84f280",
+      "hex": "40534883ec30488b4150"
+    },
+    {
+      "id": "throw-entry-ground-sample",
+      "binary": "game",
+      "rva": "0xa62620",
+      "hex": "48895c24084889742410"
+    },
+    {
+      "id": "throw-entry-selected-weapon",
+      "binary": "game",
+      "rva": "0x81b080",
+      "hex": "4863414c85c0781c"
+    },
+    {
+      "id": "throw-entry-game-free-thunk",
+      "binary": "game",
+      "rva": "0xda1e38",
+      "hex": "e943185dff"
+    },
+    {
+      "id": "abi-91be00",
+      "binary": "game",
+      "rva": "0x91be00",
+      "hex": "488b0181a19c030000fffffffd"
+    },
+    {
+      "id": "abi-c2b740",
+      "binary": "game",
+      "rva": "0xc2b740",
+      "hex": "40534883ec20"
+    },
+    {
+      "id": "abi-c2b7a0",
+      "binary": "game",
+      "rva": "0xc2b7a0",
+      "hex": "40534883ec20"
+    },
+    {
+      "id": "abi-a7a80",
+      "binary": "game",
+      "rva": "0xa7a80",
+      "hex": "4883ec28e8b359ec00"
+    },
+    {
+      "id": "abi-b9a260",
+      "binary": "game",
+      "rva": "0xb9a260",
+      "hex": "488bc45355"
+    },
+    {
+      "id": "abi-781240",
+      "binary": "game",
+      "rva": "0x781240",
+      "hex": "4889742418"
+    },
+    {
+      "id": "abi-7657d0",
+      "binary": "game",
+      "rva": "0x7657d0",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-765fb0",
+      "binary": "game",
+      "rva": "0x765fb0",
+      "hex": "488bc448895810"
+    },
+    {
+      "id": "abi-765690",
+      "binary": "game",
+      "rva": "0x765690",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-b98c50",
+      "binary": "game",
+      "rva": "0xb98c50",
+      "hex": "48895c2410"
+    },
+    {
+      "id": "abi-68c630",
+      "binary": "game",
+      "rva": "0x68c630",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-68c6a0",
+      "binary": "game",
+      "rva": "0x68c6a0",
+      "hex": "40534883ec20"
+    },
+    {
+      "id": "abi-b98f20",
+      "binary": "game",
+      "rva": "0xb98f20",
+      "hex": "4889742420"
+    },
+    {
+      "id": "abi-534150",
+      "binary": "game",
+      "rva": "0x534150",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-c94280",
+      "binary": "game",
+      "rva": "0xc94280",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-804ac0",
+      "binary": "game",
+      "rva": "0x804ac0",
+      "hex": "40534883ec20"
+    },
+    {
+      "id": "abi-1274c0",
+      "binary": "game",
+      "rva": "0x1274c0",
+      "hex": "40574881ec20020000"
+    },
+    {
+      "id": "abi-379260",
+      "binary": "game",
+      "rva": "0x379260",
+      "hex": "4c8bc14885c9"
+    },
+    {
+      "id": "abi-a62620",
+      "binary": "game",
+      "rva": "0xa62620",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-a5d440",
+      "binary": "game",
+      "rva": "0xa5d440",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-901600",
+      "binary": "game",
+      "rva": "0x901600",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-919270",
+      "binary": "game",
+      "rva": "0x919270",
+      "hex": "48895c2418"
+    },
+    {
+      "id": "abi-91db30",
+      "binary": "game",
+      "rva": "0x91db30",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-96f2f0",
+      "binary": "game",
+      "rva": "0x96f2f0",
+      "hex": "4885d2743f"
+    },
+    {
+      "id": "abi-81b080",
+      "binary": "game",
+      "rva": "0x81b080",
+      "hex": "4863414c85c0"
+    },
+    {
+      "id": "abi-84f1b0",
+      "binary": "game",
+      "rva": "0x84f1b0",
+      "hex": "33c0894108"
+    },
+    {
+      "id": "abi-84f260",
+      "binary": "game",
+      "rva": "0x84f260",
+      "hex": "488bc1f6c203"
+    },
+    {
+      "id": "abi-84f280",
+      "binary": "game",
+      "rva": "0x84f280",
+      "hex": "40534883ec30"
+    },
+    {
+      "id": "abi-da1e38",
+      "binary": "game",
+      "rva": "0xda1e38",
+      "hex": "e943185dff"
+    },
+    {
+      "id": "abi-903fe0",
+      "binary": "game",
+      "rva": "0x903fe0",
+      "hex": "40574883ec20"
+    },
+    {
+      "id": "abi-8ecbf0",
+      "binary": "game",
+      "rva": "0x8ecbf0",
+      "hex": "48895c2410"
+    },
+    {
+      "id": "abi-906480",
+      "binary": "game",
+      "rva": "0x906480",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-832550",
+      "binary": "game",
+      "rva": "0x832550",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-831c40",
+      "binary": "game",
+      "rva": "0x831c40",
+      "hex": "48895c2408"
+    },
+    {
+      "id": "abi-8313b0",
+      "binary": "game",
+      "rva": "0x8313b0",
+      "hex": "40574881ec70010000"
+    },
+    {
+      "id": "abi-151340",
+      "binary": "game",
+      "rva": "0x151340",
+      "hex": "4889742418"
+    },
+    {
+      "id": "abi-831fd0",
+      "binary": "game",
+      "rva": "0x831fd0",
+      "hex": "4c894c2420"
+    },
+    {
+      "id": "abi-831db0",
+      "binary": "game",
+      "rva": "0x831db0",
+      "hex": "488bc448895810"
+    },
+    {
+      "id": "role-emit-slot25",
+      "binary": "game",
+      "rva": "0xc2b77a",
+      "hex": "488b03488bcbff90c800000084c07408b001"
+    },
+    {
+      "id": "role-remote-slot25",
+      "binary": "game",
+      "rva": "0xc2b7da",
+      "hex": "488b03488bcbff90c800000084c07508b001"
+    },
+    {
+      "id": "role-worker-category",
+      "binary": "game",
+      "rva": "0xa7ab9",
+      "hex": "8b400c83f8030f94c0"
+    },
+    {
+      "id": "serial-actor-after-sensor",
+      "binary": "game",
+      "rva": "0x804c50",
+      "hex": "488b8bc80d0000e8a4711100"
+    },
+    {
+      "id": "sim-time-global",
+      "binary": "game",
+      "rva": "0x66e7b0",
+      "hex": "8b05b25df100c3"
+    },
+    {
+      "id": "duration-scale",
+      "binary": "game",
+      "rva": "0x66e7e0",
+      "hex": "f30f590570ffe200f30f2cc0c3"
+    },
+    {
+      "id": "coord-scale",
+      "binary": "game",
+      "rva": "0x91b8c9",
+      "hex": "f30f101d7f2eb800"
+    },
+    {
+      "id": "class-actor-tag",
+      "binary": "game",
+      "rva": "0x92c400",
+      "hex": "4885c9742ef64114017410488b41184885c0741f4805e80d0000c3f7411000000010b800000000488d0d5272c800480f45"
+    },
+    {
+      "id": "tag-text",
+      "binary": "game",
+      "rva": "0x564ed6",
+      "hex": "48837b580f488d4b407603488b09488b5350e84398ffff488903"
+    },
+    {
+      "id": "def-tag-list",
+      "binary": "game",
+      "rva": "0x565a50",
+      "hex": "48895c240848896c2410488974241848897c242041564883ec20488b9a18"
+    },
+    {
+      "id": "inhibit-low-six",
+      "binary": "game",
+      "rva": "0x91abd1",
+      "hex": "448bc233d083e23f33d0"
+    },
+    {
+      "id": "fire-policy",
+      "binary": "game",
+      "rva": "0x91b2b0",
+      "hex": "8b819803000025000c000074173d00080000750d"
+    },
+    {
+      "id": "squad-owner",
+      "binary": "game",
+      "rva": "0x91b2e0",
+      "hex": "488b91000100004885d27410488b4138483982a8000000"
+    },
+    {
+      "id": "subject-vector",
+      "binary": "game",
+      "rva": "0x91b8dc",
+      "hex": "488b91d00d0000f30f59db488b8a80020000488b9288020000483bca746066"
+    },
+    {
+      "id": "known-and-enemy",
+      "binary": "game",
+      "rva": "0x88dcf0",
+      "hex": "48895c24084889742410574883ec20448b4214488bda4183c801488bf144894214488b5218488b896002000041c1e8054180e001e8f7751d0033ff448bc083f801"
+    },
+    {
+      "id": "morale-recovery",
+      "binary": "game",
+      "rva": "0x95ac24",
+      "hex": "e8b73bd1ff8bd8e8803bd1ff03c38986780400000f"
+    },
+    {
+      "id": "morale-signal",
+      "binary": "game",
+      "rva": "0x95d9e7",
+      "hex": "8981740400007626f30f1005bd726c0048895c2440e8df0dd1ff8bd8e8a80dd1ff03c3488b5c2440898778040000"
+    },
+    {
+      "id": "diplomacy",
+      "binary": "game",
+      "rva": "0xa6534a",
+      "hex": "410fb681a80d00003ac174300fb68aa80d00003ac174258bd08bc183fa12732283f812731d0faf059a43b60003c24863c8488b057e43b6008b0488c3b802000000c333c0"
+    },
+    {
+      "id": "terrain-allocator-free",
+      "binary": "game",
+      "rva": "0x373680",
+      "hex": "488bd1f048ff05e5371f01488b0dbe371f01488b"
+    },
+    {
+      "id": "order-front-kind",
+      "binary": "game",
+      "rva": "0x918a02",
+      "hex": "488b5340488b4338488bca48ffc848d1e94823c823d6488b4330488b04c8488b0cd0488b01ff"
+    },
+    {
+      "id": "current-weapon-def",
+      "binary": "game",
+      "rva": "0x88df00",
+      "hex": "488b889800000048894b404883b89800000000"
+    },
+    {
+      "id": "terrain-class-lower-nibble",
+      "binary": "game",
+      "rva": "0xa626bd",
+      "hex": "410fb64c9002410fb744900280e10f66c1e804247f884c241880e9038844241980f902"
+    },
+    {
+      "id": "terrain-height-float",
+      "binary": "game",
+      "rva": "0xa5d5cb",
+      "hex": "0f287c2410f30f58d30f28c24883c430415f415e5fc3"
+    },
+    {
+      "id": "attack-state6",
+      "binary": "game",
+      "rva": "0x9036e7",
+      "hex": "488b07488bcfc7473806000000ff90a000000033c0"
+    },
+    {
+      "id": "wire-throw-vec-binder",
+      "binary": "game",
+      "rva": "0xb6dd0",
+      "hex": "48895110488bc1c3"
+    },
+    {
+      "id": "throw-spin-rng1",
+      "binary": "game",
+      "rva": "0x831916",
+      "hex": "ff400c81c1311da02a894808"
+    },
+    {
+      "id": "throw-spin-rng2",
+      "binary": "game",
+      "rva": "0x831952",
+      "hex": "ff400c694808eda3f87f81c1"
+    },
+    {
+      "id": "throw-spin-rng3",
+      "binary": "game",
+      "rva": "0x831998",
+      "hex": "ff400c81c1311da02a894808"
+    },
+    {
+      "id": "smoke-lifecycle-fire-prologue",
+      "binary": "game",
+      "rva": "0x8ecbf0",
+      "hex": "48895c241048896c24184889742420574883ec30"
+    },
+    {
+      "id": "smoke-lifecycle-fire-receiver",
+      "binary": "game",
+      "rva": "0x8ecc04",
+      "hex": "488b4108488bf94885c0bdd80d00008bf2488d88e8020000480f44cd488b09e858e4f2ff"
+    },
+    {
+      "id": "smoke-lifecycle-fire-end",
+      "binary": "game",
+      "rva": "0x8ecc62",
+      "hex": "85f60f846901000083ee01741783fe010f85080200008bd6488bcbe8fe27f3ff33c0ebbb"
+    },
+    {
+      "id": "smoke-lifecycle-fire-start",
+      "binary": "game",
+      "rva": "0x8ecde6",
+      "hex": "480f44cd488b09e8aef9f2ff448b87b8000000488d573841b903000000c7442420ffffffff488bcbe8ad22f3ff"
+    },
+    {
+      "id": "smoke-lifecycle-root-exec-prologue",
+      "binary": "game",
+      "rva": "0x903fe0",
+      "hex": "40574883ec20488bf9"
+    },
+    {
+      "id": "smoke-lifecycle-root-exec-end",
+      "binary": "game",
+      "rva": "0x903fe9",
+      "hex": "85d2741c83ea01742d83fa01750733d2e832fdffffb801000000"
+    },
+    {
+      "id": "smoke-lifecycle-root-to-fire",
+      "binary": "game",
+      "rva": "0x903f32",
+      "hex": "4533c04883c1408b9620040000e87c7afeff488bd0488bcee831620100"
+    },
+    {
+      "id": "smoke-lifecycle-root-dtor-prologue",
+      "binary": "game",
+      "rva": "0x906480",
+      "hex": "48895c24084889742410574883ec20"
+    },
+    {
+      "id": "smoke-lifecycle-root-delete",
+      "binary": "game",
+      "rva": "0x9064db",
+      "hex": "48894640e85c39010040f6c701740dba28040000488bcee841b94900"
+    },
+    {
+      "id": "smoke-lifecycle-shooter-dtor-prologue",
+      "binary": "game",
+      "rva": "0x832550",
+      "hex": "48895c2408574883ec20"
+    },
+    {
+      "id": "smoke-lifecycle-shooter-delete",
+      "binary": "game",
+      "rva": "0x832572",
+      "hex": "f6c301740dba80000000488bcfe8b4f85600"
+    },
+    {
+      "id": "smoke-lifecycle-firing-prologue",
+      "binary": "game",
+      "rva": "0x831c40",
+      "hex": "48895c2408574881ec800000000fb6fa"
+    },
+    {
+      "id": "smoke-lifecycle-firing-writes-flag",
+      "binary": "game",
+      "rva": "0x831c53",
+      "hex": "385114744de8439b3f0084c0754440887b14e8d69a3f0084c07437"
+    },
+    {
+      "id": "smoke-lifecycle-firing-checks-pending",
+      "binary": "game",
+      "rva": "0x831cc1",
+      "hex": "4084ff750a40387b150f84c5000000e80be8faff"
+    },
+    {
+      "id": "smoke-lifecycle-firing-ledger",
+      "binary": "game",
+      "rva": "0x831d01",
+      "hex": "807b15000f848a000000b201488bcbe89b000000"
+    },
+    {
+      "id": "smoke-lifecycle-firing-unlock",
+      "binary": "game",
+      "rva": "0x831d5a",
+      "hex": "84c0743733d2488bcbe848000000e8339a3f0084c0"
+    },
+    {
+      "id": "smoke-lifecycle-firing-release",
+      "binary": "game",
+      "rva": "0x831d71",
+      "hex": "488b03488bcb488b9c24900000004881c4800000005f48ff6058"
+    },
+    {
+      "id": "smoke-lifecycle-release-prologue",
+      "binary": "game",
+      "rva": "0x8313b0",
+      "hex": "40574881ec70010000488bf9"
+    },
+    {
+      "id": "smoke-lifecycle-cancel-hands-prologue",
+      "binary": "game",
+      "rva": "0x831db0",
+      "hex": "488bc448895810574883ec700fb6fa488bd9"
+    },
+    {
+      "id": "smoke-lifecycle-cancel-hand-token",
+      "binary": "game",
+      "rva": "0x831dc2",
+      "hex": "3851150f849800000048897008488d357a6acb00488970b0488948a8488b4108885115488b8890000000e8bfe6faff"
+    },
+    {
+      "id": "smoke-lifecycle-cancel-first",
+      "binary": "game",
+      "rva": "0x831df1",
+      "hex": "488bd0488d4c2430e892fdfaff488bc8488d542420440fb6c7e8d10ffbff"
+    },
+    {
+      "id": "smoke-lifecycle-cancel-second",
+      "binary": "game",
+      "rva": "0x831e19",
+      "hex": "488b430848895c24204889742428488b8890000000e84de6faff488bd0488d4c2430e850fdfaff488bc8488d542420440fb6c7e88f0ffbff"
+    },
+    {
+      "id": "smoke-lifecycle-remove-holder-token",
+      "binary": "game",
+      "rva": "0x7e2e59",
+      "hex": "4883790800742a488b41204885c0740c488d48784533c0e9ebfad7ff"
+    },
+    {
+      "id": "smoke-lifecycle-native-end-and-drop-child",
+      "binary": "game",
+      "rva": "0x91a0f8",
+      "hex": "488b01ba02000000ff9098000000488b4b304885c97421488b01ff5020488b4b304885c9740a488b01ba01000000ff10"
+    },
+    {
+      "id": "smoke-lifecycle-native-end-reset-target",
+      "binary": "game",
+      "rva": "0x81f4d6",
+      "hex": "488dbbc8000000837f08007408488bcfe8553d0300"
+    },
+    {
+      "id": "smoke-lifecycle-native-end-firing",
+      "binary": "game",
+      "rva": "0x81f58d",
+      "hex": "488b8bb800000033c04889830802000033d2898310020000b8e5ff000066218364020000488b01ff5008"
+    },
+    {
+      "id": "smoke-lifecycle-receive-firing-only",
+      "binary": "game",
+      "rva": "0xabc3a",
+      "hex": "40887d14eb04c6451401"
+    }
+  ],
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/throwable.pattern",
+      "size": 145,
+      "sha256": "a8c815a1835f5a91b5be118466aff9c31d071a314752832fe2d34e3c49698226"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke.pattern",
+      "size": 159,
+      "sha256": "9d82415221a238ef24ee659398ffb75f58f944fbe73569d569be59b9f2b001cc"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-personnel.pattern",
+      "size": 458,
+      "sha256": "e1ab881dbb642f3144d1e8d689100b5de2185cb304d3e39bd90699ed013b5835"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-tank.pattern",
+      "size": 170,
+      "sha256": "b175fd43f73f04877e4af18207caacce421af2af932e365fde2925e1785c5537"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-tank grenade/molotov_cocktail.grenade",
+      "size": 514,
+      "sha256": "ae37291b9ff682ff21e6c4a0f0a705cdd6246d1b1ee121e602f1bae47fa2118d"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/grenade.inc",
+      "size": 15907,
+      "sha256": "fe2fb9f281236f8ca192c3653f8828999497585c70bf85a1646bf5a434571b8d"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/shell.inc",
+      "size": 7452,
+      "sha256": "86ee4cca026f2628c5e97e97805da95c2b83530410fa2157aea779678fd97a4d"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/anm8_smoke.grenade",
+      "size": 104,
+      "sha256": "0bbaadebe612bff0de83ff7e57ee8689a47f2af99c773d603a757c6ad00152a6"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/m15_wp.grenade",
+      "size": 99,
+      "sha256": "580046faf72fb88a73059652536dd640cac6b5da3db5bf158bb3c2ef1de6bfca"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/m24_smoke.grenade",
+      "size": 125,
+      "sha256": "ad26028a6a5ecae995d81eac20569d54b6db6409bbbe7b78590421fa4afd230e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/m24_smoke_supplies.grenade",
+      "size": 134,
+      "sha256": "614d884472caae99b632e1af7eb5762f0c8ae1cdda514c34953b5dc372a993cd"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/m42_wp.grenade",
+      "size": 98,
+      "sha256": "497580a72bd78b11fe1cd69eec1825f56ce1d547b9f2df05f1393482d2419cbd"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/m43_smoke.grenade",
+      "size": 101,
+      "sha256": "5e6bf9184805710e87e308853d08a253f6b50b822eb66f91ce9e13cb1c9e00d4"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/nbk39.grenade",
+      "size": 106,
+      "sha256": "79d36c69ab98c53f7c20aec81394c7663e07651e76a4b1ab62cb970b55837535"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/nbks.grenade",
+      "size": 105,
+      "sha256": "c025e346f388a1cd490ddc7f8e4bddcb2856fca4192c661e28fb770fcf9c3502"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/no77_wp.grenade",
+      "size": 101,
+      "sha256": "7771911a39cfaf9e288d538792e1815c8a60066379f0b9e96e76dc9921580d10"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/no8_smoke.grenade",
+      "size": 110,
+      "sha256": "83815998991b5cc0cb9f922379ae7310fbec55276f726590a7910187e730428e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/rdg1_smoke.grenade",
+      "size": 87,
+      "sha256": "1f2b666260dfc1828a77a4e36378c72e2b01659de3d9cd4ab8bf4285fa35895f"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/rdg1_smoke_supplies.grenade",
+      "size": 96,
+      "sha256": "d93bf3d4ccfcebf91c1d0fcee56d648c01d0266f11c5f885e1361c687dafd9d1"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/svkkr_pm.grenade",
+      "size": 100,
+      "sha256": "410b7ee4c66794f829f22022c15e9efd6bccfea9063c2075ecdc1bea9d1d32f2"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/stuff_grenade.ext",
+      "size": 233,
+      "sha256": "ab51c44771b242c412cdb5f54ff623592584d79fd0ab8541c255379454c9fe00"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/stuff_small.ext",
+      "size": 257,
+      "sha256": "97543456308066e13d2e3db5bcef22f312ed4b95f97bc289059e4e1498c16e38"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/stuff.ext",
+      "size": 423,
+      "sha256": "d0d20f1b3e74a03227a981db67d9c46daaa053435df1cd8ef567fa71b74cc2e6"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/shadow/round.inc",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "fx/smoke/mortar_smoke.def",
+      "size": 11329,
+      "sha256": "2e12d1e7ac25e2318ff0970a25c084dcf427bc45f068d052014462b56aae2211"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/shell_smoke/shell_smoke.def",
+      "size": 157,
+      "sha256": "c0c9c916ca977d37ddeb60c162bb036094648a81a646b029b093f60609d3355d"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/smoke_volume/smoke_volume_cylinder.def",
+      "size": 176,
+      "sha256": "74d7a895cdba18409a44953788777ea4cf7011bf8401267cba304c403adc6b4c"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/smoke_volume/smoke_volume_cylinder_sm.def",
+      "size": 176,
+      "sha256": "bf0ef0f73a0ed0f22f1306f31b567e1b4d08c10d81d3c36f0f7c95fa2d0b537b"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/anm8_smoke/anm8_smoke.def",
+      "size": 229,
+      "sha256": "b68d57b21eee0d5dd89bd3596bb8fa0fb5a67c302bd4389d84a376ad95f2b235"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/m15_wp/m15_wp.def",
+      "size": 179,
+      "sha256": "e7d7037714688c53e88e0e8f2a7472313717a7f034c34b690d636eb9774aa11f"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/m24_smoke/m24_smoke.def",
+      "size": 351,
+      "sha256": "269fdde51e069c21f62ef1e1c674f82d1ded20b2f49265c03df754960ad68dfe"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/m24_smoke_supplies/m24_smoke_supplies.def",
+      "size": 380,
+      "sha256": "0366284fc90701a7b6fab0e2eb98ecbfa31ea4fa916b29445fc34cedfb0f101f"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/m42_wp/m42_wp.def",
+      "size": 179,
+      "sha256": "eb3c0624e5f2da4c0d2b3f24836e2eeec3a6f7104b313120b6a7f09f9027450e"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/m43_smoke/m43_smoke.def",
+      "size": 188,
+      "sha256": "7aee5dcc8c98aa50e56aaca38d408453205b62e3a845c49bd1084afce0c41972"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/nbk39/nbk39.def",
+      "size": 177,
+      "sha256": "0898f14ec0fa21cce98716ce2c74a30adde8b8e3847226e137162ac7466012e5"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/nbk39/nbks.def",
+      "size": 176,
+      "sha256": "66dfc2c31755f7190845d32faec1756e0f3a16768c67ba7ebd38a6c667616297"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/no77_wp/no77_wp.def",
+      "size": 189,
+      "sha256": "7170b65196a13aeb6c482785e260595838f519f26b7d863a997c27b38df656aa"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/no8_smoke/no8_smoke.def",
+      "size": 185,
+      "sha256": "242c504cbaa04f6c85294cc549387c32f27c451b941364fe0888bc388fc82aea"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/rdg1_smoke/rdg1_smoke.def",
+      "size": 349,
+      "sha256": "78b3d73b48e118619b0332e3a8929ee7cfd642b7fd5532fb48c82f5081e7d6c1"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/rdg1_smoke_supplies/rdg1_smoke_supplies.def",
+      "size": 378,
+      "sha256": "cd9f53687f56b8e4ecc3fee08f2dda1baa6d4f043b305ba48a9d942212ab8b10"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/svkkr_pm/svkkr_pm.def",
+      "size": 180,
+      "sha256": "c52d3b5baa201c7c0273155023881b4f9b0c6e5a49155a03678da9ebb4c1513d"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/tank/tank-main.inc",
+      "size": 67055,
+      "sha256": "05953aa2a2c95b5d59856cc9105deaa3bc12f4f0c25d8fc78cb6ce53604ad221"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/tank/tank-specifics.inc",
+      "size": 121114,
+      "sha256": "6bcc7dde4f9f7a0d7c7bd3b173e23a26e683ed234e9e5456893fd3b834b4e535"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/tank/tank-damage.inc",
+      "size": 31680,
+      "sha256": "153f6bc016b3de52fe068a0936b4cd1d6a9a6f92649be690f0b0d6680a2db559"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mortar/mortareng_50.sm.ammo",
+      "size": 200,
+      "sha256": "426dc9274db78c6ba607fd298661f833e62dfb69b30b12bfbd17747f8b4c4376"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mortar/mortareng_50.wp.ammo",
+      "size": 216,
+      "sha256": "47229848015161fdf3fa9043f5fedfb716ef88b076a6086b5e58da68b32656d2"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mortar/mortar_ammo.pattern",
+      "size": 93,
+      "sha256": "f98cadff47a8ce8a017cd626b6a3d4196cc6c1041646a2768aab4551d81778dd"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/btr/humber_recon_mk2/humber_recon_mk2.def",
+      "size": 2638,
+      "sha256": "a13d30c88db41b59089e104d1652a5ee646484011ecc8494a031e4c52e679582"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/btr/aec_mk1/aec_mk1.def",
+      "size": 2318,
+      "sha256": "dbc37fb6c83d68d80a2aa959df6e955a5607305310c9c5f44ccf278aa8916a49"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/tank_light/panzer1f/panzer1f.def",
+      "size": 2604,
+      "sha256": "9dad26a772a006d9d8a433ab1d8137bcf380299c219efffbd3ac7eb5794656cc"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/tank_light/m24_chaffee/m24_chaffee.def",
+      "size": 4287,
+      "sha256": "a60000851dda48cef0d04f3b42d8f1f36989ffe905ab933fb029d247d877b9c6"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/btr/morris_cs9/morris_cs9.def",
+      "size": 2415,
+      "sha256": "4846380993a0f2493ffd2014b95ce1af315c6e090b4e4a74b24bdd2d7aac617d"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-ammo/-mortar/51mm_eng_mortar_sm/51mm_eng_mortar_sm.def",
+      "size": 185,
+      "sha256": "bb139e10c13a17bb2ab04233cb2ebcd50d1a459601ebab0d30c05622a833b59d"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-ammo/-mortar/51mm_eng_mortar_wp/51mm_eng_mortar_wp.def",
+      "size": 177,
+      "sha256": "e999ed3f59d69bffd7ea3aafe0ac1fcdfb639c43f17ab1fa1505b486ad0b6836"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_ap.inc",
+      "size": 1102,
+      "sha256": "b222d1853c0ad5b301b9f736bbc3d719f8681bcdffe0892942e36e5be97f7c83"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_big.inc",
+      "size": 1060,
+      "sha256": "d58a90d2505ce83d5a7a1401a000189a956b3e96cf7ba13e879344ef70188af4"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_medium.inc",
+      "size": 1283,
+      "sha256": "d77c7e474694c3604af2ce33e79af81dfb49a7f05e3248d7b09d859c0969a037"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mgun/mgun_generic.pattern",
+      "size": 892,
+      "sha256": "f508d15f3134d19bc30e6648a35ba184c51fc9b37786ff300712d88b85166c1e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mgun/hmgun.pattern",
+      "size": 912,
+      "sha256": "6ae1fee797453f7f11c15b638e8606e97d16bdcd2dc09d71dd5d520a0699ff81"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/rifle/ptr/at_rifle.pattern",
+      "size": 922,
+      "sha256": "4a2c770066a9ed517a2e30145c86bbe43809cdf6c060f4d88cea5ca8d6116ff2"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/bazooka/rpg_weapon.pattern",
+      "size": 1056,
+      "sha256": "24ecac3213c7ec57928bdade2466aa986267bcbeab7073a39c4aea32416b15d7"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "fx/flash/flash_grenade_launcher.def",
+      "size": 2258,
+      "sha256": "4a4346a8c8fd61d019f368684b1fcb2dd9a1b3fd55c105a12a80ca9174dad02e"
+    }
+  ],
+  "inputs": {
+    "serial": {
+      "actor_slot_23": "0x804ac0",
+      "sensor_commit": "0x804c0b",
+      "decision_call": "0x804c57",
+      "worker": "0xa7a80",
+      "remote": "0xc2b7a0",
+      "emit": "0xc2b740"
+    },
+    "actor": {
+      "entity_id": "u32 +0xc0",
+      "mid": "u16 +0xdaa",
+      "owner_player": "u8 +0xda8",
+      "xyz": "f32[3] +0x74",
+      "brain": "ptr +0xdc8",
+      "sensor": "ptr +0xdd0",
+      "chassis": "ptr +0xde0",
+      "weaponry": "ptr +0xdd8",
+      "aggregate": "ptr +0x578"
+    },
+    "authority": {
+      "inhibition": "u32 brain+0x39c & 0x3f",
+      "user_order": "brain+0x39c bit 28",
+      "control": "brain+0x398 bits 0..1",
+      "fire_mode": "brain+0x398 bits 10..11",
+      "move_mode": "brain+0x398 bits 12..13",
+      "chassis_direct": "u32 chassis+0x18",
+      "weaponry_direct": "weaponry+0x70 bit 1"
+    },
+    "threat": {
+      "entries": "sensor+[0x280,0x288)",
+      "known_visible": "subject+0x10 bits 28,29",
+      "enemy": "(u32(subject+0x14) & 0x1e) == 2",
+      "actor": "subject+0x14 bit 0, ptr +0x18",
+      "position": "f32[3] subject+0x28",
+      "observed_weapon": "ptr subject+0x40",
+      "contact_timestamp": "u32 +0x64",
+      "fire_timestamp": "u32 +0x68",
+      "attacking_threating": "subject+0x14 bits 8,7",
+      "excluded_subject": "u8 subject+0x6c"
+    },
+    "infantry": {
+      "squad": "ptr brain+0x100",
+      "members": "squad+[0x80,0x88)",
+      "morale": "f32 brain+0x474",
+      "recovery_deadline": "u32 brain+0x478",
+      "recent_injury": "u32 sensor+0x2f4",
+      "heal_target": "ptr eMedic+0x48",
+      "vitality": "aggregate+0x18 -> +0x174 flags"
+    },
+    "vehicle_damage": {
+      "components": "actor+[0xb90,0xb98), stride 0x28",
+      "definition": "ptr +0x0",
+      "owner": "ptr +0x8",
+      "current_max": "f32 +0x14, +0x1c",
+      "condition": "u8 +0x24",
+      "component_name": "first 0x60-byte token at [component def+0x328]",
+      "recent_hit": "actor+[0x4e8,0x4f0) pen_fx, or >=0.20 hull health fraction lost in <=3 simulation seconds"
+    },
+    "inventory": {
+      "definitions": "item+0x40 -> exact selector +0x868, keys [+0xb80,+0xb88), expanded [+0x11e0,+0x11e8)",
+      "damage_list": "def+[0x480,0x488) must be empty",
+      "box": "aggregate+0x28 -> manager+0xa0",
+      "entries": "box+[0x10,0x18), ptr each",
+      "place": "item+0x30 = box or item+0x38 = right hand",
+      "count": "i32 item+0x48 > 0",
+      "reserved": "ptr item+0x50 must be null"
+    }
+  },
+  "wire": [
+    {
+      "id": "0x10",
+      "object": "eInventoryTransferCommand",
+      "emit": "0x7dfd96",
+      "receive": "0x3e1e20",
+      "effect": "native TakeToRight inventory action"
+    },
+    {
+      "id": "0x0d",
+      "object": "eWeaponThrowerShootingCommand",
+      "subtype": 2,
+      "emit": "0x831a9a",
+      "receive": "0xabae0",
+      "local": "0x831aae",
+      "remote": "0xabc33",
+      "payload": "shooter place and actor, mode, three XYZ vectors; live right-hand item determines identity"
+    },
+    {
+      "id": "0x31",
+      "object": "multiplayer input frame",
+      "category": 1,
+      "action": "0x11",
+      "local_emit": "0xc942e3",
+      "bot_emit": "0x5341d6",
+      "master_forward": "0x442835",
+      "server_schedule": "0xc97747",
+      "broadcast": "0xc99750",
+      "receive": "0xc90277",
+      "action_dispatch": "0xb9a260",
+      "extender": "0x1274c0"
+    },
+    {
+      "id": "0x44",
+      "object": "eIASpawnCommand",
+      "emit": "0x76698f",
+      "receive": "0x158f30",
+      "apply": "0x159019",
+      "effect": "authoritative world entity spawn"
+    }
+  ],
+  "policy": {
+    "units": "simulation seconds and native metres",
+    "cooldown_seconds": 25,
+    "cluster_metres": 20,
+    "order_lease_seconds": 8,
+    "memory_seconds": 4,
+    "screen_distances_metres": [
+      9,
+      8,
+      10,
+      7,
+      11,
+      6,
+      12,
+      5,
+      4,
+      3,
+      2
+    ],
+    "first_contact_tolerance_metres": 0.75,
+    "capacity": 256,
+    "admission_rng_draws": 0
+  },
+  "payload_proof": {
+    "assumption": "audited stock definitions and interaction scripts resolved by active VFS",
+    "negative_examples": [
+      "grenade m15_wp",
+      "grenade m42_wp",
+      "grenade no77_wp",
+      "grenade rdg1_smoke_supplies",
+      "grenade m24_smoke_supplies",
+      "molotov_cocktail",
+      "fragmentation and AT grenades",
+      "2in_wp launcher on m24_chaffee"
+    ],
+    "grenades": "Exact positive two-token definition key, empty item damage range, audited effect chain, verified again on current right hand.",
+    "vehicle": "Match the first accepted resident charge and the audited model program which names its literal spawn."
+  },
+  "vehicle_replay": {
+    "receipt": {
+      "flags": "0x140",
+      "ui_byte_42": "0xe3",
+      "ticket_field": "f32 bits +0xfc, 0x3f000000 | monotone ticket",
+      "owner": "u8 envelope+0, control+0x43; decoded +9/+0x43",
+      "capacity": 256,
+      "expires_seconds": 25
+    },
+    "delay_templates": "[delay+0x28,+0x30), eAction_Spawn literal at +0x50; physical, flash_grenade_launcher, ProcessBone, or one separate ProcessBone",
+    "approved_spawns": [
+      "nbk39",
+      "no8_smoke",
+      "51mm_eng_mortar_sm"
+    ],
+    "wp": "51mm_eng_mortar_wp and all unknown blocks refuse enqueue on the host for marked actions",
+    "boundaries": [
+      "0xb9a260",
+      "0x781240",
+      "0x765690",
+      "0x7657d0",
+      "0x765fb0"
+    ],
+    "edge_cases": "Native debit/deadline precede event cancellation. A rejected WP timer skips its mixed flash/cap-hide block. Loss of a private pure-only veto across checkpoint load may allow pure smoke. Remote effects need runtime acceptance."
+  },
+  "offline_checks": {
+    "minhook": "x64 CreateTrampolineFunction on isolated copied PE bytes, full instructions and branch destinations checked.",
+    "runtime_execution": false
+  }
+}

@@ -1,0 +1,399 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "fine_map_sha256": "71d4711fd75258bd796629668c30c95faecb5f571cd75d9880f0175fa410cf51",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "export_report_sha256": "69b1ae380997d241d3ed31d3a35cca24356ebf1480d3290a6b0d33aa520f80a8",
+      "exact_candidates": 19,
+      "exported_functions": 19,
+      "exported_basic_blocks": 509,
+      "checked_enums": 4,
+      "checked_constants": 2,
+      "checked_method_entries": 19,
+      "checked_instruction_locations": 97,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 36,
+      "checked_byte_sequences": 365
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/throwable.pattern",
+      "size": 145,
+      "sha256": "a8c815a1835f5a91b5be118466aff9c31d071a314752832fe2d34e3c49698226"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke.pattern",
+      "size": 159,
+      "sha256": "9d82415221a238ef24ee659398ffb75f58f944fbe73569d569be59b9f2b001cc"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-personnel.pattern",
+      "size": 458,
+      "sha256": "e1ab881dbb642f3144d1e8d689100b5de2185cb304d3e39bd90699ed013b5835"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-tank.pattern",
+      "size": 170,
+      "sha256": "b175fd43f73f04877e4af18207caacce421af2af932e365fde2925e1785c5537"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-tank grenade/molotov_cocktail.grenade",
+      "size": 514,
+      "sha256": "ae37291b9ff682ff21e6c4a0f0a705cdd6246d1b1ee121e602f1bae47fa2118d"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/grenade.inc",
+      "size": 15907,
+      "sha256": "fe2fb9f281236f8ca192c3653f8828999497585c70bf85a1646bf5a434571b8d"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/shell.inc",
+      "size": 7452,
+      "sha256": "86ee4cca026f2628c5e97e97805da95c2b83530410fa2157aea779678fd97a4d"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/anm8_smoke.grenade",
+      "size": 104,
+      "sha256": "0bbaadebe612bff0de83ff7e57ee8689a47f2af99c773d603a757c6ad00152a6"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/m15_wp.grenade",
+      "size": 99,
+      "sha256": "580046faf72fb88a73059652536dd640cac6b5da3db5bf158bb3c2ef1de6bfca"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/m24_smoke.grenade",
+      "size": 125,
+      "sha256": "ad26028a6a5ecae995d81eac20569d54b6db6409bbbe7b78590421fa4afd230e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/m24_smoke_supplies.grenade",
+      "size": 134,
+      "sha256": "614d884472caae99b632e1af7eb5762f0c8ae1cdda514c34953b5dc372a993cd"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/m42_wp.grenade",
+      "size": 98,
+      "sha256": "497580a72bd78b11fe1cd69eec1825f56ce1d547b9f2df05f1393482d2419cbd"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/m43_smoke.grenade",
+      "size": 101,
+      "sha256": "5e6bf9184805710e87e308853d08a253f6b50b822eb66f91ce9e13cb1c9e00d4"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/nbk39.grenade",
+      "size": 106,
+      "sha256": "79d36c69ab98c53f7c20aec81394c7663e07651e76a4b1ab62cb970b55837535"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/nbks.grenade",
+      "size": 105,
+      "sha256": "c025e346f388a1cd490ddc7f8e4bddcb2856fca4192c661e28fb770fcf9c3502"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/no77_wp.grenade",
+      "size": 101,
+      "sha256": "7771911a39cfaf9e288d538792e1815c8a60066379f0b9e96e76dc9921580d10"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/no8_smoke.grenade",
+      "size": 110,
+      "sha256": "83815998991b5cc0cb9f922379ae7310fbec55276f726590a7910187e730428e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/rdg1_smoke.grenade",
+      "size": 87,
+      "sha256": "1f2b666260dfc1828a77a4e36378c72e2b01659de3d9cd4ab8bf4285fa35895f"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/rdg1_smoke_supplies.grenade",
+      "size": 96,
+      "sha256": "d93bf3d4ccfcebf91c1d0fcee56d648c01d0266f11c5f885e1361c687dafd9d1"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/smoke grenade/svkkr_pm.grenade",
+      "size": 100,
+      "sha256": "410b7ee4c66794f829f22022c15e9efd6bccfea9063c2075ecdc1bea9d1d32f2"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/stuff_grenade.ext",
+      "size": 233,
+      "sha256": "ab51c44771b242c412cdb5f54ff623592584d79fd0ab8541c255379454c9fe00"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/stuff_small.ext",
+      "size": 257,
+      "sha256": "97543456308066e13d2e3db5bcef22f312ed4b95f97bc289059e4e1498c16e38"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/stuff.ext",
+      "size": 423,
+      "sha256": "d0d20f1b3e74a03227a981db67d9c46daaa053435df1cd8ef567fa71b74cc2e6"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/shadow/round.inc",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "fx/smoke/mortar_smoke.def",
+      "size": 11329,
+      "sha256": "2e12d1e7ac25e2318ff0970a25c084dcf427bc45f068d052014462b56aae2211"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/shell_smoke/shell_smoke.def",
+      "size": 157,
+      "sha256": "c0c9c916ca977d37ddeb60c162bb036094648a81a646b029b093f60609d3355d"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/smoke_volume/smoke_volume_cylinder.def",
+      "size": 176,
+      "sha256": "74d7a895cdba18409a44953788777ea4cf7011bf8401267cba304c403adc6b4c"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/smoke_volume/smoke_volume_cylinder_sm.def",
+      "size": 176,
+      "sha256": "bf0ef0f73a0ed0f22f1306f31b567e1b4d08c10d81d3c36f0f7c95fa2d0b537b"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/anm8_smoke/anm8_smoke.def",
+      "size": 229,
+      "sha256": "b68d57b21eee0d5dd89bd3596bb8fa0fb5a67c302bd4389d84a376ad95f2b235"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/m15_wp/m15_wp.def",
+      "size": 179,
+      "sha256": "e7d7037714688c53e88e0e8f2a7472313717a7f034c34b690d636eb9774aa11f"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/m24_smoke/m24_smoke.def",
+      "size": 351,
+      "sha256": "269fdde51e069c21f62ef1e1c674f82d1ded20b2f49265c03df754960ad68dfe"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/m24_smoke_supplies/m24_smoke_supplies.def",
+      "size": 380,
+      "sha256": "0366284fc90701a7b6fab0e2eb98ecbfa31ea4fa916b29445fc34cedfb0f101f"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/m42_wp/m42_wp.def",
+      "size": 179,
+      "sha256": "eb3c0624e5f2da4c0d2b3f24836e2eeec3a6f7104b313120b6a7f09f9027450e"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/m43_smoke/m43_smoke.def",
+      "size": 188,
+      "sha256": "7aee5dcc8c98aa50e56aaca38d408453205b62e3a845c49bd1084afce0c41972"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/nbk39/nbk39.def",
+      "size": 177,
+      "sha256": "0898f14ec0fa21cce98716ce2c74a30adde8b8e3847226e137162ac7466012e5"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/nbk39/nbks.def",
+      "size": 176,
+      "sha256": "66dfc2c31755f7190845d32faec1756e0f3a16768c67ba7ebd38a6c667616297"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/no77_wp/no77_wp.def",
+      "size": 189,
+      "sha256": "7170b65196a13aeb6c482785e260595838f519f26b7d863a997c27b38df656aa"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/no8_smoke/no8_smoke.def",
+      "size": 185,
+      "sha256": "242c504cbaa04f6c85294cc549387c32f27c451b941364fe0888bc388fc82aea"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/rdg1_smoke/rdg1_smoke.def",
+      "size": 349,
+      "sha256": "78b3d73b48e118619b0332e3a8929ee7cfd642b7fd5532fb48c82f5081e7d6c1"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/rdg1_smoke_supplies/rdg1_smoke_supplies.def",
+      "size": 378,
+      "sha256": "cd9f53687f56b8e4ecc3fee08f2dda1baa6d4f043b305ba48a9d942212ab8b10"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-weapon/-grenades/smoke/svkkr_pm/svkkr_pm.def",
+      "size": 180,
+      "sha256": "c52d3b5baa201c7c0273155023881b4f9b0c6e5a49155a03678da9ebb4c1513d"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/tank/tank-main.inc",
+      "size": 67055,
+      "sha256": "05953aa2a2c95b5d59856cc9105deaa3bc12f4f0c25d8fc78cb6ce53604ad221"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/tank/tank-specifics.inc",
+      "size": 121114,
+      "sha256": "6bcc7dde4f9f7a0d7c7bd3b173e23a26e683ed234e9e5456893fd3b834b4e535"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/tank/tank-damage.inc",
+      "size": 31680,
+      "sha256": "153f6bc016b3de52fe068a0936b4cd1d6a9a6f92649be690f0b0d6680a2db559"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mortar/mortareng_50.sm.ammo",
+      "size": 200,
+      "sha256": "426dc9274db78c6ba607fd298661f833e62dfb69b30b12bfbd17747f8b4c4376"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mortar/mortareng_50.wp.ammo",
+      "size": 216,
+      "sha256": "47229848015161fdf3fa9043f5fedfb716ef88b076a6086b5e58da68b32656d2"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mortar/mortar_ammo.pattern",
+      "size": 93,
+      "sha256": "f98cadff47a8ce8a017cd626b6a3d4196cc6c1041646a2768aab4551d81778dd"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/btr/humber_recon_mk2/humber_recon_mk2.def",
+      "size": 2638,
+      "sha256": "a13d30c88db41b59089e104d1652a5ee646484011ecc8494a031e4c52e679582"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/btr/aec_mk1/aec_mk1.def",
+      "size": 2318,
+      "sha256": "dbc37fb6c83d68d80a2aa959df6e955a5607305310c9c5f44ccf278aa8916a49"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/tank_light/panzer1f/panzer1f.def",
+      "size": 2604,
+      "sha256": "9dad26a772a006d9d8a433ab1d8137bcf380299c219efffbd3ac7eb5794656cc"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/tank_light/m24_chaffee/m24_chaffee.def",
+      "size": 4287,
+      "sha256": "a60000851dda48cef0d04f3b42d8f1f36989ffe905ab933fb029d247d877b9c6"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/btr/morris_cs9/morris_cs9.def",
+      "size": 2415,
+      "sha256": "4846380993a0f2493ffd2014b95ce1af315c6e090b4e4a74b24bdd2d7aac617d"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-ammo/-mortar/51mm_eng_mortar_sm/51mm_eng_mortar_sm.def",
+      "size": 185,
+      "sha256": "bb139e10c13a17bb2ab04233cb2ebcd50d1a459601ebab0d30c05622a833b59d"
+    },
+    {
+      "archive": "entity/inventory.pak",
+      "member": "inventory/-ammo/-mortar/51mm_eng_mortar_wp/51mm_eng_mortar_wp.def",
+      "size": 177,
+      "sha256": "e999ed3f59d69bffd7ea3aafe0ac1fcdfb639c43f17ab1fa1505b486ad0b6836"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/human_ap.inc",
+      "size": 1102,
+      "sha256": "b222d1853c0ad5b301b9f736bbc3d719f8681bcdffe0892942e36e5be97f7c83"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/cannon_big.inc",
+      "size": 1060,
+      "sha256": "d58a90d2505ce83d5a7a1401a000189a956b3e96cf7ba13e879344ef70188af4"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/tank_medium.inc",
+      "size": 1283,
+      "sha256": "d77c7e474694c3604af2ce33e79af81dfb49a7f05e3248d7b09d859c0969a037"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mgun/mgun_generic.pattern",
+      "size": 892,
+      "sha256": "f508d15f3134d19bc30e6648a35ba184c51fc9b37786ff300712d88b85166c1e"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/mgun/hmgun.pattern",
+      "size": 912,
+      "sha256": "6ae1fee797453f7f11c15b638e8606e97d16bdcd2dc09d71dd5d520a0699ff81"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/rifle/ptr/at_rifle.pattern",
+      "size": 922,
+      "sha256": "4a2c770066a9ed517a2e30145c86bbe43809cdf6c060f4d88cea5ca8d6116ff2"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/bazooka/rpg_weapon.pattern",
+      "size": 1056,
+      "sha256": "24ecac3213c7ec57928bdade2466aa986267bcbeab7073a39c4aea32416b15d7"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "fx/flash/flash_grenade_launcher.def",
+      "size": 2258,
+      "sha256": "4a4346a8c8fd61d019f368684b1fcb2dd9a1b3fd55c105a12a80ca9174dad02e"
+    }
+  ],
+  "status": "passed"
+}

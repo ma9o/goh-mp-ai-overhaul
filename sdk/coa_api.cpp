@@ -43,15 +43,15 @@ static void* g_OriginalApplyDamage = nullptr;
 
 static void InitLog() {
     if (g_LogFile) return;
-    
+
     char path[MAX_PATH];
     GetModuleFileNameA(nullptr, path, MAX_PATH);
-    
+
     char* lastSlash = strrchr(path, '\\');
     if (lastSlash) {
         strcpy(lastSlash + 1, "coa_extender.log");
     }
-    
+
     g_LogFile = fopen(path, "w");
     if (g_LogFile) {
         fprintf(g_LogFile, "=== COA Script Extender v%s ===\n", COA_EXTENDER_VERSION_STRING);
@@ -61,39 +61,39 @@ static void InitLog() {
 
 void COA_Log(const char* format, ...) {
     if (!g_LogFile) return;
-    
+
     std::lock_guard<std::mutex> lock(g_Mutex);
-    
+
     SYSTEMTIME st;
     GetLocalTime(&st);
     fprintf(g_LogFile, "[%02d:%02d:%02d] ", st.wHour, st.wMinute, st.wSecond);
-    
+
     va_list args;
     va_start(args, format);
     vfprintf(g_LogFile, format, args);
     va_end(args);
-    
+
     fprintf(g_LogFile, "\n");
     fflush(g_LogFile);
 }
 
 void COA_LogLevel(int level, const char* format, ...) {
     if (!g_LogFile) return;
-    
+
     const char* levelStr[] = {"DEBUG", "INFO", "WARN", "ERROR"};
     if (level < 0 || level > 3) level = 1;
-    
+
     std::lock_guard<std::mutex> lock(g_Mutex);
-    
+
     SYSTEMTIME st;
     GetLocalTime(&st);
     fprintf(g_LogFile, "[%02d:%02d:%02d] [%s] ", st.wHour, st.wMinute, st.wSecond, levelStr[level]);
-    
+
     va_list args;
     va_start(args, format);
     vfprintf(g_LogFile, format, args);
     va_end(args);
-    
+
     fprintf(g_LogFile, "\n");
     fflush(g_LogFile);
 }
@@ -123,12 +123,12 @@ static ApplyDamage_fn Original_ApplyDamage = nullptr;
 
 static float Hooked_ApplyDamage(void* target, float damage, void* attacker, int weaponType) {
     float modifiedDamage = damage * g_DamageMultiplier;
-    
+
     // Call registered callbacks
     for (auto& cb : g_DamageCallbacks) {
         modifiedDamage = cb((::Unit*)target, modifiedDamage, (::Unit*)attacker, weaponType);
     }
-    
+
     // Call original with modified damage
     if (Original_ApplyDamage) {
         return Original_ApplyDamage(target, modifiedDamage, attacker, weaponType);
@@ -144,10 +144,10 @@ bool COA_Initialize() {
     if (g_Initialized) {
         return true;
     }
-    
+
     InitLog();
     COA_Log("Initializing COA Script Extender v%s", COA_EXTENDER_VERSION_STRING);
-    
+
     // Get game base address
     g_GameBase = (uintptr_t)GetModuleHandleA(nullptr);
     if (g_GameBase == 0) {
@@ -155,7 +155,7 @@ bool COA_Initialize() {
         return false;
     }
     COA_Log("Game base: 0x%llX", (unsigned long long)g_GameBase);
-    
+
     // Initialize MinHook
     MH_STATUS status = MH_Initialize();
     if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED) {
@@ -163,10 +163,10 @@ bool COA_Initialize() {
         return false;
     }
     COA_Log("MinHook initialized");
-    
+
     // Install core hooks
     void* target;
-    
+
     // AI Update hook
     target = (void*)(g_GameBase + Hooks::AI_UPDATE);
     status = MH_CreateHook(target, (void*)Hooked_AIUpdate, (void**)&Original_AIUpdate);
@@ -176,33 +176,33 @@ bool COA_Initialize() {
     } else {
         COA_Log("WARNING: AI Update hook failed: %d", status);
     }
-    
+
     g_Initialized = true;
     COA_Log("Initialization complete");
-    
+
     return true;
 }
 
 void COA_Shutdown() {
     if (!g_Initialized) return;
-    
+
     COA_Log("Shutting down...");
-    
+
     MH_DisableHook(MH_ALL_HOOKS);
     MH_Uninitialize();
-    
+
     g_DamageCallbacks.clear();
     g_AIUpdateCallbacks.clear();
     g_SpawnCallbacks.clear();
     g_CommandCallbacks.clear();
     g_EventCallbacks.clear();
-    
+
     if (g_LogFile) {
         COA_Log("Shutdown complete");
         fclose(g_LogFile);
         g_LogFile = nullptr;
     }
-    
+
     g_Initialized = false;
 }
 
@@ -231,7 +231,7 @@ void* COA_GetGameManager() {
 ::GameWorld* COA_GetGameWorld() {
     void* manager = COA_GetGameManager();
     if (!manager) return nullptr;
-    
+
     // GameWorld is typically at offset 0x8 or 0x10 in the manager
     ::GameWorld** worldPtr = (::GameWorld**)((uintptr_t)manager + 0x8);
     return worldPtr ? *worldPtr : nullptr;
@@ -265,7 +265,7 @@ static void RefreshUnitCache() {
         RefreshUnitCache();
         g_UnitCacheDirty = false;
     }
-    
+
     if (outCount) *outCount = (int)g_UnitCache.size();
     return g_UnitCache.empty() ? nullptr : g_UnitCache.data();
 }
@@ -273,17 +273,17 @@ static void RefreshUnitCache() {
 ::Unit** COA_GetUnitsByTeam(int teamId, int* outCount) {
     static std::vector<::Unit*> teamUnits;
     teamUnits.clear();
-    
+
     int totalCount;
     ::Unit** allUnits = COA_GetAllUnits(&totalCount);
-    
+
     for (int i = 0; i < totalCount; i++) {
         ::Unit* unit = allUnits[i];
         if (unit && (int)unit->side == teamId) {
             teamUnits.push_back(unit);
         }
     }
-    
+
     if (outCount) *outCount = (int)teamUnits.size();
     return teamUnits.empty() ? nullptr : teamUnits.data();
 }
@@ -296,7 +296,7 @@ static void RefreshUnitCache() {
 ::Unit* COA_GetUnitById(uint32_t unitId) {
     int count;
     ::Unit** units = COA_GetAllUnits(&count);
-    
+
     for (int i = 0; i < count; i++) {
         if (units[i] && units[i]->entityId == unitId) {
             return units[i];
@@ -367,16 +367,16 @@ void COA_UnregisterDamageCallback(int handle) {
 
 void COA_ApplyDamage(::Unit* target, float damage, ::Unit* attacker) {
     if (!target) return;
-    
+
     float finalDamage = damage * g_DamageMultiplier;
-    
+
     for (auto& cb : g_DamageCallbacks) {
         finalDamage = cb(target, finalDamage, attacker, 0);
     }
-    
+
     target->health -= finalDamage;
     if (target->health < 0) target->health = 0;
-    
+
     COA_Log("Applied %.2f damage to unit %llu", finalDamage, (unsigned long long)target->entityId);
 }
 
@@ -452,17 +452,17 @@ bool COA_ReadMemory(uintptr_t offset, void* buffer, size_t size) {
 
 bool COA_WriteMemory(uintptr_t offset, const void* data, size_t size) {
     if (!data) return false;
-    
+
     void* dst = (void*)(g_GameBase + offset);
-    
+
     DWORD oldProtect;
     if (!VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldProtect)) {
         COA_Log("ERROR: VirtualProtect failed for write at 0x%llX", (unsigned long long)offset);
         return false;
     }
-    
+
     memcpy(dst, data, size);
-    
+
     VirtualProtect(dst, size, oldProtect, &oldProtect);
     return true;
 }
@@ -484,10 +484,10 @@ void COA_RegisterCommand(const char* command, CommandCallback callback) {
 void COA_ExecuteCommand(const char* command) {
     std::string cmdStr(command);
     std::vector<std::string> args;
-    
+
     size_t pos = cmdStr.find(' ');
     std::string cmdName = (pos != std::string::npos) ? cmdStr.substr(0, pos) : cmdStr;
-    
+
     auto it = g_CommandCallbacks.find(cmdName);
     if (it != g_CommandCallbacks.end()) {
         it->second(cmdName, args);
@@ -514,7 +514,7 @@ void COA_UnregisterEventCallback(int handle) {
 
 void COA_FireEvent(const char* eventName, void* eventData) {
     std::lock_guard<std::mutex> lock(g_Mutex);
-    
+
     auto it = g_EventCallbacks.find(eventName);
     if (it != g_EventCallbacks.end()) {
         for (auto& cb : it->second) {

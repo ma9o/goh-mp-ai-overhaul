@@ -35,6 +35,10 @@ project(COA_ScriptExtender VERSION 1.0.0 LANGUAGES C CXX)
 # C++17 for std::filesystem
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+option(COA_WARNINGS_AS_ERRORS "Treat C++ compiler warnings as errors" OFF)
+option(COA_ENABLE_CLANG_TIDY "Run clang-tidy during C++ builds" OFF)
 
 # Cross-compilation check
 if(CMAKE_CROSSCOMPILING AND MINGW)
@@ -86,16 +90,48 @@ set(SDK_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sdk)
 
 if(MSVC)
     # MSVC settings
-    set(COA_COMPILE_OPTIONS /W3 /wd4996)
+    set(COA_COMPILE_OPTIONS /W4 /permissive- /wd4996)
+    if(COA_WARNINGS_AS_ERRORS)
+        list(APPEND COA_COMPILE_OPTIONS /WX)
+    endif()
     set(COA_LINK_OPTIONS "")
 elseif(MINGW OR IS_MINGW_CROSS)
     # MinGW settings (native or cross-compile)
-    set(COA_COMPILE_OPTIONS -Wall -Wno-unknown-pragmas)
+    set(COA_COMPILE_OPTIONS
+        -Wall
+        -Wextra
+        -Wshadow
+        -Wformat=2
+        -Wundef
+        -Wnull-dereference
+        -Wduplicated-cond
+        -Wlogical-op
+        -Werror=return-type
+        -Wno-unknown-pragmas
+        -Wno-cast-function-type
+    )
+    if(COA_WARNINGS_AS_ERRORS)
+        list(APPEND COA_COMPILE_OPTIONS -Werror)
+    endif()
     set(COA_LINK_OPTIONS -static-libgcc -static-libstdc++)
 else()
     message(WARNING "Unknown compiler, using default settings")
     set(COA_COMPILE_OPTIONS "")
     set(COA_LINK_OPTIONS "")
+endif()
+
+set(COA_CLANG_TIDY_CMD "")
+if(COA_ENABLE_CLANG_TIDY)
+    find_program(CLANG_TIDY_EXE NAMES clang-tidy HINTS /opt/homebrew/opt/llvm/bin)
+    if(CLANG_TIDY_EXE)
+        set(COA_CLANG_TIDY_CMD "${CLANG_TIDY_EXE}")
+        if(IS_MINGW_CROSS)
+            list(APPEND COA_CLANG_TIDY_CMD "--extra-arg=--target=x86_64-w64-mingw32")
+        endif()
+        message(STATUS "clang-tidy enabled: ${CLANG_TIDY_EXE}")
+    else()
+        message(WARNING "COA_ENABLE_CLANG_TIDY is ON, but clang-tidy was not found")
+    endif()
 endif()
 
 #=============================================================================
@@ -213,6 +249,12 @@ endif()
 # Compiler options
 target_compile_options(example_mod PRIVATE ${COA_COMPILE_OPTIONS})
 target_link_options(example_mod PRIVATE ${COA_LINK_OPTIONS})
+
+if(COA_CLANG_TIDY_CMD)
+    foreach(coa_target version_proxy coa_extender example_mod)
+        set_target_properties(${coa_target} PROPERTIES CXX_CLANG_TIDY "${COA_CLANG_TIDY_CMD}")
+    endforeach()
+endif()
 
 #=============================================================================
 # Installation

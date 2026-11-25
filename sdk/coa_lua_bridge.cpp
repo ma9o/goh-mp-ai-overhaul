@@ -17,6 +17,11 @@
 #include <mutex>
 
 // Forward declaration for logging
+#if defined(__MINGW_PRINTF_FORMAT)
+__attribute__((format(__MINGW_PRINTF_FORMAT, 1, 2)))
+#elif defined(__GNUC__) || defined(__clang__)
+__attribute__((format(printf, 1, 2)))
+#endif
 extern void Log(const char* format, ...);
 
 namespace COA {
@@ -62,29 +67,29 @@ typedef struct luaL_Reg {
 typedef void (*luaL_setfuncs_t)(lua_State* L, const luaL_Reg* l, int nup);
 
 // Function pointers (resolved at runtime)
-static lua_pushnil_t        p_lua_pushnil = nullptr;
-static lua_pushnumber_t     p_lua_pushnumber = nullptr;
-static lua_pushinteger_t    p_lua_pushinteger = nullptr;
-static lua_pushstring_t     p_lua_pushstring = nullptr;
-static lua_pushboolean_t    p_lua_pushboolean = nullptr;
-static lua_pushvalue_t      p_lua_pushvalue = nullptr;
-static lua_pushcclosure_t   p_lua_pushcclosure = nullptr;
-static lua_createtable_t    p_lua_createtable = nullptr;
-static lua_setfield_t       p_lua_setfield = nullptr;
-static lua_setglobal_t      p_lua_setglobal = nullptr;
-static lua_getglobal_t      p_lua_getglobal = nullptr;
-static lua_settop_t         p_lua_settop = nullptr;
-static lua_gettop_t         p_lua_gettop = nullptr;
-static lua_type_t           p_lua_type = nullptr;
-static lua_tonumberx_t      p_lua_tonumberx = nullptr;
-static lua_tointegerx_t     p_lua_tointegerx = nullptr;
-static lua_tolstring_t      p_lua_tolstring = nullptr;
-static lua_toboolean_t      p_lua_toboolean = nullptr;
-static lua_rawseti_t        p_lua_rawseti = nullptr;
-static lua_rawgeti_t        p_lua_rawgeti = nullptr;  // NEW: for getting globals table
-static lua_pcallk_t         p_lua_pcallk = nullptr;
-static luaL_error_t         p_luaL_error = nullptr;
-static luaL_setfuncs_t      p_luaL_setfuncs = nullptr;
+static lua_pushnil_t p_lua_pushnil = nullptr;
+static lua_pushnumber_t p_lua_pushnumber = nullptr;
+static lua_pushinteger_t p_lua_pushinteger = nullptr;
+static lua_pushstring_t p_lua_pushstring = nullptr;
+static lua_pushboolean_t p_lua_pushboolean = nullptr;
+static lua_pushvalue_t p_lua_pushvalue = nullptr;
+static lua_pushcclosure_t p_lua_pushcclosure = nullptr;
+static lua_createtable_t p_lua_createtable = nullptr;
+static lua_setfield_t p_lua_setfield = nullptr;
+static lua_setglobal_t p_lua_setglobal = nullptr;
+static lua_getglobal_t p_lua_getglobal = nullptr;
+static lua_settop_t p_lua_settop = nullptr;
+static lua_gettop_t p_lua_gettop = nullptr;
+static lua_type_t p_lua_type = nullptr;
+static lua_tonumberx_t p_lua_tonumberx = nullptr;
+static lua_tointegerx_t p_lua_tointegerx = nullptr;
+static lua_tolstring_t p_lua_tolstring = nullptr;
+static lua_toboolean_t p_lua_toboolean = nullptr;
+static lua_rawseti_t p_lua_rawseti = nullptr;
+static lua_rawgeti_t p_lua_rawgeti = nullptr; // NEW: for getting globals table
+static lua_pcallk_t p_lua_pcallk = nullptr;
+static luaL_error_t p_luaL_error = nullptr;
+static luaL_setfuncs_t p_luaL_setfuncs = nullptr;
 
 // State tracking
 static lua_State* g_LuaState = nullptr;
@@ -102,20 +107,20 @@ static std::vector<std::string> g_LuaLogMessages;
 //=============================================================================
 
 // Lua pseudo-indices (from the game's custom Lua 5.2)
-#define LUA_REGISTRYINDEX   (-1001000)  // -0xf4628
-#define LUA_RIDX_GLOBALS    2           // _G is at registry[2]
+#define LUA_REGISTRYINDEX (-1001000) // -0xf4628
+#define LUA_RIDX_GLOBALS 2           // _G is at registry[2]
 
-#define lua_pop(L, n)           p_lua_settop(L, -(n)-1)
+#define lua_pop(L, n) p_lua_settop(L, -(n) - 1)
 #define lua_pushcfunction(L, f) p_lua_pushcclosure(L, (f), 0)
-#define lua_newtable(L)         p_lua_createtable(L, 0, 0)
-#define lua_tonumber(L, i)      p_lua_tonumberx(L, (i), nullptr)
-#define lua_tointeger(L, i)     p_lua_tointegerx(L, (i), nullptr)
-#define lua_tostring(L, i)      p_lua_tolstring(L, (i), nullptr)
-#define lua_isnil(L, n)         (p_lua_type(L, (n)) == 0)
-#define lua_isnumber(L, n)      (p_lua_type(L, (n)) == 3)
-#define lua_isstring(L, n)      (p_lua_type(L, (n)) == 4)
-#define lua_isboolean(L, n)     (p_lua_type(L, (n)) == 1)
-#define lua_pcall(L, n, r, f)   p_lua_pcallk(L, (n), (r), (f), 0, nullptr)
+#define lua_newtable(L) p_lua_createtable(L, 0, 0)
+#define lua_tonumber(L, i) p_lua_tonumberx(L, (i), nullptr)
+#define lua_tointeger(L, i) p_lua_tointegerx(L, (i), nullptr)
+#define lua_tostring(L, i) p_lua_tolstring(L, (i), nullptr)
+#define lua_isnil(L, n) (p_lua_type(L, (n)) == 0)
+#define lua_isnumber(L, n) (p_lua_type(L, (n)) == 3)
+#define lua_isstring(L, n) (p_lua_type(L, (n)) == 4)
+#define lua_isboolean(L, n) (p_lua_type(L, (n)) == 1)
+#define lua_pcall(L, n, r, f) p_lua_pcallk(L, (n), (r), (f), 0, nullptr)
 
 //=============================================================================
 // LUA FUNCTION IMPLEMENTATIONS
@@ -246,7 +251,7 @@ static int L_GetUptime(lua_State* L) {
 static int L_GetSystemTime(lua_State* L) {
     SYSTEMTIME st;
     GetLocalTime(&st);
-    
+
     lua_newtable(L);
     p_lua_pushinteger(L, st.wHour);
     p_lua_setfield(L, -2, "hour");
@@ -256,7 +261,7 @@ static int L_GetSystemTime(lua_State* L) {
     p_lua_setfield(L, -2, "second");
     p_lua_pushinteger(L, st.wMilliseconds);
     p_lua_setfield(L, -2, "millisecond");
-    
+
     return 1;
 }
 
@@ -265,7 +270,7 @@ static int L_GetSystemTime(lua_State* L) {
 static int L_Print(lua_State* L) {
     int nargs = p_lua_gettop(L);
     std::string output;
-    
+
     for (int i = 1; i <= nargs; i++) {
         const char* s = lua_tostring(L, i);
         if (s) {
@@ -273,7 +278,7 @@ static int L_Print(lua_State* L) {
             output += s;
         }
     }
-    
+
     Log("[Lua.Print] %s", output.c_str());
     return 0;
 }
@@ -283,7 +288,7 @@ static int L_Print(lua_State* L) {
 //=============================================================================
 
 // Helper to check if memory is readable
-static bool IsMemoryReadable(void* ptr, size_t size) {
+static bool IsMemoryReadable(void* ptr, size_t /*size*/) {
     MEMORY_BASIC_INFORMATION mbi;
     if (VirtualQuery(ptr, &mbi, sizeof(mbi)) == 0) return false;
     if (mbi.State != MEM_COMMIT) return false;
@@ -298,16 +303,16 @@ static int L_ReadMemoryInt(lua_State* L) {
         p_lua_pushinteger(L, 0);
         return 1;
     }
-    
+
     lua_Integer offset = lua_tointeger(L, 1);
     uintptr_t addr = g_GameBase + (uintptr_t)offset;
-    
+
     if (!IsMemoryReadable((void*)addr, sizeof(int))) {
         Log("[Lua] ReadMemoryInt: Memory not readable at 0x%llX", addr);
         p_lua_pushinteger(L, 0);
         return 1;
     }
-    
+
     int value = *(int*)addr;
     p_lua_pushinteger(L, value);
     return 1;
@@ -320,16 +325,16 @@ static int L_ReadMemoryFloat(lua_State* L) {
         p_lua_pushnumber(L, 0.0);
         return 1;
     }
-    
+
     lua_Integer offset = lua_tointeger(L, 1);
     uintptr_t addr = g_GameBase + (uintptr_t)offset;
-    
+
     if (!IsMemoryReadable((void*)addr, sizeof(float))) {
         Log("[Lua] ReadMemoryFloat: Memory not readable at 0x%llX", addr);
         p_lua_pushnumber(L, 0.0);
         return 1;
     }
-    
+
     float value = *(float*)addr;
     p_lua_pushnumber(L, (lua_Number)value);
     return 1;
@@ -342,11 +347,11 @@ static int L_WriteMemoryInt(lua_State* L) {
         p_lua_pushboolean(L, 0);
         return 1;
     }
-    
+
     lua_Integer offset = lua_tointeger(L, 1);
     int value = (int)lua_tointeger(L, 2);
     uintptr_t addr = g_GameBase + (uintptr_t)offset;
-    
+
     // Make memory writable
     DWORD oldProtect;
     if (!VirtualProtect((void*)addr, sizeof(int), PAGE_EXECUTE_READWRITE, &oldProtect)) {
@@ -354,13 +359,13 @@ static int L_WriteMemoryInt(lua_State* L) {
         p_lua_pushboolean(L, 0);
         return 1;
     }
-    
+
     *(int*)addr = value;
     Log("[Lua] WriteMemoryInt: Wrote %d to 0x%llX", value, addr);
-    
+
     // Restore protection
     VirtualProtect((void*)addr, sizeof(int), oldProtect, &oldProtect);
-    
+
     p_lua_pushboolean(L, 1);
     return 1;
 }
@@ -372,11 +377,11 @@ static int L_WriteMemoryFloat(lua_State* L) {
         p_lua_pushboolean(L, 0);
         return 1;
     }
-    
+
     lua_Integer offset = lua_tointeger(L, 1);
     float value = (float)lua_tonumber(L, 2);
     uintptr_t addr = g_GameBase + (uintptr_t)offset;
-    
+
     // Make memory writable
     DWORD oldProtect;
     if (!VirtualProtect((void*)addr, sizeof(float), PAGE_EXECUTE_READWRITE, &oldProtect)) {
@@ -384,13 +389,13 @@ static int L_WriteMemoryFloat(lua_State* L) {
         p_lua_pushboolean(L, 0);
         return 1;
     }
-    
+
     *(float*)addr = value;
     Log("[Lua] WriteMemoryFloat: Wrote %f to 0x%llX", value, addr);
-    
+
     // Restore protection
     VirtualProtect((void*)addr, sizeof(float), oldProtect, &oldProtect);
-    
+
     p_lua_pushboolean(L, 1);
     return 1;
 }
@@ -402,26 +407,26 @@ static int L_ReadMemoryString(lua_State* L) {
         p_lua_pushstring(L, "");
         return 1;
     }
-    
+
     lua_Integer offset = lua_tointeger(L, 1);
     int maxLen = lua_isnumber(L, 2) ? (int)lua_tointeger(L, 2) : 256;
-    if (maxLen > 4096) maxLen = 4096;  // Safety limit
-    
+    if (maxLen > 4096) maxLen = 4096; // Safety limit
+
     uintptr_t addr = g_GameBase + (uintptr_t)offset;
-    
+
     if (!IsMemoryReadable((void*)addr, 1)) {
         Log("[Lua] ReadMemoryString: Memory not readable at 0x%llX", addr);
         p_lua_pushstring(L, "");
         return 1;
     }
-    
+
     const char* str = (const char*)addr;
     // Find length safely (check each page as we go)
     size_t len = 0;
     while (len < (size_t)maxLen && str[len] != '\0') {
         len++;
     }
-    
+
     char* buffer = (char*)malloc(len + 1);
     if (buffer) {
         memcpy(buffer, str, len);
@@ -431,7 +436,7 @@ static int L_ReadMemoryString(lua_State* L) {
     } else {
         p_lua_pushstring(L, "");
     }
-    
+
     return 1;
 }
 
@@ -447,12 +452,12 @@ static std::unordered_map<std::string, std::string> g_Config;
 static int L_SetConfig(lua_State* L) {
     const char* key = lua_tostring(L, 1);
     const char* value = lua_tostring(L, 2);
-    
+
     if (key && value) {
         g_Config[key] = value;
         Log("[Lua] Config set: %s = %s", key, value);
     }
-    
+
     return 0;
 }
 
@@ -461,7 +466,7 @@ static int L_SetConfig(lua_State* L) {
 static int L_GetConfig(lua_State* L) {
     const char* key = lua_tostring(L, 1);
     const char* defaultVal = lua_isstring(L, 2) ? lua_tostring(L, 2) : "";
-    
+
     if (key) {
         auto it = g_Config.find(key);
         if (it != g_Config.end()) {
@@ -469,7 +474,7 @@ static int L_GetConfig(lua_State* L) {
             return 1;
         }
     }
-    
+
     p_lua_pushstring(L, defaultVal);
     return 1;
 }
@@ -485,18 +490,18 @@ static std::unordered_map<std::string, int> g_Callbacks;
 // Register a Lua function to be called for specific events
 static int L_RegisterCallback(lua_State* L) {
     const char* eventName = lua_tostring(L, 1);
-    
-    if (!eventName || p_lua_type(L, 2) != 6) {  // 6 = LUA_TFUNCTION
+
+    if (!eventName || p_lua_type(L, 2) != 6) { // 6 = LUA_TFUNCTION
         Log("[Lua] RegisterCallback: Invalid arguments");
         p_lua_pushboolean(L, 0);
         return 1;
     }
-    
+
     // For now, just log the registration
     // Full implementation would store a ref to the function
     Log("[Lua] Callback registered for event: %s", eventName);
-    g_Callbacks[eventName] = 1;  // Placeholder
-    
+    g_Callbacks[eventName] = 1; // Placeholder
+
     p_lua_pushboolean(L, 1);
     return 1;
 }
@@ -529,7 +534,7 @@ static int L_GetRegisteredCallbacks(lua_State* L) {
 static int L_DumpStack(lua_State* L) {
     int top = p_lua_gettop(L);
     Log("[Lua] === Stack Dump (%d items) ===", top);
-    
+
     for (int i = 1; i <= top; i++) {
         int t = p_lua_type(L, i);
         const char* typeName = "unknown";
@@ -544,21 +549,21 @@ static int L_DumpStack(lua_State* L) {
             case 7: typeName = "userdata"; break;
             case 8: typeName = "thread"; break;
         }
-        
-        if (t == 4) {  // string
+
+        if (t == 4) { // string
             const char* s = lua_tostring(L, i);
             Log("[Lua]   [%d] %s: \"%s\"", i, typeName, s ? s : "(null)");
-        } else if (t == 3) {  // number
+        } else if (t == 3) { // number
             lua_Number n = lua_tonumber(L, i);
             Log("[Lua]   [%d] %s: %g", i, typeName, n);
-        } else if (t == 1) {  // boolean
+        } else if (t == 1) { // boolean
             int b = p_lua_toboolean(L, i);
             Log("[Lua]   [%d] %s: %s", i, typeName, b ? "true" : "false");
         } else {
             Log("[Lua]   [%d] %s", i, typeName);
         }
     }
-    
+
     Log("[Lua] === End Stack Dump ===");
     return 0;
 }
@@ -568,17 +573,36 @@ static int L_DumpStack(lua_State* L) {
 // NOTE: This is a hardcoded list - update when adding new functions!
 static int L_GetFunctionList(lua_State* L) {
     lua_newtable(L);
-    
-    const char* functions[] = {
-        "GetVersion", "Log", "IsActive", "GetGameBase", "GetLoadedMods",
-        "GetFunctionList", "SetDamageMultiplier", "GetDamageMultiplier",
-        "SetGodMode", "IsGodMode", "SetUnlimitedAmmo", "IsUnlimitedAmmo",
-        "GetFrameCount", "GetUptime", "GetSystemTime", "Print", "DumpStack",
-        "ReadMemoryInt", "ReadMemoryFloat", "WriteMemoryInt", "WriteMemoryFloat",
-        "ReadMemoryString", "SetConfig", "GetConfig", "RegisterCallback",
-        "GetRegisteredCallbacks", "ExecuteHook", nullptr
-    };
-    
+
+    const char* functions[] = {"GetVersion",
+                               "Log",
+                               "IsActive",
+                               "GetGameBase",
+                               "GetLoadedMods",
+                               "GetFunctionList",
+                               "SetDamageMultiplier",
+                               "GetDamageMultiplier",
+                               "SetGodMode",
+                               "IsGodMode",
+                               "SetUnlimitedAmmo",
+                               "IsUnlimitedAmmo",
+                               "GetFrameCount",
+                               "GetUptime",
+                               "GetSystemTime",
+                               "Print",
+                               "DumpStack",
+                               "ReadMemoryInt",
+                               "ReadMemoryFloat",
+                               "WriteMemoryInt",
+                               "WriteMemoryFloat",
+                               "ReadMemoryString",
+                               "SetConfig",
+                               "GetConfig",
+                               "RegisterCallback",
+                               "GetRegisteredCallbacks",
+                               "ExecuteHook",
+                               nullptr};
+
     int i = 1;
     for (const char** f = functions; *f != nullptr; f++) {
         p_lua_pushstring(L, *f);
@@ -589,7 +613,7 @@ static int L_GetFunctionList(lua_State* L) {
         }
         i++;
     }
-    
+
     return 1;
 }
 
@@ -598,78 +622,78 @@ static int L_GetFunctionList(lua_State* L) {
 //=============================================================================
 
 // Game's lua.start initialization handler
-#define LUA_START_HANDLER_OFFSET    0x004BA470
+#define LUA_START_HANDLER_OFFSET 0x004BA470
 
 // === LUA STATE CREATION (from AnalyzeLuaInitCaller.java) ===
 // FUN_140d6cfa0 is called first in both Lua init functions, returns lua_State* in RAX
-#define LUA_NEWSTATE_OFFSET         0x00D6CFA0  // lua_newstate or luaL_newstate
+#define LUA_NEWSTATE_OFFSET 0x00D6CFA0 // lua_newstate or luaL_newstate
 
 // Global variable that stores lua_State* (from AnalyzeLuaInitCaller.java)
 // 0x01139B48 is used as RCX (first param) in multiple Lua calls
-#define LUA_STATE_GLOBAL_OFFSET     0x01139B48  // Global lua_State* storage
+#define LUA_STATE_GLOBAL_OFFSET 0x01139B48 // Global lua_State* storage
 
 // === CORE LUA 5.2 API FUNCTIONS ===
 
 // Stack manipulation
 // OLD: 0x00D6F090 - was wrong
 // NEW: 0x00D6B9B0 - Found from luaL_setfuncs (it calls this at the end to pop)
-#define LUA_SETTOP_OFFSET           0x00D6B9B0  // lua_settop - VERIFIED from luaL_setfuncs!
-#define LUA_TYPE_OFFSET             0x00D6F630  // lua_type
+#define LUA_SETTOP_OFFSET 0x00D6B9B0 // lua_settop - VERIFIED from luaL_setfuncs!
+#define LUA_TYPE_OFFSET 0x00D6F630   // lua_type
 
 // Push functions
-#define LUA_PUSHSTRING_OFFSET       0x00D7AC60  // lua_pushstring
-#define LUA_PUSHCCLOSURE_OFFSET     0x00D6AB20  // lua_pushcclosure - VERIFIED via Ghidra
-#define LUAL_SETFUNCS_OFFSET        0x00D6E580  // luaL_setfuncs (was incorrectly labeled pushcclosure)
-#define LUA_PUSHFSTRING_OFFSET      0x00D6D0C0  // lua_pushfstring
+#define LUA_PUSHSTRING_OFFSET 0x00D7AC60   // lua_pushstring
+#define LUA_PUSHCCLOSURE_OFFSET 0x00D6AB20 // lua_pushcclosure - VERIFIED via Ghidra
+#define LUAL_SETFUNCS_OFFSET 0x00D6E580    // luaL_setfuncs (was incorrectly labeled pushcclosure)
+#define LUA_PUSHFSTRING_OFFSET 0x00D6D0C0  // lua_pushfstring
 
 // Table functions
 // OLD WRONG: 0x00D77E80 was luaH_resize, NOT lua_createtable!
 // NEW: 0x00D69D40 - Found via FindLuaCreateTable.java (score 80/100, 107 bytes)
-#define LUA_CREATETABLE_OFFSET      0x00D69D40  // lua_createtable - VERIFIED
+#define LUA_CREATETABLE_OFFSET 0x00D69D40 // lua_createtable - VERIFIED
 // OLD WRONG: 0x00D76D50 was INTERNAL function (takes TValue* not stack index)
 // NEW: 0x00D6B670 - Found from luaL_setfuncs decompilation (the REAL public wrapper)
-#define LUA_SETFIELD_OFFSET         0x00D6B670  // lua_setfield - FIXED!
+#define LUA_SETFIELD_OFFSET 0x00D6B670 // lua_setfield - FIXED!
 
 // Call functions
-#define LUA_PCALL_OFFSET            0x00D712A0  // lua_pcall
-#define LUA_ERROR_OFFSET            0x00D715C0  // lua_error
+#define LUA_PCALL_OFFSET 0x00D712A0 // lua_pcall
+#define LUA_ERROR_OFFSET 0x00D715C0 // lua_error
 
 // Error handling
-#define LUAL_ERROR_OFFSET           0x00D6CCF0  // luaL_error
+#define LUAL_ERROR_OFFSET 0x00D6CCF0 // luaL_error
 
 // Loading
-#define LUAL_LOADFILE_OFFSET        0x00D6DB50  // luaL_loadfile
-#define LUAL_LOADBUFFER_OFFSET      0x00D7D2E0  // luaL_loadbuffer
+#define LUAL_LOADFILE_OFFSET 0x00D6DB50   // luaL_loadfile
+#define LUAL_LOADBUFFER_OFFSET 0x00D7D2E0 // luaL_loadbuffer
 
 // Library opening
-#define LUAL_OPENLIBS_OFFSET        0x00D85F90  // luaL_openlibs
+#define LUAL_OPENLIBS_OFFSET 0x00D85F90 // luaL_openlibs
 
 // === DISCOVERED VIA FindLuaSetGlobal.java + VerifyLuaFunctions.java ===
 // OLD WRONG: 0x00D773F0 was internal function (4 params)
 // NEW CORRECT: 0x00D6DE90 - Found via ExtractRealLuaAPI.java (2 params, calls setfield with registry)
-#define LUA_SETGLOBAL_OFFSET        0x00D6DE90  // lua_setglobal - VERIFIED!
+#define LUA_SETGLOBAL_OFFSET 0x00D6DE90 // lua_setglobal - VERIFIED!
 
 // Push functions near lua_pushstring (0x00D7AC60) - VERIFIED via instruction analysis:
 // 0x00D7A440 uses ECX (integer param) -> lua_pushinteger
 // 0x00D7A470 uses XMM0 (double param) -> lua_pushnumber
-#define LUA_PUSHINTEGER_OFFSET      0x00D7A440  // lua_pushinteger (48 bytes, uses ECX)
-#define LUA_PUSHNUMBER_OFFSET       0x00D7A470  // lua_pushnumber (50 bytes, uses XMM0)
+#define LUA_PUSHINTEGER_OFFSET 0x00D7A440 // lua_pushinteger (48 bytes, uses ECX)
+#define LUA_PUSHNUMBER_OFFSET 0x00D7A470  // lua_pushnumber (50 bytes, uses XMM0)
 
 // lua_pushboolean - need to find separately (different signature)
 // Looking at 0x00D6F6D0 (70 bytes) or similar small functions
-#define LUA_PUSHBOOLEAN_OFFSET      0x00D7A4B0  // lua_pushboolean candidate (127 bytes)
+#define LUA_PUSHBOOLEAN_OFFSET 0x00D7A4B0 // lua_pushboolean candidate (127 bytes)
 
 // Stack query - VERIFIED: 0x00D6FD10 is 16 bytes, perfect for lua_gettop
-#define LUA_GETTOP_OFFSET           0x00D6FD10  // lua_gettop (16 bytes)
+#define LUA_GETTOP_OFFSET 0x00D6FD10 // lua_gettop (16 bytes)
 
 // lua_to* functions - in range 0x00D6F200 - 0x00D6F800
-#define LUA_TOBOOLEAN_OFFSET        0x00D6F550  // lua_toboolean (118 bytes)
-#define LUA_TONUMBERX_OFFSET        0x00D6F3D0  // lua_tonumberx (380 bytes)
-#define LUA_TOLSTRING_OFFSET        0x00D7A290  // lua_tolstring (336 bytes, near pushstring)
+#define LUA_TOBOOLEAN_OFFSET 0x00D6F550 // lua_toboolean (118 bytes)
+#define LUA_TONUMBERX_OFFSET 0x00D6F3D0 // lua_tonumberx (380 bytes)
+#define LUA_TOLSTRING_OFFSET 0x00D7A290 // lua_tolstring (336 bytes, near pushstring)
 
 // lua_rawgeti - for accessing registry (found from game's _G access pattern)
 // FUN_140d6b0b0 is used with (L, LUA_REGISTRYINDEX, 2) to get _G
-#define LUA_RAWGETI_OFFSET          0x00D6B0B0  // lua_rawgeti - VERIFIED from Ghidra
+#define LUA_RAWGETI_OFFSET 0x00D6B0B0 // lua_rawgeti - VERIFIED from Ghidra
 
 //=============================================================================
 // FUNCTION RESOLVER
@@ -679,76 +703,76 @@ static int L_GetFunctionList(lua_State* L) {
 static bool ResolveLuaFunctions() {
     // The game has Lua statically linked
     uintptr_t base = g_GameBase;
-    
+
     Log("[LuaBridge] Resolving Lua functions from game base 0x%llX", base);
-    
+
     // === STACK MANIPULATION ===
     p_lua_settop = (lua_settop_t)(base + LUA_SETTOP_OFFSET);
     Log("[LuaBridge] lua_settop at 0x%llX", (uintptr_t)p_lua_settop);
-    
+
     p_lua_gettop = (lua_gettop_t)(base + LUA_GETTOP_OFFSET);
     Log("[LuaBridge] lua_gettop at 0x%llX (guessed)", (uintptr_t)p_lua_gettop);
-    
+
     p_lua_type = (lua_type_t)(base + LUA_TYPE_OFFSET);
     Log("[LuaBridge] lua_type at 0x%llX", (uintptr_t)p_lua_type);
-    
+
     // === PUSH FUNCTIONS ===
     p_lua_pushstring = (lua_pushstring_t)(base + LUA_PUSHSTRING_OFFSET);
     Log("[LuaBridge] lua_pushstring at 0x%llX", (uintptr_t)p_lua_pushstring);
-    
+
     p_lua_pushcclosure = (lua_pushcclosure_t)(base + LUA_PUSHCCLOSURE_OFFSET);
     Log("[LuaBridge] lua_pushcclosure at 0x%llX", (uintptr_t)p_lua_pushcclosure);
-    
+
     // === TABLE FUNCTIONS ===
     p_lua_createtable = (lua_createtable_t)(base + LUA_CREATETABLE_OFFSET);
     Log("[LuaBridge] lua_createtable at 0x%llX", (uintptr_t)p_lua_createtable);
-    
+
     p_lua_setfield = (lua_setfield_t)(base + LUA_SETFIELD_OFFSET);
     Log("[LuaBridge] lua_setfield at 0x%llX", (uintptr_t)p_lua_setfield);
-    
+
     // === CALL/ERROR FUNCTIONS ===
     p_lua_pcallk = (lua_pcallk_t)(base + LUA_PCALL_OFFSET);
     Log("[LuaBridge] lua_pcall at 0x%llX", (uintptr_t)p_lua_pcallk);
-    
+
     p_luaL_error = (luaL_error_t)(base + LUAL_ERROR_OFFSET);
     Log("[LuaBridge] luaL_error at 0x%llX", (uintptr_t)p_luaL_error);
-    
+
     // === NEWLY DISCOVERED FUNCTIONS ===
     p_lua_setglobal = (lua_setglobal_t)(base + LUA_SETGLOBAL_OFFSET);
     Log("[LuaBridge] lua_setglobal at 0x%llX", (uintptr_t)p_lua_setglobal);
-    
+
     p_lua_gettop = (lua_gettop_t)(base + LUA_GETTOP_OFFSET);
     Log("[LuaBridge] lua_gettop at 0x%llX", (uintptr_t)p_lua_gettop);
-    
+
     p_lua_pushnumber = (lua_pushnumber_t)(base + LUA_PUSHNUMBER_OFFSET);
     Log("[LuaBridge] lua_pushnumber at 0x%llX", (uintptr_t)p_lua_pushnumber);
-    
+
     p_lua_pushinteger = (lua_pushinteger_t)(base + LUA_PUSHINTEGER_OFFSET);
     Log("[LuaBridge] lua_pushinteger at 0x%llX", (uintptr_t)p_lua_pushinteger);
-    
+
     p_lua_pushboolean = (lua_pushboolean_t)(base + LUA_PUSHBOOLEAN_OFFSET);
     Log("[LuaBridge] lua_pushboolean at 0x%llX", (uintptr_t)p_lua_pushboolean);
-    
+
     p_lua_toboolean = (lua_toboolean_t)(base + LUA_TOBOOLEAN_OFFSET);
     Log("[LuaBridge] lua_toboolean at 0x%llX", (uintptr_t)p_lua_toboolean);
-    
+
     p_lua_tonumberx = (lua_tonumberx_t)(base + LUA_TONUMBERX_OFFSET);
     Log("[LuaBridge] lua_tonumberx at 0x%llX", (uintptr_t)p_lua_tonumberx);
-    
+
     p_lua_tolstring = (lua_tolstring_t)(base + LUA_TOLSTRING_OFFSET);
     Log("[LuaBridge] lua_tolstring at 0x%llX", (uintptr_t)p_lua_tolstring);
-    
+
     // === lua_rawgeti - for getting globals table from registry ===
     p_lua_rawgeti = (lua_rawgeti_t)(base + LUA_RAWGETI_OFFSET);
     Log("[LuaBridge] lua_rawgeti at 0x%llX", (uintptr_t)p_lua_rawgeti);
-    
+
     // === luaL_setfuncs - THE KEY FUNCTION FOR REGISTRATION ===
     p_luaL_setfuncs = (luaL_setfuncs_t)(base + LUAL_SETFUNCS_OFFSET);
     Log("[LuaBridge] luaL_setfuncs at 0x%llX", (uintptr_t)p_luaL_setfuncs);
-    
+
     Log("[LuaBridge] All Lua functions resolved!");
     Log("[LuaBridge] Ready to register COA_Extender table");
-    
+
     return true;
 }
 
@@ -757,7 +781,7 @@ static bool ResolveLuaFunctions() {
 //=============================================================================
 
 static bool g_COAExtenderRegistered = false;
-static bool g_ReadyToRegister = false;  // Flag set when we should register on next safe opportunity
+static bool g_ReadyToRegister = false; // Flag set when we should register on next safe opportunity
 
 // === APPROACH 0: Hook lua_pushcclosure - called when registering C functions in Lua ===
 // Signature: void lua_pushcclosure(lua_State *L, lua_CFunction fn, int n)
@@ -767,42 +791,41 @@ static int g_PushCClosureCount = 0;
 
 static void Hooked_lua_pushcclosure(lua_State* L, void* fn, int n) {
     g_PushCClosureCount++;
-    
+
     // Log first several calls and periodically after
     if (g_PushCClosureCount <= 20 || g_PushCClosureCount == 100 || g_PushCClosureCount == 200) {
-        Log("[LuaBridge] lua_pushcclosure #%d: L=0x%p, fn=0x%p, n=%d", 
-            g_PushCClosureCount, L, fn, n);
+        Log("[LuaBridge] lua_pushcclosure #%d: L=0x%p, fn=0x%p, n=%d", g_PushCClosureCount, L, fn, n);
     }
-    
+
     // Capture lua_State on first call
     if (L && !g_LuaState) {
         Log("[LuaBridge] Captured lua_State from lua_pushcclosure: 0x%p", L);
         g_LuaState = L;
     }
-    
+
     // Check if we need to register BEFORE calling original
     // This means the PREVIOUS call has completed and stack is clean
     if (g_ReadyToRegister && !g_COAExtenderRegistered) {
-        g_ReadyToRegister = false;  // Clear flag first
-        g_COAExtenderRegistered = true;  // Mark as registered BEFORE calling luaL_setfuncs
-                                          // This prevents re-entry when luaL_setfuncs calls pushcclosure internally
+        g_ReadyToRegister = false;      // Clear flag first
+        g_COAExtenderRegistered = true; // Mark as registered BEFORE calling luaL_setfuncs
+                                        // This prevents re-entry when luaL_setfuncs calls pushcclosure internally
         Log("[LuaBridge] Registering COA_Extender (deferred, closure #%d)...", g_PushCClosureCount);
-        
+
         // Check stack state
         int top = p_lua_gettop ? p_lua_gettop(g_LuaState) : -1;
         Log("[LuaBridge] Stack top before registration: %d", top);
-        
+
         // Register our functions using the CORRECT offsets!
         RegisterFunctions(g_LuaState);
-        
+
         int newTop = p_lua_gettop ? p_lua_gettop(g_LuaState) : -1;
         Log("[LuaBridge] Stack top after registration: %d", newTop);
         Log("[LuaBridge] COA_Extender registered successfully!");
     }
-    
-    // Call original 
+
+    // Call original
     g_OriginalPushCClosure(L, fn, n);
-    
+
     // After 100+ closures, set flag for NEXT call to do registration
     if (g_LuaState && !g_COAExtenderRegistered && !g_ReadyToRegister && g_PushCClosureCount >= 100) {
         Log("[LuaBridge] Setting deferred registration flag at closure #%d", g_PushCClosureCount);
@@ -817,44 +840,44 @@ static int g_PcallCount = 0;
 
 static int Hooked_lua_pcall(lua_State* L, int nargs, int nresults, int errfunc) {
     g_PcallCount++;
-    
+
     // Only log first few calls to avoid spam
     if (g_PcallCount <= 10) {
-        Log("[LuaBridge] lua_pcall #%d called! lua_State=0x%p, nargs=%d, nresults=%d", 
-            g_PcallCount, L, nargs, nresults);
+        Log("[LuaBridge] lua_pcall #%d called! lua_State=0x%p, nargs=%d, nresults=%d", g_PcallCount, L, nargs,
+            nresults);
     }
-    
+
     // Capture lua_State on first call
     if (L && !g_LuaState) {
         Log("[LuaBridge] Captured lua_State from lua_pcall: 0x%p", L);
         g_LuaState = L;
     }
-    
+
     // SAFE REGISTRATION POINT: Register on first pcall when we have lua_State
     // At this point, the game is executing Lua code, so Lua is fully initialized
     // and the stack is in a known good state (about to call a function)
     if (g_LuaState && !g_COAExtenderRegistered && g_PcallCount >= 3) {
         Log("[LuaBridge] Safe registration point reached (pcall #%d)", g_PcallCount);
-        
+
         // Save current stack state
         int savedTop = p_lua_gettop ? p_lua_gettop(L) : 0;
         Log("[LuaBridge] Stack top before registration: %d", savedTop);
-        
+
         // Register our functions
         RegisterFunctions(L);
         g_COAExtenderRegistered = true;
-        
+
         // Verify stack is restored
         int newTop = p_lua_gettop ? p_lua_gettop(L) : 0;
         Log("[LuaBridge] Stack top after registration: %d (expected: %d)", newTop, savedTop);
-        
+
         // Restore stack if needed (shouldn't be necessary but safety first)
         if (p_lua_settop && newTop != savedTop) {
             Log("[LuaBridge] WARNING: Stack mismatch, restoring...");
             p_lua_settop(L, savedTop);
         }
     }
-    
+
     // Call original pcall
     return g_OriginalPcall(L, nargs, nresults, errfunc);
 }
@@ -865,16 +888,16 @@ static LuaNewstate_t g_OriginalNewstate = nullptr;
 
 static lua_State* Hooked_lua_newstate(void* allocFunc, void* userData) {
     Log("[LuaBridge] lua_newstate called! allocFunc=0x%p, userData=0x%p", allocFunc, userData);
-    
+
     lua_State* L = g_OriginalNewstate(allocFunc, userData);
-    
+
     Log("[LuaBridge] lua_newstate returned lua_State* = 0x%p", L);
-    
+
     if (L) {
         g_LuaState = L;
         Log("[LuaBridge] Captured lua_State from lua_newstate!");
     }
-    
+
     return L;
 }
 
@@ -884,12 +907,12 @@ static LuaL_openlibs_t g_OriginalOpenlibs = nullptr;
 
 static void Hooked_luaL_openlibs(lua_State* L) {
     Log("[LuaBridge] luaL_openlibs called with lua_State* = 0x%p", L);
-    
+
     // Call original first to set up standard libraries
     g_OriginalOpenlibs(L);
-    
+
     Log("[LuaBridge] Standard Lua libraries loaded");
-    
+
     // Just capture the state, don't register directly
     if (L && !g_LuaState) {
         g_LuaState = L;
@@ -901,42 +924,42 @@ static void Hooked_luaL_openlibs(lua_State* L) {
 static lua_State* TryGetLuaStateFromGlobal() {
     // The game stores lua_State* at global address 0x141139B48
     uintptr_t globalAddr = g_GameBase + LUA_STATE_GLOBAL_OFFSET;
-    
+
     // Log the address we're checking (only first time)
     static bool firstCheck = true;
     if (firstCheck) {
         Log("[LuaBridge] Checking for lua_State at global 0x%llX", globalAddr);
         firstCheck = false;
     }
-    
+
     // This is a pointer to a pointer - dereference carefully
     lua_State** ppState = (lua_State**)globalAddr;
-    
+
     // Check if the memory is readable
     if (IsBadReadPtr(ppState, sizeof(lua_State*))) {
         return nullptr;
     }
-    
+
     lua_State* L = *ppState;
-    
+
     // Log what we found (for debugging)
     static lua_State* lastChecked = (lua_State*)1; // Use 1 to trigger first log
     if (L != lastChecked) {
         Log("[LuaBridge] Global value changed: 0x%p", L);
         lastChecked = L;
     }
-    
+
     if (L && !IsBadReadPtr(L, sizeof(void*))) {
         return L;
     }
-    
+
     return nullptr;
 }
 
 // Periodic check for lua_State from global (called from game loop hook if needed)
 void CheckForLuaState() {
     if (g_LuaState || g_COAExtenderRegistered) return;
-    
+
     lua_State* L = TryGetLuaStateFromGlobal();
     if (L) {
         Log("[LuaBridge] Found lua_State from global: 0x%p", L);
@@ -951,56 +974,55 @@ void CheckForLuaState() {
 static HANDLE g_CheckThread = nullptr;
 static bool g_CheckThreadRunning = false;
 
-static DWORD WINAPI LuaStateCheckThread(LPVOID param) {
+static DWORD WINAPI LuaStateCheckThread(LPVOID /*param*/) {
     Log("[LuaBridge] Background Lua state checker started");
-    
+
     // Multiple candidate global addresses from AnalyzeLuaInitCaller.java
     const uintptr_t candidates[] = {
-        0x01139B48,  // lua_State candidate 1 (used as RCX)
-        0x01139B50,  // lua_State candidate 2 (used as RDX)  
-        0x01137060,  // lua_State candidate 3 (frequently used)
+        0x01139B48, // lua_State candidate 1 (used as RCX)
+        0x01139B50, // lua_State candidate 2 (used as RDX)
+        0x01137060, // lua_State candidate 3 (frequently used)
     };
     const int numCandidates = sizeof(candidates) / sizeof(candidates[0]);
-    
+
     int checkCount = 0;
-    const int MAX_CHECKS = 120;  // Check for up to 120 seconds
-    
+    const int MAX_CHECKS = 120; // Check for up to 120 seconds
+
     while (g_CheckThreadRunning && !g_COAExtenderRegistered && checkCount < MAX_CHECKS) {
-        Sleep(1000);  // Check every second
+        Sleep(1000); // Check every second
         checkCount++;
-        
+
         if (g_COAExtenderRegistered) break;
-        
+
         // Check all candidate addresses
         for (int i = 0; i < numCandidates; i++) {
             uintptr_t globalAddr = g_GameBase + candidates[i];
-            
+
             if (IsBadReadPtr((void*)globalAddr, sizeof(void*))) continue;
-            
+
             void* ptrValue = *(void**)globalAddr;
-            
+
             // Log on first check or if value changed
             static void* lastValues[3] = {nullptr, nullptr, nullptr};
             if (checkCount == 1 || ptrValue != lastValues[i]) {
-                Log("[LuaBridge] [Thread] Global[%d] at 0x%llX = 0x%p", 
-                    i, globalAddr, ptrValue);
+                Log("[LuaBridge] [Thread] Global[%d] at 0x%llX = 0x%p", i, globalAddr, ptrValue);
                 lastValues[i] = ptrValue;
             }
-            
+
             // Check if this looks like a valid pointer
             if (ptrValue && !IsBadReadPtr(ptrValue, 64)) {
                 // Try to validate it's a lua_State by checking structure
                 // lua_State typically has specific patterns at known offsets
                 lua_State* L = (lua_State*)ptrValue;
-                
+
                 // If we haven't registered yet and this looks valid, try it
                 if (!g_COAExtenderRegistered) {
                     Log("[LuaBridge] [Thread] Testing candidate lua_State at 0x%p from global[%d]", L, i);
-                    
+
                     std::lock_guard<std::mutex> lock(g_LuaMutex);
                     if (!g_COAExtenderRegistered) {
                         g_LuaState = L;
-                        
+
                         // Try to call a simple Lua function to validate
                         // lua_gettop should return a small non-negative integer
                         if (p_lua_gettop) {
@@ -1021,18 +1043,18 @@ static DWORD WINAPI LuaStateCheckThread(LPVOID param) {
                 }
             }
         }
-        
+
         if (g_COAExtenderRegistered) break;
-        
+
         if (checkCount % 10 == 0) {
             Log("[LuaBridge] [Thread] Still waiting for Lua state... (%d seconds)", checkCount);
         }
     }
-    
+
     if (!g_COAExtenderRegistered) {
         Log("[LuaBridge] [Thread] Gave up waiting for Lua state after %d seconds", checkCount);
     }
-    
+
     Log("[LuaBridge] Background checker thread exiting");
     return 0;
 }
@@ -1051,7 +1073,7 @@ static void StopLuaStateChecker() {
     }
 }
 
-// Backup hook: lua.start 
+// Backup hook: lua.start
 static const uintptr_t LUA_START_RVA = LUA_START_HANDLER_OFFSET;
 typedef void* (*LuaStart_t)(void* param1, void* param2);
 static LuaStart_t g_OriginalLuaStart = nullptr;
@@ -1059,16 +1081,16 @@ static LuaStart_t g_OriginalLuaStart = nullptr;
 static void* Hooked_LuaStart(void* param1, void* param2) {
     Log("[LuaBridge] lua.start handler called!");
     Log("[LuaBridge] param1=0x%p, param2=0x%p", param1, param2);
-    
+
     void* result = g_OriginalLuaStart(param1, param2);
-    
+
     Log("[LuaBridge] lua.start returned: 0x%p", result);
-    
+
     // After lua.start, try to get state from global
     if (!g_COAExtenderRegistered) {
         CheckForLuaState();
     }
-    
+
     return result;
 }
 
@@ -1077,12 +1099,12 @@ static bool InstallLuaHooks() {
     uintptr_t base = g_GameBase;
     bool success = false;
     MH_STATUS status;
-    
+
     // PRIMARY: Hook lua_pushcclosure - called when game registers C functions in Lua
     // This has a well-defined signature: void lua_pushcclosure(lua_State *L, lua_CFunction fn, int n)
     void* pushcclosure_target = (void*)(base + LUA_PUSHCCLOSURE_OFFSET);
     Log("[LuaBridge] Installing hook at lua_pushcclosure (0x%p)", pushcclosure_target);
-    
+
     status = MH_CreateHook(pushcclosure_target, (void*)Hooked_lua_pushcclosure, (void**)&g_OriginalPushCClosure);
     if (status != MH_OK) {
         Log("[LuaBridge] Failed to create lua_pushcclosure hook: %d", status);
@@ -1095,14 +1117,14 @@ static bool InstallLuaHooks() {
             success = true;
         }
     }
-    
+
     Log("[LuaBridge] Hook installation complete (pushcclosure only)");
-    
+
     // ENABLED: lua_pcall hook for safe deferred registration
     // lua_pcall - register our functions when game starts calling Lua scripts
     void* pcall_target = (void*)(base + LUA_PCALL_OFFSET);
     Log("[LuaBridge] Installing hook at lua_pcall (0x%p)", pcall_target);
-    
+
     status = MH_CreateHook(pcall_target, (void*)Hooked_lua_pcall, (void**)&g_OriginalPcall);
     if (status != MH_OK) {
         Log("[LuaBridge] Failed to create lua_pcall hook: %d", status);
@@ -1114,11 +1136,11 @@ static bool InstallLuaHooks() {
             Log("[LuaBridge] lua_pcall hook installed successfully");
         }
     }
-    
+
     Log("[LuaBridge] Hook installation complete (minimal mode - pcall only)");
-    
-    // DISABLED: These hooks may interfere with game initialization
-    #if 0
+
+// DISABLED: These hooks may interfere with game initialization
+#if 0
     // Secondary hook: lua_newstate (captures lua_State* when created)
     void* newstate_target = (void*)(base + LUA_NEWSTATE_OFFSET);
     Log("[LuaBridge] Installing hook at lua_newstate (0x%p)", newstate_target);
@@ -1168,15 +1190,15 @@ static bool InstallLuaHooks() {
     
     // Also try to get state from global immediately (in case Lua already initialized)
     Log("[LuaBridge] Checking global variable for existing lua_State...");
-    CheckForLuaState();;
+    CheckForLuaState();
     
     // Start background thread to periodically check for Lua state
     if (!g_COAExtenderRegistered) {
         Log("[LuaBridge] Starting background Lua state checker thread...");
         StartLuaStateChecker();
     }
-    #endif
-    
+#endif
+
     Log("[LuaBridge] Hook installation complete (minimal mode - pcall only)");
     return success;
 }
@@ -1194,7 +1216,7 @@ static const luaL_Reg COA_Extender_funcs[] = {
     {"GetGameBase", L_GetGameBase},
     {"GetLoadedMods", L_GetLoadedMods},
     {"GetFunctionList", L_GetFunctionList},
-    
+
     // Cheat/modifier functions (placeholders)
     {"SetDamageMultiplier", L_SetDamageMultiplier},
     {"GetDamageMultiplier", L_GetDamageMultiplier},
@@ -1202,33 +1224,33 @@ static const luaL_Reg COA_Extender_funcs[] = {
     {"IsGodMode", L_IsGodMode},
     {"SetUnlimitedAmmo", L_SetUnlimitedAmmo},
     {"IsUnlimitedAmmo", L_IsUnlimitedAmmo},
-    
+
     // Time and system functions
     {"GetFrameCount", L_GetFrameCount},
     {"GetUptime", L_GetUptime},
     {"GetSystemTime", L_GetSystemTime},
-    
+
     // Debug and output
     {"Print", L_Print},
     {"DumpStack", L_DumpStack},
-    
+
     // Memory access (advanced modding)
     {"ReadMemoryInt", L_ReadMemoryInt},
     {"ReadMemoryFloat", L_ReadMemoryFloat},
     {"WriteMemoryInt", L_WriteMemoryInt},
     {"WriteMemoryFloat", L_WriteMemoryFloat},
     {"ReadMemoryString", L_ReadMemoryString},
-    
+
     // Configuration system
     {"SetConfig", L_SetConfig},
     {"GetConfig", L_GetConfig},
-    
+
     // Callback/hook system
     {"RegisterCallback", L_RegisterCallback},
     {"GetRegisteredCallbacks", L_GetRegisteredCallbacks},
     {"ExecuteHook", L_ExecuteHook},
-    
-    {NULL, NULL}  // Sentinel
+
+    {NULL, NULL} // Sentinel
 };
 
 void RegisterFunctions(lua_State* L) {
@@ -1236,106 +1258,106 @@ void RegisterFunctions(lua_State* L) {
         Log("[LuaBridge] Cannot register - lua_State is NULL");
         return;
     }
-    
+
     std::lock_guard<std::mutex> lock(g_LuaMutex);
-    
+
     // Check if we have the required Lua functions - now using luaL_setfuncs
     if (!p_lua_createtable || !p_luaL_setfuncs || !p_lua_setglobal) {
         Log("[LuaBridge] Cannot register - Lua functions not resolved");
-        Log("[LuaBridge] p_lua_createtable=%p, p_luaL_setfuncs=%p, p_lua_setglobal=%p",
-            p_lua_createtable, p_luaL_setfuncs, p_lua_setglobal);
+        Log("[LuaBridge] p_lua_createtable=%p, p_luaL_setfuncs=%p, p_lua_setglobal=%p", p_lua_createtable,
+            p_luaL_setfuncs, p_lua_setglobal);
         return;
     }
-    
+
     Log("[LuaBridge] Registering COA_Extender table...");
     Log("[LuaBridge] lua_State* = 0x%p", L);
     Log("[LuaBridge] Using luaL_setfuncs at 0x%p", p_luaL_setfuncs);
-    
+
     // First, verify the lua_State is valid by calling lua_gettop
     if (p_lua_gettop) {
         int top = p_lua_gettop(L);
         Log("[LuaBridge] Pre-check: lua_gettop returned %d", top);
-        
+
         // If top is a crazy value, the state is invalid
         if (top < 0 || top > 10000) {
             Log("[LuaBridge] ERROR: lua_State appears invalid (stack top = %d)", top);
             return;
         }
     }
-    
+
     Log("[LuaBridge] About to call lua_createtable...");
-    
+
     // Step 1: Get _G from registry FIRST
     // In Lua 5.2, _G is at registry[LUA_RIDX_GLOBALS] (index 2)
     Log("[LuaBridge] Getting _G from registry...");
     p_lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
     // Stack: [..., _G]
-    
+
     if (p_lua_gettop) {
         int top = p_lua_gettop(L);
         Log("[LuaBridge] Stack after rawgeti (_G): %d", top);
     }
-    
+
     // Step 2: Create the table for our functions
     p_lua_createtable(L, 0, 12);
     // Stack: [..., _G, our_table]
-    
+
     Log("[LuaBridge] lua_createtable succeeded!");
-    
+
     if (p_lua_gettop) {
         int top = p_lua_gettop(L);
         Log("[LuaBridge] Stack after createtable: %d", top);
     }
-    
+
     Log("[LuaBridge] About to call luaL_setfuncs...");
-    
+
     // Step 3: Register all functions to our_table
     p_luaL_setfuncs(L, COA_Extender_funcs, 0);
     // Stack: [..., _G, our_table]
-    
+
     Log("[LuaBridge] luaL_setfuncs succeeded!");
-    
+
     if (p_lua_gettop) {
         int top = p_lua_gettop(L);
         Log("[LuaBridge] Stack after setfuncs: %d", top);
     }
-    
+
     // Step 4: Set _G["COA_Extender"] = our_table
     // lua_setfield(L, idx, k) does: table_at_idx[k] = pop()
     // Stack: [..., _G, our_table]
     // We want: _G["COA_Extender"] = our_table
     // So: lua_setfield(L, -2, "COA_Extender") - _G is at -2, our_table is at top (-1)
-    
+
     Log("[LuaBridge] Calling lua_setfield to set _G['COA_Extender']...");
     p_lua_setfield(L, -2, "COA_Extender");
     // Stack: [..., _G] (our_table popped and stored in _G)
-    
+
     Log("[LuaBridge] COA_Extender set in _G!");
-    
+
     if (p_lua_gettop) {
         int top = p_lua_gettop(L);
         Log("[LuaBridge] Stack after setfield: %d", top);
     }
-    
+
     // Step 5: Pop _G to clean up the stack (pop 1 element)
     // lua_settop(L, -2) is equivalent to lua_pop(L, 1)
     p_lua_settop(L, -2);
     // Stack: [...] (back to original)
-    
+
     if (p_lua_gettop) {
         int top = p_lua_gettop(L);
         Log("[LuaBridge] Stack after cleanup (popped _G): %d", top);
     }
-    
+
     g_LuaState = L;
     Log("[LuaBridge] COA_Extender table registered successfully!");
-    
+
     // Step 6: Register plugin-provided Lua functions
     // Plugins may have registered functions during ModInit()
     if (COA::PluginAPI::IsInitialized()) {
         Log("[LuaBridge] Registering plugin Lua functions...");
         COA::PluginAPI::RegisterPluginFunctionsToLua(L);
-        
+
         // Dispatch LUA_LOADED event to plugins
         COA::PluginAPI::DispatchLuaLoaded(L);
     }
@@ -1343,23 +1365,23 @@ void RegisterFunctions(lua_State* L) {
 
 bool Initialize() {
     if (g_Initialized) return true;
-    
+
     Log("[LuaBridge] Initializing Lua bridge...");
-    
+
     // Initialize timing
     g_StartTime = GetTickCount();
     g_FrameCount = 0;
-    
+
     // Resolve Lua function addresses from the game
     ResolveLuaFunctions();
-    
+
     // Install hooks to capture lua_State*
     if (InstallLuaHooks()) {
         Log("[LuaBridge] Hooks installed - will register COA_Extender when Lua initializes");
     } else {
         Log("[LuaBridge] Warning: Could not install Lua hooks");
     }
-    
+
     g_Initialized = true;
     Log("[LuaBridge] Lua bridge initialized");
     return true;
@@ -1368,11 +1390,11 @@ bool Initialize() {
 void Shutdown() {
     // Stop background checker first (outside lock to avoid deadlock)
     StopLuaStateChecker();
-    
+
     std::lock_guard<std::mutex> lock(g_LuaMutex);
-    
+
     uintptr_t base = g_GameBase;
-    
+
     // Remove lua_newstate hook
     if (g_OriginalNewstate) {
         void* target = (void*)(base + LUA_NEWSTATE_OFFSET);
@@ -1380,7 +1402,7 @@ void Shutdown() {
         MH_RemoveHook(target);
         g_OriginalNewstate = nullptr;
     }
-    
+
     // Remove luaL_openlibs hook
     if (g_OriginalOpenlibs) {
         void* target = (void*)(base + LUAL_OPENLIBS_OFFSET);
@@ -1388,7 +1410,7 @@ void Shutdown() {
         MH_RemoveHook(target);
         g_OriginalOpenlibs = nullptr;
     }
-    
+
     // Remove lua.start hook
     if (g_OriginalLuaStart) {
         void* target = (void*)COA_RVA(LUA_START_RVA);
@@ -1396,7 +1418,7 @@ void Shutdown() {
         MH_RemoveHook(target);
         g_OriginalLuaStart = nullptr;
     }
-    
+
     // Remove lua_pcall hook
     if (g_OriginalPcall) {
         void* target = (void*)(base + LUA_PCALL_OFFSET);
@@ -1404,7 +1426,7 @@ void Shutdown() {
         MH_RemoveHook(target);
         g_OriginalPcall = nullptr;
     }
-    
+
     // Remove lua_pushcclosure hook
     if (g_OriginalPushCClosure) {
         void* target = (void*)(base + LUA_PUSHCCLOSURE_OFFSET);
@@ -1412,7 +1434,7 @@ void Shutdown() {
         MH_RemoveHook(target);
         g_OriginalPushCClosure = nullptr;
     }
-    
+
     g_LuaState = nullptr;
     g_Initialized = false;
     g_COAExtenderRegistered = false;

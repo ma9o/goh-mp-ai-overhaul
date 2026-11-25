@@ -1,0 +1,3681 @@
+{
+  "schema_version": 1,
+  "item": "Early grenade escape",
+  "scope": "Game-only, build-specific static contracts. Code spans are byte fingerprints of selected straight disassembly listings. They can cross basic blocks. References bind individual instructions to their operands. Vtable slots are decimal.",
+  "runtime_allowed": false,
+  "whole_native_escape_zero_synced_draws": "contradicted on reachable paths",
+  "builds": {
+    "25492057": {
+      "filename": "call_to_arms.exe",
+      "sha256": "4b6a807ad867c4f6eb1019376224d74fa3a6ac048355739ab0b76d73c7c0a267",
+      "code": [
+        {
+          "id": "role_host",
+          "rva": "0xc0b5d0",
+          "size": 80,
+          "instructions": 26,
+          "sha256": "631ecbd23b05d11d95c27e5cf6681bf2e70aec6d3e72833c1c6f3bc9d9a3be28"
+        },
+        {
+          "id": "role_remote",
+          "rva": "0xc0b630",
+          "size": 80,
+          "instructions": 26,
+          "sha256": "813bdff2b947bc8854cebb9885b5ce619b9a562b4afdf4d7c93a3b208a010b5e"
+        },
+        {
+          "id": "main_actor_after_sensor",
+          "rva": "0x7efe51",
+          "size": 91,
+          "instructions": 22,
+          "sha256": "3c70fe3df683f0feb9f9b69ff45a4f84e2eff2c55ff1f368abbc90479f2af200"
+        },
+        {
+          "id": "foot_general_default",
+          "rva": "0x83f1f5",
+          "size": 7,
+          "instructions": 1,
+          "sha256": "88c1ecff0277142be099a869ecf4badc4e920e293080607357bbe53bec681fd3"
+        },
+        {
+          "id": "foot_base_copy",
+          "rva": "0x83fffa",
+          "size": 6,
+          "instructions": 2,
+          "sha256": "5361cfce88e214664d31894dc95923a78930f83ee8c69797cf9abb4f7c2e26ca"
+        },
+        {
+          "id": "foot_read_limit_ae",
+          "rva": "0x8403ce",
+          "size": 11,
+          "instructions": 3,
+          "sha256": "8c6ebcbe3442f7d611d9cfb4eb8cc29c6186cbcc48ea6b3fc69469891ff972c2"
+        },
+        {
+          "id": "foot_base_inline_default",
+          "rva": "0x842667",
+          "size": 7,
+          "instructions": 1,
+          "sha256": "34dc636efc732a5357ec76d2a604f48a8f49c78b8b83e174e6f8575b7453fd7f"
+        },
+        {
+          "id": "foot_stamina_default",
+          "rva": "0x8475c5",
+          "size": 10,
+          "instructions": 1,
+          "sha256": "e390b4604a701a70e3d490dc77fedb633386eb34cd1bad26484937376949dabb"
+        },
+        {
+          "id": "general_limit_from_interaction",
+          "rva": "0x744da0",
+          "size": 34,
+          "instructions": 9,
+          "sha256": "f6b90681227824692b694f2aacd6ee763216d294a3e5242f4f997b3757efe219"
+        },
+        {
+          "id": "general_limit_forced_receive",
+          "rva": "0xbacab",
+          "size": 26,
+          "instructions": 6,
+          "sha256": "6db35ed5f6a872455606515fcef833759f40f05f701dc57698f5e0bc4cc94d0e"
+        },
+        {
+          "id": "general_limit_store",
+          "rva": "0x848f4b",
+          "size": 61,
+          "instructions": 14,
+          "sha256": "a1424650c099d89b9945e93f6e7b9c3c27f38e7f87836a398c70d0b65638cc27"
+        },
+        {
+          "id": "stamina_limit_store",
+          "rva": "0x849185",
+          "size": 66,
+          "instructions": 14,
+          "sha256": "5024ead44902011136912a36f9637e6553e88fb950bf0f9132cd6478cc0a0ac9"
+        },
+        {
+          "id": "general_limit_name",
+          "rva": "0x848fa3",
+          "size": 7,
+          "instructions": 1,
+          "sha256": "30291b5f353cfaebdfed43c6e0e4e23f3c66987c8d6df4a5df197040036eaffe"
+        },
+        {
+          "id": "stamina_limit_name",
+          "rva": "0x8491e1",
+          "size": 7,
+          "instructions": 1,
+          "sha256": "57f8108bfcf68ffdc5d72b43df78e1c997cf608363f0cb3091b8c6c85decca9b"
+        },
+        {
+          "id": "limit_wire_general",
+          "rva": "0x840f70",
+          "size": 64,
+          "instructions": 16,
+          "sha256": "5fd1de11e2185aaf23dce9a495278f3c74fa6651bf0f00c2658ae580bb3b049e"
+        },
+        {
+          "id": "limit_wire_stamina",
+          "rva": "0x840fc0",
+          "size": 64,
+          "instructions": 16,
+          "sha256": "95f4c7006ed547d9c4938991b9e8753d96b56abe9f8f3e3ee80bb0a38b857a42"
+        },
+        {
+          "id": "stamina_threshold_records",
+          "rva": "0x926992",
+          "size": 118,
+          "instructions": 28,
+          "sha256": "227b4f129fb2fe25d6fde963f35b8167e0a95fc6090514f1e4f7e692fd7a5c97"
+        },
+        {
+          "id": "stamina_carry_override",
+          "rva": "0x9269ff",
+          "size": 47,
+          "instructions": 10,
+          "sha256": "d1b818653ca09ca05b28c5bae732b65c4aa8804d3b1bfe5c26a52e6e35c3f04d"
+        },
+        {
+          "id": "stamina_publish",
+          "rva": "0x926a2e",
+          "size": 33,
+          "instructions": 8,
+          "sha256": "52558f6c8a93da7ad3bb5b063fb72e6e80c6234792a7b5bf74d517387e013392"
+        },
+        {
+          "id": "carry_tags",
+          "rva": "0x7ccfa0",
+          "size": 119,
+          "instructions": 32,
+          "sha256": "da71c33bd3a810ada6863e1cfa993c5d119f6427fe5917d9353b02b47fabf395"
+        },
+        {
+          "id": "brain_policy_bit",
+          "rva": "0x9031c0",
+          "size": 42,
+          "instructions": 12,
+          "sha256": "d5d3d78308faed8e4e9c800571c7508440f453276ae0104935f03bdcdf67a86c"
+        },
+        {
+          "id": "ui_policy_bit",
+          "rva": "0xb0a9ee",
+          "size": 50,
+          "instructions": 15,
+          "sha256": "0343212a4599de0197d692fdd7ace60a79015f490c2e6fd5e4840bf7ed076d50"
+        },
+        {
+          "id": "combined_limits",
+          "rva": "0x849400",
+          "size": 51,
+          "instructions": 18,
+          "sha256": "57b30589abd3de138cdbb7cca8d31b97b40ba7f40df72d3d003fbe43128a62e7"
+        },
+        {
+          "id": "resolve_speed",
+          "rva": "0x84e540",
+          "size": 259,
+          "instructions": 74,
+          "sha256": "132155ff10b69578d367e1c0972530e9d51783469d113d91930e4076484a4273"
+        },
+        {
+          "id": "defer_actual_type",
+          "rva": "0x84e2b6",
+          "size": 106,
+          "instructions": 25,
+          "sha256": "ec70329aeb8caf4270a86426ec1ec456aa2269f409f0e6afceea4c4dd8829db3"
+        },
+        {
+          "id": "apply_mode",
+          "rva": "0x84dba0",
+          "size": 215,
+          "instructions": 46,
+          "sha256": "c8622ac87725a7b82aba6546b9135bf57c07b25f7444ca2565e29bd796b03f29"
+        },
+        {
+          "id": "applied_fields",
+          "rva": "0x84dc80",
+          "size": 80,
+          "instructions": 17,
+          "sha256": "16d7beb7847b8d62205293716a44858678bbd486d273cd30db18a27400eacc7b"
+        },
+        {
+          "id": "health_profile",
+          "rva": "0x84e7d2",
+          "size": 74,
+          "instructions": 18,
+          "sha256": "ed9e45853d2617d2ab58777cf1fc27f43c2e39d037e68c8c1a3b11a73c1a46a4"
+        },
+        {
+          "id": "request_mode",
+          "rva": "0x8484b0",
+          "size": 62,
+          "instructions": 14,
+          "sha256": "5da5d638dc7cd2fbacdcd207f5811407d3b6c23820e4993661e979b2d31e7625"
+        },
+        {
+          "id": "request_type_admission",
+          "rva": "0x848710",
+          "size": 97,
+          "instructions": 23,
+          "sha256": "2c6ba06b607a61a1a7620593491598cad54bf917ce1ec578a75348fc1ed3fbe6"
+        },
+        {
+          "id": "type_gate_inventory",
+          "rva": "0x848b1f",
+          "size": 78,
+          "instructions": 17,
+          "sha256": "3d997748dde99a9550ffb026a5364802e7f8e35cb7bcc90cd85964fd2de73697"
+        },
+        {
+          "id": "type_normal_fsm",
+          "rva": "0x848bcd",
+          "size": 98,
+          "instructions": 18,
+          "sha256": "018b57d9ac3738789b7dfb36bfc5998c4323a5c966938743fef5c85acb24502a"
+        },
+        {
+          "id": "type_notify",
+          "rva": "0x848cf3",
+          "size": 8,
+          "instructions": 2,
+          "sha256": "e8dd85aa7c3152d922c032bdcd5c9f6be5a67beab93d26a34ad49d2ed6536bab"
+        },
+        {
+          "id": "type_commit",
+          "rva": "0x84d591",
+          "size": 15,
+          "instructions": 3,
+          "sha256": "040220714603b6c9b387e7647aa3fbb65119d50418d332fdff79c0b84a7ee33b"
+        },
+        {
+          "id": "scanner_categories",
+          "rva": "0x9077c9",
+          "size": 404,
+          "instructions": 90,
+          "sha256": "0a91f75f8d557cb2aa8860f7979229b320fb7553f1f25bcf7234468e1015cd86"
+        },
+        {
+          "id": "scanner_flying_gate",
+          "rva": "0x907943",
+          "size": 130,
+          "instructions": 34,
+          "sha256": "1ea2f100dd7c5982dbd6127f5e0be12e3417244bc81019d2b8f7aab9602e5f9a"
+        },
+        {
+          "id": "scanner_configuration",
+          "rva": "0x907a30",
+          "size": 204,
+          "instructions": 54,
+          "sha256": "b66f42764186ee4586215565d537ebb08bc21074255bf3fcc38cd10d8f1734fd"
+        },
+        {
+          "id": "grenade_tag_init",
+          "rva": "0x54094",
+          "size": 19,
+          "instructions": 3,
+          "sha256": "9ce505d31209602911dba1eb320ebc17b46e1f160bf28d6cf192cdc33e971da0"
+        },
+        {
+          "id": "units_init",
+          "rva": "0x2fa60",
+          "size": 352,
+          "instructions": 67,
+          "sha256": "36e456d780a96929c839c53255c4ff85b5edde6155bc9e5497f70b7fb4eab895"
+        },
+        {
+          "id": "units_refresh",
+          "rva": "0x4c0c00",
+          "size": 352,
+          "instructions": 67,
+          "sha256": "215483555ca0ea3605c26854c3bf984e63170e3be746ae583efbd916f4eeb131"
+        },
+        {
+          "id": "entity_area_setup",
+          "rva": "0x7197fe",
+          "size": 24,
+          "instructions": 6,
+          "sha256": "6f44949a20bf08c4ce87b5b472a1c49f38d9f1bcc77dee214169be728f5c74e4"
+        },
+        {
+          "id": "body_proper_permit_parse",
+          "rva": "0x72b375",
+          "size": 21,
+          "instructions": 4,
+          "sha256": "640d1487d2db85eea930f3369008a88868c9a687736591f226ee3d9183a6f70d"
+        },
+        {
+          "id": "area_mask_decode",
+          "rva": "0x72fa10",
+          "size": 127,
+          "instructions": 33,
+          "sha256": "6fb164dd98c776650941d3649a1f70f44cfca824c48e96d6db12ebba60aca4a1"
+        },
+        {
+          "id": "area_mask_set",
+          "rva": "0x72fd00",
+          "size": 11,
+          "instructions": 4,
+          "sha256": "451f6d9a232d7184dfaa7c6698163564fd142ba3b2d070ee1aaa70e0a3d06f98"
+        },
+        {
+          "id": "entity_area_bind",
+          "rva": "0x72fd20",
+          "size": 98,
+          "instructions": 27,
+          "sha256": "57e8b697e3f0dc12a8939d3be4e08e8c4f7915af06182eac3a645070316ded7a"
+        },
+        {
+          "id": "area_owner",
+          "rva": "0x7722c0",
+          "size": 83,
+          "instructions": 22,
+          "sha256": "66243e41e59b087dd239df1cfba1ad0edab10922950153ee34600f7a38cd4860"
+        },
+        {
+          "id": "spatial_collect",
+          "rva": "0x87ac97",
+          "size": 134,
+          "instructions": 28,
+          "sha256": "54b4f84e0809c70acb0a48a2173a80f50616f3c8c65889d8d15632205358f5f0"
+        },
+        {
+          "id": "unlinked_spatial_query",
+          "rva": "0x7711d0",
+          "size": 159,
+          "instructions": 37,
+          "sha256": "30aaba5e5caba13fbfdfe13f5752a1cc3c19cd88bda5b5e83ea433bb0c26e43b"
+        },
+        {
+          "id": "spatial_collection_entry",
+          "rva": "0x7779d0",
+          "size": 119,
+          "instructions": 30,
+          "sha256": "b972777bcb1ae8b544e20580c723faed22a0fc013f46170c2a5d465272c49060"
+        },
+        {
+          "id": "simulation_velocity",
+          "rva": "0x727070",
+          "size": 75,
+          "instructions": 20,
+          "sha256": "69141db4548366b568f4e7ddc285051f5c924a5b63ed8a426181b85a3c0612de"
+        },
+        {
+          "id": "grenade_factory",
+          "rva": "0x731490",
+          "size": 112,
+          "instructions": 27,
+          "sha256": "110694fff60b36a80b616a0636b623c68c2bd4a2e4752ea9a0aa0770f3af6fbe"
+        },
+        {
+          "id": "grenade_bind",
+          "rva": "0x730130",
+          "size": 18,
+          "instructions": 6,
+          "sha256": "679c67b4787c651f2e12a31e70cb6354e6c465316e7b3e648c88a0115f79c1e0"
+        },
+        {
+          "id": "grenade_launch_attribution",
+          "rva": "0x81d39a",
+          "size": 147,
+          "instructions": 30,
+          "sha256": "e356d0de7ea65deea219f6e83c0b69e3d0d69e96ec55631272c404e85ba75578"
+        },
+        {
+          "id": "grenade_launch_motion",
+          "rva": "0x81d405",
+          "size": 118,
+          "instructions": 22,
+          "sha256": "aa29318458c202706710133a27ba7099c5960c5376e3b2f96afd263adc3055b6"
+        },
+        {
+          "id": "damage_info_source",
+          "rva": "0xa55720",
+          "size": 85,
+          "instructions": 19,
+          "sha256": "c483b54cd445b5b4998d431550e7b037406ed9c00e4f6cd864d3e14874889fed"
+        },
+        {
+          "id": "arm_fuse",
+          "rva": "0x7b26a0",
+          "size": 152,
+          "instructions": 44,
+          "sha256": "4f2f9b2d25e2990dc40ce219e3b110a9b666e73bd8b7902810dc31fb8d6c2dc6"
+        },
+        {
+          "id": "display_fuse",
+          "rva": "0x7b3baa",
+          "size": 28,
+          "instructions": 6,
+          "sha256": "49155a00b06683ea83ce2b4efa05383d3e3bee9bdbc7a712c8a4ea68f6f0fb66"
+        },
+        {
+          "id": "expire_fuse",
+          "rva": "0x7b3dce",
+          "size": 77,
+          "instructions": 17,
+          "sha256": "582abffa6243e863182d90c6bf00c608ce3bb8335fbd1c964ca1fa82389f6a6b"
+        },
+        {
+          "id": "detonate_attribution",
+          "rva": "0x7b284d",
+          "size": 33,
+          "instructions": 8,
+          "sha256": "421b7acce07376b47b887fdb3963324b3511cb2776603ef350e178d8937b7378"
+        },
+        {
+          "id": "velocity_store",
+          "rva": "0x73de50",
+          "size": 31,
+          "instructions": 11,
+          "sha256": "c61d7e5cfd3466688d170ed323046e88e1141971e49e6eecbcb5c99c5141b140"
+        },
+        {
+          "id": "position_read",
+          "rva": "0x737ca0",
+          "size": 22,
+          "instructions": 7,
+          "sha256": "58b033461aedd96a56ada1f255184ea18ca9d30f95a6e0c76c7f664aa03b2cc9"
+        },
+        {
+          "id": "base_acceleration",
+          "rva": "0x737ae0",
+          "size": 18,
+          "instructions": 7,
+          "sha256": "2aab1eb0784f0e51ed37d23a72368c43504bd7494f4cc03e8acc16aada79e34c"
+        },
+        {
+          "id": "linear_damping",
+          "rva": "0x737ac0",
+          "size": 6,
+          "instructions": 2,
+          "sha256": "345fd2da774e82e1f18b1f1593353c560bf3d00e738cd04b0d0734764a01df34"
+        },
+        {
+          "id": "grenade_tick",
+          "rva": "0x7310c0",
+          "size": 137,
+          "instructions": 30,
+          "sha256": "13b097d9f841c2461bcf3adb69430981419e96e5f0e809cae6969e365793c2e8"
+        },
+        {
+          "id": "grenade_contact",
+          "rva": "0x730d90",
+          "size": 221,
+          "instructions": 48,
+          "sha256": "503fcec31bdd9a23a2375f541fdcc2bb326a94da29c1e0f295a5b7211dfd59e0"
+        },
+        {
+          "id": "terrain_height",
+          "rva": "0xa3e8d0",
+          "size": 118,
+          "instructions": 30,
+          "sha256": "71764e30045480fc389b9610f462c2c25aebcd80da60581ca161a4518161478a"
+        },
+        {
+          "id": "player_relation",
+          "rva": "0xa46830",
+          "size": 102,
+          "instructions": 32,
+          "sha256": "1a50e140e6b31b6ad53cab96a59becd9467287bf92fa36d5df7dfe922bbb3e05"
+        },
+        {
+          "id": "point_factory",
+          "rva": "0x8f369b",
+          "size": 181,
+          "instructions": 47,
+          "sha256": "3c155a537c652e1b09a881c5c7e9ba1c924446c5630d61bfba874591f5ae3600"
+        },
+        {
+          "id": "route_factory",
+          "rva": "0x8f34f0",
+          "size": 89,
+          "instructions": 27,
+          "sha256": "39a19293811b751b4f7e3ac737961b39335e32f06bc6c3e1ed0a92ce0aa7980e"
+        },
+        {
+          "id": "route_copy",
+          "rva": "0x8f7dd0",
+          "size": 119,
+          "instructions": 29,
+          "sha256": "7a9a282bf617589ecc81da42ce70a5a34689ec3675ce0dfc66481b877c6a303c"
+        },
+        {
+          "id": "route_child",
+          "rva": "0x8f6541",
+          "size": 16,
+          "instructions": 4,
+          "sha256": "3ab082d1fbaae9d0217e156ff5d102172b203828e5e09127159e1cef8d2688cd"
+        },
+        {
+          "id": "move_ctor",
+          "rva": "0x8f7b50",
+          "size": 78,
+          "instructions": 19,
+          "sha256": "d6493c7922f52a43720a32a64cae2f90916ea7d0d3c449f29914a1e6ee0dbdf0"
+        },
+        {
+          "id": "move_phase0",
+          "rva": "0x8f3f58",
+          "size": 96,
+          "instructions": 20,
+          "sha256": "88ddf1841f2257249dfaa6f8f9cdcdb956ffd23815922008f9d99e062a1b52c8"
+        },
+        {
+          "id": "role_flags",
+          "rva": "0x8f3b43",
+          "size": 24,
+          "instructions": 6,
+          "sha256": "f9a78ff374ad3ae098e8d57659258545640cef8819d2f50c2b3fb2621a5dbb94"
+        },
+        {
+          "id": "move_start_send",
+          "rva": "0x8f40f0",
+          "size": 78,
+          "instructions": 18,
+          "sha256": "2171343c9a8d610cee27a1d38a451f21744d087ce62c24665893602a9d259890"
+        },
+        {
+          "id": "move_command_bind",
+          "rva": "0xb9d10",
+          "size": 61,
+          "instructions": 16,
+          "sha256": "c20aa9b9b5d5e850be3227b8b28a66d1ef96dc95ae05bdd9c838a26ac825bf2e"
+        },
+        {
+          "id": "move_probe",
+          "rva": "0x8f4621",
+          "size": 5,
+          "instructions": 1,
+          "sha256": "2cee685e60c85c5d53c2fd45b6afe4cbac92c1fe508681203533a6ff34ae629f"
+        },
+        {
+          "id": "probe_draw",
+          "rva": "0x8ae8ea",
+          "size": 63,
+          "instructions": 13,
+          "sha256": "2fd8f6e54545ccb36c251ef172d341e58817677baeff461bd466e78df6a322d9"
+        },
+        {
+          "id": "line_draw",
+          "rva": "0x8acbc0",
+          "size": 55,
+          "instructions": 12,
+          "sha256": "c5845c0fdaffa4fd96c5abb2721d5c935a174b574b00ccdbd3e9ec3ce813f1fb"
+        },
+        {
+          "id": "avoid_terminal_draw",
+          "rva": "0x8fdfae",
+          "size": 58,
+          "instructions": 12,
+          "sha256": "dc8ebc40271f1d1040c4a7c1b6086a21eb96bdca56572bcfca4373fbc898d46b"
+        },
+        {
+          "id": "selected_rng",
+          "rva": "0x554b50",
+          "size": 41,
+          "instructions": 8,
+          "sha256": "64e2f7c787e095f7b703962e5cea3a8a31b9dbcf58746877d246cac7bbccce7b"
+        },
+        {
+          "id": "select_rng_in_context",
+          "rva": "0x65f0a0",
+          "size": 179,
+          "instructions": 48,
+          "sha256": "ca156bdd4f29d42b1b0282fb71a0ef610311d220eda9ce8200b6f240448039a0"
+        },
+        {
+          "id": "movement_change_factory",
+          "rva": "0x8f3930",
+          "size": 101,
+          "instructions": 28,
+          "sha256": "804dfc5a9fa0b9cc67c56ec1fedfbb61be4b95bd0bc62a5db807ded6405bf90c"
+        },
+        {
+          "id": "movement_change_exec",
+          "rva": "0x8f7366",
+          "size": 137,
+          "instructions": 40,
+          "sha256": "c9f265207bb5f345a1689905d324a547a441c43a02d5fd9a38d142c03a25d818"
+        },
+        {
+          "id": "mode_notify",
+          "rva": "0x840ed0",
+          "size": 64,
+          "instructions": 16,
+          "sha256": "0c4c4a046341dfb25f082b14df4acb0a5c5b50f5319481bdab2894ce5306fd1b"
+        },
+        {
+          "id": "type_wire",
+          "rva": "0x840f20",
+          "size": 64,
+          "instructions": 16,
+          "sha256": "15452e26c54f4b846de4e4c3ef3c759296f5eb4295dd80e3453e5e7436312135"
+        },
+        {
+          "id": "type_serialize",
+          "rva": "0xbae00",
+          "size": 65,
+          "instructions": 17,
+          "sha256": "2140932fbae8d09286b6e295b8aedbd7867c593b4dde1e2816305f9d2d1ef266"
+        },
+        {
+          "id": "mode_serialize",
+          "rva": "0xbab20",
+          "size": 73,
+          "instructions": 19,
+          "sha256": "396233c16cad9da726b198cf96abf4aca28c259e27e2cf2b901c1831af2dac64"
+        },
+        {
+          "id": "applied_serialize",
+          "rva": "0xbb0b0",
+          "size": 121,
+          "instructions": 32,
+          "sha256": "49b9d0f4133f38ef76dd0178418eaa05a5f091b0c65f4f6ab729debc1755df2d"
+        },
+        {
+          "id": "strafe_factory",
+          "rva": "0xbc560",
+          "size": 63,
+          "instructions": 15,
+          "sha256": "8ded8846fafc002b52113dd1f9ae9df5e4b2e12a3d18b24e96a896741abebe01"
+        },
+        {
+          "id": "strafe_acquire",
+          "rva": "0x8fdc8c",
+          "size": 118,
+          "instructions": 29,
+          "sha256": "afec9e9d2209ab0ca27887f2cf02e8c8600b0972f08792b3ae4f629830dc4876"
+        },
+        {
+          "id": "strafe_restore",
+          "rva": "0x8fd941",
+          "size": 106,
+          "instructions": 24,
+          "sha256": "7864be76645d69010fcd10aad1ef8ef0570386ec5816d03190d810b2d97f3425"
+        },
+        {
+          "id": "strafe_serialize",
+          "rva": "0xbafd0",
+          "size": 54,
+          "instructions": 15,
+          "sha256": "284c19974bf6717811fd80bbd219666d1b15ace8418e6f074d7dae32f2f18c4e"
+        },
+        {
+          "id": "vanilla_circle",
+          "rva": "0x8fe840",
+          "size": 192,
+          "instructions": 40,
+          "sha256": "9f11a4fe2cd4066a6cfd3ade14e516205b0e0809c6894be3321eac3ee4dde814"
+        },
+        {
+          "id": "vanilla_route_child",
+          "rva": "0x8fe9d8",
+          "size": 67,
+          "instructions": 16,
+          "sha256": "1304d1655e967e47d54802752a909812f93bb2a874bc4973e997f9dc0e8ea34b"
+        },
+        {
+          "id": "snapshot",
+          "rva": "0x956f20",
+          "size": 215,
+          "instructions": 50,
+          "sha256": "913821660663fd402bca5d5f7fc6b1fb6be400fac3e61f9d921e441a6e750542"
+        },
+        {
+          "id": "install",
+          "rva": "0x956b20",
+          "size": 71,
+          "instructions": 23,
+          "sha256": "76f900c0d8329abe6a4788d9b0707749afc7983b6e822d6ffbc28bb63b8a8e5d"
+        },
+        {
+          "id": "restore_sequence",
+          "rva": "0x956b70",
+          "size": 73,
+          "instructions": 15,
+          "sha256": "fc855fa963515926dcc490499d83b1642ce8dada9957d9645eac8dc68db404cd"
+        },
+        {
+          "id": "restore_type",
+          "rva": "0x956c43",
+          "size": 14,
+          "instructions": 4,
+          "sha256": "6f5889a5b71755096e136b887790c966b72c1f59f5719dc905d13f0c64af9d83"
+        },
+        {
+          "id": "restore_point",
+          "rva": "0x956d3c",
+          "size": 14,
+          "instructions": 4,
+          "sha256": "2da3ae15eb464b0a16b3b4cee20172485ef44512912e0b9f241789f3b20ee3c8"
+        },
+        {
+          "id": "restore_end_event",
+          "rva": "0x956e51",
+          "size": 70,
+          "instructions": 17,
+          "sha256": "1b7fe6b01e20a2027360a441a2152c7c6ee7801b5831eea9a68f1047c3704514"
+        },
+        {
+          "id": "saved_order_disposition",
+          "rva": "0x955aff",
+          "size": 58,
+          "instructions": 15,
+          "sha256": "5ea5b7964634e4147604d0472b623ebf587450cc58c23668cbcd15e6eb21377a"
+        },
+        {
+          "id": "restore_mode_clear",
+          "rva": "0x956a56",
+          "size": 30,
+          "instructions": 7,
+          "sha256": "33aa3f8d32d9851586e78a1328a90401c0171a14780061bdc19cf997950e5060"
+        },
+        {
+          "id": "periodic_vitality_call",
+          "rva": "0x926129",
+          "size": 5,
+          "instructions": 1,
+          "sha256": "a2560ba9babe596c2b70954311fb12d2431b9016942291b0f9d153cb87c64b0a"
+        },
+        {
+          "id": "armed_tag_query",
+          "rva": "0x907fa0",
+          "size": 158,
+          "instructions": 36,
+          "sha256": "6b9d61efdcebbe7e1d6a9e550949452678edb98028733bbb020cf2c6bcf33651"
+        },
+        {
+          "id": "simulator_attachment",
+          "rva": "0x72784e",
+          "size": 52,
+          "instructions": 11,
+          "sha256": "bf00b6a9c7b9ea1dace1c0fe6b9dded479af583bbd269db61101df0a4bed155c"
+        },
+        {
+          "id": "thrower_handle_assignment",
+          "rva": "0xb8120",
+          "size": 67,
+          "instructions": 18,
+          "sha256": "1d786cca198c2b9f66945f8a7f0591ff5bdf3e577e76cdd05262fa750b3a25ab"
+        },
+        {
+          "id": "display_timer_label",
+          "rva": "0x7b3c13",
+          "size": 12,
+          "instructions": 2,
+          "sha256": "dd799032d0721c506e2f851573ee0afbe34404b16d533130e04268c335d44f94"
+        },
+        {
+          "id": "vanilla_route_solver",
+          "rva": "0x8fe94b",
+          "size": 5,
+          "instructions": 1,
+          "sha256": "ebf7a591ba09ac6a5cf92f2173735a1b597fbe13f9bf30b7ef13373cd6347599"
+        },
+        {
+          "id": "native_plan_tick",
+          "rva": "0x8fdd3b",
+          "size": 10,
+          "instructions": 2,
+          "sha256": "08db9734ce53b2d3ae21cea42c3bfe65398558df382ea1e7590ea86d185a22e1"
+        },
+        {
+          "id": "worker_thread_test",
+          "rva": "0xa6740",
+          "size": 49,
+          "instructions": 12,
+          "sha256": "273e51f216cbcbc166bbf515c097936ea573ceebdcddce2f70210695f6c1b998"
+        },
+        {
+          "id": "direct_control_chassis",
+          "rva": "0x83fb90",
+          "size": 8,
+          "instructions": 3,
+          "sha256": "d9a7364f6b8495afcd75e1198b2b9e6a68c355be0bda3bf3541da017935b5fe5"
+        },
+        {
+          "id": "serial_brain_dispatch",
+          "rva": "0x9035c0",
+          "size": 110,
+          "instructions": 35,
+          "sha256": "b12e76d51f1f192f9316ff01c49b20649de88090f13436e9cec1cc332e5b3ba8"
+        },
+        {
+          "id": "move_command_send",
+          "rva": "0x14c010",
+          "size": 52,
+          "instructions": 12,
+          "sha256": "978ec492f79334ea27ae15c6d498ad46f610d37c99a728904041fe72ad9d54be"
+        },
+        {
+          "id": "move_command_write",
+          "rva": "0xb9dc0",
+          "size": 141,
+          "instructions": 36,
+          "sha256": "dc9236f911e1c073f110bfff9a7f6a7baecd94699b89b8199a1c88758b3a5a7d"
+        },
+        {
+          "id": "move_command_read",
+          "rva": "0xba0e0",
+          "size": 133,
+          "instructions": 27,
+          "sha256": "cb5c7ad71d44aebb24bd906c21cfd17398c1343f1d94c35c014a30abc9d754c9"
+        },
+        {
+          "id": "rng_context_selection",
+          "rva": "0x65f241",
+          "size": 31,
+          "instructions": 8,
+          "sha256": "be891353c7444fd6787b5866cd8388f2a852f1ec3bd0a09e07c5b157718c764e"
+        },
+        {
+          "id": "body_world_center",
+          "rva": "0x73db00",
+          "size": 18,
+          "instructions": 7,
+          "sha256": "48890a4fb0121b2c1f60bab7de9a39bce32d058e02522134b427236fb4ea7a63"
+        },
+        {
+          "id": "stamina_limit_forced_receive",
+          "rva": "0xbadd6",
+          "size": 18,
+          "instructions": 6,
+          "sha256": "d183b4c95b946f89f0af4bf480fc27f5c14e84f5bf163391e326bdc4a83c6690"
+        },
+        {
+          "id": "world_registration",
+          "rva": "0x721180",
+          "size": 109,
+          "instructions": 29,
+          "sha256": "5122945d72be58539e68ea49582457e71d85b1c5c6db32825e23be041d1f0662"
+        },
+        {
+          "id": "world_query_dispatch",
+          "rva": "0x777bb8",
+          "size": 34,
+          "instructions": 11,
+          "sha256": "6ed40c003f53d7485026a095413f67db7a1c41782ee47c012d9936c7b63009f9"
+        },
+        {
+          "id": "world_tree_masks",
+          "rva": "0x60d886",
+          "size": 80,
+          "instructions": 22,
+          "sha256": "4a22c122b132b24bc4a8e67f6d065f8b044bbd7f3647f5ba6bd056f07e951656"
+        },
+        {
+          "id": "indexed_area_masks",
+          "rva": "0x777abd",
+          "size": 69,
+          "instructions": 23,
+          "sha256": "e869f419f09374c6e2dd59d10198abe557bbf172f2d56d93232149472a0020e5"
+        },
+        {
+          "id": "terrain_sampler_caller",
+          "rva": "0xa42946",
+          "size": 56,
+          "instructions": 14,
+          "sha256": "d26277b55ec59a2509d82794e99e4b3b3af784c6229a3c86735f7112e7f00fb1"
+        },
+        {
+          "id": "contact_latch",
+          "rva": "0x730f58",
+          "size": 25,
+          "instructions": 4,
+          "sha256": "4b2f646e8dacf00c08b69f87476b2dbea0fa429b69c43758075dc2a0c2ae0851"
+        },
+        {
+          "id": "contact_latch_clear",
+          "rva": "0x7310a0",
+          "size": 17,
+          "instructions": 7,
+          "sha256": "80e43c0b3a38ff1bf0bc7afa8d864375d0555a32d0f7fba5c055a1abd9c51766"
+        },
+        {
+          "id": "avoid_factory",
+          "rva": "0x8fd870",
+          "size": 109,
+          "instructions": 29,
+          "sha256": "c585a69d6da59be52d33ed13efeb321bd177c509037e3091904cc950e939743d"
+        },
+        {
+          "id": "root_scanner_dispatch",
+          "rva": "0x9573ae",
+          "size": 13,
+          "instructions": 3,
+          "sha256": "bc8b19ca5713ec3e1b5e12c644bd4339b89fcfe8235b454cf34826bb301dbac0"
+        },
+        {
+          "id": "root_grenade_make_and_detach",
+          "rva": "0x9563b6",
+          "size": 91,
+          "instructions": 20,
+          "sha256": "caf316a2f3fa117daae36d86bcd427f51e81c3f432b47972d511d64ec1deb6cf"
+        },
+        {
+          "id": "scanner_order_factory",
+          "rva": "0x907740",
+          "size": 14,
+          "instructions": 3,
+          "sha256": "ddde3ff77bd2efb62b72c63db3c681a8845866e2e072cc58d708e0c4fbcfa30f"
+        },
+        {
+          "id": "clock_read",
+          "rva": "0x65e700",
+          "size": 7,
+          "instructions": 2,
+          "sha256": "2b2cb3212074e4b863eed09c3ed424d1a463fb9cfa9936eb454f39f0a6cee07a"
+        },
+        {
+          "id": "clock_from_seconds",
+          "rva": "0x65e730",
+          "size": 13,
+          "instructions": 3,
+          "sha256": "74d7e3cd4f49d494fa0997559aca6048c87355bd7cdf0dc5b5039004e9caa731"
+        },
+        {
+          "id": "clock_to_seconds",
+          "rva": "0x65e710",
+          "size": 16,
+          "instructions": 4,
+          "sha256": "c97afbb9d13d19d5931cd8d19f321ca8314cb60bd81ff906395333154667a9a7"
+        },
+        {
+          "id": "scene_rng_at_slot23",
+          "rva": "0xa1c51a",
+          "size": 66,
+          "instructions": 17,
+          "sha256": "96ba42ee0a0b402f50d3d5c033a217e51795c1cec59eb47bf347b5104baa5464"
+        },
+        {
+          "id": "global_rng_getter",
+          "rva": "0x6fbd60",
+          "size": 180,
+          "instructions": 30,
+          "sha256": "8a97b991d7f4b3298112a212990bf03b9f92ffa422d4249bc36f32a8ffed9ec5"
+        },
+        {
+          "id": "move_probe_traversal_flags",
+          "rva": "0x8f45c2",
+          "size": 95,
+          "instructions": 20,
+          "sha256": "4261d497cb6f1f22fa961c0dfcbf4a260572a40a8772bd6c253d6ca2016484f6"
+        },
+        {
+          "id": "move_command_factory",
+          "rva": "0xbbf10",
+          "size": 67,
+          "instructions": 18,
+          "sha256": "4a2746d92a0ac699c09ee8e71d64ac779242ecff6b54c2f36c69f6d25e2c92cf"
+        },
+        {
+          "id": "mode_command_factory",
+          "rva": "0xbc050",
+          "size": 54,
+          "instructions": 14,
+          "sha256": "a394d61465ab446b371bbf1e8b70a27103fcb3d4dde2e8d233779fc9681a44d3"
+        },
+        {
+          "id": "type_command_factory",
+          "rva": "0xbc230",
+          "size": 54,
+          "instructions": 14,
+          "sha256": "f4b57e034addee1b97995edbabd96405448a6e9e8cbcdd7995d51fa6e038ef46"
+        },
+        {
+          "id": "applied_command_factory",
+          "rva": "0xbc370",
+          "size": 62,
+          "instructions": 16,
+          "sha256": "a25ad6d260182ee4097878723d074d6430d8dc98157c930275a23f907f4a6958"
+        }
+      ],
+      "references": [
+        {
+          "id": "mode_notify_send",
+          "kind": "call",
+          "site": "0x840f05",
+          "target": "0x14c010"
+        },
+        {
+          "id": "type_notify_send",
+          "kind": "call",
+          "site": "0x840f55",
+          "target": "0x14c010"
+        },
+        {
+          "id": "mode_limit_send",
+          "kind": "call",
+          "site": "0x840fa5",
+          "target": "0x14c010"
+        },
+        {
+          "id": "stamina_limit_send",
+          "kind": "call",
+          "site": "0x840ff5",
+          "target": "0x14c010"
+        },
+        {
+          "id": "stamina_call_from_vitality",
+          "kind": "call",
+          "site": "0x926a48",
+          "target": "0x849160"
+        },
+        {
+          "id": "periodic_vitality",
+          "kind": "call",
+          "site": "0x926129",
+          "target": "0x9263b0"
+        },
+        {
+          "id": "hand_test",
+          "kind": "call",
+          "site": "0x926a03",
+          "target": "0x7ccf10"
+        },
+        {
+          "id": "set_mode_notify",
+          "kind": "call",
+          "site": "0x8484da",
+          "target": "0x840ed0"
+        },
+        {
+          "id": "set_mode_resolve",
+          "kind": "call",
+          "site": "0x8484e2",
+          "target": "0x84e050"
+        },
+        {
+          "id": "type_inventory_check",
+          "kind": "call",
+          "site": "0x848b1f",
+          "target": "0x7ccf10"
+        },
+        {
+          "id": "set_type_notify",
+          "kind": "call",
+          "site": "0x848cf6",
+          "target": "0x840f20"
+        },
+        {
+          "id": "mode_limit_table",
+          "kind": "rip",
+          "site": "0x84e5eb",
+          "target": "0x1481170"
+        },
+        {
+          "id": "wounded_threshold",
+          "kind": "rip",
+          "site": "0x84e7f3",
+          "target": "0x1003f64"
+        },
+        {
+          "id": "applied_send",
+          "kind": "call",
+          "site": "0x84dc6c",
+          "target": "0x14c010"
+        },
+        {
+          "id": "general_limit_diagnostic",
+          "kind": "rip",
+          "site": "0x848fa3",
+          "target": "0x10e2950"
+        },
+        {
+          "id": "stamina_limit_diagnostic",
+          "kind": "rip",
+          "site": "0x8491e1",
+          "target": "0x10e2978"
+        },
+        {
+          "id": "gate_coefficient",
+          "kind": "rip",
+          "site": "0x9077c9",
+          "target": "0x100a284"
+        },
+        {
+          "id": "grenade_tag",
+          "kind": "rip",
+          "site": "0x9078f0",
+          "target": "0x1575b60"
+        },
+        {
+          "id": "gate_velocity_scale",
+          "kind": "rip",
+          "site": "0x907943",
+          "target": "0x1547db0"
+        },
+        {
+          "id": "velocity_read",
+          "kind": "call",
+          "site": "0x907958",
+          "target": "0x727070"
+        },
+        {
+          "id": "startup_velocity_store",
+          "kind": "rip",
+          "site": "0x2fb33",
+          "target": "0x1547db0"
+        },
+        {
+          "id": "refresh_velocity_store",
+          "kind": "rip",
+          "site": "0x4c0cd3",
+          "target": "0x1547db0"
+        },
+        {
+          "id": "startup_gravity_store",
+          "kind": "rip",
+          "site": "0x2fb87",
+          "target": "0x1547dd0"
+        },
+        {
+          "id": "refresh_gravity_store",
+          "kind": "rip",
+          "site": "0x4c0d27",
+          "target": "0x1547dd0"
+        },
+        {
+          "id": "startup_length_operand",
+          "kind": "rip",
+          "site": "0x2fa74",
+          "target": "0x14776c0"
+        },
+        {
+          "id": "startup_time_operand",
+          "kind": "rip",
+          "site": "0x2fa64",
+          "target": "0x14776c8"
+        },
+        {
+          "id": "spatial_manager",
+          "kind": "rip",
+          "site": "0x87ac97",
+          "target": "0x159a0a0"
+        },
+        {
+          "id": "launch_source",
+          "kind": "call",
+          "site": "0x81d3ac",
+          "target": "0xa55720"
+        },
+        {
+          "id": "launch_arm",
+          "kind": "call",
+          "site": "0x81d3e4",
+          "target": "0x7b26a0"
+        },
+        {
+          "id": "launch_activate",
+          "kind": "call",
+          "site": "0x81d3f8",
+          "target": "0x726b00"
+        },
+        {
+          "id": "launch_damping",
+          "kind": "call",
+          "site": "0x81d41e",
+          "target": "0x737ac0"
+        },
+        {
+          "id": "launch_velocity",
+          "kind": "call",
+          "site": "0x81d430",
+          "target": "0x737990"
+        },
+        {
+          "id": "launch_spin",
+          "kind": "call",
+          "site": "0x81d442",
+          "target": "0x7379c0"
+        },
+        {
+          "id": "launch_gravity_operand",
+          "kind": "rip",
+          "site": "0x81d447",
+          "target": "0x1547dd0"
+        },
+        {
+          "id": "launch_acceleration",
+          "kind": "call",
+          "site": "0x81d46d",
+          "target": "0x737ae0"
+        },
+        {
+          "id": "arm_clock",
+          "kind": "call",
+          "site": "0x7b26ed",
+          "target": "0x65e700"
+        },
+        {
+          "id": "fuse_clock",
+          "kind": "call",
+          "site": "0x7b3ddd",
+          "target": "0x65e700"
+        },
+        {
+          "id": "fuse_ui_conversion",
+          "kind": "call",
+          "site": "0x7b3bb9",
+          "target": "0x65e710"
+        },
+        {
+          "id": "fuse_ui_label",
+          "kind": "rip",
+          "site": "0x7b3c13",
+          "target": "0x10daaa0"
+        },
+        {
+          "id": "move_ctor_call",
+          "kind": "call",
+          "site": "0x8f3516",
+          "target": "0x8f7b50"
+        },
+        {
+          "id": "move_copy_call",
+          "kind": "call",
+          "site": "0x8f3529",
+          "target": "0x8f7dd0"
+        },
+        {
+          "id": "point_child_factory",
+          "kind": "call",
+          "site": "0x8f6541",
+          "target": "0x8f34f0"
+        },
+        {
+          "id": "host_sync_bit_source",
+          "kind": "call",
+          "site": "0x8f3b43",
+          "target": "0xc0b5d0"
+        },
+        {
+          "id": "client_bit_source",
+          "kind": "call",
+          "site": "0x8f3b4b",
+          "target": "0xc0b630"
+        },
+        {
+          "id": "move_command_body_bind",
+          "kind": "call",
+          "site": "0x8f412d",
+          "target": "0xb9d10"
+        },
+        {
+          "id": "move_native_probe",
+          "kind": "call",
+          "site": "0x8f4621",
+          "target": "0x8ae780"
+        },
+        {
+          "id": "move_probe_rng",
+          "kind": "call",
+          "site": "0x8ae8ea",
+          "target": "0x554b50"
+        },
+        {
+          "id": "terrain_line_rng",
+          "kind": "call",
+          "site": "0x8acbc0",
+          "target": "0x554b50"
+        },
+        {
+          "id": "avoid_expiry_rng",
+          "kind": "call",
+          "site": "0x8fdfae",
+          "target": "0x554b50"
+        },
+        {
+          "id": "strafe_begin_command",
+          "kind": "call",
+          "site": "0x8fdce4",
+          "target": "0xbbd00"
+        },
+        {
+          "id": "strafe_end_send",
+          "kind": "call",
+          "site": "0x8fd99a",
+          "target": "0x14c010"
+        },
+        {
+          "id": "avoid_planner",
+          "kind": "call",
+          "site": "0x8fdd3b",
+          "target": "0x8fdd60"
+        },
+        {
+          "id": "vanilla_plan_route",
+          "kind": "call",
+          "site": "0x8fe94b",
+          "target": "0x8c8f60"
+        },
+        {
+          "id": "vanilla_route_factory",
+          "kind": "call",
+          "site": "0x8fea0b",
+          "target": "0x8f34f0"
+        },
+        {
+          "id": "save_before_install",
+          "kind": "call",
+          "site": "0x956b37",
+          "target": "0x956f20"
+        },
+        {
+          "id": "clear_state_before_install",
+          "kind": "call",
+          "site": "0x956b3f",
+          "target": "0x912260"
+        },
+        {
+          "id": "restore_stand_before_move",
+          "kind": "call",
+          "site": "0x956c43",
+          "target": "0x8f3930"
+        },
+        {
+          "id": "restore_point_factory",
+          "kind": "call",
+          "site": "0x956d3c",
+          "target": "0x8f3600"
+        },
+        {
+          "id": "restore_final_type",
+          "kind": "call",
+          "site": "0x956e51",
+          "target": "0x8f3930"
+        },
+        {
+          "id": "rng_registry_selection",
+          "kind": "call",
+          "site": "0x65f241",
+          "target": "0x6fbd60"
+        },
+        {
+          "id": "rng_context_install",
+          "kind": "call",
+          "site": "0x65f249",
+          "target": "0x554ce0"
+        },
+        {
+          "id": "forced_stamina_setter",
+          "kind": "call",
+          "site": "0xbade3",
+          "target": "0x849160"
+        },
+        {
+          "id": "world_tree_query",
+          "kind": "call",
+          "site": "0x777bc7",
+          "target": "0x60d160"
+        },
+        {
+          "id": "terrain_sample_level_zero",
+          "kind": "call",
+          "site": "0xa42971",
+          "target": "0xa3e8d0"
+        },
+        {
+          "id": "phase_zero_role_setup",
+          "kind": "call",
+          "site": "0x8f3faa",
+          "target": "0x8f3a50"
+        },
+        {
+          "id": "explosives_property",
+          "kind": "rip",
+          "site": "0x907a40",
+          "target": "0x10ea398"
+        },
+        {
+          "id": "grenade_property",
+          "kind": "rip",
+          "site": "0x907a76",
+          "target": "0x10ea3b0"
+        },
+        {
+          "id": "danger_property",
+          "kind": "rip",
+          "site": "0x907aac",
+          "target": "0x10ea3c8"
+        },
+        {
+          "id": "slot23_synced_global",
+          "kind": "call",
+          "site": "0xa1c527",
+          "target": "0x6fbd60"
+        },
+        {
+          "id": "slot23_select_stream",
+          "kind": "call",
+          "site": "0xa1c52f",
+          "target": "0x554ce0"
+        },
+        {
+          "id": "rng_name_literal",
+          "kind": "rip",
+          "site": "0x6fbdc5",
+          "target": "0x10cfbe8"
+        },
+        {
+          "id": "move_command_factory_vtable",
+          "kind": "rip",
+          "site": "0xbbf32",
+          "target": "0x10031c0"
+        },
+        {
+          "id": "mode_command_factory_vtable",
+          "kind": "rip",
+          "site": "0xbc06e",
+          "target": "0x10032b0"
+        },
+        {
+          "id": "type_command_factory_vtable",
+          "kind": "rip",
+          "site": "0xbc24e",
+          "target": "0x1003418"
+        },
+        {
+          "id": "applied_command_factory_vtable",
+          "kind": "rip",
+          "site": "0xbc39e",
+          "target": "0x1003580"
+        }
+      ],
+      "data": [
+        {
+          "id": "length_unit",
+          "rva": "0x14776c0",
+          "encoding": "f32",
+          "value": 20.0
+        },
+        {
+          "id": "time_unit",
+          "rva": "0x14776c8",
+          "encoding": "f32",
+          "value": 1000.0
+        },
+        {
+          "id": "gravity_setting",
+          "rva": "0x14776d0",
+          "encoding": "f32",
+          "value": 9.8100004196167
+        },
+        {
+          "id": "speed_coefficient",
+          "rva": "0x100a284",
+          "encoding": "f32",
+          "value": 3.0
+        },
+        {
+          "id": "wounded_fraction",
+          "rva": "0x1003f64",
+          "encoding": "f32",
+          "value": 0.30000001192092896
+        },
+        {
+          "id": "fast_mode_matrix",
+          "rva": "0x1481170",
+          "encoding": "i32[32]",
+          "value": [
+            0,
+            0,
+            0,
+            3,
+            0,
+            0,
+            6,
+            7,
+            0,
+            1,
+            1,
+            3,
+            4,
+            5,
+            6,
+            7,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            6,
+            7
+          ]
+        },
+        {
+          "id": "general_limit_name",
+          "rva": "0x10e2950",
+          "encoding": "cstring",
+          "value": "eChassisFoot::SetMovementModeLimit: mm "
+        },
+        {
+          "id": "stamina_limit_name",
+          "rva": "0x10e2978",
+          "encoding": "cstring",
+          "value": "eChassisFoot::SetStaminaMovementModeLimit: mm "
+        },
+        {
+          "id": "movement_limit_token",
+          "rva": "0x10e1a40",
+          "encoding": "cstring",
+          "value": "MovementModeLimit"
+        },
+        {
+          "id": "sensible_token",
+          "rva": "0x10d1568",
+          "encoding": "cstring",
+          "value": "Sensible"
+        },
+        {
+          "id": "body_token",
+          "rva": "0x10d154c",
+          "encoding": "cstring",
+          "value": "Body"
+        },
+        {
+          "id": "fuse_ui",
+          "rva": "0x10daaa0",
+          "encoding": "cstring",
+          "value": "component/grenade_timer"
+        },
+        {
+          "id": "carry_tag_one",
+          "rva": "0x10dc1f0",
+          "encoding": "cstring",
+          "value": "itemin1hand"
+        },
+        {
+          "id": "carry_tag_two",
+          "rva": "0x10dc200",
+          "encoding": "cstring",
+          "value": "itemin2hands"
+        },
+        {
+          "id": "carry_tag_human",
+          "rva": "0x10202b0",
+          "encoding": "cstring",
+          "value": "human"
+        },
+        {
+          "id": "quick_up_tag",
+          "rva": "0x10df030",
+          "encoding": "cstring",
+          "value": "quick-up"
+        },
+        {
+          "id": "up_tag",
+          "rva": "0x10d3844",
+          "encoding": "cstring",
+          "value": "up"
+        },
+        {
+          "id": "explosives_property",
+          "rva": "0x10ea398",
+          "encoding": "cstring",
+          "value": "bomb/detect_explosives"
+        },
+        {
+          "id": "grenade_property",
+          "rva": "0x10ea3b0",
+          "encoding": "cstring",
+          "value": "bomb/detect_grenades"
+        },
+        {
+          "id": "danger_property",
+          "rva": "0x10ea3c8",
+          "encoding": "cstring",
+          "value": "bomb/danger_zone"
+        },
+        {
+          "id": "default_detect_explosives",
+          "rva": "0x105ecb8",
+          "encoding": "f32",
+          "value": 7.0
+        },
+        {
+          "id": "default_detect_grenades",
+          "rva": "0x10124b4",
+          "encoding": "f32",
+          "value": 5.0
+        },
+        {
+          "id": "default_danger_zone",
+          "rva": "0x10124b0",
+          "encoding": "f32",
+          "value": 4.0
+        },
+        {
+          "id": "synced_rng_name",
+          "rva": "0x10cfbe8",
+          "encoding": "cstring",
+          "value": "synced_global"
+        },
+        {
+          "id": "runtime_velocity_unit",
+          "rva": "0x1547db0",
+          "encoding": "zerofill_f32",
+          "value": 0
+        },
+        {
+          "id": "runtime_world_gravity",
+          "rva": "0x1547dd0",
+          "encoding": "zerofill_f32",
+          "value": 0
+        }
+      ],
+      "vtables": [
+        {
+          "type": ".?AVeActor@@",
+          "rva": "0x10de138",
+          "slots": {
+            "23": "0x7efd10"
+          }
+        },
+        {
+          "type": ".?AVeChassisFoot@Actor@@",
+          "rva": "0x10e24b0",
+          "slots": {
+            "39": "0x847ae0",
+            "40": "0x84ec00",
+            "41": "0x849400",
+            "44": "0x848490",
+            "45": "0x848710",
+            "46": "0x848f30",
+            "65": "0x84b880",
+            "66": "0x84ad30"
+          }
+        },
+        {
+          "type": ".?AUeAction_MovementLimit@Interaction@@",
+          "rva": "0x10d3188",
+          "slots": {
+            "9": "0x744da0"
+          }
+        },
+        {
+          "type": ".?AVeGrenadeSimulator@@",
+          "rva": "0x10d1de0",
+          "slots": {
+            "0": "0x730130",
+            "3": "0x7310a0",
+            "4": "0x7310c0",
+            "7": "0x730d90"
+          }
+        },
+        {
+          "type": ".?AVeStuffExtender@Entity@@",
+          "rva": "0x10da9c0",
+          "slots": {
+            "6": "0x7b4470",
+            "7": "0x7b38f0"
+          }
+        },
+        {
+          "type": ".?AUeMove@Order@@",
+          "rva": "0x10e9770",
+          "slots": {
+            "19": "0x8f3e00",
+            "20": "0x8f4f30"
+          }
+        },
+        {
+          "type": ".?AUeMoveTask@Order@@",
+          "rva": "0x1003918",
+          "slots": {
+            "19": "0x8f6230"
+          }
+        },
+        {
+          "type": ".?AUeMovementChange@Order@@",
+          "rva": "0x10e9980",
+          "slots": {
+            "19": "0x8f7330"
+          }
+        },
+        {
+          "type": ".?AUeAvoidGrenade@Order@@",
+          "rva": "0x10e9be8",
+          "slots": {
+            "19": "0x8fd8f0"
+          }
+        },
+        {
+          "type": ".?AVeHumanBrain@Actor@@",
+          "rva": "0x10ec7c8",
+          "slots": {
+            "13": "0x9052f0",
+            "23": "0x941bc0",
+            "35": "0x941d00"
+          }
+        },
+        {
+          "type": ".?AVeHumanBrainClient@Actor@@",
+          "rva": "0xfffee8",
+          "slots": {
+            "23": "0xa7720",
+            "35": "0x941d00"
+          }
+        },
+        {
+          "type": ".?AUeSetMovementModeCommand@@",
+          "rva": "0x10032b0",
+          "slots": {
+            "1": "0x14c010",
+            "2": "0xbab20",
+            "3": "0xbab70"
+          }
+        },
+        {
+          "type": ".?AUeSetMovementTypeCommand@@",
+          "rva": "0x1003418",
+          "slots": {
+            "1": "0x14c010",
+            "2": "0xbae00",
+            "3": "0xbae50"
+          }
+        },
+        {
+          "type": ".?AUeSetStrafeDisabledCommand@@",
+          "rva": "0x1003508",
+          "slots": {
+            "1": "0x14c010",
+            "2": "0xbafd0",
+            "3": "0xbb010"
+          }
+        },
+        {
+          "type": ".?AUeChassisFootSetModeCommand@@",
+          "rva": "0x1003580",
+          "slots": {
+            "1": "0x14c010",
+            "2": "0xbb0b0",
+            "3": "0xbb130"
+          }
+        },
+        {
+          "type": ".?AUeOrderMoveCommand@@",
+          "rva": "0x10031c0",
+          "slots": {
+            "1": "0x14c010",
+            "2": "0xb9dc0",
+            "3": "0xba0e0"
+          }
+        }
+      ]
+    },
+    "26734796": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "code": [
+        {
+          "id": "role_host",
+          "rva": "0xc2b740",
+          "size": 80,
+          "instructions": 26,
+          "sha256": "31dcb4d0d56bf2cad46e239517b386f6c655b14dda310bbe0921410584979c4d"
+        },
+        {
+          "id": "role_remote",
+          "rva": "0xc2b7a0",
+          "size": 80,
+          "instructions": 26,
+          "sha256": "f2e5fe3aeba6ba629288415c98436b116106a4d74451ed3b6392c4abc72994b0"
+        },
+        {
+          "id": "main_actor_after_sensor",
+          "rva": "0x804c01",
+          "size": 91,
+          "instructions": 22,
+          "sha256": "55cfbeac25bd44597fe25e0eedc0b40bdabc3d62f65a8ec45796547a260f9dc5"
+        },
+        {
+          "id": "foot_general_default",
+          "rva": "0x853f45",
+          "size": 7,
+          "instructions": 1,
+          "sha256": "88c1ecff0277142be099a869ecf4badc4e920e293080607357bbe53bec681fd3"
+        },
+        {
+          "id": "foot_base_copy",
+          "rva": "0x854d4a",
+          "size": 6,
+          "instructions": 2,
+          "sha256": "5361cfce88e214664d31894dc95923a78930f83ee8c69797cf9abb4f7c2e26ca"
+        },
+        {
+          "id": "foot_read_limit_ae",
+          "rva": "0x85511e",
+          "size": 11,
+          "instructions": 3,
+          "sha256": "9cb52395a2e810276c6a91879624fcb380a9aeea8821f8d4c145cf9dbe2fc633"
+        },
+        {
+          "id": "foot_base_inline_default",
+          "rva": "0x8573b7",
+          "size": 7,
+          "instructions": 1,
+          "sha256": "34dc636efc732a5357ec76d2a604f48a8f49c78b8b83e174e6f8575b7453fd7f"
+        },
+        {
+          "id": "foot_stamina_default",
+          "rva": "0x85c315",
+          "size": 10,
+          "instructions": 1,
+          "sha256": "e390b4604a701a70e3d490dc77fedb633386eb34cd1bad26484937376949dabb"
+        },
+        {
+          "id": "general_limit_from_interaction",
+          "rva": "0x755ae0",
+          "size": 34,
+          "instructions": 9,
+          "sha256": "b3778bb3b701bdfb570f1be959075e7aacbc0362a091ea2e8708ee0ff53a21ac"
+        },
+        {
+          "id": "general_limit_forced_receive",
+          "rva": "0xbc74b",
+          "size": 26,
+          "instructions": 6,
+          "sha256": "77a20c399cef135d4af8a9a4f1d3085ddacfade176499af8d90079d00fa2f868"
+        },
+        {
+          "id": "general_limit_store",
+          "rva": "0x85dc9b",
+          "size": 61,
+          "instructions": 14,
+          "sha256": "4ca3a86338eedb7be63bf663b40191813b7ac77b2514bad4076c53c6bf4e1127"
+        },
+        {
+          "id": "stamina_limit_store",
+          "rva": "0x85ded5",
+          "size": 66,
+          "instructions": 14,
+          "sha256": "a7342628eef8f8ea2897a5a4d28cb617c1de03b9495c8c851975a57558bb4a00"
+        },
+        {
+          "id": "general_limit_name",
+          "rva": "0x85dcf3",
+          "size": 7,
+          "instructions": 1,
+          "sha256": "ef0e9109866a529c3c1693d1239447c476136e9ada78c3f320a823179cce31eb"
+        },
+        {
+          "id": "stamina_limit_name",
+          "rva": "0x85df31",
+          "size": 7,
+          "instructions": 1,
+          "sha256": "8255b70774ad8bb66da9ae52e792d2a32dcb62f69b67221e919b5798c1b4e933"
+        },
+        {
+          "id": "limit_wire_general",
+          "rva": "0x855cc0",
+          "size": 64,
+          "instructions": 16,
+          "sha256": "9a3b358c5e2c82da2f808934d93a2822b96238d9a4ed5db648dabbe9d9affffd"
+        },
+        {
+          "id": "limit_wire_stamina",
+          "rva": "0x855d10",
+          "size": 64,
+          "instructions": 16,
+          "sha256": "172bbb61a05e982f8b0e3f066e4decc857565aec699a9c136702def9f839ef4a"
+        },
+        {
+          "id": "stamina_threshold_records",
+          "rva": "0x93f0a9",
+          "size": 112,
+          "instructions": 28,
+          "sha256": "5b44fbaa1627ab738b175a59a5351c9b09c925911bf330088c25e4249280ae43"
+        },
+        {
+          "id": "stamina_carry_override",
+          "rva": "0x93f105",
+          "size": 48,
+          "instructions": 10,
+          "sha256": "b5b062d4ae31c46dda048b5d8d0d8c7ff1aecec71ff84c58eac3e5d8352fdd87"
+        },
+        {
+          "id": "stamina_publish",
+          "rva": "0x93f41a",
+          "size": 78,
+          "instructions": 16,
+          "sha256": "280a63ef1fddf8581a318d873b3d61d5903e64aeb2fa5ba54e63b0b0d9248ca3"
+        },
+        {
+          "id": "carry_tags",
+          "rva": "0x7e06a0",
+          "size": 119,
+          "instructions": 32,
+          "sha256": "df3f9c074c32bffd3a9dc78df2231c70dddbae6e4b89ff224d805bae17cf8ede"
+        },
+        {
+          "id": "brain_policy_bit",
+          "rva": "0x91ba00",
+          "size": 42,
+          "instructions": 12,
+          "sha256": "d5d3d78308faed8e4e9c800571c7508440f453276ae0104935f03bdcdf67a86c"
+        },
+        {
+          "id": "ui_policy_bit",
+          "rva": "0xb2942e",
+          "size": 50,
+          "instructions": 15,
+          "sha256": "0343212a4599de0197d692fdd7ace60a79015f490c2e6fd5e4840bf7ed076d50"
+        },
+        {
+          "id": "combined_limits",
+          "rva": "0x85e150",
+          "size": 51,
+          "instructions": 18,
+          "sha256": "57b30589abd3de138cdbb7cca8d31b97b40ba7f40df72d3d003fbe43128a62e7"
+        },
+        {
+          "id": "resolve_speed",
+          "rva": "0x863510",
+          "size": 259,
+          "instructions": 74,
+          "sha256": "5f1dcbcfb160eba7fa87e7f30a37bf2a2cc2acb999b393fb9ef3e175225db72a"
+        },
+        {
+          "id": "defer_actual_type",
+          "rva": "0x863276",
+          "size": 96,
+          "instructions": 25,
+          "sha256": "15e35160a61a736f66f1d5cc73e9f2e4a6d8b7fd9a85cdc86ff39c3ed3aa009b"
+        },
+        {
+          "id": "apply_mode",
+          "rva": "0x862b60",
+          "size": 215,
+          "instructions": 46,
+          "sha256": "a3f267edecb01c7064487b9c29fda2b225d2dc7e7bf73c96242fd152dd2fc36b"
+        },
+        {
+          "id": "applied_fields",
+          "rva": "0x862c40",
+          "size": 80,
+          "instructions": 17,
+          "sha256": "5e3341c0ef209a2a6665f5276cff100de1c3581bae2a7da42c67b4174a4ad50e"
+        },
+        {
+          "id": "health_profile",
+          "rva": "0x8637a2",
+          "size": 74,
+          "instructions": 18,
+          "sha256": "c63f40c8a633519e9ebc148107766b4a9987ae7269302d6bbfd83a7a7eb52d0b"
+        },
+        {
+          "id": "request_mode",
+          "rva": "0x85d200",
+          "size": 62,
+          "instructions": 14,
+          "sha256": "1ea76e5de0b3a9d8563fe8fe27c768491ff3f0914a39679caf99dcf541afc029"
+        },
+        {
+          "id": "request_type_admission",
+          "rva": "0x85d460",
+          "size": 97,
+          "instructions": 23,
+          "sha256": "2157a6879774e544eb9416ad6733c90436c7bd8ab3acabbb1d653611d0310ab5"
+        },
+        {
+          "id": "type_gate_inventory",
+          "rva": "0x85d86f",
+          "size": 78,
+          "instructions": 17,
+          "sha256": "d42eba79e673e5975b775e2e9b140ea65f3ddf6730289672d866edb931fd1e93"
+        },
+        {
+          "id": "type_normal_fsm",
+          "rva": "0x85d91d",
+          "size": 98,
+          "instructions": 18,
+          "sha256": "214a1dfa01bc0dbab6f9116368aea131c2916c65b48f59af8cf4e418af5c9966"
+        },
+        {
+          "id": "type_notify",
+          "rva": "0x85da43",
+          "size": 8,
+          "instructions": 2,
+          "sha256": "e8dd85aa7c3152d922c032bdcd5c9f6be5a67beab93d26a34ad49d2ed6536bab"
+        },
+        {
+          "id": "type_commit",
+          "rva": "0x862551",
+          "size": 15,
+          "instructions": 3,
+          "sha256": "805cd23fe94dcbee43543db1d56353f460a17283f3a139dbaf02a9d346003bc1"
+        },
+        {
+          "id": "scanner_categories",
+          "rva": "0x920009",
+          "size": 404,
+          "instructions": 90,
+          "sha256": "585dae32fbec5a917bcf7fc894110bc474a19f0fd21b06eaa7056f50d3b80ac0"
+        },
+        {
+          "id": "scanner_flying_gate",
+          "rva": "0x920183",
+          "size": 130,
+          "instructions": 34,
+          "sha256": "642d67eafdc079542551294fd44da50086b427f87f6932ec4cf5a6986207c66c"
+        },
+        {
+          "id": "scanner_configuration",
+          "rva": "0x920270",
+          "size": 204,
+          "instructions": 54,
+          "sha256": "039e741ce4cdfc43c9ea74b6a40cb7a7ff7acfbec1ed9e7edba7982ead19d2ea"
+        },
+        {
+          "id": "grenade_tag_init",
+          "rva": "0x54b74",
+          "size": 19,
+          "instructions": 3,
+          "sha256": "fda8be65c40d5a4382da9e186d6fad29fc4a2e9ec83f0232636bb949e52ec7a5"
+        },
+        {
+          "id": "units_init",
+          "rva": "0x2ff00",
+          "size": 352,
+          "instructions": 67,
+          "sha256": "7714a6f6dc9eb353cbd5c7c0171fd9e5f90bc860ace21cd2c1383ba42e9deed0"
+        },
+        {
+          "id": "units_refresh",
+          "rva": "0x4cf3b0",
+          "size": 352,
+          "instructions": 67,
+          "sha256": "c5006e8df3591f6f4b4f2ec4324d37a46c1d23b7e2c53970e0efa6c2da0881cb"
+        },
+        {
+          "id": "entity_area_setup",
+          "rva": "0x72ca2e",
+          "size": 24,
+          "instructions": 6,
+          "sha256": "6f44949a20bf08c4ce87b5b472a1c49f38d9f1bcc77dee214169be728f5c74e4"
+        },
+        {
+          "id": "body_proper_permit_parse",
+          "rva": "0x73e5a5",
+          "size": 21,
+          "instructions": 4,
+          "sha256": "640d1487d2db85eea930f3369008a88868c9a687736591f226ee3d9183a6f70d"
+        },
+        {
+          "id": "area_mask_decode",
+          "rva": "0x742c40",
+          "size": 127,
+          "instructions": 33,
+          "sha256": "dfcb7f6251a4d9d251e393e454e0e7de978f688de85ae88c1aad9290737b2153"
+        },
+        {
+          "id": "area_mask_set",
+          "rva": "0x742f30",
+          "size": 11,
+          "instructions": 4,
+          "sha256": "451f6d9a232d7184dfaa7c6698163564fd142ba3b2d070ee1aaa70e0a3d06f98"
+        },
+        {
+          "id": "entity_area_bind",
+          "rva": "0x742f50",
+          "size": 98,
+          "instructions": 27,
+          "sha256": "aa9f5376f8f839c1bb5844cf97fc359bf584730fb4efc9d4b59a1539507132af"
+        },
+        {
+          "id": "area_owner",
+          "rva": "0x785450",
+          "size": 83,
+          "instructions": 22,
+          "sha256": "66243e41e59b087dd239df1cfba1ad0edab10922950153ee34600f7a38cd4860"
+        },
+        {
+          "id": "spatial_collect",
+          "rva": "0x890447",
+          "size": 134,
+          "instructions": 28,
+          "sha256": "eee073432e2089f7949273cf307fef1f7d0529031a9ad9dc734a2fbc5aac48b0"
+        },
+        {
+          "id": "unlinked_spatial_query",
+          "rva": "0x784360",
+          "size": 159,
+          "instructions": 37,
+          "sha256": "30aaba5e5caba13fbfdfe13f5752a1cc3c19cd88bda5b5e83ea433bb0c26e43b"
+        },
+        {
+          "id": "spatial_collection_entry",
+          "rva": "0x78ab60",
+          "size": 119,
+          "instructions": 30,
+          "sha256": "b972777bcb1ae8b544e20580c723faed22a0fc013f46170c2a5d465272c49060"
+        },
+        {
+          "id": "simulation_velocity",
+          "rva": "0x73a2a0",
+          "size": 75,
+          "instructions": 20,
+          "sha256": "69141db4548366b568f4e7ddc285051f5c924a5b63ed8a426181b85a3c0612de"
+        },
+        {
+          "id": "grenade_factory",
+          "rva": "0x7446c0",
+          "size": 112,
+          "instructions": 27,
+          "sha256": "d530d333a018373de0c5d8e414c8f847c4e24aa561ab49062961f980a6524742"
+        },
+        {
+          "id": "grenade_bind",
+          "rva": "0x743360",
+          "size": 18,
+          "instructions": 6,
+          "sha256": "679c67b4787c651f2e12a31e70cb6354e6c465316e7b3e648c88a0115f79c1e0"
+        },
+        {
+          "id": "grenade_launch_attribution",
+          "rva": "0x8320ea",
+          "size": 147,
+          "instructions": 30,
+          "sha256": "20d0d5dd26cd9f990547d8d5052fe1d64508889ddee65cda045d30ef00ae078c"
+        },
+        {
+          "id": "grenade_launch_motion",
+          "rva": "0x832155",
+          "size": 118,
+          "instructions": 22,
+          "sha256": "e5c7b67dbc0545ddd0c91b298acd5c3376f4cf43bcc4f74507724412c34ed357"
+        },
+        {
+          "id": "damage_info_source",
+          "rva": "0xa74290",
+          "size": 85,
+          "instructions": 19,
+          "sha256": "b038590bc51e24784f8966fb77fd4301a3637c11e0e6cdc25e2a432f25624e83"
+        },
+        {
+          "id": "arm_fuse",
+          "rva": "0x7c5860",
+          "size": 152,
+          "instructions": 44,
+          "sha256": "63a51f6ef9b157e4079f9e650ae514710eb2440992221dde3f09ab5fb2b2a812"
+        },
+        {
+          "id": "display_fuse",
+          "rva": "0x7c6d6a",
+          "size": 28,
+          "instructions": 6,
+          "sha256": "685d31b1284b0649239da4ea3a44a0a095e8b2643ed67c73d18dc0bbfb92aad0"
+        },
+        {
+          "id": "expire_fuse",
+          "rva": "0x7c6f8e",
+          "size": 77,
+          "instructions": 17,
+          "sha256": "e4f0ceca4fe5ffc94f0d2bd50d9a7f32515d5abcc02d8bd32d52e36787b2b341"
+        },
+        {
+          "id": "detonate_attribution",
+          "rva": "0x7c5a0d",
+          "size": 33,
+          "instructions": 8,
+          "sha256": "421b7acce07376b47b887fdb3963324b3511cb2776603ef350e178d8937b7378"
+        },
+        {
+          "id": "velocity_store",
+          "rva": "0x751080",
+          "size": 31,
+          "instructions": 11,
+          "sha256": "c61d7e5cfd3466688d170ed323046e88e1141971e49e6eecbcb5c99c5141b140"
+        },
+        {
+          "id": "position_read",
+          "rva": "0x74aed0",
+          "size": 22,
+          "instructions": 7,
+          "sha256": "58b033461aedd96a56ada1f255184ea18ca9d30f95a6e0c76c7f664aa03b2cc9"
+        },
+        {
+          "id": "base_acceleration",
+          "rva": "0x74ad10",
+          "size": 18,
+          "instructions": 7,
+          "sha256": "2aab1eb0784f0e51ed37d23a72368c43504bd7494f4cc03e8acc16aada79e34c"
+        },
+        {
+          "id": "linear_damping",
+          "rva": "0x74acf0",
+          "size": 6,
+          "instructions": 2,
+          "sha256": "345fd2da774e82e1f18b1f1593353c560bf3d00e738cd04b0d0734764a01df34"
+        },
+        {
+          "id": "grenade_tick",
+          "rva": "0x7442f0",
+          "size": 137,
+          "instructions": 30,
+          "sha256": "b70e6adbe3f5c2cccb452ac12e74a9c4c4dea54a7bf1afac4d3a9f2fcec99924"
+        },
+        {
+          "id": "grenade_contact",
+          "rva": "0x743fc0",
+          "size": 221,
+          "instructions": 48,
+          "sha256": "643335129c945ed04251d81bd86b5fe05b757b9b365f52a17cb9e0932fac7a31"
+        },
+        {
+          "id": "terrain_height",
+          "rva": "0xa5d440",
+          "size": 118,
+          "instructions": 30,
+          "sha256": "71764e30045480fc389b9610f462c2c25aebcd80da60581ca161a4518161478a"
+        },
+        {
+          "id": "player_relation",
+          "rva": "0xa653a0",
+          "size": 102,
+          "instructions": 32,
+          "sha256": "d5d978b054458a36e9aee87b6beb6b3945d548273e7bc6ef1764e9405bba7e30"
+        },
+        {
+          "id": "point_factory",
+          "rva": "0x90a95b",
+          "size": 181,
+          "instructions": 47,
+          "sha256": "4b72f42db2f488de2411a889c2e3060e67dfa95190faea7406227881940ae1b6"
+        },
+        {
+          "id": "route_factory",
+          "rva": "0x90a7b0",
+          "size": 89,
+          "instructions": 27,
+          "sha256": "49380f32637b480b6b3a3a6b2286377481c107c3051dc8f9b4d9e5c95ce20425"
+        },
+        {
+          "id": "route_copy",
+          "rva": "0x9102d0",
+          "size": 119,
+          "instructions": 29,
+          "sha256": "fc0f4c37a0d05bd30112c3d9831b773740846538e7e5775efc7f93413210e44f"
+        },
+        {
+          "id": "route_child",
+          "rva": "0x90e766",
+          "size": 16,
+          "instructions": 4,
+          "sha256": "b576187d0a9960b99d3d50e9fa1443ef231c189be4678c9cf0838c70ec0b4c77"
+        },
+        {
+          "id": "move_ctor",
+          "rva": "0x90ffb0",
+          "size": 78,
+          "instructions": 19,
+          "sha256": "ed3ca0e1e55786fcc86b0a0215189e2ae0de6ab1bf13b7c987630742e9898048"
+        },
+        {
+          "id": "move_phase0",
+          "rva": "0x90b519",
+          "size": 147,
+          "instructions": 28,
+          "sha256": "685a3035a280d608b0de8dd7b44fe996df0bf4e8d4ad416556361689d2297fd2"
+        },
+        {
+          "id": "role_flags",
+          "rva": "0x90ae05",
+          "size": 24,
+          "instructions": 6,
+          "sha256": "3ba1382a763d0308c4edf18b468efeb4f3245a4a92b7a7436ee7afb6b8c4ad70"
+        },
+        {
+          "id": "move_start_send",
+          "rva": "0x90b71f",
+          "size": 95,
+          "instructions": 21,
+          "sha256": "75c810cb7c60a426a6a7dab5018e83ae2b003cc2dad410363a22046c1f2eda29"
+        },
+        {
+          "id": "move_command_bind",
+          "rva": "0xbb530",
+          "size": 61,
+          "instructions": 16,
+          "sha256": "986cd44095841ee6aa6bef0df51cb6c86ddbf4c7a3ed1df99aa8ec4cdf5f4124"
+        },
+        {
+          "id": "move_probe",
+          "rva": "0x90bd73",
+          "size": 5,
+          "instructions": 1,
+          "sha256": "f0a741fef04f4ed3684ea6828c0572c0b3451adda1e00a59047771cf70684be7"
+        },
+        {
+          "id": "probe_draw",
+          "rva": "0x8c3eca",
+          "size": 63,
+          "instructions": 13,
+          "sha256": "2823459b68c6d86b07c35430fbb9e31bfa62d59a2aa9f15e44fc0038593b6bda"
+        },
+        {
+          "id": "line_draw",
+          "rva": "0x8c21b0",
+          "size": 55,
+          "instructions": 12,
+          "sha256": "f4461703f32478dfc02c73126b19968d7f196ac48e4954b86c689ba9f25d9034"
+        },
+        {
+          "id": "avoid_terminal_draw",
+          "rva": "0x9167be",
+          "size": 58,
+          "instructions": 12,
+          "sha256": "b14a765187394e118154ea2d22728536466d4fa81353de4599ce7cae7afeb8f5"
+        },
+        {
+          "id": "selected_rng",
+          "rva": "0x563680",
+          "size": 41,
+          "instructions": 8,
+          "sha256": "f0022267db969c88e16d044e9921a75ba7912f010e7791643b587966626caf5d"
+        },
+        {
+          "id": "select_rng_in_context",
+          "rva": "0x66f150",
+          "size": 179,
+          "instructions": 48,
+          "sha256": "e346194dc27b28f8570da351286fc3c1fbcb913dccaea28ba023274231bbc53b"
+        },
+        {
+          "id": "movement_change_factory",
+          "rva": "0x90abf0",
+          "size": 101,
+          "instructions": 28,
+          "sha256": "b905bc7ad6410938d545f75224b379ad18531b19fc80207026589fc313594a2f"
+        },
+        {
+          "id": "movement_change_exec",
+          "rva": "0x90f686",
+          "size": 137,
+          "instructions": 40,
+          "sha256": "fcdeacca7fbe7e1318fb5c3f59a10226befd48f0da831713b4544c2e9e35ac45"
+        },
+        {
+          "id": "mode_notify",
+          "rva": "0x855c20",
+          "size": 64,
+          "instructions": 16,
+          "sha256": "32b68f09ff4d5c88435a72e19188d0f26a72f8334afdaf4f05415825c0f48aa0"
+        },
+        {
+          "id": "type_wire",
+          "rva": "0x855c70",
+          "size": 64,
+          "instructions": 16,
+          "sha256": "6d46f7bdb8da898cc331d63b0bc68eafff9b7bf4f8d4296cba89cc26a698a8d5"
+        },
+        {
+          "id": "type_serialize",
+          "rva": "0xbc8a0",
+          "size": 65,
+          "instructions": 17,
+          "sha256": "a7a098e49fdd32173b099bb1438d38a0317a45c2b1fea4f9ff5836c809a478d7"
+        },
+        {
+          "id": "mode_serialize",
+          "rva": "0xbc5c0",
+          "size": 73,
+          "instructions": 19,
+          "sha256": "d5ddc54d1a32beff290d1ae49f74f6cf0a800edc3d038661e32542e0b7307c6f"
+        },
+        {
+          "id": "applied_serialize",
+          "rva": "0xbcb60",
+          "size": 121,
+          "instructions": 32,
+          "sha256": "c030213730a7f09a284a01536cef14dcf668eb0fd79888001d7c64d668be31e7"
+        },
+        {
+          "id": "strafe_factory",
+          "rva": "0xbb360",
+          "size": 63,
+          "instructions": 15,
+          "sha256": "06dd58a44078c69249ef545e2c2e097df4ea0091c54f0910769271fa2d463306"
+        },
+        {
+          "id": "strafe_acquire",
+          "rva": "0x91649c",
+          "size": 118,
+          "instructions": 29,
+          "sha256": "65c71a2ebe79db4b7f55ef8ce552ec6734e993319c2c33002ef19edad737286a"
+        },
+        {
+          "id": "strafe_restore",
+          "rva": "0x916151",
+          "size": 106,
+          "instructions": 24,
+          "sha256": "a11cd5fc1a6aedc452c2af5301c497a5b6f74ddab0dba8ba890129b8e4f47872"
+        },
+        {
+          "id": "strafe_serialize",
+          "rva": "0xbca70",
+          "size": 54,
+          "instructions": 15,
+          "sha256": "349b1ee07251593f1f8a7bfd865b4cd3795dfc7caa01027cbbf75b59a8902c13"
+        },
+        {
+          "id": "vanilla_circle",
+          "rva": "0x917050",
+          "size": 192,
+          "instructions": 40,
+          "sha256": "e7e47fc39a09002dcdbd79acee3de6f2df387770709e0f82ea6e4116d71bf890"
+        },
+        {
+          "id": "vanilla_route_child",
+          "rva": "0x9171e8",
+          "size": 67,
+          "instructions": 16,
+          "sha256": "24d19adf49dcc12909141a36524c3ad38197fc6f8d266536fba7fc80f75f969e"
+        },
+        {
+          "id": "snapshot",
+          "rva": "0x96f6f0",
+          "size": 215,
+          "instructions": 50,
+          "sha256": "913821660663fd402bca5d5f7fc6b1fb6be400fac3e61f9d921e441a6e750542"
+        },
+        {
+          "id": "install",
+          "rva": "0x96f2f0",
+          "size": 71,
+          "instructions": 23,
+          "sha256": "5695a8baba7f108cd6a81e29f9ef6d5136dac0fd1ad326e3ef6b287a91155ea3"
+        },
+        {
+          "id": "restore_sequence",
+          "rva": "0x96f340",
+          "size": 73,
+          "instructions": 15,
+          "sha256": "f42391130e7a2f107f145ae86ab4bd7ed6008603cf283e751dd7fd384350ec3b"
+        },
+        {
+          "id": "restore_type",
+          "rva": "0x96f413",
+          "size": 14,
+          "instructions": 4,
+          "sha256": "79785c24822a578953f1259591fca1048134b6a5dae45e03f6545eff1f1824bb"
+        },
+        {
+          "id": "restore_point",
+          "rva": "0x96f50c",
+          "size": 14,
+          "instructions": 4,
+          "sha256": "5d1ba6700cc185120f0d942cc6f72ee42acf25d03f200470af00abfe063b0c29"
+        },
+        {
+          "id": "restore_end_event",
+          "rva": "0x96f621",
+          "size": 70,
+          "instructions": 17,
+          "sha256": "d57a0d8bd9653397dda111d5df7e5f59ce161c3cbaed60051b74b95e977e87e6"
+        },
+        {
+          "id": "saved_order_disposition",
+          "rva": "0x96e2cf",
+          "size": 58,
+          "instructions": 15,
+          "sha256": "5ea5b7964634e4147604d0472b623ebf587450cc58c23668cbcd15e6eb21377a"
+        },
+        {
+          "id": "restore_mode_clear",
+          "rva": "0x96f226",
+          "size": 30,
+          "instructions": 7,
+          "sha256": "33aa3f8d32d9851586e78a1328a90401c0171a14780061bdc19cf997950e5060"
+        },
+        {
+          "id": "periodic_vitality_call",
+          "rva": "0x93e979",
+          "size": 5,
+          "instructions": 1,
+          "sha256": "a2560ba9babe596c2b70954311fb12d2431b9016942291b0f9d153cb87c64b0a"
+        },
+        {
+          "id": "armed_tag_query",
+          "rva": "0x9207e0",
+          "size": 158,
+          "instructions": 36,
+          "sha256": "11730cf7b7c33e92350fc797044c974ed30558fa565774f70b9adfaba3880b92"
+        },
+        {
+          "id": "simulator_attachment",
+          "rva": "0x73aa7e",
+          "size": 52,
+          "instructions": 11,
+          "sha256": "3d079acdd6e3f4f3f65d62e8f274d96d32c01af573aeaeac4b50a89c39bb23ce"
+        },
+        {
+          "id": "thrower_handle_assignment",
+          "rva": "0xb9690",
+          "size": 67,
+          "instructions": 18,
+          "sha256": "1d786cca198c2b9f66945f8a7f0591ff5bdf3e577e76cdd05262fa750b3a25ab"
+        },
+        {
+          "id": "display_timer_label",
+          "rva": "0x7c6dd3",
+          "size": 12,
+          "instructions": 2,
+          "sha256": "d0b55722c608e12043dac24e32ba626d68c51766cf72675917531f0aa7c7ba1f"
+        },
+        {
+          "id": "vanilla_route_solver",
+          "rva": "0x91715b",
+          "size": 5,
+          "instructions": 1,
+          "sha256": "98ef1084ef7acfdbf62d5691a587a19f5b8d1318464c07aba5bada22ea43001b"
+        },
+        {
+          "id": "native_plan_tick",
+          "rva": "0x91654b",
+          "size": 10,
+          "instructions": 2,
+          "sha256": "08db9734ce53b2d3ae21cea42c3bfe65398558df382ea1e7590ea86d185a22e1"
+        },
+        {
+          "id": "worker_thread_test",
+          "rva": "0xa7a80",
+          "size": 49,
+          "instructions": 12,
+          "sha256": "64ff80976511fd718b80e4cd298157587449ecb986a060324c376b352c606f1d"
+        },
+        {
+          "id": "direct_control_chassis",
+          "rva": "0x8548e0",
+          "size": 8,
+          "instructions": 3,
+          "sha256": "d9a7364f6b8495afcd75e1198b2b9e6a68c355be0bda3bf3541da017935b5fe5"
+        },
+        {
+          "id": "serial_brain_dispatch",
+          "rva": "0x91be00",
+          "size": 110,
+          "instructions": 35,
+          "sha256": "b12e76d51f1f192f9316ff01c49b20649de88090f13436e9cec1cc332e5b3ba8"
+        },
+        {
+          "id": "move_command_send",
+          "rva": "0xbb5e0",
+          "size": 35,
+          "instructions": 11,
+          "sha256": "15c9e6bac3ad1035582e3e5709f6bd59ae7ffed0363342dfd95c912e4e385270"
+        },
+        {
+          "id": "move_command_write",
+          "rva": "0xbb610",
+          "size": 129,
+          "instructions": 40,
+          "sha256": "ed8143d6a7c69eed7bac5e1736b026e9e19fdc63a7a00132b08bf34ae17bf7f4"
+        },
+        {
+          "id": "move_command_read",
+          "rva": "0xbbb30",
+          "size": 133,
+          "instructions": 27,
+          "sha256": "4a149eacc0d2a1a957daedec525c60e28dacdab37959bfc0591dc469eab5edaa"
+        },
+        {
+          "id": "rng_context_selection",
+          "rva": "0x66f2f1",
+          "size": 31,
+          "instructions": 8,
+          "sha256": "52e16ff8b93f1df65e6dd362d28c481ba7ef91bc0dfcdfa02377b453a257d014"
+        },
+        {
+          "id": "body_world_center",
+          "rva": "0x750d30",
+          "size": 18,
+          "instructions": 7,
+          "sha256": "48890a4fb0121b2c1f60bab7de9a39bce32d058e02522134b427236fb4ea7a63"
+        },
+        {
+          "id": "stamina_limit_forced_receive",
+          "rva": "0xbc876",
+          "size": 18,
+          "instructions": 6,
+          "sha256": "52f52d3bb63dd4b05997b58d3c59d4b499ed86f3073c241519037ce567dc24ca"
+        },
+        {
+          "id": "world_registration",
+          "rva": "0x7343b0",
+          "size": 109,
+          "instructions": 29,
+          "sha256": "5122945d72be58539e68ea49582457e71d85b1c5c6db32825e23be041d1f0662"
+        },
+        {
+          "id": "world_query_dispatch",
+          "rva": "0x78ad48",
+          "size": 34,
+          "instructions": 11,
+          "sha256": "01e0c3ae235cc8d2620be179e7edeb256e2dc1ac4bd6ca4493fb29d0840b5901"
+        },
+        {
+          "id": "world_tree_masks",
+          "rva": "0x61d266",
+          "size": 80,
+          "instructions": 22,
+          "sha256": "4a22c122b132b24bc4a8e67f6d065f8b044bbd7f3647f5ba6bd056f07e951656"
+        },
+        {
+          "id": "indexed_area_masks",
+          "rva": "0x78ac4d",
+          "size": 69,
+          "instructions": 23,
+          "sha256": "e497e5421e69282c9ff2bbace6293d6fcfdf760619b2034b1938e546a401057c"
+        },
+        {
+          "id": "terrain_sampler_caller",
+          "rva": "0xa614b6",
+          "size": 56,
+          "instructions": 14,
+          "sha256": "7cb7e55c1ab1dd88bdf7a8caee2232b6c627140b837834e9cfcd96415d3120c9"
+        },
+        {
+          "id": "contact_latch",
+          "rva": "0x744188",
+          "size": 25,
+          "instructions": 4,
+          "sha256": "4b2f646e8dacf00c08b69f87476b2dbea0fa429b69c43758075dc2a0c2ae0851"
+        },
+        {
+          "id": "contact_latch_clear",
+          "rva": "0x7442d0",
+          "size": 17,
+          "instructions": 7,
+          "sha256": "80e43c0b3a38ff1bf0bc7afa8d864375d0555a32d0f7fba5c055a1abd9c51766"
+        },
+        {
+          "id": "avoid_factory",
+          "rva": "0x916080",
+          "size": 109,
+          "instructions": 29,
+          "sha256": "c157231d1cc52217dfaee6b949e09d714ef9cc220dab12c8360c3911d3430158"
+        },
+        {
+          "id": "root_scanner_dispatch",
+          "rva": "0x96fb7e",
+          "size": 13,
+          "instructions": 3,
+          "sha256": "bc8b19ca5713ec3e1b5e12c644bd4339b89fcfe8235b454cf34826bb301dbac0"
+        },
+        {
+          "id": "root_grenade_make_and_detach",
+          "rva": "0x96eb86",
+          "size": 91,
+          "instructions": 20,
+          "sha256": "caf316a2f3fa117daae36d86bcd427f51e81c3f432b47972d511d64ec1deb6cf"
+        },
+        {
+          "id": "scanner_order_factory",
+          "rva": "0x91ff80",
+          "size": 14,
+          "instructions": 3,
+          "sha256": "f5c74de8d9625ceca701ab7bb1b990855ec6364b4b38c8c543527d235cc7bb2c"
+        },
+        {
+          "id": "clock_read",
+          "rva": "0x66e7b0",
+          "size": 7,
+          "instructions": 2,
+          "sha256": "5566c775ea7b925c8dc3f9469a71d28af44dd2bef5a2416cbe957dad70179042"
+        },
+        {
+          "id": "clock_from_seconds",
+          "rva": "0x66e7e0",
+          "size": 13,
+          "instructions": 3,
+          "sha256": "9f25c98dd4bb8e1827a9b6d0ced7965cfa471a639f662317865a2682009b4503"
+        },
+        {
+          "id": "clock_to_seconds",
+          "rva": "0x66e7c0",
+          "size": 16,
+          "instructions": 4,
+          "sha256": "4e16157a91db5cff606f9133eb98921879f3bb05ba9b9d79ca15ce839e30223b"
+        },
+        {
+          "id": "scene_rng_at_slot23",
+          "rva": "0xa3ae6a",
+          "size": 66,
+          "instructions": 17,
+          "sha256": "fcaa7d69023239aaa16ded588ed0be740a5a55c0244aec20003775443607b71f"
+        },
+        {
+          "id": "global_rng_getter",
+          "rva": "0x70ef70",
+          "size": 180,
+          "instructions": 30,
+          "sha256": "c715dc3e86ea66e1676fc5abe3a8d8e451f02409ab6b48b8b627715122ce2d3b"
+        },
+        {
+          "id": "move_probe_traversal_flags",
+          "rva": "0x90bd19",
+          "size": 109,
+          "instructions": 20,
+          "sha256": "445278d8e4c30f6cfa97ed665d55dd13837b11cb6d888a845d876585b1499283"
+        },
+        {
+          "id": "move_command_factory",
+          "rva": "0xbe350",
+          "size": 70,
+          "instructions": 18,
+          "sha256": "5889885021b7d797af8f00059c049ef0c140938df30b3b449a20838ef242a43a"
+        },
+        {
+          "id": "mode_command_factory",
+          "rva": "0xbe4a0",
+          "size": 54,
+          "instructions": 14,
+          "sha256": "062b8c05039bf0896a6f745e62704e1af3dc1f410d8bc932f10cae8a55763465"
+        },
+        {
+          "id": "type_command_factory",
+          "rva": "0xbe680",
+          "size": 54,
+          "instructions": 14,
+          "sha256": "bb9e358b163da5b1702a946840ad0e0e3e84ab21fbf61b79393b3db206c9d989"
+        },
+        {
+          "id": "applied_command_factory",
+          "rva": "0xbe7c0",
+          "size": 62,
+          "instructions": 16,
+          "sha256": "db88789e7b6b39b628cef6a96e0e91a9391941e611bb14d2415f6a01c1fc80d9"
+        },
+        {
+          "id": "start_time_token",
+          "rva": "0x5db10",
+          "size": 32,
+          "instructions": 5,
+          "sha256": "a16d650c75aef49be206a95cf6a62e1172d35af9b0951d6b9d90401a2b72e9b4"
+        },
+        {
+          "id": "start_time_default",
+          "rva": "0x85c777",
+          "size": 6,
+          "instructions": 1,
+          "sha256": "0b28a2162aaee3a0528b69461b2d5ec807415b3ff2504dfa766c58bbd65ad0ef"
+        },
+        {
+          "id": "start_time_parser_dispatch",
+          "rva": "0x85f720",
+          "size": 38,
+          "instructions": 10,
+          "sha256": "9463c2bffc0191b5ae440ba9813e35649f9b74c72f5eede606266a0312e7809f"
+        },
+        {
+          "id": "start_time_parser_value",
+          "rva": "0x85f914",
+          "size": 24,
+          "instructions": 4,
+          "sha256": "d160352eb9cfae628df9d1b717fb1418c3b064d46f4577d6a232718661bb45f8"
+        },
+        {
+          "id": "start_time_clamp",
+          "rva": "0x861c60",
+          "size": 258,
+          "instructions": 55,
+          "sha256": "28407921e7a39b4180b774b8ff7de7d6d7b09c9cb38ffb5df1fe085201910c9d"
+        },
+        {
+          "id": "start_time_traversal",
+          "rva": "0x85fd4d",
+          "size": 40,
+          "instructions": 7,
+          "sha256": "cdbc37d5339f138fe9dc523c0511e47b919a94e733ad11fc1373a061fcb76a5a"
+        }
+      ],
+      "references": [
+        {
+          "id": "mode_notify_send",
+          "kind": "call",
+          "site": "0x855c55",
+          "target": "0x151340"
+        },
+        {
+          "id": "type_notify_send",
+          "kind": "call",
+          "site": "0x855ca5",
+          "target": "0x151340"
+        },
+        {
+          "id": "mode_limit_send",
+          "kind": "call",
+          "site": "0x855cf5",
+          "target": "0x151340"
+        },
+        {
+          "id": "stamina_limit_send",
+          "kind": "call",
+          "site": "0x855d45",
+          "target": "0x151340"
+        },
+        {
+          "id": "stamina_call_from_vitality",
+          "kind": "call",
+          "site": "0x93f461",
+          "target": "0x85deb0"
+        },
+        {
+          "id": "periodic_vitality",
+          "kind": "call",
+          "site": "0x93e979",
+          "target": "0x93ec00"
+        },
+        {
+          "id": "hand_test",
+          "kind": "call",
+          "site": "0x93f109",
+          "target": "0x7e0610"
+        },
+        {
+          "id": "set_mode_notify",
+          "kind": "call",
+          "site": "0x85d22a",
+          "target": "0x855c20"
+        },
+        {
+          "id": "set_mode_resolve",
+          "kind": "call",
+          "site": "0x85d232",
+          "target": "0x863010"
+        },
+        {
+          "id": "type_inventory_check",
+          "kind": "call",
+          "site": "0x85d86f",
+          "target": "0x7e0610"
+        },
+        {
+          "id": "set_type_notify",
+          "kind": "call",
+          "site": "0x85da46",
+          "target": "0x855c70"
+        },
+        {
+          "id": "mode_limit_table",
+          "kind": "rip",
+          "site": "0x8635bb",
+          "target": "0x14a8580"
+        },
+        {
+          "id": "wounded_threshold",
+          "kind": "rip",
+          "site": "0x8637c3",
+          "target": "0x1024bd4"
+        },
+        {
+          "id": "applied_send",
+          "kind": "call",
+          "site": "0x862c2c",
+          "target": "0x151340"
+        },
+        {
+          "id": "general_limit_diagnostic",
+          "kind": "rip",
+          "site": "0x85dcf3",
+          "target": "0x11056c8"
+        },
+        {
+          "id": "stamina_limit_diagnostic",
+          "kind": "rip",
+          "site": "0x85df31",
+          "target": "0x11056f0"
+        },
+        {
+          "id": "gate_coefficient",
+          "kind": "rip",
+          "site": "0x920009",
+          "target": "0x102af14"
+        },
+        {
+          "id": "grenade_tag",
+          "kind": "rip",
+          "site": "0x920130",
+          "target": "0x15a32a0"
+        },
+        {
+          "id": "gate_velocity_scale",
+          "kind": "rip",
+          "site": "0x920183",
+          "target": "0x15754c0"
+        },
+        {
+          "id": "velocity_read",
+          "kind": "call",
+          "site": "0x920198",
+          "target": "0x73a2a0"
+        },
+        {
+          "id": "startup_velocity_store",
+          "kind": "rip",
+          "site": "0x2ffd3",
+          "target": "0x15754c0"
+        },
+        {
+          "id": "refresh_velocity_store",
+          "kind": "rip",
+          "site": "0x4cf483",
+          "target": "0x15754c0"
+        },
+        {
+          "id": "startup_gravity_store",
+          "kind": "rip",
+          "site": "0x30027",
+          "target": "0x15754e0"
+        },
+        {
+          "id": "refresh_gravity_store",
+          "kind": "rip",
+          "site": "0x4cf4d7",
+          "target": "0x15754e0"
+        },
+        {
+          "id": "startup_length_operand",
+          "kind": "rip",
+          "site": "0x2ff14",
+          "target": "0x149e750"
+        },
+        {
+          "id": "startup_time_operand",
+          "kind": "rip",
+          "site": "0x2ff04",
+          "target": "0x149e758"
+        },
+        {
+          "id": "spatial_manager",
+          "kind": "rip",
+          "site": "0x890447",
+          "target": "0x15c7d90"
+        },
+        {
+          "id": "launch_source",
+          "kind": "call",
+          "site": "0x8320fc",
+          "target": "0xa74290"
+        },
+        {
+          "id": "launch_arm",
+          "kind": "call",
+          "site": "0x832134",
+          "target": "0x7c5860"
+        },
+        {
+          "id": "launch_activate",
+          "kind": "call",
+          "site": "0x832148",
+          "target": "0x739d30"
+        },
+        {
+          "id": "launch_damping",
+          "kind": "call",
+          "site": "0x83216e",
+          "target": "0x74acf0"
+        },
+        {
+          "id": "launch_velocity",
+          "kind": "call",
+          "site": "0x832180",
+          "target": "0x74abc0"
+        },
+        {
+          "id": "launch_spin",
+          "kind": "call",
+          "site": "0x832192",
+          "target": "0x74abf0"
+        },
+        {
+          "id": "launch_gravity_operand",
+          "kind": "rip",
+          "site": "0x832197",
+          "target": "0x15754e0"
+        },
+        {
+          "id": "launch_acceleration",
+          "kind": "call",
+          "site": "0x8321bd",
+          "target": "0x74ad10"
+        },
+        {
+          "id": "arm_clock",
+          "kind": "call",
+          "site": "0x7c58ad",
+          "target": "0x66e7b0"
+        },
+        {
+          "id": "fuse_clock",
+          "kind": "call",
+          "site": "0x7c6f9d",
+          "target": "0x66e7b0"
+        },
+        {
+          "id": "fuse_ui_conversion",
+          "kind": "call",
+          "site": "0x7c6d79",
+          "target": "0x66e7c0"
+        },
+        {
+          "id": "fuse_ui_label",
+          "kind": "rip",
+          "site": "0x7c6dd3",
+          "target": "0x10fd2e0"
+        },
+        {
+          "id": "move_ctor_call",
+          "kind": "call",
+          "site": "0x90a7d6",
+          "target": "0x90ffb0"
+        },
+        {
+          "id": "move_copy_call",
+          "kind": "call",
+          "site": "0x90a7e9",
+          "target": "0x9102d0"
+        },
+        {
+          "id": "point_child_factory",
+          "kind": "call",
+          "site": "0x90e766",
+          "target": "0x90a7b0"
+        },
+        {
+          "id": "host_sync_bit_source",
+          "kind": "call",
+          "site": "0x90ae05",
+          "target": "0xc2b740"
+        },
+        {
+          "id": "client_bit_source",
+          "kind": "call",
+          "site": "0x90ae0d",
+          "target": "0xc2b7a0"
+        },
+        {
+          "id": "move_command_body_bind",
+          "kind": "call",
+          "site": "0x90b76d",
+          "target": "0xbb530"
+        },
+        {
+          "id": "move_native_probe",
+          "kind": "call",
+          "site": "0x90bd73",
+          "target": "0x8c3d60"
+        },
+        {
+          "id": "move_probe_rng",
+          "kind": "call",
+          "site": "0x8c3eca",
+          "target": "0x563680"
+        },
+        {
+          "id": "terrain_line_rng",
+          "kind": "call",
+          "site": "0x8c21b0",
+          "target": "0x563680"
+        },
+        {
+          "id": "avoid_expiry_rng",
+          "kind": "call",
+          "site": "0x9167be",
+          "target": "0x563680"
+        },
+        {
+          "id": "strafe_begin_command",
+          "kind": "call",
+          "site": "0x9164f4",
+          "target": "0xbe140"
+        },
+        {
+          "id": "strafe_end_send",
+          "kind": "call",
+          "site": "0x9161aa",
+          "target": "0x151340"
+        },
+        {
+          "id": "avoid_planner",
+          "kind": "call",
+          "site": "0x91654b",
+          "target": "0x916570"
+        },
+        {
+          "id": "vanilla_plan_route",
+          "kind": "call",
+          "site": "0x91715b",
+          "target": "0x8de560"
+        },
+        {
+          "id": "vanilla_route_factory",
+          "kind": "call",
+          "site": "0x91721b",
+          "target": "0x90a7b0"
+        },
+        {
+          "id": "save_before_install",
+          "kind": "call",
+          "site": "0x96f307",
+          "target": "0x96f6f0"
+        },
+        {
+          "id": "clear_state_before_install",
+          "kind": "call",
+          "site": "0x96f30f",
+          "target": "0x92aaa0"
+        },
+        {
+          "id": "restore_stand_before_move",
+          "kind": "call",
+          "site": "0x96f413",
+          "target": "0x90abf0"
+        },
+        {
+          "id": "restore_point_factory",
+          "kind": "call",
+          "site": "0x96f50c",
+          "target": "0x90a8c0"
+        },
+        {
+          "id": "restore_final_type",
+          "kind": "call",
+          "site": "0x96f621",
+          "target": "0x90abf0"
+        },
+        {
+          "id": "new_move_wire_dispatch",
+          "kind": "call",
+          "site": "0xbb5f4",
+          "target": "0x151340"
+        },
+        {
+          "id": "rng_registry_selection",
+          "kind": "call",
+          "site": "0x66f2f1",
+          "target": "0x70ef70"
+        },
+        {
+          "id": "rng_context_install",
+          "kind": "call",
+          "site": "0x66f2f9",
+          "target": "0x563810"
+        },
+        {
+          "id": "forced_stamina_setter",
+          "kind": "call",
+          "site": "0xbc883",
+          "target": "0x85deb0"
+        },
+        {
+          "id": "world_tree_query",
+          "kind": "call",
+          "site": "0x78ad57",
+          "target": "0x61cb40"
+        },
+        {
+          "id": "terrain_sample_level_zero",
+          "kind": "call",
+          "site": "0xa614e1",
+          "target": "0xa5d440"
+        },
+        {
+          "id": "phase_zero_role_setup",
+          "kind": "call",
+          "site": "0x90b594",
+          "target": "0x90ad10"
+        },
+        {
+          "id": "explosives_property",
+          "kind": "rip",
+          "site": "0x920280",
+          "target": "0x110da28"
+        },
+        {
+          "id": "grenade_property",
+          "kind": "rip",
+          "site": "0x9202b6",
+          "target": "0x110da40"
+        },
+        {
+          "id": "danger_property",
+          "kind": "rip",
+          "site": "0x9202ec",
+          "target": "0x110da58"
+        },
+        {
+          "id": "slot23_synced_global",
+          "kind": "call",
+          "site": "0xa3ae77",
+          "target": "0x70ef70"
+        },
+        {
+          "id": "slot23_select_stream",
+          "kind": "call",
+          "site": "0xa3ae7f",
+          "target": "0x563810"
+        },
+        {
+          "id": "rng_name_literal",
+          "kind": "rip",
+          "site": "0x70efd5",
+          "target": "0x10f2468"
+        },
+        {
+          "id": "move_command_factory_vtable",
+          "kind": "rip",
+          "site": "0xbe372",
+          "target": "0x1023a70"
+        },
+        {
+          "id": "mode_command_factory_vtable",
+          "kind": "rip",
+          "site": "0xbe4be",
+          "target": "0x1023ba0"
+        },
+        {
+          "id": "type_command_factory_vtable",
+          "kind": "rip",
+          "site": "0xbe69e",
+          "target": "0x1023d68"
+        },
+        {
+          "id": "applied_command_factory_vtable",
+          "kind": "rip",
+          "site": "0xbe7ee",
+          "target": "0x1023f30"
+        },
+        {
+          "id": "start_time_name",
+          "kind": "rip",
+          "site": "0x5db16",
+          "target": "0x1105168"
+        },
+        {
+          "id": "start_time_scale",
+          "kind": "rip",
+          "site": "0x85f91c",
+          "target": "0x149e758"
+        },
+        {
+          "id": "start_time_apply",
+          "kind": "call",
+          "site": "0x85fd67",
+          "target": "0x861c60"
+        }
+      ],
+      "data": [
+        {
+          "id": "length_unit",
+          "rva": "0x149e750",
+          "encoding": "f32",
+          "value": 20.0
+        },
+        {
+          "id": "time_unit",
+          "rva": "0x149e758",
+          "encoding": "f32",
+          "value": 1000.0
+        },
+        {
+          "id": "gravity_setting",
+          "rva": "0x149e760",
+          "encoding": "f32",
+          "value": 9.8100004196167
+        },
+        {
+          "id": "speed_coefficient",
+          "rva": "0x102af14",
+          "encoding": "f32",
+          "value": 3.0
+        },
+        {
+          "id": "wounded_fraction",
+          "rva": "0x1024bd4",
+          "encoding": "f32",
+          "value": 0.30000001192092896
+        },
+        {
+          "id": "fast_mode_matrix",
+          "rva": "0x14a8580",
+          "encoding": "i32[32]",
+          "value": [
+            0,
+            0,
+            0,
+            3,
+            0,
+            0,
+            6,
+            7,
+            0,
+            1,
+            1,
+            3,
+            4,
+            5,
+            6,
+            7,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            6,
+            7
+          ]
+        },
+        {
+          "id": "general_limit_name",
+          "rva": "0x11056c8",
+          "encoding": "cstring",
+          "value": "eChassisFoot::SetMovementModeLimit: mm "
+        },
+        {
+          "id": "stamina_limit_name",
+          "rva": "0x11056f0",
+          "encoding": "cstring",
+          "value": "eChassisFoot::SetStaminaMovementModeLimit: mm "
+        },
+        {
+          "id": "movement_limit_token",
+          "rva": "0x1104720",
+          "encoding": "cstring",
+          "value": "MovementModeLimit"
+        },
+        {
+          "id": "sensible_token",
+          "rva": "0x10f3dc8",
+          "encoding": "cstring",
+          "value": "Sensible"
+        },
+        {
+          "id": "body_token",
+          "rva": "0x10f3dac",
+          "encoding": "cstring",
+          "value": "Body"
+        },
+        {
+          "id": "fuse_ui",
+          "rva": "0x10fd2e0",
+          "encoding": "cstring",
+          "value": "component/grenade_timer"
+        },
+        {
+          "id": "carry_tag_one",
+          "rva": "0x10fea30",
+          "encoding": "cstring",
+          "value": "itemin1hand"
+        },
+        {
+          "id": "carry_tag_two",
+          "rva": "0x10fea40",
+          "encoding": "cstring",
+          "value": "itemin2hands"
+        },
+        {
+          "id": "carry_tag_human",
+          "rva": "0x1041598",
+          "encoding": "cstring",
+          "value": "human"
+        },
+        {
+          "id": "quick_up_tag",
+          "rva": "0x1101d30",
+          "encoding": "cstring",
+          "value": "quick-up"
+        },
+        {
+          "id": "up_tag",
+          "rva": "0x10f5a64",
+          "encoding": "cstring",
+          "value": "up"
+        },
+        {
+          "id": "explosives_property",
+          "rva": "0x110da28",
+          "encoding": "cstring",
+          "value": "bomb/detect_explosives"
+        },
+        {
+          "id": "grenade_property",
+          "rva": "0x110da40",
+          "encoding": "cstring",
+          "value": "bomb/detect_grenades"
+        },
+        {
+          "id": "danger_property",
+          "rva": "0x110da58",
+          "encoding": "cstring",
+          "value": "bomb/danger_zone"
+        },
+        {
+          "id": "default_detect_explosives",
+          "rva": "0x10802e8",
+          "encoding": "f32",
+          "value": 7.0
+        },
+        {
+          "id": "default_detect_grenades",
+          "rva": "0x1033164",
+          "encoding": "f32",
+          "value": 5.0
+        },
+        {
+          "id": "default_danger_zone",
+          "rva": "0x1033160",
+          "encoding": "f32",
+          "value": 4.0
+        },
+        {
+          "id": "synced_rng_name",
+          "rva": "0x10f2468",
+          "encoding": "cstring",
+          "value": "synced_global"
+        },
+        {
+          "id": "start_time_property",
+          "rva": "0x1105168",
+          "encoding": "cstring",
+          "value": "StartTime"
+        },
+        {
+          "id": "start_time_parser_case",
+          "rva": "0x85f9d8",
+          "encoding": "u32",
+          "value": 8780052
+        },
+        {
+          "id": "runtime_velocity_unit",
+          "rva": "0x15754c0",
+          "encoding": "zerofill_f32",
+          "value": 0
+        },
+        {
+          "id": "runtime_world_gravity",
+          "rva": "0x15754e0",
+          "encoding": "zerofill_f32",
+          "value": 0
+        }
+      ],
+      "vtables": [
+        {
+          "type": ".?AVeActor@@",
+          "rva": "0x1100e38",
+          "slots": {
+            "23": "0x804ac0"
+          }
+        },
+        {
+          "type": ".?AVeChassisFoot@Actor@@",
+          "rva": "0x11051b0",
+          "slots": {
+            "40": "0x85c830",
+            "41": "0x863bd0",
+            "42": "0x85e150",
+            "45": "0x85d1e0",
+            "46": "0x85d460",
+            "47": "0x85dc80",
+            "66": "0x8607c0",
+            "67": "0x85fb90",
+            "75": "0x863d80"
+          }
+        },
+        {
+          "type": ".?AUeAction_MovementLimit@Interaction@@",
+          "rva": "0x10f53a8",
+          "slots": {
+            "9": "0x755ae0"
+          }
+        },
+        {
+          "type": ".?AVeGrenadeSimulator@@",
+          "rva": "0x10f4640",
+          "slots": {
+            "0": "0x743360",
+            "3": "0x7442d0",
+            "4": "0x7442f0",
+            "7": "0x743fc0"
+          }
+        },
+        {
+          "type": ".?AVeStuffExtender@Entity@@",
+          "rva": "0x10fd200",
+          "slots": {
+            "6": "0x7c7630",
+            "7": "0x7c6ab0"
+          }
+        },
+        {
+          "type": ".?AUeMove@Order@@",
+          "rva": "0x110c810",
+          "slots": {
+            "19": "0x90b0c0",
+            "20": "0x90c980"
+          }
+        },
+        {
+          "type": ".?AUeMoveTask@Order@@",
+          "rva": "0x1023970",
+          "slots": {
+            "19": "0x90e3f0"
+          }
+        },
+        {
+          "type": ".?AUeMovementChange@Order@@",
+          "rva": "0x110d010",
+          "slots": {
+            "19": "0x90f650"
+          }
+        },
+        {
+          "type": ".?AUeAvoidGrenade@Order@@",
+          "rva": "0x110d278",
+          "slots": {
+            "19": "0x916100"
+          }
+        },
+        {
+          "type": ".?AVeHumanBrain@Actor@@",
+          "rva": "0x110ff88",
+          "slots": {
+            "13": "0x91db30",
+            "23": "0x95a540",
+            "35": "0x95a680"
+          }
+        },
+        {
+          "type": ".?AVeHumanBrainClient@Actor@@",
+          "rva": "0x1020020",
+          "slots": {
+            "23": "0xa8ab0",
+            "35": "0x95a680"
+          }
+        },
+        {
+          "type": ".?AUeSetMovementModeCommand@@",
+          "rva": "0x1023ba0",
+          "slots": {
+            "1": "0x151340",
+            "2": "0xbc5c0",
+            "3": "0xbc610"
+          }
+        },
+        {
+          "type": ".?AUeSetMovementTypeCommand@@",
+          "rva": "0x1023d68",
+          "slots": {
+            "1": "0x151340",
+            "2": "0xbc8a0",
+            "3": "0xbc8f0"
+          }
+        },
+        {
+          "type": ".?AUeSetStrafeDisabledCommand@@",
+          "rva": "0x1023e98",
+          "slots": {
+            "1": "0x151340",
+            "2": "0xbca70",
+            "3": "0xbcab0"
+          }
+        },
+        {
+          "type": ".?AUeChassisFootSetModeCommand@@",
+          "rva": "0x1023f30",
+          "slots": {
+            "1": "0x151340",
+            "2": "0xbcb60",
+            "3": "0xbcbe0"
+          }
+        },
+        {
+          "type": ".?AUeOrderMoveCommand@@",
+          "rva": "0x1023a70",
+          "slots": {
+            "1": "0xbb5e0",
+            "2": "0xbb610",
+            "3": "0xbbb30"
+          }
+        }
+      ],
+      "resource_members": [
+        {
+          "archive": "properties.pak",
+          "member": "properties/human.ext",
+          "sha256": "84ba324b2bc1fbe988711918556a645d914e63560d5f82cadccaeb60fde23012"
+        },
+        {
+          "archive": "properties.pak",
+          "member": "properties/stuff_grenade.ext",
+          "sha256": "ab51c44771b242c412cdb5f54ff623592584d79fd0ab8541c255379454c9fe00"
+        },
+        {
+          "archive": "properties.pak",
+          "member": "properties/stuff_grenade_mine.ext",
+          "sha256": "b054c7d5ea8749d4a65eab9a2e2163d9afa60cc710dae94041198e1d42e3eec3"
+        },
+        {
+          "archive": "entity/inventory.pak",
+          "member": "inventory/-weapon/-grenades/anti_personnel/f1/f1.def",
+          "sha256": "4307831af5367dc2f843b5b7e64fb058670b4929e821ef1949742d54dc5943d2"
+        }
+      ]
+    }
+  },
+  "baseline_profile_audit": {
+    "profile_sha256": "7fa42502ffa71f92fc676b2831acc4b40d4467f076f9c381f25880965c0d74d1",
+    "target": "game only",
+    "game_mapping_counts": {
+      "RELOCATED": 182,
+      "CONTRACT_CHANGED": 16,
+      "NOT_CHECKED": 15,
+      "UNRESOLVED": 13,
+      "AMBIGUOUS": 8
+    },
+    "required_checks_passed": false,
+    "exit_code": 1
+  },
+  "provenance": {
+    "baseline": "Original file bytes from the read-only GoH_25492057 Ghidra import, matched against archived build SHA-256",
+    "updated": "Installed x64 game, Steam app 400750 appmanifest buildid 26734796",
+    "code": "LLVM and Capstone agreed on instruction starts in the recorded spans",
+    "resources": "Read-only stock definition samples from the updated installation",
+    "ghidra": {
+      "project": "GoH_26734796",
+      "import_saved": true,
+      "whole_image_autoanalysis": "900-second timeout",
+      "focused_export_entries": [
+        "0x85e150",
+        "0x93ec00",
+        "0x91ffa0",
+        "0x7446c0",
+        "0x90a7b0",
+        "0x90f650",
+        "0x916100",
+        "0x96f6f0"
+      ],
+      "focused_decompilations_completed": 8
+    }
+  }
+}

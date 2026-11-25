@@ -1,0 +1,3339 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "title": "Explicit Attack, soft-cover line of fire and detour decisions",
+  "runtime_allowed": false,
+  "runtime_verified": false,
+  "scope": "Static game-binary research. A structural pass is insufficient to approve a hook, predict a live shot, or establish multiplayer agreement.",
+  "export_suffix": "-lof-detour/orders",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "image_base": "0x140000000"
+    }
+  },
+  "contracts": {
+    "authority": {
+      "catalog": [
+        "C-BATTLE",
+        "C-OUTPUTS"
+      ],
+      "admit": "Serial simulation actor/order invocation, exact concrete human or vehicle host brain, !remote, emission role, explicit Attack provenance, same owner and target. Honor control, hold and inhibition. Reacquire objects per trial.",
+      "worker": "0xa7a80",
+      "remote": "0xc2b7a0",
+      "emission": "0xc2b740",
+      "actor_dispatch": "0x804ac0",
+      "order_phase_dispatch": "0x919f60"
+    },
+    "attack": {
+      "parent": "0x905290",
+      "trial_call": "0x90368b",
+      "verdict_compare": "0x903690",
+      "blocked_call": "0x903698",
+      "target_offset": "0x40",
+      "child_offset": "0x30",
+      "results": {
+        "running": 0,
+        "success": 1,
+        "failure": 2
+      },
+      "status": "Scoped insertion point identified. A clear result continues Attack scheduling and readiness."
+    },
+    "scene_hit": {
+      "stride": "0x48",
+      "layout": {
+        "+0": "u32 kind",
+        "+4": "f32 cumulative distance in trajectory output",
+        "+8": "vec3f world hit",
+        "+0x18": "entity pointer",
+        "+0x20": "volume instance pointer",
+        "+0x28": "vec3f normal",
+        "+0x34": "vec3f ray direction",
+        "+0x40": "i32 face"
+      },
+      "unassigned": [
+        "+0x14",
+        "+0x44"
+      ],
+      "volume_contacts": "kind 4 writer 0xa41360. Terrain terminal face -1."
+    },
+    "shape_contact": {
+      "stride": "0x28",
+      "layout": {
+        "+0": "volume pointer",
+        "+8": "vec3f normal",
+        "+0x14": "vec3f point",
+        "+0x20": "f32 segment distance",
+        "+0x24": "u8 face",
+        "+0x25": "u8 flags"
+      }
+    },
+    "armor_hit": {
+      "layout": {
+        "+0": "vec3f impact",
+        "+0xc": "vec3f normal",
+        "+0x18": "vec3f direction",
+        "+0x24": "i32 face",
+        "+0x28": "volume pointer",
+        "+0x30": "entry bit"
+      },
+      "producer": "0x84b890",
+      "consumer": "0x7fc310"
+    },
+    "line_of_fire": {
+      "try": "0x835790",
+      "evaluator": "0x836820",
+      "muzzle_probe": "0x834ea0",
+      "may_break_window": "R9B != 0",
+      "preview": "0x82d4c0",
+      "step": "0x84f5a0",
+      "normal_flags": "0x86803",
+      "extended_flags": "0x486803",
+      "stock_verdicts": {
+        "2": "empty hits without target coverage",
+        "3": "target entity or path proximity, subject to allied scan",
+        "4": "eligible allied non-target",
+        "5": "trajectory blocked or earlier muzzle probe veto"
+      },
+      "decision": "Only the trajectory-derived 5 is eligible. Preserve the stock first verdict and source. Replay the sampled launch inputs in a separate collector. Require complete target and friendly/backstop coverage, independently reject hard/unknown contacts and HE proximity. Native all-hits excludes filtered objects and ends on terminal terrain/water."
+    },
+    "ballistics": {
+      "weaponry": "[actor+0xdd8]",
+      "selected_weapon": "0x81b080",
+      "ammo": "0x820b50([weapon+0xb0])",
+      "bullet_cast": "0x8514e0",
+      "profile": "0x81ec40(weapon)",
+      "caliber": "f32 [weapon.definition+0x1628]",
+      "damage_at_distance": "0x841650(RCX=profile, EDX=f32 bits) -> XMM0",
+      "live_distance": "f32 [projectile+0xfc] + [shapeContact+0x20]",
+      "remaining_fraction": "f32 [projectile+0x10c]",
+      "typed_energy": "0xa8be80(damage, 6)",
+      "armor_lookup": [
+        "0x72d200",
+        "0x7fddf0",
+        "0x7fc5b0",
+        "0x7fca60",
+        "0x7fcde0",
+        "0x7fc3a0"
+      ],
+      "material": "[volume.definition+0x408] -> +0xe0 SteelEquivalent",
+      "caliber_threshold": "f32 [selected armor setting+0x10]",
+      "detonation_thickness": "eStuffBullet token 0x2e -> ammo+0x12b8, typed kind 0. Live 0x84c143..0x84c175 compares consumed contact energy and this threshold in kind 6.",
+      "blast_bound": "0x7f5870 returns [ammo+0x498] if positive. Inspect every descriptor in [ammo+0x480,ammo+0x488) and include each recognized outer radius. Unknown effects keep veto."
+    },
+    "reposition": {
+      "catalog": [
+        "I-SUBJECT-POSITION",
+        "I-THREATENING",
+        "I-ATTACKING",
+        "O-MOVE-TO-POSITION",
+        "O-MOVE-TO-COVER"
+      ],
+      "infantry_call": "0x9030a4",
+      "abi": "RCX=caller context, RDX=initialized caller result, XMM2=world radius, AL=success",
+      "result": {
+        "+0": "u32 1=pose, 2=point, 3=cover",
+        "+4": "movement/pose selection",
+        "+8": "vec2f XY",
+        "+0x10": "0x88-byte native cover descriptor"
+      },
+      "explicit_vehicle": "0x903698; preserve parent and retry. Stock nonhuman obstruction uses eLookAt only in aimer state 7.",
+      "autonomous_vehicle": "0x9af4d3 consumes due brain+0x3d8. Root Move installation replaces the current order.",
+      "private_candidate_design": "Use copied actor, target and geometry state and private tie-breaker. No repeated pose solves, shooter sampling, vehicle route probes or native circle sampling. Rank validated lateral/corner points against committed hostile observations. Defer final aim and route admission to the ordinary order."
+    },
+    "replication": {
+      "move": "eMoveTask point factory 0x90a8c0 -> path Move 0x90a7b0 -> eMove execution +0x3c gate -> ID 0x09",
+      "cover": "0x8e2770 -> cover entry 0x8ae410 or leave 0x8ae590 -> ID 0x22",
+      "fire": "0x905240 -> 0x8eb9c0 -> 0x8ecbf0 -> native target commit ID 0x0c. SyncedProjectiles has separate conditional ID 0x0e.",
+      "sender": "0x151340",
+      "ownership": "0x91a180 replaces the parent child. Infantry appends move/cover and wait-ready using 0x919270. Re-evaluate after child completion."
+    },
+    "runtime_open": [
+      "host/client/-no_server admission",
+      "actual callback ABI and serial phase",
+      "coverage and residual energy for the active shot",
+      "native RNG accounting vs additional speculative draws",
+      "replicated movement, cover, shot, impact and checksum agreement with a vanilla client"
+    ]
+  },
+  "baseline_relocations": [
+    {
+      "baseline_rva": "0x820a40",
+      "game_rva": "0x835790",
+      "role": "TargetAccessor::Try"
+    },
+    {
+      "baseline_rva": "0x821ad0",
+      "game_rva": "0x836820",
+      "role": "Collision evaluator"
+    },
+    {
+      "baseline_rva": "0x818770",
+      "game_rva": "0x82d4c0",
+      "role": "Bullet shooter geometry slot 3"
+    },
+    {
+      "baseline_rva": "0x83a850",
+      "game_rva": "0x84f5a0",
+      "role": "Trajectory segment"
+    },
+    {
+      "baseline_rva": "0x820030",
+      "game_rva": "0x834d80",
+      "role": "Muzzle obstruction wrapper"
+    },
+    {
+      "baseline_rva": "0x820150",
+      "game_rva": "0x834ea0",
+      "role": "Segment/window probe"
+    },
+    {
+      "baseline_rva": "0x81eee0",
+      "game_rva": "0x833c30",
+      "role": "Aimer feasibility wrapper"
+    },
+    {
+      "baseline_rva": "0x7e9040",
+      "game_rva": "0x7fddf0",
+      "role": "Armor volume setting selector"
+    },
+    {
+      "baseline_rva": "0x7e7800",
+      "game_rva": "0x7fc5b0",
+      "role": "Base face or shape thickness"
+    },
+    {
+      "baseline_rva": "0x7e7560",
+      "game_rva": "0x7fc310",
+      "role": "Armor query constructor"
+    },
+    {
+      "baseline_rva": "0x7e8030",
+      "game_rva": "0x7fcde0",
+      "role": "Armor energy threshold"
+    },
+    {
+      "baseline_rva": "0x7e72e0",
+      "game_rva": "0x7fc090",
+      "role": "Angle-dependent penetration parameters"
+    },
+    {
+      "baseline_rva": "0x82c900",
+      "game_rva": "0x841650",
+      "role": "Distance-dependent damage"
+    },
+    {
+      "baseline_rva": "0x7e0ac0",
+      "game_rva": "0x7f5870",
+      "role": "Possible damage radius"
+    },
+    {
+      "baseline_rva": "0x80be00",
+      "game_rva": "0x820b50",
+      "role": "Loaded ammunition definition"
+    },
+    {
+      "baseline_rva": "0x8edfd0",
+      "game_rva": "0x905290",
+      "role": "Attack slot 19"
+    },
+    {
+      "baseline_rva": "0x8ec030",
+      "game_rva": "0x9032f0",
+      "role": "Attack firing trial consumer"
+    },
+    {
+      "baseline_rva": "0x8ebc10",
+      "game_rva": "0x902ed0",
+      "role": "Attack obstruction handler"
+    },
+    {
+      "baseline_rva": "0x8d68e0",
+      "game_rva": "0x8ebd20",
+      "role": "LookAt factory"
+    },
+    {
+      "baseline_rva": "0x93ed30",
+      "game_rva": "0x9575d0",
+      "role": "Infantry detour"
+    },
+    {
+      "baseline_rva": "0x990870",
+      "game_rva": "0x9aeda0",
+      "role": "Vehicle root"
+    },
+    {
+      "baseline_rva": "0x989a80",
+      "game_rva": "0x9a7fa0",
+      "role": "Vehicle fire selection and deadline"
+    },
+    {
+      "baseline_rva": "0x940130",
+      "game_rva": "0x958a80",
+      "role": "Infantry hypothetical trial"
+    },
+    {
+      "baseline_rva": "0x940780",
+      "game_rva": "0x9590f0",
+      "role": "Route shortening"
+    },
+    {
+      "baseline_rva": "0x93ebc0",
+      "game_rva": "0x957460",
+      "role": "Detour context"
+    },
+    {
+      "baseline_rva": "0x8ed670",
+      "game_rva": "0x904930",
+      "role": "Attack selection"
+    },
+    {
+      "baseline_rva": "0x8d77b0",
+      "game_rva": "0x8ecbf0",
+      "role": "WeaponFire slot 19"
+    },
+    {
+      "baseline_rva": "0x898ad0",
+      "game_rva": "0x8ae410",
+      "role": "Enter cover"
+    },
+    {
+      "baseline_rva": "0x898c50",
+      "game_rva": "0x8ae590",
+      "role": "Leave cover"
+    },
+    {
+      "baseline_rva": "0x8f3a50",
+      "game_rva": "0x90ad10",
+      "role": "Move synchronization"
+    },
+    {
+      "baseline_rva": "0x836b40",
+      "game_rva": "0x84b890",
+      "role": "Live bullet contact"
+    },
+    {
+      "baseline_rva": "0x8184d0",
+      "game_rva": "0x82d220",
+      "role": "Bullet shooter slot 11"
+    },
+    {
+      "baseline_rva": "0xc0b630",
+      "game_rva": "0xc2b7a0",
+      "role": "Remote role"
+    },
+    {
+      "baseline_rva": "0xc0b5d0",
+      "game_rva": "0xc2b740",
+      "role": "Emission role"
+    },
+    {
+      "baseline_rva": "0xa6740",
+      "game_rva": "0xa7a80",
+      "role": "Quant worker predicate"
+    },
+    {
+      "baseline_rva": "0x14c010",
+      "game_rva": "0x151340",
+      "role": "Native packet sender"
+    }
+  ],
+  "methods": [
+    {
+      "id": "explicit attack lifecycle",
+      "entry_rvas": {
+        "game": "0x905290"
+      }
+    },
+    {
+      "id": "attack selection",
+      "entry_rvas": {
+        "game": "0x904930"
+      }
+    },
+    {
+      "id": "attack LOF consumer",
+      "entry_rvas": {
+        "game": "0x9032f0"
+      }
+    },
+    {
+      "id": "attack install fire",
+      "entry_rvas": {
+        "game": "0x905240"
+      }
+    },
+    {
+      "id": "attack obstruction",
+      "entry_rvas": {
+        "game": "0x902ed0"
+      }
+    },
+    {
+      "id": "orientation order factory",
+      "entry_rvas": {
+        "game": "0x8ebd20"
+      }
+    },
+    {
+      "id": "infantry detour input",
+      "entry_rvas": {
+        "game": "0x957460"
+      }
+    },
+    {
+      "id": "infantry detour implementation",
+      "entry_rvas": {
+        "game": "0x9575d0"
+      }
+    },
+    {
+      "id": "infantry hypothetical trial",
+      "entry_rvas": {
+        "game": "0x958a80"
+      }
+    },
+    {
+      "id": "route shortening trials",
+      "entry_rvas": {
+        "game": "0x9590f0"
+      }
+    },
+    {
+      "id": "vehicle root scheduling",
+      "entry_rvas": {
+        "game": "0x9aeda0"
+      }
+    },
+    {
+      "id": "selected WeaponFire lifecycle",
+      "entry_rvas": {
+        "game": "0x8ecbf0"
+      }
+    },
+    {
+      "id": "enter cover emission",
+      "entry_rvas": {
+        "game": "0x8ae410"
+      }
+    },
+    {
+      "id": "leave cover emission",
+      "entry_rvas": {
+        "game": "0x8ae590"
+      }
+    },
+    {
+      "id": "Move update and synchronization",
+      "entry_rvas": {
+        "game": "0x90ad10"
+      }
+    },
+    {
+      "id": "parent child ownership",
+      "entry_rvas": {
+        "game": "0x91a180"
+      }
+    },
+    {
+      "id": "wait ready factory",
+      "entry_rvas": {
+        "game": "0x8eb8b0"
+      }
+    },
+    {
+      "id": "cover factory",
+      "entry_rvas": {
+        "game": "0x8e2770"
+      }
+    },
+    {
+      "id": "point Move factory",
+      "entry_rvas": {
+        "game": "0x90a8c0"
+      }
+    },
+    {
+      "id": "path Move factory",
+      "entry_rvas": {
+        "game": "0x90a7b0"
+      }
+    },
+    {
+      "id": "active weapon selection",
+      "entry_rvas": {
+        "game": "0x81b080"
+      }
+    },
+    {
+      "id": "blastwave inner and outer area parser",
+      "entry_rvas": {
+        "game": "0xa8d2d0"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "orders_8ae410",
+      "binary": "game",
+      "function_rva": "0x8ae410",
+      "instruction_rvas": [
+        "0x8ae528"
+      ]
+    },
+    {
+      "id": "orders_8ae590",
+      "binary": "game",
+      "function_rva": "0x8ae590",
+      "instruction_rvas": [
+        "0x8ae648"
+      ]
+    },
+    {
+      "id": "orders_8ecbf0",
+      "binary": "game",
+      "function_rva": "0x8ecbf0",
+      "instruction_rvas": [
+        "0x8ecc7d",
+        "0x8ecded",
+        "0x8ecdfd",
+        "0x8ece03",
+        "0x8ece0e",
+        "0x8ece57"
+      ]
+    },
+    {
+      "id": "orders_902ed0",
+      "binary": "game",
+      "function_rva": "0x902ed0",
+      "instruction_rvas": [
+        "0x902f21",
+        "0x902f27",
+        "0x903086",
+        "0x903093",
+        "0x903098",
+        "0x9030a4",
+        "0x9030ba",
+        "0x9030c0",
+        "0x9030c7",
+        "0x903118",
+        "0x903122",
+        "0x903128",
+        "0x903135",
+        "0x903146",
+        "0x903157",
+        "0x903168",
+        "0x903198",
+        "0x9031b1",
+        "0x903226",
+        "0x9032af",
+        "0x9032bb",
+        "0x9032c6"
+      ]
+    },
+    {
+      "id": "orders_9032f0",
+      "binary": "game",
+      "function_rva": "0x9032f0",
+      "instruction_rvas": [
+        "0x90368b",
+        "0x903690",
+        "0x903698",
+        "0x9036f4"
+      ]
+    },
+    {
+      "id": "orders_904930",
+      "binary": "game",
+      "function_rva": "0x904930",
+      "instruction_rvas": [
+        "0x905155"
+      ]
+    },
+    {
+      "id": "orders_905240",
+      "binary": "game",
+      "function_rva": "0x905240",
+      "instruction_rvas": [
+        "0x90526a",
+        "0x90527a"
+      ]
+    },
+    {
+      "id": "orders_905290",
+      "binary": "game",
+      "function_rva": "0x905290",
+      "instruction_rvas": [
+        "0x90558e"
+      ]
+    },
+    {
+      "id": "orders_90ad10",
+      "binary": "game",
+      "function_rva": "0x90ad10",
+      "instruction_rvas": [
+        "0x90ae05",
+        "0x90ae0a",
+        "0x90ae0d",
+        "0x90ae12"
+      ]
+    },
+    {
+      "id": "orders_91a180",
+      "binary": "game",
+      "function_rva": "0x91a180",
+      "instruction_rvas": [
+        "0x91a19c",
+        "0x91a1b0",
+        "0x91a1b9"
+      ]
+    },
+    {
+      "id": "orders_9575d0",
+      "binary": "game",
+      "function_rva": "0x9575d0",
+      "instruction_rvas": [
+        "0x957814",
+        "0x957945",
+        "0x95794c",
+        "0x957c88",
+        "0x9582de",
+        "0x9585aa",
+        "0x9585c4",
+        "0x958637",
+        "0x95864a",
+        "0x9587d2",
+        "0x95884f",
+        "0x9588c3"
+      ]
+    },
+    {
+      "id": "orders_9aeda0",
+      "binary": "game",
+      "function_rva": "0x9aeda0",
+      "instruction_rvas": [
+        "0x9af4cc",
+        "0x9af4d3",
+        "0x9af650",
+        "0x9af69d",
+        "0x9af757",
+        "0x9af7b9",
+        "0x9af96e",
+        "0x9afa9e",
+        "0x9afab3"
+      ]
+    },
+    {
+      "id": "orders_a8d2d0",
+      "binary": "game",
+      "function_rva": "0xa8d2d0",
+      "instruction_rvas": [
+        "0xa8d4c5",
+        "0xa8d4dd"
+      ]
+    }
+  ],
+  "fields": [],
+  "inline_regions": [],
+  "enums": [],
+  "float_constants": [
+    {
+      "id": "stationary_attack_timeout",
+      "binary": "game",
+      "rva": "0x1024cb4",
+      "value": 10
+    },
+    {
+      "id": "detour_radius_cap",
+      "binary": "game",
+      "rva": "0x1042378",
+      "value": 12
+    },
+    {
+      "id": "trajectory_target_tolerance_factor",
+      "binary": "game",
+      "rva": "0x1023908",
+      "value": 0.5
+    }
+  ],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHumanBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x110ff88",
+      "methods": {
+        "24": "0x91df50",
+        "35": "0x95a680"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHumanBrainClient@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x1020020",
+      "methods": {
+        "24": "0x91df50"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeVehicleBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x101fd68",
+      "methods": {
+        "24": "0x9a76c0",
+        "35": "0x9a74e0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeVehicleBrainClient@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x1020178",
+      "methods": {
+        "24": "0x9a76c0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAttack@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110c018",
+      "methods": {
+        "19": "0x905290",
+        "20": "0x905240"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeStuffBullet@@",
+      "subobject_offset": 0,
+      "rva": "0x1104488",
+      "methods": {
+        "7": "0x851730"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeWeaponFire@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110a6e0",
+      "methods": {
+        "19": "0x8ecbf0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeBulletShooter@Weapon@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x1102c10",
+      "methods": {
+        "3": "0x82d4c0",
+        "11": "0x82d220"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeMove@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110c810",
+      "methods": {
+        "19": "0x90b0c0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeMoveTask@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x1023970",
+      "methods": {
+        "19": "0x90e3f0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeMoveToCover@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x1109c60",
+      "methods": {
+        "19": "0x8e3ab0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeEffectDescBlastwave@Damage@@",
+      "subobject_offset": 0,
+      "rva": "0x1038380",
+      "methods": {
+        "5": "0x15f240",
+        "8": "0xa8d2d0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeOrderMoveCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x1023a70",
+      "methods": {
+        "1": "0xbb5e0",
+        "3": "0xbbb30"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeCoverSectorCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x1022f10",
+      "methods": {
+        "1": "0x151340",
+        "3": "0xaa7b0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeWeaponTargetCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x1023138",
+      "methods": {
+        "1": "0x151340",
+        "3": "0xab640"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeWeaponBulletShootingCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x1023248",
+      "methods": {
+        "1": "0x151340",
+        "3": "0xabe90"
+      }
+    }
+  ],
+  "property_bindings": [
+    {
+      "name": "PossibleDamageRadius",
+      "property_id": "0xb4",
+      "registration_rva": "0x56ee0",
+      "name_rva": "0x1100560"
+    },
+    {
+      "name": "Calibre",
+      "property_id": "0xbb",
+      "registration_rva": "0x5c180",
+      "name_rva": "0x1100bb0"
+    },
+    {
+      "name": "SteelEquivalent",
+      "property_id": "0x1d",
+      "registration_rva": "0x57f70",
+      "name_rva": "0x1100d88"
+    },
+    {
+      "name": "SyncedProjectiles",
+      "property_id": "0xfd",
+      "registration_rva": "0x5bd70",
+      "name_rva": "0x1103b50"
+    },
+    {
+      "name": "DetonationThickness",
+      "property_id": "0x2e",
+      "registration_rva": "0x5ccf0",
+      "name_rva": "0x1104448"
+    }
+  ],
+  "byte_sequences": [
+    {
+      "id": "serial_order_tick_804bda",
+      "binary": "game",
+      "rva": "0x804bda",
+      "hex": "4883b86002000000",
+      "instruction": "CMP qword ptr [RAX + 0x260],0x0",
+      "function_rva": "0x804ac0",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "serial_order_tick_804be2",
+      "binary": "game",
+      "rva": "0x804be2",
+      "hex": "0f8486000000",
+      "instruction": "JZ 0x140804c6e",
+      "function_rva": "0x804ac0",
+      "export_pass": "boundaries",
+      "target_rva": "0x804c6e"
+    },
+    {
+      "id": "serial_order_tick_804c0b",
+      "binary": "game",
+      "rva": "0x804c0b",
+      "hex": "ff5068",
+      "instruction": "CALL qword ptr [RAX + 0x68]",
+      "function_rva": "0x804ac0",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "serial_order_tick_804c57",
+      "binary": "game",
+      "rva": "0x804c57",
+      "hex": "e8a4711100",
+      "instruction": "CALL 0x14091be00",
+      "function_rva": "0x804ac0",
+      "export_pass": "boundaries",
+      "target_rva": "0x91be00"
+    },
+    {
+      "id": "serial_order_tick_804c96",
+      "binary": "game",
+      "rva": "0x804c96",
+      "hex": "ff90c0000000",
+      "instruction": "CALL qword ptr [RAX + 0xc0]",
+      "function_rva": "0x804ac0",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "serial_order_tick_919fa9",
+      "binary": "game",
+      "rva": "0x919fa9",
+      "hex": "4c8b8098000000",
+      "instruction": "MOV R8,qword ptr [RAX + 0x98]",
+      "function_rva": "0x919f60",
+      "export_pass": "firing"
+    },
+    {
+      "id": "serial_order_tick_9a78a4",
+      "binary": "game",
+      "rva": "0x9a78a4",
+      "hex": "e8a766f7ff",
+      "instruction": "CALL 0x14091df50",
+      "function_rva": "0x9a76c0",
+      "export_pass": "phase",
+      "target_rva": "0x91df50"
+    },
+    {
+      "id": "serial_order_tick_91df62",
+      "binary": "game",
+      "rva": "0x91df62",
+      "hex": "488b89f0000000",
+      "instruction": "MOV RCX,qword ptr [RCX + 0xf0]",
+      "function_rva": "0x91df50",
+      "export_pass": "queries"
+    },
+    {
+      "id": "serial_order_tick_91dfda",
+      "binary": "game",
+      "rva": "0x91dfda",
+      "hex": "ff5018",
+      "instruction": "CALL qword ptr [RAX + 0x18]",
+      "function_rva": "0x91df50",
+      "export_pass": "queries"
+    },
+    {
+      "id": "serial_order_tick_91c654",
+      "binary": "game",
+      "rva": "0x91c654",
+      "hex": "f6c23f",
+      "instruction": "TEST DL,0x3f",
+      "function_rva": "0x91c350",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "attack_trial_90558e",
+      "binary": "game",
+      "rva": "0x90558e",
+      "hex": "e89df3ffff",
+      "instruction": "CALL 0x140904930",
+      "function_rva": "0x905290",
+      "export_pass": "orders",
+      "target_rva": "0x904930"
+    },
+    {
+      "id": "attack_trial_905155",
+      "binary": "game",
+      "rva": "0x905155",
+      "hex": "e896e1ffff",
+      "instruction": "CALL 0x1409032f0",
+      "function_rva": "0x904930",
+      "export_pass": "orders",
+      "target_rva": "0x9032f0"
+    },
+    {
+      "id": "attack_trial_90368b",
+      "binary": "game",
+      "rva": "0x90368b",
+      "hex": "e8a005f3ff",
+      "instruction": "CALL 0x140833c30",
+      "function_rva": "0x9032f0",
+      "export_pass": "orders",
+      "target_rva": "0x833c30"
+    },
+    {
+      "id": "attack_trial_903690",
+      "binary": "game",
+      "rva": "0x903690",
+      "hex": "83f803",
+      "instruction": "CMP EAX,0x3",
+      "function_rva": "0x9032f0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "attack_trial_903698",
+      "binary": "game",
+      "rva": "0x903698",
+      "hex": "e833f8ffff",
+      "instruction": "CALL 0x140902ed0",
+      "function_rva": "0x9032f0",
+      "export_pass": "orders",
+      "target_rva": "0x902ed0"
+    },
+    {
+      "id": "attack_trial_9036f4",
+      "binary": "game",
+      "rva": "0x9036f4",
+      "hex": "ff90a0000000",
+      "instruction": "CALL qword ptr [RAX + 0xa0]",
+      "function_rva": "0x9032f0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "attack_trial_90526a",
+      "binary": "game",
+      "rva": "0x90526a",
+      "hex": "e85167feff",
+      "instruction": "CALL 0x1408eb9c0",
+      "function_rva": "0x905240",
+      "export_pass": "orders",
+      "target_rva": "0x8eb9c0"
+    },
+    {
+      "id": "attack_trial_90527a",
+      "binary": "game",
+      "rva": "0x90527a",
+      "hex": "e9014f0100",
+      "instruction": "JMP 0x14091a180",
+      "function_rva": "0x905240",
+      "export_pass": "orders",
+      "target_rva": "0x91a180"
+    },
+    {
+      "id": "obstruction_trial_833c8c",
+      "binary": "game",
+      "rva": "0x833c8c",
+      "hex": "e8ff1a0000",
+      "instruction": "CALL 0x140835790",
+      "function_rva": "0x833c30",
+      "export_pass": "soft",
+      "target_rva": "0x835790"
+    },
+    {
+      "id": "obstruction_trial_835c95",
+      "binary": "game",
+      "rva": "0x835c95",
+      "hex": "33d2",
+      "instruction": "XOR EDX,EDX",
+      "function_rva": "0x835790",
+      "export_pass": "soft"
+    },
+    {
+      "id": "obstruction_trial_835ca4",
+      "binary": "game",
+      "rva": "0x835ca4",
+      "hex": "e8d7f0ffff",
+      "instruction": "CALL 0x140834d80",
+      "function_rva": "0x835790",
+      "export_pass": "soft",
+      "target_rva": "0x834d80"
+    },
+    {
+      "id": "obstruction_trial_835cab",
+      "binary": "game",
+      "rva": "0x835cab",
+      "hex": "0f85fd000000",
+      "instruction": "JNZ 0x140835dae",
+      "function_rva": "0x835790",
+      "export_pass": "soft",
+      "target_rva": "0x835dae"
+    },
+    {
+      "id": "obstruction_trial_835cc3",
+      "binary": "game",
+      "rva": "0x835cc3",
+      "hex": "ff9090000000",
+      "instruction": "CALL qword ptr [RAX + 0x90]",
+      "function_rva": "0x835790",
+      "export_pass": "soft"
+    },
+    {
+      "id": "obstruction_trial_835d10",
+      "binary": "game",
+      "rva": "0x835d10",
+      "hex": "c744242000080800",
+      "instruction": "MOV dword ptr [RSP + 0x20],0x80800",
+      "function_rva": "0x835790",
+      "export_pass": "soft"
+    },
+    {
+      "id": "obstruction_trial_835d22",
+      "binary": "game",
+      "rva": "0x835d22",
+      "hex": "ff5018",
+      "instruction": "CALL qword ptr [RAX + 0x18]",
+      "function_rva": "0x835790",
+      "export_pass": "soft"
+    },
+    {
+      "id": "obstruction_trial_835d3b",
+      "binary": "game",
+      "rva": "0x835d3b",
+      "hex": "e8e00a0000",
+      "instruction": "CALL 0x140836820",
+      "function_rva": "0x835790",
+      "export_pass": "soft",
+      "target_rva": "0x836820"
+    },
+    {
+      "id": "obstruction_trial_835db5",
+      "binary": "game",
+      "rva": "0x835db5",
+      "hex": "e886e8d9ff",
+      "instruction": "CALL 0x1405d4640",
+      "function_rva": "0x835790",
+      "export_pass": "soft",
+      "target_rva": "0x5d4640"
+    },
+    {
+      "id": "obstruction_trial_835dea",
+      "binary": "game",
+      "rva": "0x835dea",
+      "hex": "e8219cd9ff",
+      "instruction": "CALL 0x1405cfa10",
+      "function_rva": "0x835790",
+      "export_pass": "soft",
+      "target_rva": "0x5cfa10"
+    },
+    {
+      "id": "obstruction_trial_834f29",
+      "binary": "game",
+      "rva": "0x834f29",
+      "hex": "81c2036e1000",
+      "instruction": "ADD EDX,0x106e03",
+      "function_rva": "0x834ea0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "obstruction_trial_834fc5",
+      "binary": "game",
+      "rva": "0x834fc5",
+      "hex": "833f04",
+      "instruction": "CMP dword ptr [RDI],0x4",
+      "function_rva": "0x834ea0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "obstruction_trial_834fca",
+      "binary": "game",
+      "rva": "0x834fca",
+      "hex": "488b4720",
+      "instruction": "MOV RAX,qword ptr [RDI + 0x20]",
+      "function_rva": "0x834ea0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "obstruction_trial_834fd3",
+      "binary": "game",
+      "rva": "0x834fd3",
+      "hex": "f6402820",
+      "instruction": "TEST byte ptr [RAX + 0x28],0x20",
+      "function_rva": "0x834ea0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "obstruction_trial_835014",
+      "binary": "game",
+      "rva": "0x835014",
+      "hex": "e827c2f4ff",
+      "instruction": "CALL 0x140781240",
+      "function_rva": "0x834ea0",
+      "export_pass": "soft",
+      "target_rva": "0x781240"
+    },
+    {
+      "id": "trajectory_collection_82d588",
+      "binary": "game",
+      "rva": "0x82d588",
+      "hex": "e8231c0200",
+      "instruction": "CALL 0x14084f1b0",
+      "function_rva": "0x82d4c0",
+      "export_pass": "soft",
+      "target_rva": "0x84f1b0"
+    },
+    {
+      "id": "trajectory_collection_82d597",
+      "binary": "game",
+      "rva": "0x82d597",
+      "hex": "e8c41c0200",
+      "instruction": "CALL 0x14084f260",
+      "function_rva": "0x82d4c0",
+      "export_pass": "soft",
+      "target_rva": "0x84f260"
+    },
+    {
+      "id": "trajectory_collection_82d59f",
+      "binary": "game",
+      "rva": "0x82d59f",
+      "hex": "48896858",
+      "instruction": "MOV qword ptr [RAX + 0x58],RBP",
+      "function_rva": "0x82d4c0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_82d5ba",
+      "binary": "game",
+      "rva": "0x82d5ba",
+      "hex": "f30f11430c",
+      "instruction": "MOVSS dword ptr [RBX + 0xc],XMM0",
+      "function_rva": "0x82d4c0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_82d5bf",
+      "binary": "game",
+      "rva": "0x82d5bf",
+      "hex": "e8bc1c0200",
+      "instruction": "CALL 0x14084f280",
+      "function_rva": "0x82d4c0",
+      "export_pass": "soft",
+      "target_rva": "0x84f280"
+    },
+    {
+      "id": "trajectory_collection_84f1eb",
+      "binary": "game",
+      "rva": "0x84f1eb",
+      "hex": "c7411403600000",
+      "instruction": "MOV dword ptr [RCX + 0x14],0x6003",
+      "function_rva": "0x84f1b0",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "trajectory_collection_84f26c",
+      "binary": "game",
+      "rva": "0x84f26c",
+      "hex": "095114",
+      "instruction": "OR dword ptr [RCX + 0x14],EDX",
+      "function_rva": "0x84f260",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "trajectory_collection_84fa70",
+      "binary": "game",
+      "rva": "0x84fa70",
+      "hex": "488b4b20",
+      "instruction": "MOV RCX,qword ptr [RBX + 0x20]",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_84fa80",
+      "binary": "game",
+      "rva": "0x84fa80",
+      "hex": "0fbae20e",
+      "instruction": "BT EDX,0xe",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_84fa86",
+      "binary": "game",
+      "rva": "0x84fa86",
+      "hex": "f6412820",
+      "instruction": "TEST byte ptr [RCX + 0x28],0x20",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_84fa8f",
+      "binary": "game",
+      "rva": "0x84fa8f",
+      "hex": "d1e8",
+      "instruction": "SHR EAX,0x1",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_84fa95",
+      "binary": "game",
+      "rva": "0x84fa95",
+      "hex": "0fbae217",
+      "instruction": "BT EDX,0x17",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_84faac",
+      "binary": "game",
+      "rva": "0x84faac",
+      "hex": "c1e802",
+      "instruction": "SHR EAX,0x2",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_84fafd",
+      "binary": "game",
+      "rva": "0x84fafd",
+      "hex": "4883410848",
+      "instruction": "ADD qword ptr [RCX + 0x8],0x48",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_84fb1e",
+      "binary": "game",
+      "rva": "0x84fb1e",
+      "hex": "f30f1141bc",
+      "instruction": "MOVSS dword ptr [RCX + -0x44],XMM0",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_84fb23",
+      "binary": "game",
+      "rva": "0x84fb23",
+      "hex": "f7471400004000",
+      "instruction": "TEST dword ptr [RDI + 0x14],0x400000",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "trajectory_collection_84fb2a",
+      "binary": "game",
+      "rva": "0x84fb2a",
+      "hex": "0f84cd010000",
+      "instruction": "JZ 0x14084fcfd",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft",
+      "target_rva": "0x84fcfd"
+    },
+    {
+      "id": "trajectory_collection_84fb39",
+      "binary": "game",
+      "rva": "0x84fb39",
+      "hex": "0f86f6000000",
+      "instruction": "JBE 0x14084fc35",
+      "function_rva": "0x84f5a0",
+      "export_pass": "soft",
+      "target_rva": "0x84fc35"
+    },
+    {
+      "id": "trajectory_collection_84f31f",
+      "binary": "game",
+      "rva": "0x84f31f",
+      "hex": "f7431400004000",
+      "instruction": "TEST dword ptr [RBX + 0x14],0x400000",
+      "function_rva": "0x84f280",
+      "export_pass": "soft"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a4116b",
+      "binary": "game",
+      "rva": "0xa4116b",
+      "hex": "f70100000800",
+      "instruction": "TEST dword ptr [RCX],0x80000",
+      "function_rva": "0xa41130",
+      "export_pass": "checks"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a410b1",
+      "binary": "game",
+      "rva": "0xa410b1",
+      "hex": "83787c01",
+      "instruction": "CMP dword ptr [RAX + 0x7c],0x1",
+      "function_rva": "0xa40f70",
+      "export_pass": "queries"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_7a846f",
+      "binary": "game",
+      "rva": "0x7a846f",
+      "hex": "ff5018",
+      "instruction": "CALL qword ptr [RAX + 0x18]",
+      "function_rva": "0x7a8410",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_7a867a",
+      "binary": "game",
+      "rva": "0x7a867a",
+      "hex": "0fb64537",
+      "instruction": "MOVZX EAX,byte ptr [RBP + 0x37]",
+      "function_rva": "0x7a8410",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_7a868c",
+      "binary": "game",
+      "rva": "0x7a868c",
+      "hex": "88450b",
+      "instruction": "MOV byte ptr [RBP + 0xb],AL",
+      "function_rva": "0x7a8410",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_7a868f",
+      "binary": "game",
+      "rva": "0x7a868f",
+      "hex": "884d0c",
+      "instruction": "MOV byte ptr [RBP + 0xc],CL",
+      "function_rva": "0x7a8410",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_7a86b3",
+      "binary": "game",
+      "rva": "0x7a86b3",
+      "hex": "4883430828",
+      "instruction": "ADD qword ptr [RBX + 0x8],0x28",
+      "function_rva": "0x7a8410",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_84b8d0",
+      "binary": "game",
+      "rva": "0x84b8d0",
+      "hex": "4c8b6840",
+      "instruction": "MOV R13,qword ptr [RAX + 0x40]",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a40ee6",
+      "binary": "game",
+      "rva": "0xa40ee6",
+      "hex": "e875fce0ff",
+      "instruction": "CALL 0x140850b60",
+      "function_rva": "0xa40ac0",
+      "export_pass": "inputs",
+      "target_rva": "0x850b60"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a40f2e",
+      "binary": "game",
+      "rva": "0xa40f2e",
+      "hex": "f30f1152f8",
+      "instruction": "MOVSS dword ptr [RDX + -0x8],XMM2",
+      "function_rva": "0xa40ac0",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a40f33",
+      "binary": "game",
+      "rva": "0xa40f33",
+      "hex": "f30f1142fc",
+      "instruction": "MOVSS dword ptr [RDX + -0x4],XMM0",
+      "function_rva": "0xa40ac0",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a40f38",
+      "binary": "game",
+      "rva": "0xa40f38",
+      "hex": "f30f110a",
+      "instruction": "MOVSS dword ptr [RDX],XMM1",
+      "function_rva": "0xa40ac0",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a41562",
+      "binary": "game",
+      "rva": "0xa41562",
+      "hex": "488b03",
+      "instruction": "MOV RAX,qword ptr [RBX]",
+      "function_rva": "0xa41360",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a41571",
+      "binary": "game",
+      "rva": "0xa41571",
+      "hex": "488945d0",
+      "instruction": "MOV qword ptr [RBP + -0x30],RAX",
+      "function_rva": "0xa41360",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a4159f",
+      "binary": "game",
+      "rva": "0xa4159f",
+      "hex": "0fb64324",
+      "instruction": "MOVZX EAX,byte ptr [RBX + 0x24]",
+      "function_rva": "0xa41360",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a415ad",
+      "binary": "game",
+      "rva": "0xa415ad",
+      "hex": "8945f0",
+      "instruction": "MOV dword ptr [RBP + -0x10],EAX",
+      "function_rva": "0xa41360",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a415bd",
+      "binary": "game",
+      "rva": "0xa415bd",
+      "hex": "c745b004000000",
+      "instruction": "MOV dword ptr [RBP + -0x50],0x4",
+      "function_rva": "0xa41360",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a415c4",
+      "binary": "game",
+      "rva": "0xa415c4",
+      "hex": "4c897dc8",
+      "instruction": "MOV qword ptr [RBP + -0x38],R15",
+      "function_rva": "0xa41360",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a415e8",
+      "binary": "game",
+      "rva": "0xa415e8",
+      "hex": "0f114220",
+      "instruction": "MOVUPS xmmword ptr [RDX + 0x20],XMM0",
+      "function_rva": "0xa41360",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a415f5",
+      "binary": "game",
+      "rva": "0xa415f5",
+      "hex": "f20f114240",
+      "instruction": "MOVSD qword ptr [RDX + 0x40],XMM0",
+      "function_rva": "0xa41360",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_a415fa",
+      "binary": "game",
+      "rva": "0xa415fa",
+      "hex": "4883410848",
+      "instruction": "ADD qword ptr [RCX + 0x8],0x48",
+      "function_rva": "0xa41360",
+      "export_pass": "damage"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_7fc5dd",
+      "binary": "game",
+      "rva": "0x7fc5dd",
+      "hex": "448b4124",
+      "instruction": "MOV R8D,dword ptr [RCX + 0x24]",
+      "function_rva": "0x7fc5b0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "scene_shape_and_armor_hits_7fc5e5",
+      "binary": "game",
+      "rva": "0x7fc5e5",
+      "hex": "488b7928",
+      "instruction": "MOV RDI,qword ptr [RCX + 0x28]",
+      "function_rva": "0x7fc5b0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_836895",
+      "binary": "game",
+      "rva": "0x836895",
+      "hex": "448b03",
+      "instruction": "MOV R8D,dword ptr [RBX]",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_8368a4",
+      "binary": "game",
+      "rva": "0x8368a4",
+      "hex": "488b7318",
+      "instruction": "MOV RSI,qword ptr [RBX + 0x18]",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_8368ad",
+      "binary": "game",
+      "rva": "0x8368ad",
+      "hex": "f6463002",
+      "instruction": "TEST byte ptr [RSI + 0x30],0x2",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_8368b3",
+      "binary": "game",
+      "rva": "0x8368b3",
+      "hex": "8b86b40d0000",
+      "instruction": "MOV EAX,dword ptr [RSI + 0xdb4]",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_8368c9",
+      "binary": "game",
+      "rva": "0x8368c9",
+      "hex": "e852ea2200",
+      "instruction": "CALL 0x140a65320",
+      "function_rva": "0x836820",
+      "export_pass": "soft",
+      "target_rva": "0xa65320"
+    },
+    {
+      "id": "evaluator_8368ce",
+      "binary": "game",
+      "rva": "0x8368ce",
+      "hex": "83f802",
+      "instruction": "CMP EAX,0x2",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_8368d7",
+      "binary": "game",
+      "rva": "0x8368d7",
+      "hex": "4883c348",
+      "instruction": "ADD RBX,0x48",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_83690f",
+      "binary": "game",
+      "rva": "0x83690f",
+      "hex": "4c394818",
+      "instruction": "CMP qword ptr [RAX + 0x18],R9",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_836af4",
+      "binary": "game",
+      "rva": "0x836af4",
+      "hex": "b804000000",
+      "instruction": "MOV EAX,0x4",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_836b2c",
+      "binary": "game",
+      "rva": "0x836b2c",
+      "hex": "b803000000",
+      "instruction": "MOV EAX,0x3",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_836bad",
+      "binary": "game",
+      "rva": "0x836bad",
+      "hex": "0f2ff3",
+      "instruction": "COMISS XMM6,XMM3",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_836bd2",
+      "binary": "game",
+      "rva": "0x836bd2",
+      "hex": "b802000000",
+      "instruction": "MOV EAX,0x2",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_836bde",
+      "binary": "game",
+      "rva": "0x836bde",
+      "hex": "0f1040b8",
+      "instruction": "MOVUPS XMM0,xmmword ptr [RAX + -0x48]",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "evaluator_836c08",
+      "binary": "game",
+      "rva": "0x836c08",
+      "hex": "b805000000",
+      "instruction": "MOV EAX,0x5",
+      "function_rva": "0x836820",
+      "export_pass": "soft"
+    },
+    {
+      "id": "weapon_and_ammo_820b59",
+      "binary": "game",
+      "rva": "0x820b59",
+      "hex": "e882010000",
+      "instruction": "CALL 0x140820ce0",
+      "function_rva": "0x820b50",
+      "export_pass": "inputs",
+      "target_rva": "0x820ce0"
+    },
+    {
+      "id": "weapon_and_ammo_820b68",
+      "binary": "game",
+      "rva": "0x820b68",
+      "hex": "ff5008",
+      "instruction": "CALL qword ptr [RAX + 0x8]",
+      "function_rva": "0x820b50",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "weapon_and_ammo_820b79",
+      "binary": "game",
+      "rva": "0x820b79",
+      "hex": "488b4050",
+      "instruction": "MOV RAX,qword ptr [RAX + 0x50]",
+      "function_rva": "0x820b50",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "weapon_and_ammo_81ec49",
+      "binary": "game",
+      "rva": "0x81ec49",
+      "hex": "488b89b0000000",
+      "instruction": "MOV RCX,qword ptr [RCX + 0xb0]",
+      "function_rva": "0x81ec40",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "weapon_and_ammo_81ec66",
+      "binary": "game",
+      "rva": "0x81ec66",
+      "hex": "4805c80e0000",
+      "instruction": "ADD RAX,0xec8",
+      "function_rva": "0x81ec40",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "weapon_and_ammo_81ec75",
+      "binary": "game",
+      "rva": "0x81ec75",
+      "hex": "488b8ba0000000",
+      "instruction": "MOV RCX,qword ptr [RBX + 0xa0]",
+      "function_rva": "0x81ec40",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "weapon_and_ammo_81ec84",
+      "binary": "game",
+      "rva": "0x81ec84",
+      "hex": "e907f20100",
+      "instruction": "JMP 0x14083de90",
+      "function_rva": "0x81ec40",
+      "export_pass": "inputs",
+      "target_rva": "0x83de90"
+    },
+    {
+      "id": "weapon_and_ammo_83deeb",
+      "binary": "game",
+      "rva": "0x83deeb",
+      "hex": "488b4628",
+      "instruction": "MOV RAX,qword ptr [RSI + 0x28]",
+      "function_rva": "0x83de90",
+      "export_pass": "hit"
+    },
+    {
+      "id": "weapon_and_ammo_83df04",
+      "binary": "game",
+      "rva": "0x83df04",
+      "hex": "488b8330030000",
+      "instruction": "MOV RAX,qword ptr [RBX + 0x330]",
+      "function_rva": "0x83de90",
+      "export_pass": "hit"
+    },
+    {
+      "id": "weapon_and_ammo_841b95",
+      "binary": "game",
+      "rva": "0x841b95",
+      "hex": "f30f118628160000",
+      "instruction": "MOVSS dword ptr [RSI + 0x1628],XMM0",
+      "function_rva": "0x841ab0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "weapon_and_ammo_82f401",
+      "binary": "game",
+      "rva": "0x82f401",
+      "hex": "f30f108028160000",
+      "instruction": "MOVSS XMM0,dword ptr [RAX + 0x1628]",
+      "function_rva": "0x82f1c0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "weapon_and_ammo_82f473",
+      "binary": "game",
+      "rva": "0x82f473",
+      "hex": "e8d816ffff",
+      "instruction": "CALL 0x140820b50",
+      "function_rva": "0x82f1c0",
+      "export_pass": "soft",
+      "target_rva": "0x820b50"
+    },
+    {
+      "id": "weapon_and_ammo_82f47b",
+      "binary": "game",
+      "rva": "0x82f47b",
+      "hex": "e860200200",
+      "instruction": "CALL 0x1408514e0",
+      "function_rva": "0x82f1c0",
+      "export_pass": "soft",
+      "target_rva": "0x8514e0"
+    },
+    {
+      "id": "weapon_and_ammo_82f88e",
+      "binary": "game",
+      "rva": "0x82f88e",
+      "hex": "e8adf3feff",
+      "instruction": "CALL 0x14081ec40",
+      "function_rva": "0x82f1c0",
+      "export_pass": "soft",
+      "target_rva": "0x81ec40"
+    },
+    {
+      "id": "weapon_and_ammo_82f8e6",
+      "binary": "game",
+      "rva": "0x82f8e6",
+      "hex": "49899d30010000",
+      "instruction": "MOV qword ptr [R13 + 0x130],RBX",
+      "function_rva": "0x82f1c0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_841660",
+      "binary": "game",
+      "rva": "0x841660",
+      "hex": "660f6eca",
+      "instruction": "MOVD XMM1,EDX",
+      "function_rva": "0x841650",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_841664",
+      "binary": "game",
+      "rva": "0x841664",
+      "hex": "488b9188000000",
+      "instruction": "MOV RDX,qword ptr [RCX + 0x88]",
+      "function_rva": "0x841650",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_841670",
+      "binary": "game",
+      "rva": "0x841670",
+      "hex": "f30f5e4920",
+      "instruction": "DIVSS XMM1,dword ptr [RCX + 0x20]",
+      "function_rva": "0x841650",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_8416bb",
+      "binary": "game",
+      "rva": "0x8416bb",
+      "hex": "f30f59b398010000",
+      "instruction": "MULSS XMM6,dword ptr [RBX + 0x198]",
+      "function_rva": "0x841650",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_8416eb",
+      "binary": "game",
+      "rva": "0x8416eb",
+      "hex": "f30f590dad3dd300",
+      "instruction": "MULSS XMM1,dword ptr [0x1415754a0]",
+      "function_rva": "0x841650",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84b950",
+      "binary": "game",
+      "rva": "0x84b950",
+      "hex": "f3410f10befc000000",
+      "instruction": "MOVSS XMM7,dword ptr [R14 + 0xfc]",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84b959",
+      "binary": "game",
+      "rva": "0x84b959",
+      "hex": "f30f587e20",
+      "instruction": "ADDSS XMM7,dword ptr [RSI + 0x20]",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84bf80",
+      "binary": "game",
+      "rva": "0x84bf80",
+      "hex": "660f7efa",
+      "instruction": "MOVD EDX,XMM7",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84bf90",
+      "binary": "game",
+      "rva": "0x84bf90",
+      "hex": "f3410f10b60c010000",
+      "instruction": "MOVSS XMM6,dword ptr [R14 + 0x10c]",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84bfa5",
+      "binary": "game",
+      "rva": "0x84bfa5",
+      "hex": "e8a656ffff",
+      "instruction": "CALL 0x140841650",
+      "function_rva": "0x84b890",
+      "export_pass": "soft",
+      "target_rva": "0x841650"
+    },
+    {
+      "id": "impact_energy_84bfb5",
+      "binary": "game",
+      "rva": "0x84bfb5",
+      "hex": "f30f59de",
+      "instruction": "MULSS XMM3,XMM6",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84c044",
+      "binary": "game",
+      "rva": "0x84c044",
+      "hex": "8845d0",
+      "instruction": "MOV byte ptr [RBP + -0x30],AL",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84c0b4",
+      "binary": "game",
+      "rva": "0x84c0b4",
+      "hex": "f30f108028160000",
+      "instruction": "MOVSS XMM0,dword ptr [RAX + 0x1628]",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84c0c2",
+      "binary": "game",
+      "rva": "0x84c0c2",
+      "hex": "e8c9fffaff",
+      "instruction": "CALL 0x1407fc090",
+      "function_rva": "0x84b890",
+      "export_pass": "soft",
+      "target_rva": "0x7fc090"
+    },
+    {
+      "id": "impact_energy_84c0e3",
+      "binary": "game",
+      "rva": "0x84c0e3",
+      "hex": "e82802fbff",
+      "instruction": "CALL 0x1407fc310",
+      "function_rva": "0x84b890",
+      "export_pass": "soft",
+      "target_rva": "0x7fc310"
+    },
+    {
+      "id": "impact_energy_84c11a",
+      "binary": "game",
+      "rva": "0x84c11a",
+      "hex": "e88102fbff",
+      "instruction": "CALL 0x1407fc3a0",
+      "function_rva": "0x84b890",
+      "export_pass": "soft",
+      "target_rva": "0x7fc3a0"
+    },
+    {
+      "id": "impact_energy_84c11f",
+      "binary": "game",
+      "rva": "0x84c11f",
+      "hex": "f644246001",
+      "instruction": "TEST byte ptr [RSP + 0x60],0x1",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84c133",
+      "binary": "game",
+      "rva": "0x84c133",
+      "hex": "498b9ea0000000",
+      "instruction": "MOV RBX,qword ptr [R14 + 0xa0]",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84c143",
+      "binary": "game",
+      "rva": "0x84c143",
+      "hex": "4881c3b8120000",
+      "instruction": "ADD RBX,0x12b8",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84c14a",
+      "binary": "game",
+      "rva": "0x84c14a",
+      "hex": "e831fd2300",
+      "instruction": "CALL 0x140a8be80",
+      "function_rva": "0x84b890",
+      "export_pass": "soft",
+      "target_rva": "0xa8be80"
+    },
+    {
+      "id": "impact_energy_84c15a",
+      "binary": "game",
+      "rva": "0x84c15a",
+      "hex": "e821fd2300",
+      "instruction": "CALL 0x140a8be80",
+      "function_rva": "0x84b890",
+      "export_pass": "soft",
+      "target_rva": "0xa8be80"
+    },
+    {
+      "id": "impact_energy_84c164",
+      "binary": "game",
+      "rva": "0x84c164",
+      "hex": "0f2ff0",
+      "instruction": "COMISS XMM6,XMM0",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84c175",
+      "binary": "game",
+      "rva": "0x84c175",
+      "hex": "7421",
+      "instruction": "JZ 0x14084c198",
+      "function_rva": "0x84b890",
+      "export_pass": "soft",
+      "target_rva": "0x84c198"
+    },
+    {
+      "id": "impact_energy_84c198",
+      "binary": "game",
+      "rva": "0x84c198",
+      "hex": "f6472501",
+      "instruction": "TEST byte ptr [RDI + 0x25],0x1",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_84c2af",
+      "binary": "game",
+      "rva": "0x84c2af",
+      "hex": "e8fc1cfbff",
+      "instruction": "CALL 0x1407fdfb0",
+      "function_rva": "0x84b890",
+      "export_pass": "soft",
+      "target_rva": "0x7fdfb0"
+    },
+    {
+      "id": "impact_energy_84c310",
+      "binary": "game",
+      "rva": "0x84c310",
+      "hex": "f3410f118e0c010000",
+      "instruction": "MOVSS dword ptr [R14 + 0x10c],XMM1",
+      "function_rva": "0x84b890",
+      "export_pass": "soft"
+    },
+    {
+      "id": "impact_energy_842212",
+      "binary": "game",
+      "rva": "0x842212",
+      "hex": "f30f118798010000",
+      "instruction": "MOVSS dword ptr [RDI + 0x198],XMM0",
+      "function_rva": "0x8420e0",
+      "export_pass": "queries"
+    },
+    {
+      "id": "impact_energy_842281",
+      "binary": "game",
+      "rva": "0x842281",
+      "hex": "f30f11879c010000",
+      "instruction": "MOVSS dword ptr [RDI + 0x19c],XMM0",
+      "function_rva": "0x8420e0",
+      "export_pass": "queries"
+    },
+    {
+      "id": "impact_energy_8422bb",
+      "binary": "game",
+      "rva": "0x8422bb",
+      "hex": "8987a0010000",
+      "instruction": "MOV dword ptr [RDI + 0x1a0],EAX",
+      "function_rva": "0x8420e0",
+      "export_pass": "queries"
+    },
+    {
+      "id": "armor_and_material_7fc355",
+      "binary": "game",
+      "rva": "0x7fc355",
+      "hex": "e8a60ef3ff",
+      "instruction": "CALL 0x14072d200",
+      "function_rva": "0x7fc310",
+      "export_pass": "soft",
+      "target_rva": "0x72d200"
+    },
+    {
+      "id": "armor_and_material_7fc364",
+      "binary": "game",
+      "rva": "0x7fc364",
+      "hex": "e8871a0000",
+      "instruction": "CALL 0x1407fddf0",
+      "function_rva": "0x7fc310",
+      "export_pass": "soft",
+      "target_rva": "0x7fddf0"
+    },
+    {
+      "id": "armor_and_material_7fc5f4",
+      "binary": "game",
+      "rva": "0x7fc5f4",
+      "hex": "f30f10b490b0030000",
+      "instruction": "MOVSS XMM6,dword ptr [RAX + RDX*0x4 + 0x3b0]",
+      "function_rva": "0x7fc5b0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "armor_and_material_7fc6c2",
+      "binary": "game",
+      "rva": "0x7fc6c2",
+      "hex": "ff5018",
+      "instruction": "CALL qword ptr [RAX + 0x18]",
+      "function_rva": "0x7fc5b0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "armor_and_material_7fc9a1",
+      "binary": "game",
+      "rva": "0x7fc9a1",
+      "hex": "488b8808040000",
+      "instruction": "MOV RCX,qword ptr [RAX + 0x408]",
+      "function_rva": "0x7fc5b0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "armor_and_material_7fc9a8",
+      "binary": "game",
+      "rva": "0x7fc9a8",
+      "hex": "f30f59b1e0000000",
+      "instruction": "MULSS XMM6,dword ptr [RCX + 0xe0]",
+      "function_rva": "0x7fc5b0",
+      "export_pass": "soft"
+    },
+    {
+      "id": "armor_and_material_7fc44c",
+      "binary": "game",
+      "rva": "0x7fc44c",
+      "hex": "e80f060000",
+      "instruction": "CALL 0x1407fca60",
+      "function_rva": "0x7fc3a0",
+      "export_pass": "inputs",
+      "target_rva": "0x7fca60"
+    },
+    {
+      "id": "armor_and_material_7fc467",
+      "binary": "game",
+      "rva": "0x7fc467",
+      "hex": "e814fa2800",
+      "instruction": "CALL 0x140a8be80",
+      "function_rva": "0x7fc3a0",
+      "export_pass": "inputs",
+      "target_rva": "0xa8be80"
+    },
+    {
+      "id": "armor_and_material_7fc46c",
+      "binary": "game",
+      "rva": "0x7fc46c",
+      "hex": "807b2400",
+      "instruction": "CMP byte ptr [RBX + 0x24],0x0",
+      "function_rva": "0x7fc3a0",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "armor_and_material_7fc49b",
+      "binary": "game",
+      "rva": "0x7fc49b",
+      "hex": "800802",
+      "instruction": "OR byte ptr [RAX],0x2",
+      "function_rva": "0x7fc3a0",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "armor_and_material_7fc4bb",
+      "binary": "game",
+      "rva": "0x7fc4bb",
+      "hex": "f30f104810",
+      "instruction": "MOVSS XMM1,dword ptr [RAX + 0x10]",
+      "function_rva": "0x7fc3a0",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "armor_and_material_7fc4d8",
+      "binary": "game",
+      "rva": "0x7fc4d8",
+      "hex": "e803090000",
+      "instruction": "CALL 0x1407fcde0",
+      "function_rva": "0x7fc3a0",
+      "export_pass": "inputs",
+      "target_rva": "0x7fcde0"
+    },
+    {
+      "id": "armor_and_material_7fc4e6",
+      "binary": "game",
+      "rva": "0x7fc4e6",
+      "hex": "f680b000000001",
+      "instruction": "TEST byte ptr [RAX + 0xb0],0x1",
+      "function_rva": "0x7fc3a0",
+      "export_pass": "inputs"
+    },
+    {
+      "id": "armor_and_material_7a9fb1",
+      "binary": "game",
+      "rva": "0x7a9fb1",
+      "hex": "488d8e80000000",
+      "instruction": "LEA RCX,[RSI + 0x80]",
+      "function_rva": "0x7a9b90",
+      "export_pass": "hit"
+    },
+    {
+      "id": "armor_and_material_7aa0b7",
+      "binary": "game",
+      "rva": "0x7aa0b7",
+      "hex": "48898608040000",
+      "instruction": "MOV qword ptr [RSI + 0x408],RAX",
+      "function_rva": "0x7a9b90",
+      "export_pass": "hit"
+    },
+    {
+      "id": "armor_and_material_80237f",
+      "binary": "game",
+      "rva": "0x80237f",
+      "hex": "f30f1186e0000000",
+      "instruction": "MOVSS dword ptr [RSI + 0xe0],XMM0",
+      "function_rva": "0x801fd0",
+      "export_pass": "checks"
+    },
+    {
+      "id": "blast_851774",
+      "binary": "game",
+      "rva": "0x851774",
+      "hex": "488b0585e3d500",
+      "instruction": "MOV RAX,qword ptr [0x1415afb00]",
+      "function_rva": "0x851730",
+      "export_pass": "ammo"
+    },
+    {
+      "id": "blast_8517e2",
+      "binary": "game",
+      "rva": "0x8517e2",
+      "hex": "e829000000",
+      "instruction": "CALL 0x140851810",
+      "function_rva": "0x851730",
+      "export_pass": "ammo",
+      "target_rva": "0x851810"
+    },
+    {
+      "id": "blast_851833",
+      "binary": "game",
+      "rva": "0x851833",
+      "hex": "83ea2e",
+      "instruction": "SUB EDX,0x2e",
+      "function_rva": "0x851810",
+      "export_pass": "ammo_gate"
+    },
+    {
+      "id": "blast_851836",
+      "binary": "game",
+      "rva": "0x851836",
+      "hex": "0f84e0060000",
+      "instruction": "JZ 0x140851f1c",
+      "function_rva": "0x851810",
+      "export_pass": "ammo_gate",
+      "target_rva": "0x851f1c"
+    },
+    {
+      "id": "blast_851f24",
+      "binary": "game",
+      "rva": "0x851f24",
+      "hex": "488d8eb8120000",
+      "instruction": "LEA RCX,[RSI + 0x12b8]",
+      "function_rva": "0x851810",
+      "export_pass": "ammo_gate"
+    },
+    {
+      "id": "blast_851f2e",
+      "binary": "game",
+      "rva": "0x851f2e",
+      "hex": "33d2",
+      "instruction": "XOR EDX,EDX",
+      "function_rva": "0x851810",
+      "export_pass": "ammo_gate"
+    },
+    {
+      "id": "blast_851f3b",
+      "binary": "game",
+      "rva": "0x851f3b",
+      "hex": "e9d09e2300",
+      "instruction": "JMP 0x140a8be10",
+      "function_rva": "0x851810",
+      "export_pass": "ammo_gate",
+      "target_rva": "0xa8be10"
+    },
+    {
+      "id": "blast_7f5874",
+      "binary": "game",
+      "rva": "0x7f5874",
+      "hex": "f30f108198040000",
+      "instruction": "MOVSS XMM0,dword ptr [RCX + 0x498]",
+      "function_rva": "0x7f5870",
+      "export_pass": "soft"
+    },
+    {
+      "id": "blast_7f588e",
+      "binary": "game",
+      "rva": "0x7f588e",
+      "hex": "488b9980040000",
+      "instruction": "MOV RBX,qword ptr [RCX + 0x480]",
+      "function_rva": "0x7f5870",
+      "export_pass": "soft"
+    },
+    {
+      "id": "blast_7f58b6",
+      "binary": "game",
+      "rva": "0x7f58b6",
+      "hex": "ff5028",
+      "instruction": "CALL qword ptr [RAX + 0x28]",
+      "function_rva": "0x7f5870",
+      "export_pass": "soft"
+    },
+    {
+      "id": "blast_7f6012",
+      "binary": "game",
+      "rva": "0x7f6012",
+      "hex": "f30f118798040000",
+      "instruction": "MOVSS dword ptr [RDI + 0x498],XMM0",
+      "function_rva": "0x7f5b90",
+      "export_pass": "faces"
+    },
+    {
+      "id": "blast_15f240",
+      "binary": "game",
+      "rva": "0x15f240",
+      "hex": "f30f104114",
+      "instruction": "MOVSS XMM0,dword ptr [RCX + 0x14]",
+      "function_rva": "0x15f240",
+      "export_pass": "damage"
+    },
+    {
+      "id": "blast_a8d4c5",
+      "binary": "game",
+      "rva": "0xa8d4c5",
+      "hex": "f3410f114710",
+      "instruction": "MOVSS dword ptr [R15 + 0x10],XMM0",
+      "function_rva": "0xa8d2d0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "blast_a8d4dd",
+      "binary": "game",
+      "rva": "0xa8d4dd",
+      "hex": "f3410f114714",
+      "instruction": "MOVSS dword ptr [R15 + 0x14],XMM0",
+      "function_rva": "0xa8d2d0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "blast_903198",
+      "binary": "game",
+      "rva": "0x903198",
+      "hex": "e8b3d9f1ff",
+      "instruction": "CALL 0x140820b50",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x820b50"
+    },
+    {
+      "id": "blast_9031b1",
+      "binary": "game",
+      "rva": "0x9031b1",
+      "hex": "e8ba26efff",
+      "instruction": "CALL 0x1407f5870",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x7f5870"
+    },
+    {
+      "id": "infantry_candidates_902f21",
+      "binary": "game",
+      "rva": "0x902f21",
+      "hex": "ff87d0000000",
+      "instruction": "INC dword ptr [RDI + 0xd0]",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_902f27",
+      "binary": "game",
+      "rva": "0x902f27",
+      "hex": "83bfd000000014",
+      "instruction": "CMP dword ptr [RDI + 0xd0],0x14",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_903086",
+      "binary": "game",
+      "rva": "0x903086",
+      "hex": "e8d5430500",
+      "instruction": "CALL 0x140957460",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x957460"
+    },
+    {
+      "id": "infantry_candidates_903093",
+      "binary": "game",
+      "rva": "0x903093",
+      "hex": "488d542420",
+      "instruction": "LEA RDX,[RSP + 0x20]",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_903098",
+      "binary": "game",
+      "rva": "0x903098",
+      "hex": "f30f59d6",
+      "instruction": "MULSS XMM2,XMM6",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_9030a4",
+      "binary": "game",
+      "rva": "0x9030a4",
+      "hex": "e827450500",
+      "instruction": "CALL 0x1409575d0",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x9575d0"
+    },
+    {
+      "id": "infantry_candidates_9030ba",
+      "binary": "game",
+      "rva": "0x9030ba",
+      "hex": "899fd4000000",
+      "instruction": "MOV dword ptr [RDI + 0xd4],EBX",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_9030c0",
+      "binary": "game",
+      "rva": "0x9030c0",
+      "hex": "c7473803000000",
+      "instruction": "MOV dword ptr [RDI + 0x38],0x3",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_9030c7",
+      "binary": "game",
+      "rva": "0x9030c7",
+      "hex": "c687c000000001",
+      "instruction": "MOV byte ptr [RDI + 0xc0],0x1",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_903118",
+      "binary": "game",
+      "rva": "0x903118",
+      "hex": "e853f6fdff",
+      "instruction": "CALL 0x1408e2770",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x8e2770"
+    },
+    {
+      "id": "infantry_candidates_903122",
+      "binary": "game",
+      "rva": "0x903122",
+      "hex": "8b542424",
+      "instruction": "MOV EDX,dword ptr [RSP + 0x24]",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_903128",
+      "binary": "game",
+      "rva": "0x903128",
+      "hex": "ff9070010000",
+      "instruction": "CALL qword ptr [RAX + 0x170]",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_903135",
+      "binary": "game",
+      "rva": "0x903135",
+      "hex": "e886770000",
+      "instruction": "CALL 0x14090a8c0",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x90a8c0"
+    },
+    {
+      "id": "infantry_candidates_903146",
+      "binary": "game",
+      "rva": "0x903146",
+      "hex": "e825610100",
+      "instruction": "CALL 0x140919270",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x919270"
+    },
+    {
+      "id": "infantry_candidates_903157",
+      "binary": "game",
+      "rva": "0x903157",
+      "hex": "e85487feff",
+      "instruction": "CALL 0x1408eb8b0",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x8eb8b0"
+    },
+    {
+      "id": "infantry_candidates_903168",
+      "binary": "game",
+      "rva": "0x903168",
+      "hex": "e803610100",
+      "instruction": "CALL 0x140919270",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x919270"
+    },
+    {
+      "id": "infantry_candidates_903226",
+      "binary": "game",
+      "rva": "0x903226",
+      "hex": "e8556f0100",
+      "instruction": "CALL 0x14091a180",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x91a180"
+    },
+    {
+      "id": "infantry_candidates_9032af",
+      "binary": "game",
+      "rva": "0x9032af",
+      "hex": "83781807",
+      "instruction": "CMP dword ptr [RAX + 0x18],0x7",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_9032bb",
+      "binary": "game",
+      "rva": "0x9032bb",
+      "hex": "e8608afeff",
+      "instruction": "CALL 0x1408ebd20",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x8ebd20"
+    },
+    {
+      "id": "infantry_candidates_9032c6",
+      "binary": "game",
+      "rva": "0x9032c6",
+      "hex": "e8b56e0100",
+      "instruction": "CALL 0x14091a180",
+      "function_rva": "0x902ed0",
+      "export_pass": "orders",
+      "target_rva": "0x91a180"
+    },
+    {
+      "id": "infantry_candidates_957814",
+      "binary": "game",
+      "rva": "0x957814",
+      "hex": "e8d7230000",
+      "instruction": "CALL 0x140959bf0",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders",
+      "target_rva": "0x959bf0"
+    },
+    {
+      "id": "infantry_candidates_957945",
+      "binary": "game",
+      "rva": "0x957945",
+      "hex": "41c70601000000",
+      "instruction": "MOV dword ptr [R14],0x1",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_95794c",
+      "binary": "game",
+      "rva": "0x95794c",
+      "hex": "41894604",
+      "instruction": "MOV dword ptr [R14 + 0x4],EAX",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_957c88",
+      "binary": "game",
+      "rva": "0x957c88",
+      "hex": "41c70603000000",
+      "instruction": "MOV dword ptr [R14],0x3",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_9582de",
+      "binary": "game",
+      "rva": "0x9582de",
+      "hex": "ff5070",
+      "instruction": "CALL qword ptr [RAX + 0x70]",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_9585aa",
+      "binary": "game",
+      "rva": "0x9585aa",
+      "hex": "e86174c7ff",
+      "instruction": "CALL 0x1405cfa10",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders",
+      "target_rva": "0x5cfa10"
+    },
+    {
+      "id": "infantry_candidates_9585c4",
+      "binary": "game",
+      "rva": "0x9585c4",
+      "hex": "e84787ffff",
+      "instruction": "CALL 0x140950d10",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders",
+      "target_rva": "0x950d10"
+    },
+    {
+      "id": "infantry_candidates_958637",
+      "binary": "game",
+      "rva": "0x958637",
+      "hex": "f2410f114608",
+      "instruction": "MOVSD qword ptr [R14 + 0x8],XMM0",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_95864a",
+      "binary": "game",
+      "rva": "0x95864a",
+      "hex": "4d8926",
+      "instruction": "MOV qword ptr [R14],R12",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_9587d2",
+      "binary": "game",
+      "rva": "0x9587d2",
+      "hex": "e819090000",
+      "instruction": "CALL 0x1409590f0",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders",
+      "target_rva": "0x9590f0"
+    },
+    {
+      "id": "infantry_candidates_95884f",
+      "binary": "game",
+      "rva": "0x95884f",
+      "hex": "41c7460401000000",
+      "instruction": "MOV dword ptr [R14 + 0x4],0x1",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "infantry_candidates_9588c3",
+      "binary": "game",
+      "rva": "0x9588c3",
+      "hex": "45896604",
+      "instruction": "MOV dword ptr [R14 + 0x4],R12D",
+      "function_rva": "0x9575d0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "vehicle_candidates_9af4cc",
+      "binary": "game",
+      "rva": "0x9af4cc",
+      "hex": "4881c1d8030000",
+      "instruction": "ADD RCX,0x3d8",
+      "function_rva": "0x9aeda0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "vehicle_candidates_9af4d3",
+      "binary": "game",
+      "rva": "0x9af4d3",
+      "hex": "e828c5e7ff",
+      "instruction": "CALL 0x14082ba00",
+      "function_rva": "0x9aeda0",
+      "export_pass": "orders",
+      "target_rva": "0x82ba00"
+    },
+    {
+      "id": "vehicle_candidates_82ba23",
+      "binary": "game",
+      "rva": "0x82ba23",
+      "hex": "c70700000000",
+      "instruction": "MOV dword ptr [RDI],0x0",
+      "function_rva": "0x82ba00",
+      "export_pass": "phase"
+    },
+    {
+      "id": "vehicle_candidates_9a8647",
+      "binary": "game",
+      "rva": "0x9a8647",
+      "hex": "8986d8030000",
+      "instruction": "MOV dword ptr [RSI + 0x3d8],EAX",
+      "function_rva": "0x9a7fa0",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "vehicle_candidates_9af650",
+      "binary": "game",
+      "rva": "0x9af650",
+      "hex": "e82b40bbff",
+      "instruction": "CALL 0x140563680",
+      "function_rva": "0x9aeda0",
+      "export_pass": "orders",
+      "target_rva": "0x563680"
+    },
+    {
+      "id": "vehicle_candidates_9af69d",
+      "binary": "game",
+      "rva": "0x9af69d",
+      "hex": "e8de3fbbff",
+      "instruction": "CALL 0x140563680",
+      "function_rva": "0x9aeda0",
+      "export_pass": "orders",
+      "target_rva": "0x563680"
+    },
+    {
+      "id": "vehicle_candidates_9af757",
+      "binary": "game",
+      "rva": "0x9af757",
+      "hex": "e84421f1ff",
+      "instruction": "CALL 0x1408c18a0",
+      "function_rva": "0x9aeda0",
+      "export_pass": "orders",
+      "target_rva": "0x8c18a0"
+    },
+    {
+      "id": "vehicle_candidates_9af7b9",
+      "binary": "game",
+      "rva": "0x9af7b9",
+      "hex": "3d00200000",
+      "instruction": "CMP EAX,0x2000",
+      "function_rva": "0x9aeda0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "vehicle_candidates_9af96e",
+      "binary": "game",
+      "rva": "0x9af96e",
+      "hex": "e85de5f2ff",
+      "instruction": "CALL 0x1408dded0",
+      "function_rva": "0x9aeda0",
+      "export_pass": "orders",
+      "target_rva": "0x8dded0"
+    },
+    {
+      "id": "vehicle_candidates_9afa9e",
+      "binary": "game",
+      "rva": "0x9afa9e",
+      "hex": "e80dadf5ff",
+      "instruction": "CALL 0x14090a7b0",
+      "function_rva": "0x9aeda0",
+      "export_pass": "orders",
+      "target_rva": "0x90a7b0"
+    },
+    {
+      "id": "vehicle_candidates_9afab3",
+      "binary": "game",
+      "rva": "0x9afab3",
+      "hex": "4c8b4268",
+      "instruction": "MOV R8,qword ptr [RDX + 0x68]",
+      "function_rva": "0x9aeda0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "rng_side_effects_82dc66",
+      "binary": "game",
+      "rva": "0x82dc66",
+      "hex": "e8155ad3ff",
+      "instruction": "CALL 0x140563680",
+      "function_rva": "0x82d760",
+      "export_pass": "soft",
+      "target_rva": "0x563680"
+    },
+    {
+      "id": "rng_side_effects_82dc75",
+      "binary": "game",
+      "rva": "0x82dc75",
+      "hex": "ff400c",
+      "instruction": "INC dword ptr [RAX + 0xc]",
+      "function_rva": "0x82d760",
+      "export_pass": "soft"
+    },
+    {
+      "id": "rng_side_effects_82dcbf",
+      "binary": "game",
+      "rva": "0x82dcbf",
+      "hex": "e8bc59d3ff",
+      "instruction": "CALL 0x140563680",
+      "function_rva": "0x82d760",
+      "export_pass": "soft",
+      "target_rva": "0x563680"
+    },
+    {
+      "id": "rng_side_effects_82dccf",
+      "binary": "game",
+      "rva": "0x82dccf",
+      "hex": "ff400c",
+      "instruction": "INC dword ptr [RAX + 0xc]",
+      "function_rva": "0x82d760",
+      "export_pass": "soft"
+    },
+    {
+      "id": "rng_side_effects_82db5a",
+      "binary": "game",
+      "rva": "0x82db5a",
+      "hex": "8987f4030000",
+      "instruction": "MOV dword ptr [RDI + 0x3f4],EAX",
+      "function_rva": "0x82d760",
+      "export_pass": "soft"
+    },
+    {
+      "id": "rng_side_effects_82e2d1",
+      "binary": "game",
+      "rva": "0x82e2d1",
+      "hex": "f30f1187e4030000",
+      "instruction": "MOVSS dword ptr [RDI + 0x3e4],XMM0",
+      "function_rva": "0x82d760",
+      "export_pass": "soft"
+    },
+    {
+      "id": "rng_side_effects_66f2f1",
+      "binary": "game",
+      "rva": "0x66f2f1",
+      "hex": "e87afc0900",
+      "instruction": "CALL 0x14070ef70",
+      "function_rva": "0x66f150",
+      "export_pass": "phase",
+      "target_rva": "0x70ef70"
+    },
+    {
+      "id": "rng_side_effects_66f2f9",
+      "binary": "game",
+      "rva": "0x66f2f9",
+      "hex": "e81245efff",
+      "instruction": "CALL 0x140563810",
+      "function_rva": "0x66f150",
+      "export_pass": "phase",
+      "target_rva": "0x563810"
+    },
+    {
+      "id": "rng_side_effects_623df0",
+      "binary": "game",
+      "rva": "0x623df0",
+      "hex": "ff400c",
+      "instruction": "INC dword ptr [RAX + 0xc]",
+      "function_rva": "0x623dc0",
+      "export_pass": "phase"
+    },
+    {
+      "id": "rng_side_effects_623e3e",
+      "binary": "game",
+      "rva": "0x623e3e",
+      "hex": "ff400c",
+      "instruction": "INC dword ptr [RAX + 0xc]",
+      "function_rva": "0x623dc0",
+      "export_pass": "phase"
+    },
+    {
+      "id": "rng_side_effects_8c2030",
+      "binary": "game",
+      "rva": "0x8c2030",
+      "hex": "e8fb020000",
+      "instruction": "CALL 0x1408c2330",
+      "function_rva": "0x8c1ff0",
+      "export_pass": "queries",
+      "target_rva": "0x8c2330"
+    },
+    {
+      "id": "rng_side_effects_8c204b",
+      "binary": "game",
+      "rva": "0x8c204b",
+      "hex": "e820000000",
+      "instruction": "CALL 0x1408c2070",
+      "function_rva": "0x8c1ff0",
+      "export_pass": "queries",
+      "target_rva": "0x8c2070"
+    },
+    {
+      "id": "rng_side_effects_8c21b0",
+      "binary": "game",
+      "rva": "0x8c21b0",
+      "hex": "e8cb14caff",
+      "instruction": "CALL 0x140563680",
+      "function_rva": "0x8c2070",
+      "export_pass": "firing",
+      "target_rva": "0x563680"
+    },
+    {
+      "id": "committed_threats_91c3ec",
+      "binary": "game",
+      "rva": "0x91c3ec",
+      "hex": "488b8180020000",
+      "instruction": "MOV RAX,qword ptr [RCX + 0x280]",
+      "function_rva": "0x91c350",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "committed_threats_91c3f3",
+      "binary": "game",
+      "rva": "0x91c3f3",
+      "hex": "488b8988020000",
+      "instruction": "MOV RCX,qword ptr [RCX + 0x288]",
+      "function_rva": "0x91c350",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "committed_threats_91c406",
+      "binary": "game",
+      "rva": "0x91c406",
+      "hex": "4180796c00",
+      "instruction": "CMP byte ptr [R9 + 0x6c],0x0",
+      "function_rva": "0x91c350",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "committed_threats_91c413",
+      "binary": "game",
+      "rva": "0x91c413",
+      "hex": "458b4114",
+      "instruction": "MOV R8D,dword ptr [R9 + 0x14]",
+      "function_rva": "0x91c350",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "committed_threats_91c433",
+      "binary": "game",
+      "rva": "0x91c433",
+      "hex": "418b5114",
+      "instruction": "MOV EDX,dword ptr [R9 + 0x14]",
+      "function_rva": "0x91c350",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "weapon_replication_8ecded",
+      "binary": "game",
+      "rva": "0x8ecded",
+      "hex": "e8aef9f2ff",
+      "instruction": "CALL 0x14081c7a0",
+      "function_rva": "0x8ecbf0",
+      "export_pass": "orders",
+      "target_rva": "0x81c7a0"
+    },
+    {
+      "id": "weapon_replication_8ecdfd",
+      "binary": "game",
+      "rva": "0x8ecdfd",
+      "hex": "41b903000000",
+      "instruction": "MOV R9D,0x3",
+      "function_rva": "0x8ecbf0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "weapon_replication_8ece03",
+      "binary": "game",
+      "rva": "0x8ece03",
+      "hex": "c7442420ffffffff",
+      "instruction": "MOV dword ptr [RSP + 0x20],0xffffffff",
+      "function_rva": "0x8ecbf0",
+      "export_pass": "orders"
+    },
+    {
+      "id": "weapon_replication_8ece0e",
+      "binary": "game",
+      "rva": "0x8ece0e",
+      "hex": "e8ad22f3ff",
+      "instruction": "CALL 0x14081f0c0",
+      "function_rva": "0x8ecbf0",
+      "export_pass": "orders",
+      "target_rva": "0x81f0c0"
+    },
+    {
+      "id": "weapon_replication_8ece57",
+      "binary": "game",
+      "rva": "0x8ece57",
+      "hex": "e824d30200",
+      "instruction": "CALL 0x14091a180",
+      "function_rva": "0x8ecbf0",
+      "export_pass": "orders",
+      "target_rva": "0x91a180"
+    },
+    {
+      "id": "weapon_replication_8ecc7d",
+      "binary": "game",
+      "rva": "0x8ecc7d",
+      "hex": "e8fe27f3ff",
+      "instruction": "CALL 0x14081f480",
+      "function_rva": "0x8ecbf0",
+      "export_pass": "orders",
+      "target_rva": "0x81f480"
+    },
+    {
+      "id": "weapon_replication_81fdd1",
+      "binary": "game",
+      "rva": "0x81fdd1",
+      "hex": "e80ab788ff",
+      "instruction": "CALL 0x1400ab4e0",
+      "function_rva": "0x81fcb0",
+      "export_pass": "checks",
+      "target_rva": "0xab4e0"
+    },
+    {
+      "id": "weapon_replication_81fded",
+      "binary": "game",
+      "rva": "0x81fded",
+      "hex": "488b5108",
+      "instruction": "MOV RDX,qword ptr [RCX + 0x8]",
+      "function_rva": "0x81fcb0",
+      "export_pass": "checks"
+    },
+    {
+      "id": "weapon_replication_ab7ed",
+      "binary": "game",
+      "rva": "0xab7ed",
+      "hex": "e8ce387700",
+      "instruction": "CALL 0x14081f0c0",
+      "function_rva": "0xab640",
+      "export_pass": "boundaries",
+      "target_rva": "0x81f0c0"
+    },
+    {
+      "id": "weapon_replication_82d276",
+      "binary": "game",
+      "rva": "0x82d276",
+      "hex": "4438b2f4150000",
+      "instruction": "CMP byte ptr [RDX + 0x15f4],R14B",
+      "function_rva": "0x82d220",
+      "export_pass": "soft"
+    },
+    {
+      "id": "weapon_replication_82d369",
+      "binary": "game",
+      "rva": "0x82d369",
+      "hex": "e8521e0000",
+      "instruction": "CALL 0x14082f1c0",
+      "function_rva": "0x82d220",
+      "export_pass": "soft",
+      "target_rva": "0x82f1c0"
+    },
+    {
+      "id": "weapon_replication_82d37f",
+      "binary": "game",
+      "rva": "0x82d37f",
+      "hex": "e8bce33f00",
+      "instruction": "CALL 0x140c2b740",
+      "function_rva": "0x82d220",
+      "export_pass": "soft",
+      "target_rva": "0xc2b740"
+    },
+    {
+      "id": "weapon_replication_82d397",
+      "binary": "game",
+      "rva": "0x82d397",
+      "hex": "c74424580e000000",
+      "instruction": "MOV dword ptr [RSP + 0x58],0xe",
+      "function_rva": "0x82d220",
+      "export_pass": "soft"
+    },
+    {
+      "id": "weapon_replication_ab4fc",
+      "binary": "game",
+      "rva": "0xab4fc",
+      "hex": "c741080c000000",
+      "instruction": "MOV dword ptr [RCX + 0x8],0xc",
+      "function_rva": "0xab4e0",
+      "export_pass": "queries"
+    },
+    {
+      "id": "weapon_replication_ac201",
+      "binary": "game",
+      "rva": "0xac201",
+      "hex": "e8ba2f7800",
+      "instruction": "CALL 0x14082f1c0",
+      "function_rva": "0xabe90",
+      "export_pass": "boundaries",
+      "target_rva": "0x82f1c0"
+    },
+    {
+      "id": "movement_and_cover_91a19c",
+      "binary": "game",
+      "rva": "0x91a19c",
+      "hex": "ff5020",
+      "instruction": "CALL qword ptr [RAX + 0x20]",
+      "function_rva": "0x91a180",
+      "export_pass": "orders"
+    },
+    {
+      "id": "movement_and_cover_91a1b0",
+      "binary": "game",
+      "rva": "0x91a1b0",
+      "hex": "ff10",
+      "instruction": "CALL qword ptr [RAX]",
+      "function_rva": "0x91a180",
+      "export_pass": "orders"
+    },
+    {
+      "id": "movement_and_cover_91a1b9",
+      "binary": "game",
+      "rva": "0x91a1b9",
+      "hex": "48897b30",
+      "instruction": "MOV qword ptr [RBX + 0x30],RDI",
+      "function_rva": "0x91a180",
+      "export_pass": "orders"
+    },
+    {
+      "id": "movement_and_cover_90ae05",
+      "binary": "game",
+      "rva": "0x90ae05",
+      "hex": "e836093200",
+      "instruction": "CALL 0x140c2b740",
+      "function_rva": "0x90ad10",
+      "export_pass": "orders",
+      "target_rva": "0xc2b740"
+    },
+    {
+      "id": "movement_and_cover_90ae0a",
+      "binary": "game",
+      "rva": "0x90ae0a",
+      "hex": "88433c",
+      "instruction": "MOV byte ptr [RBX + 0x3c],AL",
+      "function_rva": "0x90ad10",
+      "export_pass": "orders"
+    },
+    {
+      "id": "movement_and_cover_90ae0d",
+      "binary": "game",
+      "rva": "0x90ae0d",
+      "hex": "e88e093200",
+      "instruction": "CALL 0x140c2b7a0",
+      "function_rva": "0x90ad10",
+      "export_pass": "orders",
+      "target_rva": "0xc2b7a0"
+    },
+    {
+      "id": "movement_and_cover_90ae12",
+      "binary": "game",
+      "rva": "0x90ae12",
+      "hex": "88433d",
+      "instruction": "MOV byte ptr [RBX + 0x3d],AL",
+      "function_rva": "0x90ad10",
+      "export_pass": "orders"
+    },
+    {
+      "id": "movement_and_cover_90b71f",
+      "binary": "game",
+      "rva": "0x90b71f",
+      "hex": "4438763c",
+      "instruction": "CMP byte ptr [RSI + 0x3c],R14B",
+      "function_rva": "0x90b0c0",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "movement_and_cover_90b731",
+      "binary": "game",
+      "rva": "0x90b731",
+      "hex": "48c744243809000000",
+      "instruction": "MOV qword ptr [RSP + 0x38],0x9",
+      "function_rva": "0x90b0c0",
+      "export_pass": "boundaries"
+    },
+    {
+      "id": "movement_and_cover_90b76d",
+      "binary": "game",
+      "rva": "0x90b76d",
+      "hex": "e8befd7aff",
+      "instruction": "CALL 0x1400bb530",
+      "function_rva": "0x90b0c0",
+      "export_pass": "boundaries",
+      "target_rva": "0xbb530"
+    },
+    {
+      "id": "movement_and_cover_8ae528",
+      "binary": "game",
+      "rva": "0x8ae528",
+      "hex": "c744244022000000",
+      "instruction": "MOV dword ptr [RSP + 0x40],0x22",
+      "function_rva": "0x8ae410",
+      "export_pass": "orders"
+    },
+    {
+      "id": "movement_and_cover_8ae648",
+      "binary": "game",
+      "rva": "0x8ae648",
+      "hex": "c744244022000000",
+      "instruction": "MOV dword ptr [RSP + 0x40],0x22",
+      "function_rva": "0x8ae590",
+      "export_pass": "orders"
+    },
+    {
+      "id": "movement_and_cover_bb5f4",
+      "binary": "game",
+      "rva": "0xbb5f4",
+      "hex": "e8475d0900",
+      "instruction": "CALL 0x140151340",
+      "function_rva": "0xbb5e0",
+      "export_pass": "checks",
+      "target_rva": "0x151340"
+    },
+    {
+      "id": "movement_and_cover_aa96e",
+      "binary": "game",
+      "rva": "0xaa96e",
+      "hex": "e99d3a8000",
+      "instruction": "JMP 0x1408ae410",
+      "function_rva": "0xaa7b0",
+      "export_pass": "boundaries",
+      "target_rva": "0x8ae410"
+    },
+    {
+      "id": "movement_and_cover_aa985",
+      "binary": "game",
+      "rva": "0xaa985",
+      "hex": "e8063c8000",
+      "instruction": "CALL 0x1408ae590",
+      "function_rva": "0xaa7b0",
+      "export_pass": "boundaries",
+      "target_rva": "0x8ae590"
+    },
+    {
+      "id": "PossibleDamageRadius_registration",
+      "binary": "game",
+      "rva": "0x56ee0",
+      "hex": "41b9b40000004c8d0573960a01488d15fc195501488d0d7d1e5501e9d05d6200"
+    },
+    {
+      "id": "PossibleDamageRadius_name",
+      "binary": "game",
+      "rva": "0x1100560",
+      "hex": "506f737369626c6544616d61676552616469757300"
+    },
+    {
+      "id": "Calibre_registration",
+      "binary": "game",
+      "rva": "0x5c180",
+      "hex": "41b9bb0000004c8d05234a0a01488d156c315501488d0dbd355501e9300b6200"
+    },
+    {
+      "id": "Calibre_name",
+      "binary": "game",
+      "rva": "0x1100bb0",
+      "hex": "43616c6962726500"
+    },
+    {
+      "id": "SteelEquivalent_registration",
+      "binary": "game",
+      "rva": "0x57f70",
+      "hex": "41b91d0000004c8d050b8e0a01488d15bc1b5501488d0d7d1d5501e9404d6200"
+    },
+    {
+      "id": "SteelEquivalent_name",
+      "binary": "game",
+      "rva": "0x1100d88",
+      "hex": "537465656c4571756976616c656e7400"
+    },
+    {
+      "id": "SyncedProjectiles_registration",
+      "binary": "game",
+      "rva": "0x5bd70",
+      "hex": "41b9fd0000004c8d05d37d0a01488d15ac2c5501488d0de5345501e9400f6200"
+    },
+    {
+      "id": "SyncedProjectiles_name",
+      "binary": "game",
+      "rva": "0x1103b50",
+      "hex": "53796e63656450726f6a656374696c657300"
+    },
+    {
+      "id": "DetonationThickness_registration",
+      "binary": "game",
+      "rva": "0x5ccf0",
+      "hex": "41b92e0000004c8d054b770a01488d15fc2d5501488d0d852e5501e9c0ff6100"
+    },
+    {
+      "id": "DetonationThickness_name",
+      "binary": "game",
+      "rva": "0x1104448",
+      "hex": "4465746f6e6174696f6e546869636b6e65737300"
+    }
+  ],
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/material.set",
+      "size": 8969,
+      "sha256": "f5b769cbc508dd519b45c24e4b56ee1084ebe4da903bfacce7da888d6a275b5f"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/construction/fence.inc",
+      "size": 2891,
+      "sha256": "54ae5c47754e634ec03f8766b760ec6db38a51551d62b8c28f188b7350b09158"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/flora.inc",
+      "size": 18041,
+      "sha256": "67752a1a60e9b19729214f563de1f4cce4e2d5dcc641915ea0b20dca95713064"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/shell/he.pattern",
+      "size": 108,
+      "sha256": "b3c7b8027480f8b073aa65873530264a2d4441deb70ad7ce2f996cf635453b92"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/shell/bullet_105x764.he.ammo",
+      "size": 268,
+      "sha256": "088463a3d537e993b923278f460a372d3a4542fcd87df51e2ba1c4ee38dd51b8"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/blast.inc",
+      "size": 12299,
+      "sha256": "667d1ec8314c7c9a6e48a0286a9a9fb838ddfdd9a36aa77860d7ae9a4b3eadec"
+    }
+  ]
+}

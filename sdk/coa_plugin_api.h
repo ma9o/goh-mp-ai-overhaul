@@ -58,41 +58,41 @@ typedef int (*lua_CFunction)(lua_State* L);
  */
 
 // Stack manipulation
-typedef int     (*COA_lua_gettop_t)(lua_State* L);
-typedef void    (*COA_lua_settop_t)(lua_State* L, int idx);
-typedef void    (*COA_lua_pushvalue_t)(lua_State* L, int idx);
-typedef void    (*COA_lua_remove_t)(lua_State* L, int idx);
-typedef int     (*COA_lua_type_t)(lua_State* L, int idx);
+typedef int (*COA_lua_gettop_t)(lua_State* L);
+typedef void (*COA_lua_settop_t)(lua_State* L, int idx);
+typedef void (*COA_lua_pushvalue_t)(lua_State* L, int idx);
+typedef void (*COA_lua_remove_t)(lua_State* L, int idx);
+typedef int (*COA_lua_type_t)(lua_State* L, int idx);
 
 // Push values
-typedef void    (*COA_lua_pushnil_t)(lua_State* L);
-typedef void    (*COA_lua_pushnumber_t)(lua_State* L, lua_Number n);
-typedef void    (*COA_lua_pushinteger_t)(lua_State* L, lua_Integer n);
-typedef void    (*COA_lua_pushstring_t)(lua_State* L, const char* s);
-typedef void    (*COA_lua_pushboolean_t)(lua_State* L, int b);
-typedef void    (*COA_lua_pushcclosure_t)(lua_State* L, lua_CFunction fn, int n);
-typedef void    (*COA_lua_pushlightuserdata_t)(lua_State* L, void* p);
+typedef void (*COA_lua_pushnil_t)(lua_State* L);
+typedef void (*COA_lua_pushnumber_t)(lua_State* L, lua_Number n);
+typedef void (*COA_lua_pushinteger_t)(lua_State* L, lua_Integer n);
+typedef void (*COA_lua_pushstring_t)(lua_State* L, const char* s);
+typedef void (*COA_lua_pushboolean_t)(lua_State* L, int b);
+typedef void (*COA_lua_pushcclosure_t)(lua_State* L, lua_CFunction fn, int n);
+typedef void (*COA_lua_pushlightuserdata_t)(lua_State* L, void* p);
 
 // Get values
-typedef lua_Number  (*COA_lua_tonumber_t)(lua_State* L, int idx);
+typedef lua_Number (*COA_lua_tonumber_t)(lua_State* L, int idx);
 typedef lua_Integer (*COA_lua_tointeger_t)(lua_State* L, int idx);
 typedef const char* (*COA_lua_tostring_t)(lua_State* L, int idx);
-typedef int         (*COA_lua_toboolean_t)(lua_State* L, int idx);
-typedef void*       (*COA_lua_touserdata_t)(lua_State* L, int idx);
+typedef int (*COA_lua_toboolean_t)(lua_State* L, int idx);
+typedef void* (*COA_lua_touserdata_t)(lua_State* L, int idx);
 
 // Table operations
-typedef void    (*COA_lua_createtable_t)(lua_State* L, int narr, int nrec);
-typedef void    (*COA_lua_settable_t)(lua_State* L, int idx);
-typedef void    (*COA_lua_gettable_t)(lua_State* L, int idx);
-typedef void    (*COA_lua_setfield_t)(lua_State* L, int idx, const char* k);
-typedef void    (*COA_lua_getfield_t)(lua_State* L, int idx, const char* k);
-typedef void    (*COA_lua_rawgeti_t)(lua_State* L, int idx, int n);
-typedef void    (*COA_lua_rawseti_t)(lua_State* L, int idx, int n);
+typedef void (*COA_lua_createtable_t)(lua_State* L, int narr, int nrec);
+typedef void (*COA_lua_settable_t)(lua_State* L, int idx);
+typedef void (*COA_lua_gettable_t)(lua_State* L, int idx);
+typedef void (*COA_lua_setfield_t)(lua_State* L, int idx, const char* k);
+typedef void (*COA_lua_getfield_t)(lua_State* L, int idx, const char* k);
+typedef void (*COA_lua_rawgeti_t)(lua_State* L, int idx, int n);
+typedef void (*COA_lua_rawseti_t)(lua_State* L, int idx, int n);
 
 // Misc
-typedef int     (*COA_lua_pcall_t)(lua_State* L, int nargs, int nresults, int msgh);
-typedef void    (*COA_lua_error_t)(lua_State* L);
-typedef int     (*COA_luaL_error_t)(lua_State* L, const char* fmt, ...);
+typedef int (*COA_lua_pcall_t)(lua_State* L, int nargs, int nresults, int msgh);
+typedef void (*COA_lua_error_t)(lua_State* L);
+typedef int (*COA_luaL_error_t)(lua_State* L, const char* fmt, ...);
 
 /**
  * Lua API function table - filled in by the extender at plugin load time.
@@ -100,42 +100,42 @@ typedef int     (*COA_luaL_error_t)(lua_State* L, const char* fmt, ...);
  */
 typedef struct {
     // Stack
-    COA_lua_gettop_t            lua_gettop;
-    COA_lua_settop_t            lua_settop;
-    COA_lua_pushvalue_t         lua_pushvalue;
-    COA_lua_remove_t            lua_remove;
-    COA_lua_type_t              lua_type;
-    
+    COA_lua_gettop_t lua_gettop;
+    COA_lua_settop_t lua_settop;
+    COA_lua_pushvalue_t lua_pushvalue;
+    COA_lua_remove_t lua_remove;
+    COA_lua_type_t lua_type;
+
     // Push
-    COA_lua_pushnil_t           lua_pushnil;
-    COA_lua_pushnumber_t        lua_pushnumber;
-    COA_lua_pushinteger_t       lua_pushinteger;
-    COA_lua_pushstring_t        lua_pushstring;
-    COA_lua_pushboolean_t       lua_pushboolean;
-    COA_lua_pushcclosure_t      lua_pushcclosure;
+    COA_lua_pushnil_t lua_pushnil;
+    COA_lua_pushnumber_t lua_pushnumber;
+    COA_lua_pushinteger_t lua_pushinteger;
+    COA_lua_pushstring_t lua_pushstring;
+    COA_lua_pushboolean_t lua_pushboolean;
+    COA_lua_pushcclosure_t lua_pushcclosure;
     COA_lua_pushlightuserdata_t lua_pushlightuserdata;
-    
+
     // Get
-    COA_lua_tonumber_t          lua_tonumber;
-    COA_lua_tointeger_t         lua_tointeger;
-    COA_lua_tostring_t          lua_tostring;
-    COA_lua_toboolean_t         lua_toboolean;
-    COA_lua_touserdata_t        lua_touserdata;
-    
+    COA_lua_tonumber_t lua_tonumber;
+    COA_lua_tointeger_t lua_tointeger;
+    COA_lua_tostring_t lua_tostring;
+    COA_lua_toboolean_t lua_toboolean;
+    COA_lua_touserdata_t lua_touserdata;
+
     // Table
-    COA_lua_createtable_t       lua_createtable;
-    COA_lua_settable_t          lua_settable;
-    COA_lua_gettable_t          lua_gettable;
-    COA_lua_setfield_t          lua_setfield;
-    COA_lua_getfield_t          lua_getfield;
-    COA_lua_rawgeti_t           lua_rawgeti;
-    COA_lua_rawseti_t           lua_rawseti;
-    
+    COA_lua_createtable_t lua_createtable;
+    COA_lua_settable_t lua_settable;
+    COA_lua_gettable_t lua_gettable;
+    COA_lua_setfield_t lua_setfield;
+    COA_lua_getfield_t lua_getfield;
+    COA_lua_rawgeti_t lua_rawgeti;
+    COA_lua_rawseti_t lua_rawseti;
+
     // Misc
-    COA_lua_pcall_t             lua_pcall;
-    COA_lua_error_t             lua_error;
-    COA_luaL_error_t            luaL_error;
-    
+    COA_lua_pcall_t lua_pcall;
+    COA_lua_error_t lua_error;
+    COA_luaL_error_t luaL_error;
+
 } COA_LuaAPI;
 
 /**
@@ -194,37 +194,37 @@ typedef uintptr_t (*COA_GetGameBase_t)(void);
  */
 typedef enum {
     COA_EVENT_NONE = 0,
-    
+
     // Game lifecycle
-    COA_EVENT_GAME_STARTED,         // Game started (map loaded)
-    COA_EVENT_GAME_ENDED,           // Game ended
-    COA_EVENT_TICK,                 // Game tick (called every frame)
-    
+    COA_EVENT_GAME_STARTED, // Game started (map loaded)
+    COA_EVENT_GAME_ENDED,   // Game ended
+    COA_EVENT_TICK,         // Game tick (called every frame)
+
     // Unit events
-    COA_EVENT_UNIT_SPAWNED,         // Unit created
-    COA_EVENT_UNIT_KILLED,          // Unit killed
-    COA_EVENT_UNIT_DAMAGED,         // Unit took damage
-    COA_EVENT_UNIT_HEALED,          // Unit healed
-    
+    COA_EVENT_UNIT_SPAWNED, // Unit created
+    COA_EVENT_UNIT_KILLED,  // Unit killed
+    COA_EVENT_UNIT_DAMAGED, // Unit took damage
+    COA_EVENT_UNIT_HEALED,  // Unit healed
+
     // Combat events
-    COA_EVENT_DAMAGE_DEALT,         // Damage was dealt
-    COA_EVENT_WEAPON_FIRED,         // Weapon fired
-    COA_EVENT_EXPLOSION,            // Explosion occurred
-    
+    COA_EVENT_DAMAGE_DEALT, // Damage was dealt
+    COA_EVENT_WEAPON_FIRED, // Weapon fired
+    COA_EVENT_EXPLOSION,    // Explosion occurred
+
     // Vehicle events
-    COA_EVENT_VEHICLE_SPAWNED,      // Vehicle created
-    COA_EVENT_VEHICLE_DESTROYED,    // Vehicle destroyed
-    COA_EVENT_VEHICLE_ENTERED,      // Unit entered vehicle
-    COA_EVENT_VEHICLE_EXITED,       // Unit exited vehicle
-    
+    COA_EVENT_VEHICLE_SPAWNED,   // Vehicle created
+    COA_EVENT_VEHICLE_DESTROYED, // Vehicle destroyed
+    COA_EVENT_VEHICLE_ENTERED,   // Unit entered vehicle
+    COA_EVENT_VEHICLE_EXITED,    // Unit exited vehicle
+
     // AI events
-    COA_EVENT_AI_DECISION,          // AI made a decision
-    COA_EVENT_AI_COMMAND,           // AI issued a command
-    
+    COA_EVENT_AI_DECISION, // AI made a decision
+    COA_EVENT_AI_COMMAND,  // AI issued a command
+
     // Lua events
-    COA_EVENT_LUA_LOADED,           // Lua state became available
-    COA_EVENT_LUA_SCRIPT_RUN,       // A Lua script was executed
-    
+    COA_EVENT_LUA_LOADED,     // Lua state became available
+    COA_EVENT_LUA_SCRIPT_RUN, // A Lua script was executed
+
     COA_EVENT_MAX
 } COA_EventType;
 
@@ -234,7 +234,7 @@ typedef enum {
  */
 typedef struct {
     COA_EventType type;
-    
+
     union {
         // Generic event data
         struct {
@@ -243,41 +243,41 @@ typedef struct {
             float value1;
             float value2;
         } generic;
-        
+
         // Unit events
         struct {
-            void* unit;         // Pointer to unit
-            float health;       // Current health
-            float maxHealth;    // Max health
+            void* unit;      // Pointer to unit
+            float health;    // Current health
+            float maxHealth; // Max health
         } unit;
-        
+
         // Damage events
         struct {
-            void* source;       // Source unit/weapon
-            void* target;       // Target unit
-            float damage;       // Damage amount
-            int damageType;     // Type of damage
+            void* source;   // Source unit/weapon
+            void* target;   // Target unit
+            float damage;   // Damage amount
+            int damageType; // Type of damage
         } damage;
-        
+
         // Vehicle events
         struct {
-            void* vehicle;      // Pointer to vehicle
-            void* unit;         // Related unit (for enter/exit)
+            void* vehicle; // Pointer to vehicle
+            void* unit;    // Related unit (for enter/exit)
         } vehicle;
-        
+
         // Tick event
         struct {
-            float deltaTime;    // Time since last tick
-            double gameTime;    // Total game time
+            float deltaTime; // Time since last tick
+            double gameTime; // Total game time
         } tick;
-        
+
         // Lua events
         struct {
             lua_State* state;   // Lua state
             const char* script; // Script name (if applicable)
         } lua;
     };
-    
+
 } COA_EventData;
 
 /**
@@ -311,22 +311,22 @@ typedef void (*COA_UnsubscribeEvent_t)(uint32_t subscriptionId);
  * This is provided to your ModInit() function.
  */
 typedef struct {
-    uint32_t version;               // API version (currently 1)
-    uint32_t size;                  // Size of this struct (for compatibility)
-    
+    uint32_t version; // API version (currently 1)
+    uint32_t size;    // Size of this struct (for compatibility)
+
     // Core
-    COA_GetGameBase_t       GetGameBase;
-    COA_GetLuaState_t       GetLuaState;
-    COA_GetLuaAPI_t         GetLuaAPI;
-    
+    COA_GetGameBase_t GetGameBase;
+    COA_GetLuaState_t GetLuaState;
+    COA_GetLuaAPI_t GetLuaAPI;
+
     // Lua function registration
-    COA_RegisterLuaFunction_t           RegisterLuaFunction;
-    COA_RegisterNamespacedFunction_t    RegisterNamespacedFunction;
-    
+    COA_RegisterLuaFunction_t RegisterLuaFunction;
+    COA_RegisterNamespacedFunction_t RegisterNamespacedFunction;
+
     // Events
-    COA_SubscribeEvent_t    SubscribeEvent;
-    COA_UnsubscribeEvent_t  UnsubscribeEvent;
-    
+    COA_SubscribeEvent_t SubscribeEvent;
+    COA_UnsubscribeEvent_t UnsubscribeEvent;
+
 } COA_PluginAPI;
 
 //=============================================================================
@@ -376,31 +376,29 @@ typedef const char* (*ModGetAuthor_t)(void);
  *       return 1;
  *   }
  */
-#define COA_LUA_FUNCTION(name) \
-    static int LuaFunc_##name(lua_State* L)
+#define COA_LUA_FUNCTION(name) static int LuaFunc_##name(lua_State* L)
 
-#define COA_REGISTER_LUA_FUNCTION(api, name) \
-    (api)->RegisterLuaFunction(#name, LuaFunc_##name)
+#define COA_REGISTER_LUA_FUNCTION(api, name) (api)->RegisterLuaFunction(#name, LuaFunc_##name)
 
 /**
  * Lua type constants (matches Lua 5.2)
  */
-#define COA_LUA_TNONE           (-1)
-#define COA_LUA_TNIL            0
-#define COA_LUA_TBOOLEAN        1
-#define COA_LUA_TLIGHTUSERDATA  2
-#define COA_LUA_TNUMBER         3
-#define COA_LUA_TSTRING         4
-#define COA_LUA_TTABLE          5
-#define COA_LUA_TFUNCTION       6
-#define COA_LUA_TUSERDATA       7
-#define COA_LUA_TTHREAD         8
+#define COA_LUA_TNONE (-1)
+#define COA_LUA_TNIL 0
+#define COA_LUA_TBOOLEAN 1
+#define COA_LUA_TLIGHTUSERDATA 2
+#define COA_LUA_TNUMBER 3
+#define COA_LUA_TSTRING 4
+#define COA_LUA_TTABLE 5
+#define COA_LUA_TFUNCTION 6
+#define COA_LUA_TUSERDATA 7
+#define COA_LUA_TTHREAD 8
 
 /**
  * Lua special indices
  */
-#define COA_LUA_REGISTRYINDEX   (-1001000)
-#define COA_LUA_RIDX_GLOBALS    2
+#define COA_LUA_REGISTRYINDEX (-1001000)
+#define COA_LUA_RIDX_GLOBALS 2
 
 #ifdef __cplusplus
 }

@@ -23,13 +23,13 @@
 #include <string>
 
 // Bring COA types into scope for the API
+using COA::AIController;
+using COA::GameWorld;
+using COA::Squad;
+using COA::Team;
 using COA::Unit;
 using COA::Vehicle;
 using COA::Weapon;
-using COA::Squad;
-using COA::Team;
-using COA::AIController;
-using COA::GameWorld;
 
 //=============================================================================
 // VERSION INFO
@@ -177,5 +177,10 @@ void* COA_GetPointer(uintptr_t offset);
 // LOGGING
 //=============================================================================
 
+#if defined(__MINGW_PRINTF_FORMAT)
+__attribute__((format(__MINGW_PRINTF_FORMAT, 1, 2)))
+#elif defined(__GNUC__) || defined(__clang__)
+__attribute__((format(printf, 1, 2)))
+#endif
 void COA_Log(const char* format, ...);
 void COA_LogLevel(int level, const char* format, ...);
