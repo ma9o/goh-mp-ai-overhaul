@@ -13,6 +13,8 @@
 //      (contract: research/notes/target-prioritization-26734796.md)
 //   5. Auto-Smoke for vehicles, pinned infantry squads, and medics
 //      (contract: research/notes/auto-smoke-26734796.md)
+//   6. BattleCrusher path costs and front-armor reverse path scoring
+//      (contract: research/notes/tank-crusher-26734796.md)
 //
 // Constraints (AGENTS.md):
 //   - Zero resource/ modifications; exact PE SHA-256 gated.
@@ -33,6 +35,7 @@
 #include "MinHook.h"
 #include "target_prioritization_module.hpp"
 #include "auto_smoke_module.hpp"
+#include "tank_crusher_module.hpp"
 
 namespace {
 
@@ -295,6 +298,7 @@ using FnCollisionEval    = uint64_t(__fastcall*)(uintptr_t target, uintptr_t own
 // Globals
 uintptr_t g_Base = 0;
 HMODULE g_SelfModule = nullptr;
+HANDLE g_InitThread = nullptr;
 CRITICAL_SECTION g_LogCs;
 CRITICAL_SECTION g_GrenadeCs;
 FILE* g_LogFile = nullptr;
@@ -968,6 +972,7 @@ void* __fastcall Hook_GrenadeSimDtor(uintptr_t sim, uint32_t flags) {
 }
 
 void __fastcall Hook_ActorSlot23(uintptr_t actor) {
+    goh::tank_crusher::ActorScope tankScope(actor);
     if (g_HooksActive && g_GrenadeCount > 0 && IsHostMainThread()) {
         uint32_t now = fnClockRead();
         uintptr_t brain = 0, chassis = 0;
@@ -2475,7 +2480,7 @@ uint64_t __fastcall Hook_AttackObstructed(uintptr_t order) {
 // Init / Shutdown
 // ============================================================================
 DWORD WINAPI InitThread(LPVOID) {
-    LogMsg("=== goh_ai_v4.dll InitThread starting: 32 hooks (18 base and target prioritization + 14 Auto-Smoke) ===");
+    LogMsg("=== goh_ai InitThread starting (35 hooks including 3 tank pathing hooks) ===");
 
     g_Base = reinterpret_cast<uintptr_t>(GetModuleHandleW(nullptr));
     LogMsg("Game module base: 0x%llx", (unsigned long long)g_Base);
@@ -2565,9 +2570,18 @@ DWORD WINAPI InitThread(LPVOID) {
     }
     ok &= smokeOk;
 
+    goh::tank_crusher::log_sink = &LogMsg;
+    if (!goh::tank_crusher::prepare_hooks(g_Base, actualSha, MH_CreateHook, MH_RemoveHook)) {
+        LogMsg("ERROR: tank pathing hook staging failed");
+        ok = false;
+    }
     if (!ok) {
+        if (MH_Uninitialize() != MH_OK) {
+            LogMsg("Hook staging rollback failed; retaining trampolines for shutdown");
+            return 1;
+        }
+        goh::tank_crusher::after_hooks_removed();
         if (smokeOk) goh::auto_smoke::after_hooks_removed();
-        MH_Uninitialize();
         goh::target_prio::after_hooks_removed();
         return 1;
     }
@@ -2576,8 +2590,16 @@ DWORD WINAPI InitThread(LPVOID) {
     MH_STATUS en = MH_EnableHook(MH_ALL_HOOKS);
     if (en != MH_OK) {
         InterlockedExchange(&g_HooksActive, 0);
+        goh::tank_crusher::deactivate();
         LogMsg("ERROR: MH_EnableHook failed: %d", (int)en);
-        MH_Uninitialize();
+        MH_DisableHook(MH_ALL_HOOKS);
+        for (int wait = 0; wait < 50 && goh::tank_crusher::inflight_count() > 0; ++wait) Sleep(10);
+        Sleep(50);
+        if (MH_Uninitialize() != MH_OK) {
+            LogMsg("Retaining trampolines after partial activation until shutdown");
+            return 1;
+        }
+        goh::tank_crusher::after_hooks_removed();
         goh::target_prio::after_hooks_removed();
         goh::auto_smoke::after_hooks_removed();
         return 1;
@@ -2588,7 +2610,7 @@ DWORD WINAPI InitThread(LPVOID) {
     auto vRoute = goh::auto_smoke::vehicle::vehicle_control_route(g_Base, masterPtr, localPl);
     LogMsg("Auto-Smoke vehicle route check: master=0x%llx localPl=%u routeCtx=0x%llx",
            (unsigned long long)masterPtr, (unsigned)localPl, (unsigned long long)vRoute.context);
-    LogMsg("=== ALL 32 HOOKS ACTIVE (11 grenade/LOF/detour + 7 target prioritization + 14 Auto-Smoke) ===");
+    LogMsg("=== ALL 35 HOOKS ACTIVE (11 grenade/LOF/detour + 7 target prioritization + 14 Auto-Smoke + 3 tank pathing) ===");
     return 0;
 }
 
@@ -2596,16 +2618,31 @@ DWORD WINAPI InitThread(LPVOID) {
 
 // Clean hot-unload helper (unhooks outside loader lock before FreeLibraryAndExitThread)
 extern "C" __declspec(dllexport) DWORD WINAPI ShutdownAndUnload(LPVOID) {
+    if (g_InitThread && WaitForSingleObject(g_InitThread, INFINITE) != WAIT_OBJECT_0) return ERROR_BUSY;
     InterlockedExchange(&g_HooksActive, 0);
-    MH_DisableHook(MH_ALL_HOOKS);
-    Sleep(100);
-    MH_Uninitialize();
+    goh::tank_crusher::deactivate();
+    MH_STATUS disabled = MH_DisableHook(MH_ALL_HOOKS);
+    if (disabled != MH_OK && disabled != MH_ERROR_NOT_INITIALIZED) return ERROR_BUSY;
+    for (int wait = 0; wait < 50 && goh::tank_crusher::inflight_count() > 0; ++wait) Sleep(10);
+    Sleep(50);
+    if (goh::tank_crusher::inflight_count() > 0) {
+        LogMsg("Unload deferred: tank pathing hook still inflight");
+        return ERROR_BUSY;
+    }
+    MH_STATUS removed = MH_Uninitialize();
+    if (removed != MH_OK && removed != MH_ERROR_NOT_INITIALIZED) return ERROR_BUSY;
+    const unsigned tankCtx = goh::tank_crusher::admitted_contexts.load();
+    const unsigned tankExp = goh::tank_crusher::expanded_contexts.load();
+    const unsigned tankDisc = goh::tank_crusher::discounted_obstacles.load();
+    const unsigned tankRev = goh::tank_crusher::biased_estimates.load();
+    goh::tank_crusher::after_hooks_removed();
     goh::target_prio::after_hooks_removed();
     goh::auto_smoke::after_hooks_removed();
-    LogMsg("=== goh_ai_v4.dll ShutdownAndUnload complete (dodges=%u softLOF=%u softRej=%u detInf=%u detVeh=%u smokeVeh=%u smokeInf=%u smokeMed=%u smokeRel=%u) ===",
+    LogMsg("=== goh_ai ShutdownAndUnload complete (dodges=%u softLOF=%u softRej=%u detInf=%u detVeh=%u smokeVeh=%u smokeInf=%u smokeMed=%u smokeRel=%u tankCtx=%u tankExp=%u tankDisc=%u tankRev=%u) ===",
            g_TotalDodges, g_TotalSoftOverrides, g_TotalSoftRejects, g_TotalDetoursInf, g_TotalDetoursVeh,
            goh::auto_smoke::stat_veh_smoke, goh::auto_smoke::stat_inf_smoke,
-           goh::auto_smoke::stat_med_smoke, goh::auto_smoke::stat_inf_released);
+           goh::auto_smoke::stat_med_smoke, goh::auto_smoke::stat_inf_released,
+           tankCtx, tankExp, tankDisc, tankRev);
     FreeLibraryAndExitThread(g_SelfModule, 0);
     return 0;
 }
@@ -2616,15 +2653,17 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID) {
         DisableThreadLibraryCalls(hinstDLL);
         InitializeCriticalSection(&g_LogCs);
         InitializeCriticalSection(&g_GrenadeCs);
-        HANDLE h = CreateThread(nullptr, 0, InitThread, nullptr, 0, nullptr);
-        if (h) CloseHandle(h);
+        g_InitThread = CreateThread(nullptr, 0, InitThread, nullptr, 0, nullptr);
     } else if (fdwReason == DLL_PROCESS_DETACH) {
         InterlockedExchange(&g_HooksActive, 0);
+        goh::tank_crusher::deactivate();
         MH_DisableHook(MH_ALL_HOOKS);
         MH_Uninitialize();
+        goh::tank_crusher::after_hooks_removed();
         goh::target_prio::after_hooks_removed();
         goh::auto_smoke::after_hooks_removed();
-        LogMsg("=== goh_ai_v4.dll unloaded ===");
+        if (g_InitThread) CloseHandle(g_InitThread);
+        LogMsg("=== goh_ai unloaded ===");
         EnterCriticalSection(&g_LogCs);
         if (g_LogFile) {
             std::fclose(g_LogFile);

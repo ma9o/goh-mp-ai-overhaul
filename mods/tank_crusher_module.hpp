@@ -23,7 +23,7 @@ using Byte = std::uint8_t;
 inline constexpr char executable_sha256[] = "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a";
 inline constexpr bool runtime_allowed = false; // Static qualification status.
 inline void (*log_sink)(const char*, ...) = nullptr;
-inline std::atomic<unsigned> admitted_contexts{}, expanded_contexts{}, biased_estimates{};
+inline std::atomic<unsigned> admitted_contexts{}, expanded_contexts{}, discounted_obstacles{}, biased_estimates{};
 
 namespace detail {
 
@@ -83,14 +83,14 @@ static_assert(sizeof(PathStats) == 0x18 && offsetof(PathStats, turn_rad) == 0x14
 inline bool frontal(XY hull, XY self, XY seen, float metres_per_unit) noexcept {
     const double dx = double(seen.x) - self.x, dy = double(seen.y) - self.y;
     const double distance = std::hypot(dx, dy), norm = std::hypot(double(hull.x), double(hull.y));
-    if (!(metres_per_unit > 0 && distance > 0 && distance * metres_per_unit <= 180.0 && norm > 0))
+    if (!(metres_per_unit > 0 && distance > 0 && distance <= 180.f / metres_per_unit && norm > 0))
         return false;
     return (hull.x * dx + hull.y * dy) > .35 * norm * distance;
 }
 inline float reverse_estimate(float original, const PathStats& path, float metres_per_unit) noexcept {
     if (!(original > 0 && std::isfinite(original) && metres_per_unit > 0 &&
           path.forward >= 0 && path.reverse > path.forward && path.switches >= 0 &&
-          path.turn_rad >= 0 && path.turn_rad <= 1.5707964f)) return original;
+          path.turn_rad >= 0 && path.turn_rad <= 2.3561945f)) return original;
     if (!((path.forward + path.reverse) * metres_per_unit <= 45.f)) return original;
     const float biased = original - .08f * (path.reverse * metres_per_unit);
     return biased > 0 ? biased : original;
@@ -104,7 +104,10 @@ inline ContextCtor orig_context{};
 inline ObjectPolicy orig_policy{};
 inline Estimate orig_estimate{};
 inline Address base{};
+inline bool rollback_pending{};
+inline std::atomic<bool> active{};
 inline std::atomic<bool> host{};
+inline std::atomic<int> inflight{};
 inline std::atomic<unsigned long> serial_tid{};
 inline thread_local Address updating_actor{};
 inline Address scene{}, obstacle_begin{}, obstacle_end{}; // serial writer only
@@ -114,7 +117,14 @@ inline bool can_expand{};
 inline std::array<std::atomic<Obstacle>, 256> obstacles{};
 inline std::array<std::atomic<std::uint64_t>, 4096> actors{};
 static_assert(std::atomic<Obstacle>::is_always_lock_free && std::atomic<bool>::is_always_lock_free &&
-              std::atomic<std::uint64_t>::is_always_lock_free);
+              std::atomic<int>::is_always_lock_free && std::atomic<std::uint64_t>::is_always_lock_free);
+
+struct InflightGuard {
+    InflightGuard() noexcept { inflight.fetch_add(1, std::memory_order_acq_rel); }
+    ~InflightGuard() noexcept { inflight.fetch_sub(1, std::memory_order_acq_rel); }
+    InflightGuard(const InflightGuard&) = delete;
+    InflightGuard& operator=(const InflightGuard&) = delete;
+};
 
 inline std::uint64_t actor_key(unsigned actor, unsigned area) noexcept {
     // The engine reserves UINT32_MAX as the absent entity ID. Zero is our empty slot.
@@ -128,6 +138,11 @@ inline void revoke(std::uint64_t key) noexcept {
 }
 inline bool actor_admitted(std::uint64_t key) noexcept {
     return key && actor_slot(key).load(std::memory_order_acquire) == key;
+}
+inline std::uint64_t previous_admission(unsigned id) noexcept {
+    const auto key = actor_key(id, 0);
+    const auto previous = actor_slot(key).load(std::memory_order_acquire);
+    return (previous >> 32) == (key >> 32) ? previous : 0;
 }
 inline void reset_admission() noexcept {
     host.store(false, std::memory_order_release);
@@ -179,21 +194,35 @@ inline Address vehicle_brain(Address actor, Address chassis) noexcept {
     if (!brain || read<Address>(brain) != base + 0x101FD68 || read<Address>(brain, 0x38) != actor ||
         !weaponry || (read<Byte>(weaponry, 0x70) & 2)) return 0;
     const unsigned modes = read<unsigned>(brain, 0x398), flags = read<unsigned>(brain, 0x39C);
-    const unsigned move = (modes >> 12) & 3;
-    if ((flags & (0x3Fu | (1u << 28))) || (modes & 3) > 1 || (move != 0 && move != 2)) return 0;
+    // Path cost & gear scoring never creates or hijacks orders: allow active user moves (bit 28)
+    // and Hold Position (move_mode == 1) while always bailing on Direct Control / inhibition.
+    if ((flags & 0x3Fu) || (modes & 3) > 1) return 0;
     return brain;
 }
 
-template<class Accept> inline bool known_enemy(Address actor, Accept accept) noexcept {
+inline bool fresh_contact(Address subject, std::uint32_t now, float ticks_per_sec) noexcept {
+    const auto flags10 = read<unsigned>(subject, 0x10);
+    if (flags10 & (1u << 29)) return true; // currently visible
+    if (!(ticks_per_sec >= 1.f && ticks_per_sec <= 1000000.f) || !now) return true;
+    const auto obs_time = read<std::uint32_t>(subject, 0x64);
+    if (!obs_time) return false;
+    const auto max_age = static_cast<std::uint32_t>(ticks_per_sec * 20.f);
+    return (now - obs_time) <= max_age;
+}
+
+template<class Accept>
+inline bool known_enemy(Address actor, std::uint32_t now, float ticks_per_sec, Accept accept) noexcept {
     const Address sensor = read<Address>(actor, 0xDD0);
     if (!sensor || read<Address>(sensor, 0x260) != actor) return false;
     const Address first = read<Address>(sensor, 0x280), last = read<Address>(sensor, 0x288);
     if (!first || last < first || (last-first) % 8 || (last-first)/8 > 4096) return false;
     for (Address p = first; p != last; p += 8) {
         const Address s = read<Address>(p);
-        if (!s || read<Byte>(s, 0x6C) || (read<unsigned>(s, 0x14) & 0x1F) != 3) continue;
+        // Enemy bit 1 set, apparent/actual ally bits 2..3 and unusable bit 4 clear (recognition bit 0 optional).
+        if (!s || read<Byte>(s, 0x6C) || (read<unsigned>(s, 0x14) & 0x1Eu) != 2u) continue;
         const auto flags = read<unsigned>(s, 0x10);
         if (!(flags & (1u << 28)) || (flags & (1u << 16)) || !read<Address>(s, 0x18)) continue;
+        if (!fresh_contact(s, now, ticks_per_sec)) continue;
         const XY seen = read<XY>(s, 0x28);
         if (std::isfinite(seen.x) && std::isfinite(seen.y) && accept(seen)) return true;
     }
@@ -203,15 +232,38 @@ template<class Accept> inline bool known_enemy(Address actor, Accept accept) noe
 inline bool battle_profile(Address profile) noexcept {
     return profile && (read<Byte>(profile, 0xF0) & 0x10);
 }
+inline bool light_tank_profile(Address profile) noexcept {
+    // Stock PATHER.SET assigns Priority == 4 exclusively to the light_tank template.
+    return profile && read<std::int32_t>(profile, 0xF4) == 4;
+}
+inline bool tank_worker_profile(Address profile) noexcept {
+    if (!profile) return false;
+    if (read<Byte>(profile, 0xF0) & 0x10) return true; // heavy_tank / medium_tank
+    const auto prio = read<std::int32_t>(profile, 0xF4);
+    // Priority 4 = light_tank; Priority 3 = amphibious tracked tanks (only admitted via actor_admitted).
+    return prio == 4 || prio == 3;
+}
+inline bool is_tank_class(Address actor) noexcept {
+    const auto type = name_at(actor + 0xDE8 + 0x40);
+    return type == "tank_light" || type == "tank_medium" || type == "tank_heavy" || type == "tank";
+}
+inline bool is_tank_actor(Address actor, Address chassis, Address profile) noexcept {
+    if (battle_profile(profile) || light_tank_profile(profile)) return true;
+    return chassis && read<Address>(chassis) == base + 0x1105E80 && is_tank_class(actor);
+}
 
 inline float Hook_ObjectPolicy(Address ctx, Address dir, Address area) noexcept {
+    InflightGuard guard;
     const float native = orig_policy(ctx, dir, area);
-    if (!passable(native) || !host.load(std::memory_order_acquire) || !read<Byte>(ctx) ||
-        read<Byte>(area, 0x1F) || !battle_profile(read<Address>(ctx, 0xD0))) return native;
+    if (!active.load(std::memory_order_acquire) || !passable(native) ||
+        !host.load(std::memory_order_acquire) || !read<Byte>(ctx) ||
+        read<Byte>(area, 0x1F) || !tank_worker_profile(read<Address>(ctx, 0xD0))) return native;
     const auto key = actor_key(read<unsigned>(ctx, 0x7C), read<unsigned>(ctx, 0x78));
     if (!actor_admitted(key)) return native;
     const auto type = obstacles[read<Byte>(area, 0x3F)].load(std::memory_order_relaxed);
-    return obstacle_cost(native, type, (read<Byte>(ctx, 0xE8) & 0x10) != 0);
+    const float adjusted = obstacle_cost(native, type, (read<Byte>(ctx, 0xE8) & 0x10) != 0);
+    if (adjusted < native) discounted_obstacles.fetch_add(1, std::memory_order_relaxed);
+    return adjusted;
 }
 
 #ifdef _WIN32
@@ -226,24 +278,41 @@ inline bool serial_host() noexcept {
 #endif
 
 inline Address Hook_ContextCtor(Address ctx, Address actor) noexcept {
+    InflightGuard guard;
     const Address result = orig_context(ctx, actor);
+    if (!active.load(std::memory_order_acquire) || !result || !actor) return result;
     const Address caller = GOH_TANK_CALLER - base;
-    if (!serial_host() || !battle_profile(read<Address>(result, 0xD0))) return result;
-    const auto key = actor_key(read<unsigned>(result, 0x7C), read<unsigned>(result, 0x78));
-    const Address brain = vehicle_brain(actor, read<Address>(actor, 0xDE0));
-    if (!brain) { revoke(key); return result; }
-    // The physics predicate constructs its own context. Leave it entirely native.
+    const Address profile = read<Address>(result, 0xD0);
+    if (!tank_worker_profile(profile)) return result;
+    const unsigned id = read<unsigned>(result, 0x7C);
+    const auto key = actor_key(id, read<unsigned>(result, 0x78));
+    if (!serial_host()) {
+        // A new client or off-thread request can reuse IDs from an older scene.
+        // Withdraw any matching admission using only the constructed context.
+        revoke(previous_admission(id));
+        return result;
+    }
+    const Address chassis = read<Address>(actor, 0xDE0);
+    const Address brain = vehicle_brain(actor, chassis);
+    if (!brain || !is_tank_actor(actor, chassis, profile)) {
+        revoke(previous_admission(id));
+        return result;
+    }
+    // The physics can_crush predicate (0x76AC6C) constructs its own context. Leave it entirely native.
     if (!key || caller == 0x76AC71 ||
-        (updating_actor != actor && caller != 0x90E511 && caller != 0x86F6CB && caller != 0x8557DF))
+        (updating_actor != actor && caller != 0x90E511 && caller != 0x90ED5D &&
+         caller != 0x86F6CB && caller != 0x8557DF && caller != 0x90B286 && caller != 0x90BD51))
         return result;
     if (!refresh_obstacles()) return result;
     actor_slot(key).store(key, std::memory_order_release);
     admitted_contexts.fetch_add(1, std::memory_order_relaxed);
     auto& flags = *reinterpret_cast<Byte*>(result + 0xE8);
+    const auto now = read<std::uint32_t>(base, 0x1584568);
+    const float ticks_per_sec = read<float>(base, 0x149E758);
     if (can_expand && !(flags & 0x10) &&
         ((read<unsigned>(brain, 0x39C) & 0x1E000u) ||
-         read<unsigned>(brain, 0x3F8) > read<unsigned>(base, 0x1584568) ||
-         known_enemy(actor, [](XY) { return true; }))) {
+         read<unsigned>(brain, 0x3F8) > now ||
+         known_enemy(actor, now, ticks_per_sec, [](XY) { return true; }))) {
         flags |= 0x10;
         expanded_contexts.fetch_add(1, std::memory_order_relaxed);
     }
@@ -251,26 +320,26 @@ inline Address Hook_ContextCtor(Address ctx, Address actor) noexcept {
 }
 
 inline float Hook_EstimatePathTime(Address chassis, const PathStats* stats) noexcept {
+    InflightGuard guard;
     const float original = orig_estimate(chassis, stats);
+    if (!active.load(std::memory_order_acquire) || !chassis || !stats) return original;
     const Address caller = GOH_TANK_CALLER - base;
     if ((caller != 0x86F78B && caller != 0x86F7B9 && caller != 0x855706) || !serial_host() ||
         (read<Byte>(chassis, 0x3C0) & 0xC0)) return original;
     const float scale = read<float>(base, 0x15754A0);
-    const auto biased = reverse_estimate(original, *stats, scale);
+    const auto biased = reverse_estimate(original, read<PathStats>(reinterpret_cast<Address>(stats)), scale);
     if (!(biased < original)) return original;
     const Address actor = read<Address>(chassis, 0x10);
     if (!vehicle_brain(actor, chassis)) return original;
     const Byte profile_id = read<Byte>(actor, 0xDB4);
     const Address first = read<Address>(base, 0x15B2FF0), last = read<Address>(base, 0x15B2FF8);
     if (!first || last <= first || profile_id >= (last-first)/0xF8) return original;
-    if (!battle_profile(first + profile_id * 0xF8)) {
-        // Stock light_tank lacks BattleCrusher. Admit positively identified tanks for gear choice.
-        const auto type = name_at(actor + 0xDE8 + 0x40);
-        if (type != "tank_light" && type != "tank_medium" && type != "tank_heavy" && type != "tank")
-            return original;
-    }
+    if (!is_tank_actor(actor, chassis, first + profile_id * 0xF8)) return original;
     const auto hull = read<XY>(chassis, 0x5C), self = read<XY>(actor, 0x74);
-    if (!known_enemy(actor, [&](XY seen) { return frontal(hull, self, seen, scale); })) return original;
+    const auto now = read<std::uint32_t>(base, 0x1584568);
+    const float ticks_per_sec = read<float>(base, 0x149E758);
+    if (!known_enemy(actor, now, ticks_per_sec,
+                     [&](XY seen) { return frontal(hull, self, seen, scale); })) return original;
     biased_estimates.fetch_add(1, std::memory_order_relaxed);
     return biased;
 }
@@ -287,12 +356,13 @@ public:
     explicit ActorScope(Address actor) noexcept : previous(detail::updating_actor) {
         using namespace detail;
         updating_actor = 0;
-        if (!base || reinterpret_cast<Role>(base + 0xA7A80)()) return;
+        if (!base || !active.load(std::memory_order_acquire) ||
+            reinterpret_cast<Role>(base + 0xA7A80)()) return;
         serial_tid.store(GetCurrentThreadId(), std::memory_order_release);
         if (!refresh_authority()) return;
         updating_actor = actor;
-        const auto key = actor_key(read<unsigned>(actor, 0xC0), read<unsigned>(actor, 0x594));
-        if (actor_admitted(key) && !vehicle_brain(actor, read<Address>(actor, 0xDE0))) revoke(key);
+        const auto previous_key = previous_admission(read<unsigned>(actor, 0xC0));
+        if (previous_key && !vehicle_brain(actor, read<Address>(actor, 0xDE0))) revoke(previous_key);
     }
     ~ActorScope() { detail::updating_actor = previous; }
     ActorScope(const ActorScope&) = delete;
@@ -302,7 +372,8 @@ public:
 template<class Create, class Remove>
 inline bool prepare_hooks(Address image, const char* measured_sha256, Create create, Remove remove) {
     using namespace detail;
-    if (base || !image || !measured_sha256 || std::strcmp(measured_sha256, executable_sha256)) return false;
+    if (base || rollback_pending || !image || !measured_sha256 ||
+        std::strcmp(measured_sha256, executable_sha256)) return false;
     std::array<void*, 3> created{};
     std::size_t count{};
     auto add = [&](Address rva, auto hook, auto& original) {
@@ -315,22 +386,53 @@ inline bool prepare_hooks(Address image, const char* measured_sha256, Create cre
     };
     if (!add(0x8DF010, Hook_ContextCtor, orig_context) || !add(0x8C3650, Hook_ObjectPolicy, orig_policy) ||
         !add(0x86F430, Hook_EstimatePathTime, orig_estimate)) {
-        while (count) remove(created[--count]);
+        while (count) {
+            const auto target = created[--count];
+            if (remove(target) != 0) {
+                rollback_pending = true;
+                if (log_sink) log_sink("Tank pathing rollback failed for RVA 0x%llx",
+                                       (unsigned long long)(reinterpret_cast<Address>(target) - image));
+            }
+        }
+        if (!rollback_pending) {
+            orig_context = nullptr;
+            orig_policy = nullptr;
+            orig_estimate = nullptr;
+        }
         return false;
     }
     base = image;
-    admitted_contexts = expanded_contexts = biased_estimates = 0;
+    admitted_contexts = expanded_contexts = discounted_obstacles = biased_estimates = 0;
+    active.store(true, std::memory_order_release);
     if (log_sink) log_sink("Tank BattleCrusher and front-armor reverse pathing staged (3 hooks)");
     return true;
 }
 #endif
 
+inline void deactivate() noexcept {
+    detail::active.store(false, std::memory_order_release);
+    detail::host.store(false, std::memory_order_release);
+}
+inline int inflight_count() noexcept {
+    return detail::inflight.load(std::memory_order_acquire);
+}
+
+// An async callback can still be inside its native trampoline after hook disable.
+// The scene drops before pather teardown. The async grid reference drops only
+// after the worker acknowledges the flush (0x8C849A..0x8C853D).
+inline bool scene_torn_down() noexcept {
+    return !detail::base || (!detail::read<Address>(detail::base, 0x15C9668) &&
+                             !detail::read<Address>(detail::base, 0x15B2F80));
+}
+
 // Call after detours are disabled and their native callers have quiesced.
 inline void after_hooks_removed() noexcept {
     using namespace detail;
+    active.store(false, std::memory_order_release);
     reset_admission();
     serial_tid = 0;
     base = 0;
+    rollback_pending = false;
     orig_context = nullptr;
     orig_policy = nullptr;
     orig_estimate = nullptr;

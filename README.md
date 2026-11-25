@@ -33,6 +33,9 @@ Host-only runtime prototype (`mods/goh_ai_mod.cpp`, Steam build `26734796`, zero
    - **Pinned infantry squads:** When a squad is suppressed, losing morale (`< 50` or recent morale drop/injury), or taking fire from an enemy vehicle, MG, or enemy squad, **one** squad member carrying a smoke grenade throws a screen 6–12 m between the squad and the primary threat (25 s per-squad / 20 m group cooldown so squads don't dump all grenades at once).
    - **Medics / revives under fire:** Screens downed allies toward the active threat while approaching/reviving.
    - **Strict White Phosphorus (WP) exclusion:** Positively whitelists only the 8 audited non-lethal smoke grenade keys (`anm8_smoke`, `m24_smoke`, `m43_smoke`, `rdg1_smoke`, `svkkr_pm`, `nbk39`, `nbks`, `no8_smoke`) and audited pure-smoke vehicle launcher programs (blocking WP grenades like `m15_wp`/`m42_wp`/`no77_wp` and WP vehicle launchers like `2in_wp` / M24 Chaffee).
+6. **Tank BattleCrusher & front-armor reverse pathing** (`mods/tank_crusher_module.hpp`, [contracts](research/notes/tank-crusher-26734796.md))
+   - Activates combat obstacle crushing (`ctx+0xE8 |= 0x10`) and dampens excessive per-step grid-solver obstacle penalties for light, medium, heavy, and amphibious tracked tanks via a pure read-only host hook on `Pather::object_policy` (`0x8C3650`)—leaving `can_crush` physics (`0x76AC64`), uncrushables (`>= 100000`), `fire`, `human`, and `marine` untouched for full vanilla-client parity.
+   - Biases `eChassisTrack::EstimatePathTime` (`0x86F430`) on tactical pullbacks (`<= 45 m`, up to `135°` corner turns) so tanks reverse keeping frontal armor toward fresh known hostiles within 180 m instead of spinning 180° (supporting both AI and player right-click / Hold Position moves while bailing on Direct Control / inhibition).
 
 ## Start here
 
