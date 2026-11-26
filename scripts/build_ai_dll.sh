@@ -14,6 +14,8 @@ OBJ_DIR="local-work/build-ai/obj"
 MINHOOK_DIR="${MINHOOK_DIR:-local-work/minhook}"
 CLEAN=false
 STANDALONE_GRENADE=false
+BUILD_PROXY=true
+PROXY_ONLY=false
 
 usage() {
     cat <<'EOF'
@@ -24,6 +26,8 @@ Options:
   --obj-dir <dir>       Object cache directory (default: local-work/build-ai/obj)
   --minhook <dir>       MinHook checkout root (default: local-work/minhook)
   --standalone-grenade  Build standalone grenade_dodge.dll instead of unified AI DLL
+  --no-proxy            Skip building the drop-in version.dll proxy beside the AI DLL
+  --proxy-only          Build only the drop-in version.dll proxy
   --clean               Remove cached object files before compiling
   -h, --help            Show this help
 EOF
@@ -34,7 +38,9 @@ while [[ $# -gt 0 ]]; do
         --out)                OUT_PATH="$2"; shift 2 ;;
         --obj-dir)            OBJ_DIR="$2"; shift 2 ;;
         --minhook)            MINHOOK_DIR="$2"; shift 2 ;;
-        --standalone-grenade) STANDALONE_GRENADE=true; shift ;;
+        --standalone-grenade) STANDALONE_GRENADE=true; BUILD_PROXY=false; shift ;;
+        --no-proxy)           BUILD_PROXY=false; shift ;;
+        --proxy-only)         PROXY_ONLY=true; BUILD_PROXY=true; shift ;;
         --clean)              CLEAN=true; shift ;;
         -h|--help)            usage; exit 0 ;;
         *)                    echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
@@ -49,14 +55,21 @@ if ! command -v "$CC" >/dev/null 2>&1 || ! command -v "$CXX" >/dev/null 2>&1; th
     exit 1
 fi
 
-if [[ ! -f "$MINHOOK_DIR/include/MinHook.h" ]]; then
-    if [[ -f "build/_deps/minhook-src/include/MinHook.h" ]]; then
-        MINHOOK_DIR="build/_deps/minhook-src"
-    else
-        echo "ERROR: MinHook not found at $MINHOOK_DIR (set --minhook or MINHOOK_DIR)." >&2
-        exit 1
+if [[ "$PROXY_ONLY" != true ]]; then
+    if [[ ! -f "$MINHOOK_DIR/include/MinHook.h" ]]; then
+        if [[ -f "build/_deps/minhook-src/include/MinHook.h" ]]; then
+            MINHOOK_DIR="build/_deps/minhook-src"
+        else
+            echo "ERROR: MinHook not found at $MINHOOK_DIR (set --minhook or MINHOOK_DIR)." >&2
+            exit 1
+        fi
     fi
 fi
+
+if [[ "$STANDALONE_GRENADE" == true ]] && [[ "$OUT_PATH" == "local-work/build-ai/goh_ai_mod.dll" ]]; then
+    OUT_PATH="local-work/build-ai/grenade_dodge.dll"
+fi
+PROXY_OUT="$(dirname "$OUT_PATH")/version.dll"
 
 if [[ "$CLEAN" == true ]]; then
     rm -rf "$OBJ_DIR"
@@ -80,6 +93,7 @@ COMMON_WARN=(
 
 C_FLAGS=(-m64 -O2 -I"$MINHOOK_DIR/include")
 CXX_FLAGS=(-std=c++17 -m64 -O2 -I"$REPO_ROOT/mods" -I"$MINHOOK_DIR/include" "${COMMON_WARN[@]}")
+PROXY_CXX_FLAGS=(-std=c++17 -m64 -O2 "${COMMON_WARN[@]}")
 
 needs_rebuild() {
     local src="$1"
@@ -112,9 +126,6 @@ MINHOOK_SRCS=(
 
 if [[ "$STANDALONE_GRENADE" == true ]]; then
     CPP_SRCS=(mods/grenade_dodge.cpp)
-    if [[ "$OUT_PATH" == "local-work/build-ai/goh_ai_mod.dll" ]]; then
-        OUT_PATH="local-work/build-ai/grenade_dodge.dll"
-    fi
 else
     CPP_SRCS=(
         mods/goh_ai_mod.cpp
@@ -127,30 +138,41 @@ fi
 OBJS=()
 PIDS=()
 
-for src in "${MINHOOK_SRCS[@]}"; do
-    base="$(basename "$src" .c)"
-    obj="$OBJ_DIR/mh_${base}.o"
-    OBJS+=("$obj")
-    if needs_rebuild "$src" "$obj"; then
-        echo "[cc]  $src -> $obj"
-        "$CC" "${C_FLAGS[@]}" -MMD -MF "${obj}.d" -c "$src" -o "$obj" &
-        PIDS+=($!)
-    fi
-done
+if [[ "$PROXY_ONLY" != true ]]; then
+    for src in "${MINHOOK_SRCS[@]}"; do
+        base="$(basename "$src" .c)"
+        obj="$OBJ_DIR/mh_${base}.o"
+        OBJS+=("$obj")
+        if needs_rebuild "$src" "$obj"; then
+            echo "[cc]  $src -> $obj"
+            "$CC" "${C_FLAGS[@]}" -MMD -MF "${obj}.d" -c "$src" -o "$obj" &
+            PIDS+=($!)
+        fi
+    done
 
-for src in "${CPP_SRCS[@]}"; do
-    base="$(basename "$src" .cpp)"
-    obj="$OBJ_DIR/${base}.o"
-    OBJS+=("$obj")
-    if needs_rebuild "$src" "$obj"; then
-        echo "[cxx] $src -> $obj"
-        "$CXX" "${CXX_FLAGS[@]}" -MMD -MF "${obj}.d" -c "$src" -o "$obj" &
+    for src in "${CPP_SRCS[@]}"; do
+        base="$(basename "$src" .cpp)"
+        obj="$OBJ_DIR/${base}.o"
+        OBJS+=("$obj")
+        if needs_rebuild "$src" "$obj"; then
+            echo "[cxx] $src -> $obj"
+            "$CXX" "${CXX_FLAGS[@]}" -MMD -MF "${obj}.d" -c "$src" -o "$obj" &
+            PIDS+=($!)
+        fi
+    done
+fi
+
+PROXY_OBJ="$OBJ_DIR/version_proxy.o"
+if [[ "$BUILD_PROXY" == true ]]; then
+    if needs_rebuild "proxy/version_proxy.cpp" "$PROXY_OBJ"; then
+        echo "[cxx] proxy/version_proxy.cpp -> $PROXY_OBJ"
+        "$CXX" "${PROXY_CXX_FLAGS[@]}" -MMD -MF "${PROXY_OBJ}.d" -c "proxy/version_proxy.cpp" -o "$PROXY_OBJ" &
         PIDS+=($!)
     fi
-done
+fi
 
 FAIL=0
-for pid in "${PIDS[@]}"; do
+for pid in ${PIDS[@]+"${PIDS[@]}"}; do
     if ! wait "$pid"; then
         FAIL=1
     fi
@@ -160,6 +182,14 @@ if [[ "$FAIL" -ne 0 ]]; then
     exit 1
 fi
 
-echo "[ld]  Linking $OUT_PATH (${#OBJS[@]} objects)..."
-"$CXX" -shared -static -m64 -O2 "${OBJS[@]}" -o "$OUT_PATH"
-echo "[ok]  Built $OUT_PATH ($(wc -c < "$OUT_PATH" | tr -d ' ') bytes)"
+if [[ "$PROXY_ONLY" != true ]]; then
+    echo "[ld]  Linking $OUT_PATH (${#OBJS[@]} objects)..."
+    "$CXX" -shared -static -m64 -O2 "${OBJS[@]}" -o "$OUT_PATH"
+    echo "[ok]  Built $OUT_PATH ($(wc -c < "$OUT_PATH" | tr -d ' ') bytes)"
+fi
+
+if [[ "$BUILD_PROXY" == true ]]; then
+    echo "[ld]  Linking $PROXY_OUT..."
+    "$CXX" -shared -static -m64 -O2 "$PROXY_OBJ" -o "$PROXY_OUT"
+    echo "[ok]  Built $PROXY_OUT ($(wc -c < "$PROXY_OUT" | tr -d ' ') bytes)"
+fi

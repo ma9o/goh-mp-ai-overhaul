@@ -11,8 +11,8 @@ See [README.md](README.md) for gameplay changes and [AGENTS.md](AGENTS.md) for c
 | `mods/goh_ai_mod.cpp`, `mods/tu_*.cpp`, `mods/ai_modules.hpp` | Unified host-only AI DLL for Steam build `26734796` split across 4 translation units (coordinator, combat, infantry/support, tanks; exports `ShutdownAndUnload`). |
 | `mods/game_runtime.hpp`, `mods/dynamic_store.hpp`, `mods/config_and_log.hpp`, `mods/game_classifiers.hpp`, `mods/actor_coordinator.hpp` | Shared build-`26734796` runtime/PE32+ RTTI verifier/hook-drain gates, heap-backed growable tables, optional `goh_ai.ini` config + leveled logger, unified entity/weapon/smoke classifiers, and actor priority coordinator. |
 | `mods/*_module.hpp`, `mods/*_policy.hpp`, `mods/ai_support_26734796.hpp` | Native hook adapters, pure C++17 policies, and shared build-`26734796` order-guard helpers. |
-| `mods/grenade_dodge.cpp`, `mods/example_mod.cpp` | Thin standalone grenade-dodge DLL wrapper and upstream SDK sample. |
-| `sdk/`, `proxy/` | Inherited script-extender loader, overlay, Lua bridge, and `version.dll` proxy scaffold ([upstream audit](research/notes/upstream-audit.md)). |
+| `mods/grenade_dodge.cpp` | Thin standalone grenade-dodge DLL wrapper. |
+| `proxy/version_proxy.cpp` | Drop-in `version.dll` proxy for `binaries/x64/`: lazily forwards all 17 `System32\version.dll` exports outside the loader lock and auto-loads sibling `goh_ai_mod.dll` into `call_to_arms.exe` (skipping `call_to_arms_ed.exe`). |
 | `scripts/lint_cpp.sh`, `scripts/build_ai_dll.sh` | C++ formatting (`clang-format`), cross-compile warnings (`x86_64-w64-mingw32-g++`), `clang-tidy` gate, and incremental parallel multi-TU MinGW DLL builder. |
 | `research/notes/` | Build-`25492057` baseline maps, decision catalog, and build-`26734796` feature contracts. |
 | `research/artifacts/build-<id>/` | Compact tracked PE scans, compatibility baseline (`build-25492057/compatibility-profile.json`), fine maps, and validation receipts. |
@@ -35,7 +35,7 @@ Every module in `mods/` must keep host and vanilla clients in sync:
 
 ### C++ lint & warning gate
 
-Run before finishing any C++ edit in `sdk/`, `proxy/`, or `mods/`:
+Run before finishing any C++ edit in `proxy/` or `mods/`:
 
 ```sh
 ./scripts/lint_cpp.sh --fix --werror <touched files>
@@ -46,16 +46,18 @@ Run before finishing any C++ edit in `sdk/`, `proxy/`, or `mods/`:
 
 Enforces `.clang-format` (`SortIncludes: Never` to preserve Windows header order), cross-compiles with `x86_64-w64-mingw32-g++ -std=c++17 -fsyntax-only` warning flags, and runs `clang-tidy` (`.clang-tidy`) when installed. Annotate `printf`-style helpers with `__MINGW_PRINTF_FORMAT` / `format(printf, ...)`.
 
-### Building the unified AI DLL
+### Building the unified AI DLL & `version.dll` proxy
 
-`CMakeLists.txt` and `./build.sh` build the upstream `version.dll`, `coa_extender.dll`, and `example_mod.dll` targets. Build the 4-TU unified AI DLL (or standalone `grenade_dodge.dll`) incrementally with MinGW-w64 against MinHook (`local-work/minhook` or `build/_deps/minhook-src`):
+Build the 4-TU unified AI DLL alongside the drop-in `version.dll` proxy (or standalone `grenade_dodge.dll`) incrementally with MinGW-w64 against MinHook (`local-work/minhook` or `build/_deps/minhook-src`):
 
 ```sh
-# Unified 4-TU AI DLL (caches .o/.d under local-work/build-ai/obj):
+# Unified 4-TU AI DLL + drop-in version.dll proxy (caches .o/.d under local-work/build-ai/obj):
 ./scripts/build_ai_dll.sh --out local-work/build-ai/goh_ai_mod.dll
 
-# Clean rebuild or standalone grenade-dodge DLL:
+# Clean rebuild, proxy-only, AI-only, or standalone grenade-dodge DLL:
 ./scripts/build_ai_dll.sh --clean --out local-work/build-ai/goh_ai_mod.dll
+./scripts/build_ai_dll.sh --proxy-only --out local-work/build-ai/goh_ai_mod.dll
+./scripts/build_ai_dll.sh --no-proxy --out local-work/build-ai/goh_ai_mod.dll
 ./scripts/build_ai_dll.sh --standalone-grenade --out local-work/build-ai/grenade_dodge.dll
 ```
 

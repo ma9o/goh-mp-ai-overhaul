@@ -221,7 +221,10 @@ class PEImage:
 def old_addresses(repo: Path) -> list[dict]:
     result = []
     for relative in ["sdk/coa_hooks.h", "sdk/coa_lua_bridge.cpp", "sdk/coa_plugin_api.cpp"]:
-        lines = (repo / relative).read_text().splitlines()
+        path = repo / relative
+        if not path.exists():
+            continue
+        lines = path.read_text().splitlines()
         for number, line in enumerate(lines, 1):
             match = re.search(r"constexpr\s+uintptr_t\s+(\w+)\s*=\s*(0x[0-9a-fA-F]+)", line)
             if not match:

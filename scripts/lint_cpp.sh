@@ -23,8 +23,8 @@ Usage: ./scripts/lint_cpp.sh [options] [file ...]
 
 Target selection (ignored when explicit files are passed):
   --changed        Check modified/staged tracked C++ files (default)
-  --all            Check all tracked C++ files under sdk/, proxy/, mods/
-  --all-files      Check all C++ files on disk under sdk/, proxy/, mods/ (incl. untracked)
+  --all            Check all tracked C++ files under proxy/, mods/
+  --all-files      Check all C++ files on disk under proxy/, mods/ (incl. untracked)
 
 Actions:
   --fix            Apply clang-format in place (instead of dry-run check)
@@ -70,7 +70,7 @@ is_cpp_source() {
 
 in_cpp_scope() {
     case "$1" in
-        sdk/*|proxy/*|mods/*) return 0 ;;
+        proxy/*|mods/*) return 0 ;;
         *) return 1 ;;
     esac
 }
@@ -147,20 +147,20 @@ elif [[ "$MODE" == "all" ]]; then
         if [[ -f "$f" ]] && in_cpp_scope "$f" && is_cpp_file "$f"; then
             FILES+=("$f")
         fi
-    done < <(git ls-files sdk proxy mods)
+    done < <(git ls-files proxy mods)
 elif [[ "$MODE" == "all-files" ]]; then
     while IFS= read -r f; do
         f="${f#./}"
         if [[ -f "$f" ]] && is_cpp_file "$f"; then
             FILES+=("$f")
         fi
-    done < <(find sdk proxy mods -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.cxx' -o -name '*.h' -o -name '*.hh' -o -name '*.hpp' -o -name '*.hxx' \) | sort)
+    done < <(find proxy mods -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.cxx' -o -name '*.h' -o -name '*.hh' -o -name '*.hpp' -o -name '*.hxx' \) | sort)
 else
     while IFS= read -r f; do
         if [[ -n "$f" ]] && [[ -f "$f" ]] && in_cpp_scope "$f" && is_cpp_file "$f"; then
             FILES+=("$f")
         fi
-    done < <({ git diff --name-only HEAD -- sdk proxy mods 2>/dev/null || true; git diff --cached --name-only -- sdk proxy mods 2>/dev/null || true; } | sort -u)
+    done < <({ git diff --name-only HEAD -- proxy mods 2>/dev/null || true; git diff --cached --name-only -- proxy mods 2>/dev/null || true; } | sort -u)
 fi
 
 if [[ ${#FILES[@]} -eq 0 ]]; then
@@ -215,7 +215,6 @@ if [[ "$RUN_COMPILE" == true ]] && [[ ${#CPP_SOURCES[@]} -gt 0 ]]; then
             -m64
             -fsyntax-only
             -I"$REPO_ROOT/mods"
-            -I"$REPO_ROOT/sdk"
             -Wall
             -Wextra
             -Wshadow
@@ -277,7 +276,6 @@ if [[ "$RUN_TIDY" == true ]] && [[ ${#CPP_SOURCES[@]} -gt 0 ]]; then
                 -D_WIN32
                 -D_WIN64
                 -I"$REPO_ROOT/mods"
-                -I"$REPO_ROOT/sdk"
             )
             if [[ -n "$MINHOOK_INC" ]]; then
                 EXTRA_ARGS+=(-I"$MINHOOK_INC")

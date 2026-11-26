@@ -70,6 +70,20 @@ Everything below works in both **Hold Position** (the GoH default) and **Move at
   - Fills `gunner` -> `driver` -> `charger` -> `commander` -> secondary cannons -> loaders -> hull MGs in order, preferring tank crewmen and mechanics first, ordinary infantry next, and medics or soldiers carrying live AT gear last.
   - Reserves seats for returning repairers, backs off 10 s after manual disembarks, and won't flip ownership of a crewless allied tank.
 
+## Loading the mod
+
+1. **Build the DLLs** (requires MinGW-w64 and MinHook; see [DEVELOPMENT.md](DEVELOPMENT.md)):
+   ```sh
+   ./scripts/build_ai_dll.sh
+   ```
+   This outputs `version.dll` and `goh_ai_mod.dll` under `local-work/build-ai/`.
+2. **Copy both files** (`version.dll` and `goh_ai_mod.dll`) into `Call to Arms - Gates of Hell/binaries/x64/`.
+3. **Launch normally through Steam.** `version.dll` loads `goh_ai_mod.dll` into `call_to_arms.exe` (skipping the editor `call_to_arms_ed.exe`), verifies the exact Steam build `26734796` binary before hooking, and writes `version_proxy.log` and `goh_ai.log` beside the DLLs.
+   - **Linux / macOS (Proton / Wine):** Set Steam launch options to `WINEDLLOVERRIDES="version=n,b" %command%`.
+   - **Multiplayer:** Only the **host** installs the mod; vanilla clients need no files.
+   - **Uninstall:** Remove `version.dll` and `goh_ai_mod.dll` from `binaries/x64/`.
+   - *Note:* Drop-in `version.dll` auto-loading is still awaiting a launch smoke test on build `26734796`; `goh_ai_mod.dll` can also be injected directly into a running `call_to_arms.exe` with any x64 DLL injector.
+
 ### Optional configuration (`goh_ai.ini`)
 
 No config file is required — everything runs with balanced defaults out of the box. To customize behavior, place a `goh_ai.ini` file beside the DLL:
@@ -83,15 +97,13 @@ No config file is required — everything runs with balanced defaults out of the
 
 All AI modules are implemented from scratch as native engine hooks without borrowing scripts or assets, while several quality-of-life and tactical ideas were inspired by community Steam Workshop mods for *Gates of Hell: Ostfront*:
 
-- **Auto Medic** and **Auto Medic-AA-Artillery & Weather Switch** (Nikral晓杉同学), and **Auto Medic Plus** (Era [FR]): autonomous medic revives with threat checks and return-to-post behavior.
-- **Auto Resupply & Return** (Slayer): automatic ammo trips to nearby supply points with return to original position.
-- **AI simple modification** / **I.A.E.M.** (222222): individual combat AI tweaks for smoke use, AT grenades, target priority, and cover reactions.
-- **Code:X AI Overhaul** (xFizzle) and **Conquest Enhanced v2** (hawka & the CEv2 team): tactical squad posture, defensive smoke support, and smarter tank self-preservation.
-- **Tank/Shell Collision Optimization** (HOBOE): letting tanks push cleanly through fences, poles, and minor obstacles.
+- **[Auto Medic](https://steamcommunity.com/sharedfiles/filedetails/?id=2960496242)** and **[Auto Medic-AA-Artillery & Weather Switch](https://steamcommunity.com/sharedfiles/filedetails/?id=2829744930)** (Nikral晓杉同学), and **Auto Medic Plus** (Era [FR]): autonomous medic revives with threat checks and return-to-post behavior.
+- **[Auto Resupply & Return](https://steamcommunity.com/sharedfiles/filedetails/?id=3814488828)** (Slayer): automatic ammo trips to nearby supply points with return to original position.
+- **[AI simple modification](https://steamcommunity.com/sharedfiles/filedetails/?id=3253307216)** / **[I.A.E.M.](https://steamcommunity.com/sharedfiles/filedetails/?id=3225523571)** (222222): individual combat AI tweaks for smoke use, AT grenades, target priority, and cover reactions.
+- **[Code:X AI Overhaul](https://steamcommunity.com/sharedfiles/filedetails/?id=3636883799)** (xFizzle) and **[Conquest Enhanced v2](https://steamcommunity.com/sharedfiles/filedetails/?id=2899823515)** (hawka & the CEv2 team): tactical squad posture, defensive smoke support, and smarter tank self-preservation.
+- **[Tank/Shell Collision Optimization](https://steamcommunity.com/sharedfiles/filedetails/?id=3008573921)** (HOBOE): letting tanks push cleanly through fences, poles, and minor obstacles.
 
-## Development & license
+## Development
 
 - [DEVELOPMENT.md](DEVELOPMENT.md): repo layout, build/lint/test commands, Ghidra, and game-update workflows.
 - [AGENTS.md](AGENTS.md): coding-agent rules and multiplayer non-desync invariants.
-
-Forked from [NorthHead-Digital's script extender](https://github.com/NorthHead-Digital/coa_script_extender) (upstream mentions MIT with no standalone license file; this fork keeps the same state).
