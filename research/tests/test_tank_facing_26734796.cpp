@@ -535,6 +535,22 @@ int main() {
     admission_and_guards();
     perception_and_stealth();
     vehicle_type_and_angle_setting();
+    {
+        Fixture f;
+        const auto tls = goh::ai_support::actor_tls;
+        goh::ai_support::actor_tls = 0; // Live layout has distinct environment and entity scene pointers.
+        f.image.put<Address>(0x15C7D58, f.scene2.ptr());
+        auto& coordinator = goh::coord::instance();
+        const auto human = f.rifleman.actor.ptr();
+        coordinator.sync_world(f.scene2.ptr(), f.world.now);
+        assert(coordinator.claim(human, 4, goh::coord::Module::recrew_weapons, goh::coord::Priority::recrew_weapons));
+        tf::on_actor_post_quant(human);
+        assert(coordinator.active_for(human, 4, f.world.now).owner == goh::coord::Module::recrew_weapons);
+        f.image.put<Address>(0x15C7D58, f.scene.ptr());
+        tf::on_actor_post_quant(human);
+        assert(coordinator.lease_count() == 0);
+        goh::ai_support::actor_tls = tls;
+    }
     lifecycle_and_hysteresis();
     allied_sensors_and_candidates();
     native_order_ownership();

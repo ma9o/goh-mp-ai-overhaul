@@ -1,5 +1,6 @@
 #pragma once
 
+#include "combat_orders_module.hpp"
 #include "config_and_log.hpp"
 #include "game_runtime.hpp"
 #include "penetration_at_module.hpp"
@@ -764,11 +765,13 @@ inline float compute_enemy_exposure_penalty(Address actor, Address target_ent, f
 inline std::uint64_t __fastcall hook_attack_check_and_fire(Address order) {
     HookGuard guard(gate);
     const auto& mods = config::active().modules;
-    if (!gate.active() || (!mods.soft_cover_lof && !mods.attack_detour) || !runtime::is_host_main_thread(base) ||
-        !is_plausible_ptr(order)) {
+    if (!gate.active() || (!mods.soft_cover_lof && !mods.attack_detour && !mods.attack_order_polish) ||
+        !runtime::is_host_main_thread(base) || !is_plausible_ptr(order)) {
         return orig_attack_check_fire(order);
     }
     if (read<Address>(order) != base + runtime::table().vt.attack_order) return orig_attack_check_fire(order);
+    combat_orders::detail::AttackMemory memory(order);
+    if (!mods.soft_cover_lof && !mods.attack_detour) return orig_attack_check_fire(order);
 
     const Address owner_sub = read<Address>(order, Off::kOrderOwner);
     if (!is_plausible_ptr(owner_sub) || owner_sub <= Off::kActorOrderedSub) return orig_attack_check_fire(order);

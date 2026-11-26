@@ -8,6 +8,7 @@
 #include <deque>
 #include <iterator>
 #include <memory>
+#include <new>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -325,7 +326,11 @@ template <class T, std::size_t N> inline T* try_append_slot(std::array<T, N>&) n
 }
 
 template <class Table> inline auto try_append_slot(Table& table) -> decltype(table.append_slot()) {
-    return table.append_slot();
+    try {
+        return table.append_slot();
+    } catch (const std::bad_alloc&) {
+        return nullptr;
+    }
 }
 
 // 8-byte heap-owned singleton box with zero bytes in PE .data. Ideal for

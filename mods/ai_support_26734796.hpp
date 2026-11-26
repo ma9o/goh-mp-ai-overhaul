@@ -97,6 +97,25 @@ inline Vec3 pos(Address entity) {
 inline bool within(Vec3 a, Vec3 b, float radius) {
     return radius >= 0 && std::isfinite(radius) && smoke::distance2(a, b) <= radius * radius;
 }
+inline bool visible_near_point(Address actor, Vec3 point, float radius) {
+    const auto sensor = read<Address>(actor, 0xDD0);
+    if (!sensor || read<Address>(sensor, 0x260) != actor) return true;
+    const auto subs = span(sensor, 0x280);
+    if (!subs.valid(8, 4096)) return true;
+    for (auto p = subs.first; p != subs.end; p += 8) {
+        const auto sub = read<Address>(p);
+        if (sub && !read<Byte>(sub, 0x6C) && (read<unsigned>(sub, 0x14) & 0x1E) == 2 &&
+            (read<unsigned>(sub, 0x10) & (1u << 29))) {
+            if (!(read<unsigned>(sub, 0x10) & (1u << 28))) return true;
+            const Vec3 seen = read<Vec3>(sub, 0x28);
+            if (!smoke::finite(seen) || within(point, seen, radius)) return true;
+        }
+    }
+    return false;
+}
+inline bool visible_near(Address actor, float radius) {
+    return visible_near_point(actor, pos(actor), radius);
+}
 struct Identity {
     Address ptr{}, definition{};
     unsigned id{};
@@ -112,6 +131,11 @@ inline Identity identity(Address a) {
 inline bool live_entity(Address a) {
     return a && (read<Byte>(a, 0x30) & 1) && !(read<unsigned>(a, 0x38) & 0x10A20u) &&
            read<unsigned>(a, 0xC0) != 0xffffffffu;
+}
+inline bool dead_human(Address a) {
+    if (!live_entity(a) || !(read<Byte>(a, 0x30) & 4)) return false;
+    const auto vitality = read<Address>(read<Address>(a, 0x578), 0x18);
+    return vitality && (read<unsigned>(vitality, 0x174) & 1);
 }
 inline bool live_runtime(const World& w) {
     return w.base != 0 && actor_tls != TLS_OUT_OF_INDEXES;
@@ -246,6 +270,11 @@ inline bool current_order(Address actor, Address order) {
                      (root && read<Address>(root) == base + 0x110D490 && read<Address>(root, 8) == actor + 0xAF0 &&
                       read<Address>(root, 0x48) == 1 && smoke::orders::active_child(base, root) == order));
 }
+// Native Board and Collect keep all order state in the engine. Caller checks the
+// idle slot before transfer of ownership, or the exact owned order before clearing.
+inline void set_brain_order(Address brain, Address order) {
+    read<void (*)(Address, Address)>(read<Address>(brain), 0x68)(brain, order);
+}
 inline Address manager(Address actor) {
     const auto agg = read<Address>(actor, 0x578);
     return agg ? read<Address>(agg, 0x28) : 0;
@@ -267,7 +296,7 @@ struct InventoryCalls {
     }
 };
 template <class Calls = InventoryCalls>
-inline int exchange_amount(Address donor, Address receiver, Address item, int amount) {
+inline int exchange_amount(Address donor, Address receiver, Address item, int amount, Address preferred_owner = 0) {
     const auto from = box(donor), to = box(receiver);
     if (!from || !to || from == to || !item || read<Address>(item, 0x30) != from || amount <= 0 ||
         amount > read<int>(item, 0x48))
@@ -281,6 +310,7 @@ inline int exchange_amount(Address donor, Address receiver, Address item, int am
         Calls::template get<void* (*)(void*, const char*)>(0x7DF910)(builder, "Xchange");
         Calls::template get<void* (*)(void*, void*)>(0x7DFEE0)(builder, source);
         Calls::template get<void* (*)(void*, void*)>(0x7E35E0)(builder + 0x40, dest);
+        runtime::write<Address>(reinterpret_cast<Address>(builder), 0x80, preferred_owner);
         Calls::template get<int* (*)(void*, int*)>(0x7DFBF0)(builder, &action);
         Calls::template get<void (*)(void*)>(0x7DFE00)(builder);
     }

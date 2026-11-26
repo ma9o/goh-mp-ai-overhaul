@@ -102,13 +102,21 @@ struct Guard {
 };
 
 struct TankState {
+    struct TransferAttempt {
+        unsigned human_id{};
+        short src{-1}, dst{-1};
+        Tick retry_until{};
+        bool retried{};
+    };
     support::Identity entity{};
     std::uint16_t route{};
     Tick last_tick{};
     Tick emit_until{};
     Tick retry_until{};
     Tick driver_gunner_swap_until{};
+    Tick secondary_gunner_until{};
     Tick defer_stat_until{};
+    TransferAttempt last_transfer{};
     bool serviced{};
     bool matches(Address a) const {
         return entity.ptr && entity.matches(a) && read<std::uint16_t>(a, 0xDAA) == route;
@@ -185,6 +193,7 @@ inline bool eligible_vehicle(Address a, Address& out_brain, pol::VehicleTactical
         const auto n = support::native_string(names.first + 0x40);
         const bool damaged = read<Byte>(p, 0x24) != 0;
         if (n == "body" && damaged) return false;
+        if (n == "gun") ctx.main_gun_broken |= damaged;
         const bool track = n == "trackleft" || n == "trackright" || support::tag(names, "track");
         has_tracks |= track;
         ctx.immobilized |=
@@ -432,11 +441,13 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
 
     const unsigned tank_player = support::owner(tank);
     unsigned available_crew_slots = 0;
-    pol::SlotFacts best_dst{};
+    pol::SlotFacts best_dst{}, internal_dst{};
     bool same_player_crew_inside = false;
     for (auto slot = seats.first; slot != seats.end; slot += 0x298) {
         const auto index = static_cast<short>((slot - seats.first) / 0x298);
         auto facts = read_slot(slot, index);
+        if ((index == st->last_transfer.src && !facts.occupied) || (index == st->last_transfer.dst && facts.occupied))
+            st->last_transfer = {};
         if (facts.group != "crew") continue;
         if (facts.occupied) {
             ++ctx.occupied_crew_count;
@@ -445,11 +456,15 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
             facts.is_cannon_gunner = repair::detail::cannon_gunner_seat(tank, facts.name);
             ++available_crew_slots;
             if (best_dst.slot_index < 0 || pol::better_crew_slot(facts, best_dst)) best_dst = facts;
+            if (pol::internal_destination_useful(facts, ctx) &&
+                (internal_dst.slot_index < 0 || pol::better_crew_slot(facts, internal_dst)))
+                internal_dst = facts;
         }
     }
     if (!available_crew_slots) return;
 
     pol::SeatOccupant internal{}, passenger{};
+    ctx.secondary_gunner_backoff = pending(st->secondary_gunner_until, w.now);
     for (auto slot = seats.first; slot != seats.end; slot += 0x298) {
         const auto human = read<Address>(slot, 0x280);
         if (!human) continue;
@@ -464,6 +479,7 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
 
         if (crew) {
             candidate.slot.is_cannon_gunner = repair::detail::cannon_gunner_seat(tank, candidate.slot.name);
+            if (!pol::internal_source_available(candidate.slot, ctx)) continue;
             if (internal.slot.slot_index < 0 || pol::better_internal_source(candidate, internal)) internal = candidate;
         } else if (passenger.slot.slot_index < 0 || pol::better_passenger(candidate.passenger, passenger.passenger)) {
             passenger = candidate;
@@ -475,9 +491,9 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
     ctx.has_eligible_passenger = passenger.slot.slot_index >= 0;
     ctx.has_move_order = orders.has_move_order;
     ctx.swap_cooldown_active = pending(st->driver_gunner_swap_until, w.now);
-    if (internal.slot.name == "driver" && best_dst.name == "gunner" && !ctx.has_eligible_passenger)
+    if (internal.slot.name == "driver" && internal_dst.name == "gunner" && !ctx.has_eligible_passenger)
         ctx.has_visible_enemy = has_visible_enemy(tank_brain);
-    const bool promote = pol::can_promote_internal(internal.slot, best_dst, ctx);
+    const bool promote = pol::can_promote_internal(internal.slot, internal_dst, ctx);
     unsigned returning = 0;
     if (!promote) {
         if (!ctx.has_eligible_passenger) return;
@@ -495,19 +511,35 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
     }
 
     const auto& src = promote ? internal : passenger;
+    const auto& dst = promote ? internal_dst : best_dst;
     const bool swap_driver_gunner = promote && pol::crew_slot_priority(src.slot) <= 1;
     short src_place = src.slot.slot_index;
-    short dst_place = best_dst.slot_index;
+    short dst_place = dst.slot_index;
     const auto human = read<Address>(seats.first + static_cast<Address>(src_place) * 0x298, 0x280);
+    auto& last = st->last_transfer;
+    const bool same = last.human_id == src.passenger.entity_id && last.src == src_place && last.dst == dst_place;
+    if (same && pending(last.retry_until, w.now)) return;
+
+    // Acceptance can precede the seat update. Give every move time to settle,
+    // and reserve the longer delays for a crewman still attempting the same move.
     const Byte moved = ops.boarder_move(boarder, tank, &src_place, tank, &dst_place);
+    st->retry_until = w.now + w.duration(moved ? 1.5f : 1.f);
+    if (same) {
+        last.retry_until = w.now + w.duration(last.retried ? 10.f : 5.f);
+        last.retried = true;
+    } else {
+        last = {src.passenger.entity_id, src_place, dst_place};
+    }
     if (!moved) {
-        st->retry_until = w.now + w.duration(1);
         ++stat_transfer_failures;
         return;
     }
 
     const unsigned n = ++stat_transfers;
     if (promote) ++stat_transfers_internal;
+    // Stock can re-man a secondary weapon with a different human on the next
+    // quant. Leave that weapon staffed even if the next vacancy changes too.
+    if (promote && pol::secondary_gunner(src.slot)) st->secondary_gunner_until = w.now + w.duration(10);
     if (swap_driver_gunner) st->driver_gunner_swap_until = w.now + w.duration(3.0f);
     if (!ctx.is_tank) ++stat_transfers_nontank;
     const int tier = pol::passenger_tier(src.passenger);
@@ -519,7 +551,7 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
         log_sink("TANK CREW FILL #%u: tank=0x%llx human=0x%llx %.*s(%d) -> %.*s(%d) tier=%d freeCrew=%u %s=%u", n,
                  static_cast<unsigned long long>(tank), static_cast<unsigned long long>(human),
                  static_cast<int>(src.slot.name.size()), src.slot.name.data(), static_cast<int>(src_place),
-                 static_cast<int>(best_dst.name.size()), best_dst.name.data(), static_cast<int>(dst_place), tier,
+                 static_cast<int>(dst.name.size()), dst.name.data(), static_cast<int>(dst_place), tier,
                  available_crew_slots, promote ? "occupiedCrew" : "returning",
                  promote ? ctx.occupied_crew_count : returning);
     }

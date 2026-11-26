@@ -153,7 +153,7 @@ public:
 // The key in eStuff+0x868 is distinct from the inherited selector at +0xEC8.
 // Native strings use the MSVC layout. Borrow their bytes during this serial call.
 inline bool SmokeTagEquals(Address row, const char* text) noexcept {
-    if (!row || !text) return false;
+    if (!runtime::is_plausible_ptr(row) || !text) return false;
     const auto length = std::strlen(text);
     const auto capacity = read<std::size_t>(row, 0x58);
     if (read<std::size_t>(row, 0x50) != length || capacity < length) return false;

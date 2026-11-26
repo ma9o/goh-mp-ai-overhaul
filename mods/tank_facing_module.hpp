@@ -424,12 +424,15 @@ inline void on_actor_post_quant(Address a) {
         if (last_scene) reset();
         return;
     }
-    if (w.scene != last_scene || w.now < last_clock) {
+    // All modules key coordinator leases on the entity scene. w.scene is the terrain environment.
+    const auto scene = support::entity_scene(w);
+    if (scene != last_scene || w.now < last_clock) {
         reset();
-        last_scene = w.scene;
+        last_scene = scene;
     }
+    if (!scene) return;
     last_clock = w.now;
-    coord::instance().sync_world(w.scene, w.now);
+    coord::instance().sync_world(scene, w.now);
     if (!(read<Byte>(a, 0x30) & 8) || !(read<unsigned>(a, 0xDB4) & 0x100u)) return;
     const auto b = support::autonomous_vehicle_brain(base, a);
     if (!b || read<Address>(read<Address>(a, 0xDE0)) != base + runtime::table().vt.chassis_track ||

@@ -5,9 +5,12 @@
 namespace goh::auto_resupply {
 using namespace ai_support;
 inline constexpr bool runtime_allowed = false;
-constexpr float travel_metres = 60, safety_metres = 25;
+constexpr float safety_metres = 25;
 inline float max_travel_metres() noexcept {
     return config::active().tuning.resupply_search_radius_m;
+}
+inline bool within_travel_budget(const World& w, float travelled) {
+    return travelled <= max_travel_metres() * w.length;
 }
 inline constexpr unsigned max_inbound_per_source = 4u;
 inline std::uint32_t stat_trips = 0;
@@ -196,19 +199,28 @@ inline bool capacity(Address zone, Address row, Address actor, const Gun& g) {
         }
     return false;
 }
-inline bool supplies(Address zone, Address actor, const Gun& g) {
+inline const char* supply_rejection(Address zone, Address actor, const Gun& g) {
     auto rows = span(zone, 0x3D0);
-    if (!rows.valid(0x18, 8192)) return false;
+    if (!rows.valid(0x18, 8192) || rows.first == rows.end) return "supply_rows";
+    const char* reason = "ammo_match";
     for (auto r = rows.first; r != rows.end; r += 0x18) {
         auto offered = read<Address>(r);
-        if (!offered || read<int>(r, 8) <= 0 || read<int>(r, 0x10) < 0 ||
-            !affordable(read<int>(zone, 0x94), read<int>(zone, 0x98), read<int>(r, 0x14)))
+        if (!offered || !tag(span(offered, 0x11E0), "ammo") ||
+            !native<BinaryTest>(0x565A50)(offered + 0x868, g.def + 0x120))
             continue;
-        if (tag(span(offered, 0x11E0), "ammo") && native<BinaryTest>(0x565A50)(offered + 0x868, g.def + 0x120) &&
-            capacity(zone, r, actor, g))
-            return true;
+        if (read<int>(r, 8) <= 0 || read<int>(r, 0x10) < 0 ||
+            !affordable(read<int>(zone, 0x94), read<int>(zone, 0x98), read<int>(r, 0x14))) {
+            reason = "row_quantity_or_budget";
+            continue;
+        }
+        if (g.human && (!g.item || read<Address>(g.item, 0x30) != box(actor))) return "weapon_outside_box";
+        if (capacity(zone, r, actor, g)) return nullptr;
+        reason = "capacity";
     }
-    return false;
+    return reason;
+}
+inline bool supplies(Address zone, Address actor, const Gun& g) {
+    return !supply_rejection(zone, actor, g);
 }
 inline Address team(Address actor) {
     auto game = native<Address (*)()>(0xD2BCC0)();
@@ -286,19 +298,23 @@ inline bool source_owner(const World& w, Address source, Address zone, Address a
     }
     return true;
 }
-inline bool serviceable(Address a) {
+inline const char* service_rejection(Address a) {
     auto tags = span(a, 0x4E8);
-    if (!tags.valid(0x60, 4096) || tag(tags, "crushed") || tag(tags, "destroyed")) return false;
+    if (!tags.valid(0x60, 4096) || tag(tags, "crushed") || tag(tags, "destroyed")) return "destruction_tags";
     // Stock wooden supply crates declare "burning" even before ignition.
     auto fire = extender(a, 0x10FD478);
     if (fire && (read<Address>(fire, 0x88) != read<Address>(fire, 0x90) || read<int>(fire, 0xA8) ||
                  !(read<float>(fire, 0xA0) <= 0)))
-        return false;
+        return "burning";
     if ((read<Byte>(a, 0x30) & 8) && smoke::has_actor(a)) {
         auto chassis = read<Address>(a, 0xDE0);
-        return chassis && !(read<unsigned>(chassis, 0x48) & 0x10) && working_hull(a);
+        if (!chassis || (read<unsigned>(chassis, 0x48) & 0x10)) return "source_chassis";
+        if (!working_hull(a)) return "working_hull";
     }
-    return true;
+    return nullptr;
+}
+inline bool serviceable(Address a) {
+    return !service_rejection(a);
 }
 struct Destination {
     Identity source{};
@@ -306,15 +322,18 @@ struct Destination {
     float radius{}, period{};
 };
 inline bool goal_crowded(const World& w, Address actor, Vec3 point);
-inline bool check_source(const World& w, Address actor, const Gun& g, Address source, Destination& d, bool select) {
-    if (actor == source || !within(pos(actor), pos(source), max_travel_metres() * w.length)) return false;
-    auto zone = extender(source, 0x109BA88);
-    if (!zone || !read<Byte>(zone, 0x430) || !serviceable(source)) return false;
+inline const char* source_rejection(const World& w, Address actor, const Gun& g, Address source, Address zone,
+                                    Destination& d, bool select) {
+    if (actor == source || !within(pos(actor), pos(source), max_travel_metres() * w.length)) return "range";
+    if (!zone || !read<Byte>(zone, 0x430)) return "zone_disabled_or_missing";
+    if (const auto* reason = service_rejection(source)) return reason;
     float r = read<float>(zone, 0x88) * w.length, period = read<float>(zone, 0x8C);
-    if (!std::isfinite(r) || r <= 0 || !std::isfinite(period) || period <= 0 || period > 90) return false;
-    if (!source_owner(w, source, zone, actor) || !supplies(zone, actor, g)) return false;
+    if (!std::isfinite(r) || r <= 0 || !std::isfinite(period) || period <= 0 || period > 90)
+        return "zone_radius_period";
+    if (!source_owner(w, source, zone, actor)) return "source_owner";
+    if (const auto* reason = supply_rejection(zone, actor, g)) return reason;
     auto threats = danger(w, actor, pos(source), safety_metres);
-    if (threats.unsafe) return false;
+    if (threats.unsafe) return "source_danger";
     if (select && !approach(w, actor, pos(source), r * .9f, d.goal, [&](Vec3 point) {
             if (goal_crowded(w, actor, point)) return false;
             bool clear = true;
@@ -326,14 +345,25 @@ inline bool check_source(const World& w, Address actor, const Gun& g, Address so
             });
             return clear;
         }))
-        return false;
-    if (!within(d.goal, pos(source), r)) return false;
+        return "approach_corridor";
+    if (!within(d.goal, pos(source), r)) return "goal_outside_zone";
     auto route_end = danger(w, actor, d.goal, safety_metres);
-    if (route_end.unsafe) return false;
+    if (route_end.unsafe) return "approach_danger";
     d.source = identity(source);
     d.radius = r;
     d.period = period;
-    return true;
+    return nullptr;
+}
+inline bool check_source(const World& w, Address actor, const Gun& g, Address source, Destination& d, bool select) {
+    return !source_rejection(w, actor, g, source, extender(source, runtime::table().vt.supply_zone_ext), d, select);
+}
+template <class Visit> inline void source_entities(const World& w, Visit visit) {
+    // 0x490670 enumerates registered actors through eScene+0x60. A truck is
+    // still a source when absent from the +0x48 visibility-update vector.
+    actors(w, visit);
+    entities(w, [&](Address e) {
+        if (!(read<Byte>(e, 0x30) & 2)) visit(e); // Uncrewed scenery such as supply crates.
+    });
 }
 enum class Phase {
     travel,
@@ -388,16 +418,45 @@ inline void stop(const World& w, Trip& t, float seconds, bool failed = true) {
 }
 struct Scan {
     Identity actor{};
-    unsigned tick{};
+    unsigned tick{}, trace_tick{};
+    bool scanned{}, traced{};
 };
 inline store::GrowableTable<Scan, 1024, 1024> scans{};
-inline bool due(const World& w, Address actor) {
+inline Scan& scan_for(Address actor) {
     scans.ensure_min_size(1024);
     const auto id = read<unsigned>(actor, 0xC0);
     auto& entry = scans[(id ^ (id >> 10)) % scans.size()];
-    if (entry.actor.matches(actor) && w.now - entry.tick < w.duration(3)) return false;
-    entry = {identity(actor), w.now};
+    if (!entry.actor.matches(actor)) entry = {identity(actor)};
+    return entry;
+}
+inline bool due(const World& w, Address actor) {
+    auto& entry = scan_for(actor);
+    if (entry.scanned && w.now - entry.tick < w.duration(3)) return false;
+    entry.scanned = true;
+    entry.tick = w.now;
     return true;
+}
+inline void trace_rejection(const World& w, Address actor, const char* gate, Gun g = {}, int rounds = -1,
+                            Address source = 0, unsigned visited = 0, unsigned zones = 0) {
+    if (!log::enabled(log::Level::verbose)) return;
+    auto& entry = scan_for(actor);
+    if (entry.traced && w.now - entry.trace_tick < w.duration(10)) return;
+    entry.traced = true;
+    entry.trace_tick = w.now;
+    const auto brain = read<Address>(actor, 0xDC8);
+    const auto order = brain ? read<Address>(brain, 0xF0) : 0;
+    const auto keys = g.def ? span(g.def + 0x868, 0x318) : Span{};
+    const auto weapon =
+        keys.first != keys.end && keys.valid(0x60, 4096) ? native_string(keys.first + 0x40) : std::string_view{};
+    log::write(log::Level::verbose,
+               "AUTO-RESUPPLY REJECT mid=%u gate=%s flags=%08x order=%llx weapon=%.*s ammo=%d "
+               "entities=%u zones=%u source=%llx source_mid=%u dist=%.1fm",
+               unsigned(read<std::uint16_t>(actor, 0xDAA)), gate, brain ? read<unsigned>(brain, 0x39C) : 0u,
+               static_cast<unsigned long long>(order ? read<Address>(order) - base : 0),
+               static_cast<int>(weapon.size()), weapon.empty() ? "" : weapon.data(), rounds, visited, zones,
+               static_cast<unsigned long long>(source),
+               smoke::has_actor(source) ? unsigned(read<std::uint16_t>(source, 0xDAA)) : 0u,
+               source ? std::sqrt(smoke::distance2(pos(actor), pos(source))) / w.length : 0.f);
 }
 inline void reset() {
     for (auto& t : trips) {
@@ -449,15 +508,20 @@ inline unsigned claimed_count(Address source) {
 inline bool claimed(Address source) {
     return claimed_count(source) >= max_inbound_per_source;
 }
-inline bool recipient(Address actor) {
-    if (!autonomous(actor, false) || !inventory_free(actor) || extender(actor, 0x109BA88)) return false;
+inline const char* recipient_rejection(Address actor) {
+    if (!autonomous(actor, false)) return "autonomous";
+    if (!inventory_free(actor)) return "inventory_busy";
+    if (extender(actor, runtime::table().vt.supply_zone_ext)) return "supply_carrier";
     auto def = read<Address>(actor, 0x548);
-    if (!def || tag(span(def, 0x330), "hidden")) return false;
+    if (!def || tag(span(def, 0x330), "hidden")) return "recipient_definition";
     if (read<Byte>(actor, 0x30) & 4) {
         auto relation = read<Address>(actor, 0x560);
-        return relation && read<int>(relation, 0x7C) != 5;
+        return relation && read<int>(relation, 0x7C) != 5 ? nullptr : "recipient_link";
     }
-    return serviceable(actor);
+    return service_rejection(actor);
+}
+inline bool recipient(Address actor) {
+    return !recipient_rejection(actor);
 }
 inline void begin_return(const World& w, Trip& t, Address actor, bool refilled, bool source_failed) {
     if (refilled) {
@@ -499,7 +563,7 @@ inline bool permit(const World& w, Address actor, Address order) {
         if (t.actor.matches(actor) && t.order.get() == order) {
             if (scene != w.scene || w.now - t.since >= t.timeout || w.now - t.progress_at >= w.duration(9) ||
                 !recipient(actor) || read<Address>(actor, 0xDC8) != t.brain || owner(actor) != t.owner_id ||
-                !current_order(actor, order) || !(distance_travelled(t, pos(actor)) <= max_travel_metres() * w.length))
+                !current_order(actor, order) || !within_travel_budget(w, distance_travelled(t, pos(actor))))
                 return false;
             if (t.phase == Phase::returning)
                 return t.return_home && hold_position(t.brain) && !post_overrun(w, actor, t.home, 10.f);
@@ -534,7 +598,8 @@ inline void tick(Address actor) {
             break;
         }
     if (job && job->phase == Phase::cooldown) return;
-    if (!recipient(actor)) {
+    if (const auto* reason = recipient_rejection(actor)) {
+        trace_rejection(w, actor, reason);
         if (job) stop(w, *job, 20, job->phase != Phase::returning);
         return;
     }
@@ -582,7 +647,7 @@ inline void tick(Address actor) {
         }
         t.travelled = distance_travelled(t, pos(actor));
         t.previous = pos(actor);
-        if (!(t.travelled <= max_travel_metres() * w.length)) {
+        if (!within_travel_budget(w, t.travelled)) {
             stop(w, t, t.return_refilled ? 30 : 20, false);
             return;
         }
@@ -594,23 +659,31 @@ inline void tick(Address actor) {
         if (w.now - t.progress_at >= w.duration(9)) stop(w, t, t.return_refilled ? 30 : 20, false);
         return;
     }
-    if (!job && (!free_slot(actor) || (medical_assignment && medical_assignment(actor)) ||
-                 !coord::instance().can_act(actor, coord::Module::auto_resupply, coord::Priority::auto_resupply,
-                                            read<std::uint32_t>(actor, 0xC0), w.now)))
-        return;
-    if (!job && !due(w, actor)) return;
+    if (!job) {
+        if (!free_slot(actor)) return trace_rejection(w, actor, "order_slot");
+        if (medical_assignment && medical_assignment(actor)) return trace_rejection(w, actor, "medical_assignment");
+        if (!coord::instance().can_act(actor, coord::Module::auto_resupply, coord::Priority::auto_resupply,
+                                       read<std::uint32_t>(actor, 0xC0), w.now))
+            return trace_rejection(w, actor, "coordinator");
+        if (!due(w, actor)) return;
+    }
     const auto g = primary(actor, job ? job->weapon_def : 0);
     const int cur_ammo = ammo_count(actor, g);
     const Ammo state = cur_ammo < 0 ? Ammo::unknown : (cur_ammo > 0 ? Ammo::available : Ammo::empty);
     if (!job) {
-        if (state != Ammo::empty) return;
+        if (state != Ammo::empty)
+            return trace_rejection(w, actor,
+                                   !g.def         ? "primary"
+                                   : cur_ammo < 0 ? "ammo_unknown"
+                                                  : "ammo_available",
+                                   g, cur_ammo);
         for (auto& t : trips)
             if (!t.actor.ptr) {
                 job = &t;
                 break;
             }
         if (!job) job = trips.append_slot();
-        if (!job) return;
+        if (!job) return trace_rejection(w, actor, "trip_table", g, cur_ammo);
         auto& t = *job;
         t.actor = identity(actor);
         t.brain = read<Address>(actor, 0xDC8);
@@ -625,19 +698,38 @@ inline void tick(Address actor) {
         t.wait_started = 0;
         float best = max_travel_metres() * w.length;
         best *= best;
-        entities(w, [&](Address s) {
-            if (!extender(s, 0x109BA88)) return;
+        const char* rejection = "no_zone_extender";
+        Address nearest{};
+        float nearest_d2 = std::numeric_limits<float>::infinity();
+        unsigned visited{}, zones{};
+        source_entities(w, [&](Address s) {
+            ++visited;
+            const auto zone = extender(s, runtime::table().vt.supply_zone_ext);
+            if (!zone) return;
+            ++zones;
             float d2 = smoke::distance2(pos(actor), pos(s));
-            if (!(d2 <= best)) return;
             if (t.dest.source.ptr && d2 == best && read<unsigned>(s, 0xC0) >= t.dest.source.id) return;
-            if (claimed(s) || suppressed(w, actor, s)) return;
             Destination candidate{};
-            if (check_source(w, actor, g, s, candidate, true)) {
+            const char* reason = "range";
+            if (d2 <= best) {
+                if (claimed(s))
+                    reason = "claimed";
+                else if (suppressed(w, actor, s))
+                    reason = "recent_failure";
+                else
+                    reason = source_rejection(w, actor, g, s, zone, candidate, true);
+            }
+            if (!reason) {
                 best = d2;
                 t.dest = candidate;
+            } else if (d2 < nearest_d2) {
+                nearest_d2 = d2;
+                nearest = s;
+                rejection = reason;
             }
         });
         if (!t.dest.source.ptr) {
+            trace_rejection(w, actor, visited ? rejection : "no_entities", g, cur_ammo, nearest, visited, zones);
             stop(w, t, 6);
             return;
         }
@@ -648,6 +740,7 @@ inline void tick(Address actor) {
         t.previous = pos(actor);
         t.remaining = std::sqrt(smoke::distance2(pos(actor), t.dest.goal));
         if (!within(pos(actor), pos(t.dest.source.ptr), t.dest.radius) && !move(actor, t.dest.goal, permit, t.order)) {
+            trace_rejection(w, actor, "move_install", g, cur_ammo, t.dest.source.ptr, visited, zones);
             stop(w, t, 20);
             return;
         }
@@ -707,7 +800,7 @@ inline void tick(Address actor) {
     }
     t.travelled = distance_travelled(t, pos(actor));
     t.previous = pos(actor);
-    if (!(t.travelled <= travel_metres * w.length)) {
+    if (!within_travel_budget(w, t.travelled)) {
         begin_return(w, t, actor, t.got_ammo, !t.got_ammo);
         return;
     }

@@ -117,6 +117,11 @@ struct BuildTable {
         Address seg_query_seg = 0x00A40A20;
         Address seg_query_run = 0x00A40AC0;
         Address aimer_muzzle_slot6 = 0x008367D0;
+        Address avoid_grenade_hide = 0x00917420;
+        Address excluded_vehicle = 0x00855D60;
+        Address repair_duration = 0x008AACF0;
+        Address collect_order = 0x008E2910;
+        Address board_order = 0x008FADC0;
         Address boarder_move = 0x007A0240;
     } fn;
 
@@ -132,6 +137,12 @@ struct BuildTable {
         Address target_accessor_try = 0x00835790;
         Address bullet_shooter_preview = 0x0082D4C0;
         Address collision_eval = 0x00836820;
+        Address advance_engagement = 0x008E79F0;
+        Address attack_tick = 0x00904930;
+        Address world_publish_signal = 0x00A7B5F0;
+        Address crush_update = 0x0091F2C0;
+        Address crush_build = 0x0091EA20;
+        Address root_execute = 0x0096E260;
         Address human_weapon_swap = 0x0095CEA0;
         Address select_exit_door = 0x0079D3C0;
         Address weapon_fire_dtor = 0x008EF8E0;
@@ -151,6 +162,9 @@ struct BuildTable {
         Address human_brain = 0x0110FF88;
         Address vehicle_brain = 0x0101FD68;
         Address avoid_grenade = 0x0110D278;
+        Address advance_order = 0x0110A070;
+        Address crush_scanner_vehicle = 0x01110BC0;
+        Address root_soldier = 0x01110CD0;
         Address attack_order = 0x0110C018;
         Address rotate_order = 0x0110C760;
         Address chassis_track = 0x01105E80;
@@ -170,6 +184,8 @@ struct BuildTable {
         Address throwing_shooter = 0x01102F20;
         Address effect_blastwave = 0x01038380;
         Address smoke_screen_ext = 0x01031C48;
+        Address collect_order = 0x01109BB8;
+        Address stuff_ext = 0x010FD200;
         Address cannon_ext = 0x0110F040;
         Address map_point_ext = 0x010FBFF0;
         Address map_point_capture = 0x0116C550;
@@ -410,6 +426,9 @@ inline RttiVerifyResult resolve_and_verify_vtables(Address base, bool apply_reso
         {".?AVeHumanBrain@Actor@@", 0, &vt.human_brain},
         {".?AVeVehicleBrain@Actor@@", 0, &vt.vehicle_brain},
         {".?AUeAvoidGrenade@Order@@", 0, &vt.avoid_grenade},
+        {".?AUeAdvance@Order@@", 0, &vt.advance_order},
+        {".?AVeCrushScannerVehicle@Actor@@", 0, &vt.crush_scanner_vehicle},
+        {".?AVeHS_RootSoldier@Human@@", 0, &vt.root_soldier},
         {".?AUeAttack@Order@@", 0, &vt.attack_order},
         {".?AUeRotate@Order@@", 0, &vt.rotate_order},
         {".?AVeChassisTrack@Actor@@", 0, &vt.chassis_track},
@@ -429,6 +448,8 @@ inline RttiVerifyResult resolve_and_verify_vtables(Address base, bool apply_reso
         {".?AUeThrowingShooter@Weapon@Actor@@", 0, &vt.throwing_shooter},
         {".?AVeEffectDescBlastwave@Damage@@", 0, &vt.effect_blastwave},
         {".?AVeSmokeScreenExtender@Entity@@", 0, &vt.smoke_screen_ext},
+        {".?AUeCollect@Order@@", 0, &vt.collect_order},
+        {".?AVeStuffExtender@Entity@@", 0, &vt.stuff_ext},
         {".?AVeCannonExtender@Entity@@", 0, &vt.cannon_ext},
         {".?AVeMapPointExtender@Entity@@", 0, &vt.map_point_ext},
         {".?AVeMapPointCaptureEngine@GamePlay@Multiplayer@@", 0, &vt.map_point_capture},

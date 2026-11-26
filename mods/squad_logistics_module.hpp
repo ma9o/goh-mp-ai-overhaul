@@ -148,22 +148,7 @@ inline Offer offer(Address donor, const Need& need) {
     const bool uses = uses_ammo(donor, read<Address>(stock.item, 0x40));
     return {stock.item, policy::ammo_amount(stock.count, stock.total, need.capacity, need.single, uses), !uses};
 }
-inline bool visible_near(Address actor, float radius) {
-    const auto sensor = read<Address>(actor, 0xDD0);
-    if (!sensor || read<Address>(sensor, 0x260) != actor) return true;
-    const auto subs = s::span(sensor, 0x280);
-    if (!subs.valid(8, 4096)) return true;
-    for (auto p = subs.first; p != subs.end; p += 8) {
-        const auto sub = read<Address>(p);
-        constexpr unsigned visible_position = (1u << 29) | (1u << 28);
-        if (sub && !read<s::Byte>(sub, 0x6C) && (read<unsigned>(sub, 0x14) & 0x1E) == 2 &&
-            (read<unsigned>(sub, 0x10) & visible_position) == visible_position) {
-            const Vec3 seen = read<Vec3>(sub, 0x28);
-            if (!s::smoke::finite(seen) || s::within(s::pos(actor), seen, radius)) return true;
-        }
-    }
-    return false;
-}
+using s::visible_near;
 inline bool free_actor(const World& w, Address a, Address owned_order = 0,
                        s::Test selected = s::native<s::Test>(0x91B190)) {
     if (!s::autonomous_if(a, true, [](unsigned bits, unsigned flags) { return s::policy_allows(bits, flags, false); }))
@@ -254,10 +239,7 @@ inline bool scavenge_source(const World& w, Address receiver, Address source,
     if (!s::smoke::has_actor(source)) return !(type & (4 | 8));
     const auto burn = read<unsigned>(w.base, 0x15C6A58);
     if (burn < 32 && (read<s::Byte>(source, 0xDAD + burn / 8) & (1u << (burn % 8)))) return false;
-    if (type & 4) {
-        const auto vit = read<Address>(read<Address>(source, 0x578), 0x18);
-        return vit && (read<unsigned>(vit, 0x174) & 3);
-    }
+    if (type & 4) return s::dead_human(source);
     const auto mine = s::owner(receiver), theirs = s::owner(source);
     const bool allied = s::smoke::allies(w.base, mine, theirs);
     if (!allied && !neutral_owners(w, mine, theirs)) return false;
@@ -453,7 +435,8 @@ inline bool prefer_scavenge(const World& w, Address receiver, const Need& ammo, 
         const float d2 = s::smoke::distance2(s::pos(receiver), s::pos(source));
         if (!(d2 <= best2) ||
             (candidate.donor.key.ptr && d2 == best2 && read<unsigned>(source, 0xC0) >= candidate.donor.key.id) ||
-            occupied(source) || source_blocked(w, receiver, source) || !s::inventory_free(source) ||
+            occupied(source) || coord::instance().provider_busy(coord::Module::scavenge, source) ||
+            source_blocked(w, receiver, source) || !s::inventory_free(source) ||
             !scavenge_source(w, receiver, source) || !scavenge_offer(source, ammo).amount ||
             s::post_overrun(w, receiver, s::pos(source), 15))
             return;
@@ -468,6 +451,11 @@ inline bool prefer_scavenge(const World& w, Address receiver, const Need& ammo, 
     candidate.home = s::pos(receiver);
     candidate.hold = s::hold_position(brain);
     return true;
+}
+inline bool battlefield_corpse(const World& w, Address receiver, const Job& candidate) {
+    return candidate.scavenge && config::active().modules.battlefield_scavenge &&
+           (read<s::Byte>(candidate.donor.key.ptr, 0x30) & 4) &&
+           together(w, receiver, candidate.donor.key.ptr, config::active().tuning.scavenge_search_radius_m);
 }
 inline void scan(const World& w, Address receiver) {
     if (!(read<s::Byte>(receiver, 0x30) & 4) || !due(w, receiver) || !free_actor(w, receiver) ||
@@ -490,6 +478,9 @@ inline void scan(const World& w, Address receiver) {
             (!prefer_donor(w, receiver, ammo, candidate) && !prefer_scavenge(w, receiver, ammo, candidate)))
             return;
     }
+    // When both scavenging options select a nearby body, let the battlefield
+    // search consider rearming and heavy weapons before collecting its ammunition.
+    if (battlefield_corpse(w, receiver, candidate)) return;
     if (!slot) slot = jobs.append_slot();
     if (slot) {
         candidate.receiver = Person::from(receiver);
@@ -497,23 +488,6 @@ inline void scan(const World& w, Address receiver) {
         *slot = candidate;
     }
 }
-
-// Reuse both native location constructors and the explicit-amount/cleanup path. Only
-// the final submit differs: the destination location's linked entity is the scheduling owner.
-template <class Calls = s::InventoryCalls> struct ReceiverInventoryCalls {
-    using Submit = int* (*)(void*, int*);
-    static int* submit(void* builder, int* action) {
-        const auto b = reinterpret_cast<Address>(builder);
-        runtime::write<Address>(b, 0x80, read<Address>(b, 0x48));
-        return Calls::template get<Submit>(0x7DFBF0)(builder, action);
-    }
-    template <class Fn> static Fn get(Address rva) {
-        if constexpr (std::is_same_v<Fn, Submit>) {
-            if (rva == 0x7DFBF0) return &submit;
-        }
-        return Calls::template get<Fn>(rva);
-    }
-};
 
 struct NativeDelivery {
     const World& w;
@@ -559,9 +533,7 @@ struct NativeDelivery {
         if (!j.amount || j.before < 0) return false;
         if (!j.scavenge) return med::begin_exchange(j.transfer, donor, receiver, selected.item, j.amount);
         j.ammo_def = read<Address>(selected.item, 0x40);
-        return med::begin_owned_exchange(j.transfer, receiver, [&] {
-            return s::exchange_amount<ReceiverInventoryCalls<>>(donor, receiver, selected.item, j.amount);
-        });
+        return med::begin_exchange(j.transfer, donor, receiver, selected.item, j.amount, receiver);
     }
     enum class Receipt {
         pending,

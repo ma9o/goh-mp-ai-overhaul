@@ -256,11 +256,18 @@ void scene_and_cloud() {
     assert(!med::screens(w, {30, 9, 0}, j.endpoint, threat));
 }
 void supply_policy() {
+    const s::World scaled{0, 0, 0, 20, 1000};
     supply::Trip detour{};
-    detour.previous = {3, 4, 0};
-    detour.travelled = 55;
-    assert(supply::distance_travelled(detour, {0, 0, 0}) == supply::travel_metres);
-    assert(supply::distance_travelled(detour, {0, -1, 0}) > supply::travel_metres);
+    detour.previous = {60, 80, 0};
+    auto& radius = goh::config::active().tuning.resupply_search_radius_m;
+    const float original = radius;
+    for (float limit : {30.f, 60.f, 90.f}) {
+        radius = limit;
+        detour.travelled = limit * scaled.length - 100.f;
+        assert(supply::within_travel_budget(scaled, supply::distance_travelled(detour, {0, 0, 0})));
+        assert(!supply::within_travel_budget(scaled, supply::distance_travelled(detour, {0, -1, 0})));
+    }
+    radius = original;
     assert(supply::affordable(495, 500, 5) && !supply::affordable(496, 500, 5));
     assert(supply::affordable(999, 0, 4) && !supply::affordable(INT_MAX, INT_MAX, 1));
     assert(!supply::affordable(-1, 0, 1) && !supply::affordable(1, 2, -1));
@@ -303,6 +310,39 @@ void supply_policy() {
     fire.put(0xa0, 0.f);
     props.string(0x40, "destroyed");
     assert(!supply::serviceable(h.actor.address()));
+}
+void truck_in_actor_registry() {
+    Human truck(112);
+    truck.actor.put(0x30, Byte{0x0b});
+    Memory<0x100> scene, head, node, crate;
+    crate.put(0x30, Byte{1});
+    std::array objects{crate.address(), truck.actor.address()};
+    scene.put(0x60, head.address());
+    scene.put(0x68, std::size_t{1});
+    head.put(0, node.address());
+    head.put(0x19, Byte{1});
+    node.put(8, head.address());
+    node.put(0x10, head.address());
+    node.put(0x28, truck.actor.address());
+    Memory<0x438> zone;
+    zone.put(0, s::base + goh::runtime::table().vt.supply_zone_ext);
+    zone.put(0x18, truck.actor.address());
+    std::array exts{zone.address()};
+    truck.agg.range(0, exts);
+    Address live_scene = scene.address();
+    s::World w{reinterpret_cast<Address>(&live_scene) - 0x15C7D58, 0, 0, 20, 1000};
+    const auto saved_tls = s::actor_tls;
+    s::actor_tls = 0; // Use the live +0x60 tree, independently of the +0x48 list.
+    for (std::size_t listed : {1u, 2u}) {
+        scene.range(0x48, objects, listed);
+        unsigned trucks{}, crates{};
+        supply::source_entities(w, [&](Address a) {
+            if (a == truck.actor.address() && s::extender(a, goh::runtime::table().vt.supply_zone_ext)) ++trucks;
+            if (a == crate.address()) ++crates;
+        });
+        assert(trucks == 1 && crates == 1);
+    }
+    s::actor_tls = saved_tls;
 }
 void structure_and_template() {
     Human owner(2), recipient(3);
@@ -496,6 +536,7 @@ int main() {
     observations();
     scene_and_cloud();
     supply_policy();
+    truck_in_actor_registry();
     structure_and_template();
     lifecycle();
     transfer_ownership();

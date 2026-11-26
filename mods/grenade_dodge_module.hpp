@@ -4,6 +4,7 @@
 #include "auto_smoke_module.hpp"
 #include "config_and_log.hpp"
 #include "game_runtime.hpp"
+#include "hit_the_dirt_module.hpp"
 
 #include <array>
 #include <atomic>
@@ -617,45 +618,58 @@ inline void __fastcall hook_scanner_upd(Address scanner) {
 
 inline std::uint64_t __fastcall hook_avoid_inner_tick(Address order) {
     HookGuard guard(gate);
-    if (gate.active() && config::active().modules.grenade_dodge && runtime::is_host_main_thread(base) &&
-        is_plausible_ptr(order)) {
-        const std::int32_t st_val = read<std::int32_t>(order, Off::kAvoidState);
-        const Address g_ent = read<Address>(order, Off::kAvoidEntity);
-        const Address owner_sub = read<Address>(order, Off::kOrderOwner);
-
-        if (st_val != 2 && is_plausible_ptr(g_ent) && is_plausible_ptr(owner_sub) &&
-            owner_sub > Off::kActorOrderedSub) {
-            const Address actor = owner_sub - Off::kActorOrderedSub;
-            Address brain = 0;
-            Address chassis = 0;
-            if (is_eligible_human(actor, brain, chassis) &&
-                native<FnArmedGrenade>(base, runtime::table().fn.armed_grenade_query)(g_ent) != 0) {
-                const Tick now = runtime::read_clock(base);
-                TrackedGrenade tg_copy{};
-                if (!grenade_position(g_ent, now, tg_copy)) return orig_avoid_inner_tick(order);
-                const float sx = read<float>(actor, Off::kEntityPos);
-                const float sy = read<float>(actor, Off::kEntityPos + 4);
-                const float L = spatial_scale();
-                const float ord_rad = danger_radius_m(order, Off::kAvoidRadius);
-                runtime::XY goal{};
-                if (player_destination(brain, goal) && safe_goal(goal, sx, sy, L, ord_rad, tg_copy)) return 1;
-                const float danger_rad = (ord_rad + 1.0f) * L;
-                float urg_sq = 0.0f;
-                const bool in_danger = is_threatened_by(tg_copy, sx, sy, danger_rad, 25.0f * L, urg_sq);
-
-                if (in_danger) {
-                    if (st_val == 1) runtime::write<std::int32_t>(order, Off::kAvoidState, 0);
-                    const Address cover = read<Address>(actor, Off::kActorCover);
-                    if (is_plausible_ptr(cover) && read<std::int32_t>(cover, 0x24) != 0) {
-                        runtime::write<std::int32_t>(order, Off::kAvoidState, 0);
-                        const Byte ok = hook_avoid_plan_escape(order);
-                        return ok ? 0ULL : 2ULL;
-                    }
-                }
-            }
-        }
-    }
-    return orig_avoid_inner_tick(order);
+    namespace dirt = hit_the_dirt::detail;
+    const bool dodge = config::active().modules.grenade_dodge;
+    if (!gate.active() || (!dodge && !dirt::enabled()) || !runtime::is_host_main_thread(base) ||
+        !is_plausible_ptr(order))
+        return orig_avoid_inner_tick(order);
+    const auto state = read<int>(order, Off::kAvoidState);
+    const auto grenade = read<Address>(order, Off::kAvoidEntity), owner = read<Address>(order, Off::kOrderOwner);
+    if (state == 2 || !is_plausible_ptr(grenade) || !is_plausible_ptr(owner) || owner <= Off::kActorOrderedSub)
+        return orig_avoid_inner_tick(order);
+    const auto actor = owner - Off::kActorOrderedSub;
+    Address brain{}, chassis{};
+    if (!is_eligible_human(actor, brain, chassis)) return orig_avoid_inner_tick(order);
+    auto_smoke::World w{};
+    const bool can_hide = dirt::enabled() && auto_smoke::world(base, w) && dirt::trap_context(w, order, actor, grenade);
+    if (can_hide && state == 1 && read<Byte>(order, 0x50) && dirt::trapped_hide(w, order, actor, grenade, false))
+        return orig_avoid_inner_tick(order);
+    const auto armed = native<FnArmedGrenade>(base, runtime::table().fn.armed_grenade_query);
+    const bool fuse = armed(grenade) != 0;
+    if (!fuse && !(can_hide && (read<unsigned>(grenade, 0x1c0) & (1u << 13)))) return orig_avoid_inner_tick(order);
+    TrackedGrenade track{};
+    const bool tracked = grenade_position(grenade, runtime::read_clock(base), track);
+    const bool improve_escape = dodge && fuse && tracked;
+    if (!improve_escape && !can_hide) return orig_avoid_inner_tick(order);
+    const float sx = read<float>(actor, Off::kEntityPos), sy = read<float>(actor, Off::kEntityPos + 4);
+    const float L = can_hide ? w.length : spatial_scale(), radius = danger_radius_m(order, Off::kAvoidRadius);
+    runtime::XY goal{};
+    if (player_destination(brain, goal) && safe_goal(goal, sx, sy, L, radius, track))
+        return improve_escape ? 1 : orig_avoid_inner_tick(order);
+    float urgency{};
+    if (!is_threatened_by(track, sx, sy, (radius + 1.f) * L, 25.f * L, urgency)) return orig_avoid_inner_tick(order);
+    const auto cover = read<Address>(actor, Off::kActorCover);
+    const bool plan_from_cover = improve_escape && is_plausible_ptr(cover) && read<int>(cover, 0x24) != 0;
+    if (improve_escape && (state == 1 || plan_from_cover)) runtime::write<int>(order, Off::kAvoidState, 0);
+    const auto actor_key = can_hide ? ai_support::identity(actor) : ai_support::Identity{};
+    const auto grenade_key = can_hide ? ai_support::identity(grenade) : ai_support::Identity{};
+    const auto result = plan_from_cover ? (hook_avoid_plan_escape(order) ? 0ULL : 2ULL) : orig_avoid_inner_tick(order);
+    if (result != 2 || !can_hide) return result;
+    // Native movement and FSM boundaries can replace the actor or unlink the hazard.
+    const auto still_trapped = [&] {
+        return ai_support::resolve(w, actor_key) && read<Address>(order, Off::kAvoidEntity) == grenade &&
+               ai_support::resolve(w, grenade_key) && dirt::trap_context(w, order, actor, grenade) &&
+               read<Address>(actor, Off::kActorChassis) == chassis &&
+               (armed(grenade) || (read<unsigned>(grenade, 0x1c0) & (1u << 13)));
+    };
+    if (!still_trapped()) return result;
+    const auto setter = dirt::posture_setter(chassis);
+    if (!setter || !dirt::trapped_hide(w, order, actor, grenade, true)) return result;
+    setter(chassis, 1, 0);
+    if (!still_trapped()) return result;
+    native<void (*)(Address)>(base, runtime::table().fn.avoid_grenade_hide)(order);
+    ++hit_the_dirt::stat_trapped_hides;
+    return 0;
 }
 
 inline Byte __fastcall hook_avoid_plan_escape(Address order) {

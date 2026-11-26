@@ -113,10 +113,18 @@ template <class Submit> inline bool begin_owned_exchange(ExchangeRef& j, Address
             mark = &t;
             break;
         }
-    if (!mark) mark = transfers.append_slot();
+    if (!mark) mark = store::try_append_slot(transfers);
     if (!mark) return false;
+    World world{};
+    const bool verify_owner = actor_tls != TLS_OUT_OF_INDEXES;
+    if (verify_owner && (!smoke::world(base, world) || !live_entity(owner_entity))) return false;
+    const auto owner_key = verify_owner ? identity(owner_entity) : Identity{};
     mark->operation.store(1); // Reserved across synchronous native callbacks.
     const int action = submit();
+    if (verify_owner && !resolve(world, owner_key)) {
+        mark->operation.store(0);
+        return false;
+    }
     if (action >= 0) {
         const auto ops = span(manager(owner_entity), 0xA8);
         if (ops.valid(8, 512))
@@ -138,8 +146,11 @@ template <class Submit> inline bool begin_owned_exchange(ExchangeRef& j, Address
     mark->operation.store(0);
     return false;
 }
-inline bool begin_exchange(ExchangeRef& j, Address donor, Address receiver, Address item, int amount) {
-    return begin_owned_exchange(j, donor, [&] { return exchange_amount(donor, receiver, item, amount); });
+template <class Calls = InventoryCalls>
+inline bool begin_exchange(ExchangeRef& j, Address donor, Address receiver, Address item, int amount,
+                           Address preferred_owner = 0) {
+    return begin_owned_exchange(j, preferred_owner ? preferred_owner : donor,
+                                [&] { return exchange_amount<Calls>(donor, receiver, item, amount, preferred_owner); });
 }
 inline bool exclusive_exchange(Address op, Address donor, Address receiver) {
     const auto src = manager(donor), dst = manager(receiver);

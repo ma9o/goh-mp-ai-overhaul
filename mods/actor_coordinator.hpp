@@ -25,7 +25,9 @@ enum class Module : std::uint8_t {
     squad_logistics = 10,
     movement_recovery = 11,
     convoy_spacing = 12,
-    count = 13
+    recrew_weapons = 13,
+    scavenge = 14,
+    count = 15
 };
 
 enum class Priority : std::uint8_t {
@@ -35,7 +37,9 @@ enum class Priority : std::uint8_t {
     convoy_spacing = 15,
     movement_recovery = 18,
     tactical_infantry = 20,
+    scavenge = 28,
     auto_resupply = 30,
+    recrew_weapons = 32,
     squad_logistics = 35,
     tank_auto_repair = 40,
     auto_medic = 50,
@@ -153,6 +157,12 @@ public:
         lease.expires = lease.has_expiry ? (now + ttl) : 0;
         leases_[actor] = lease;
         return true;
+    }
+
+    // Inventory sources may be non-actors. Ask only the provider that owns the reservation.
+    bool provider_busy(Module owner, Address entity) const noexcept {
+        const auto idx = static_cast<std::size_t>(owner);
+        return entity && idx < providers_.size() && providers_[idx].busy_fn && providers_[idx].busy_fn(entity);
     }
 
     void release(Address actor, Module owner) {

@@ -4,6 +4,7 @@
 //   - Auto-Resupply (0 extra hooks)
 //   - Tactical Infantry Movement & Cover (15 hooks)
 //   - Weapon swap (1 hook) and squad logistics (post-quant)
+//   - Crush scanner and root hazard arbitration (3 hooks)
 //   - Engine fixes (8 hooks) and lull reloading
 //   - Tactical Objectives: Pursue & Cap (0 extra hooks)
 
@@ -15,7 +16,11 @@
 #include "ai_modules.hpp"
 #include "config_and_log.hpp"
 #include "combat_logistics_module.hpp"
+#include "crush_avoidance_module.hpp"
+#include "hit_the_dirt_module.hpp"
 #include "squad_logistics_module.hpp"
+#include "recrew_weapons_module.hpp"
+#include "scavenge_module.hpp"
 #include "engine_fixes_module.hpp"
 #include "movement_recovery_module.hpp"
 #include "tactical_objectives_module.hpp"
@@ -60,7 +65,9 @@ bool stage_hooks(runtime::Address base, const char* sha, HookCreateFn create, Ho
     if (!swap_ok) log::write(log::Level::error, "Weapon swap hook staging failed");
     const bool move_rec_ok = movement_recovery::init(base, sha);
     if (!move_rec_ok) log::write(log::Level::error, "Movement recovery initialization failed");
-    return g_SupportOk && g_SmokeOk && g_TacticalOk && fixes_ok && swap_ok && move_rec_ok;
+    const bool crush_ok = crush_avoidance::prepare_hooks(base, sha, create, remove);
+    if (!crush_ok) log::write(log::Level::error, "Crush scanner and hazard priority hook staging failed");
+    return g_SupportOk && g_SmokeOk && g_TacticalOk && fixes_ok && swap_ok && move_rec_ok && crush_ok;
 }
 
 void on_hooks_enabled(runtime::Address base) {
@@ -74,6 +81,8 @@ void on_hooks_enabled(runtime::Address base) {
 }
 
 void begin_shutdown() noexcept {
+    recrew_weapons::begin_shutdown();
+    scavenge::begin_shutdown();
     movement_recovery::begin_shutdown();
     squad_logistics::begin_shutdown();
     tactical_objectives::shutdown();
@@ -83,7 +92,7 @@ bool drain_quiescence() {
     ai_support::accepting.store(false, std::memory_order_release);
     const auto drained = [] {
         return ai_support::quiescent() && auto_medic::quiescent() && squad_logistics::quiescent() &&
-               movement_recovery::quiescent();
+               recrew_weapons::quiescent() && scavenge::quiescent() && movement_recovery::quiescent();
     };
     for (int wait = 0; wait < 20 && !drained(); ++wait) {
         Sleep(10);
@@ -93,6 +102,7 @@ bool drain_quiescence() {
 
 void deactivate() noexcept {
     tactical_objectives::shutdown();
+    crush_avoidance::deactivate();
     movement_recovery::deactivate();
     combat_logistics::deactivate();
     engine_fixes::deactivate();
@@ -102,8 +112,9 @@ void deactivate() noexcept {
 }
 
 std::uint32_t inflight_count() noexcept {
-    return movement_recovery::inflight_count() + combat_logistics::inflight_count() + engine_fixes::inflight_count() +
-           ai_support::inflight_count() + auto_smoke::inflight_count() + tactical_infantry::inflight_count();
+    return crush_avoidance::inflight_count() + movement_recovery::inflight_count() +
+           combat_logistics::inflight_count() + engine_fixes::inflight_count() + ai_support::inflight_count() +
+           auto_smoke::inflight_count() + tactical_infantry::inflight_count();
 }
 
 void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) {
@@ -123,11 +134,19 @@ void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) 
     // These native order/inventory boundaries can synchronously remove or replace the actor.
     const auto present = [&] { return ai_support::resolve(world, support_actor_id) != 0; };
     if (!present()) return;
+    if (config::active().modules.hit_the_dirt && (runtime::read<runtime::Byte>(actor, 0x30) & 4)) {
+        hit_the_dirt::on_human_post_quant(world, actor);
+        if (!present()) return;
+    }
     auto_medic::tick(actor);
     if (!present()) return;
     squad_logistics::tick(actor);
     if (!present()) return;
+    recrew_weapons::tick(actor);
+    if (!present()) return;
     auto_resupply::tick(actor);
+    if (!present()) return;
+    scavenge::tick(actor);
     if (!present()) return;
     tactical_objectives::tick(actor, close_grenade::is_busy(world, actor));
     const auto& modules = config::active().modules;
@@ -135,8 +154,23 @@ void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) 
     if (present()) movement_recovery::on_actor_post_quant(actor);
 }
 
+double vehicle_hull_health(runtime::Address actor) {
+    auto_smoke::vehicle::Observation body{};
+    auto_smoke::vehicle::usableBody(actor, body);
+    return body.hullHealth >= 0 ? body.hullHealth : std::numeric_limits<double>::quiet_NaN();
+}
+
+FieldSupportStats field_support_stats() noexcept {
+    return {recrew_weapons::stat_recrews.load(std::memory_order_relaxed),
+            scavenge::stat_rearm.load(std::memory_order_relaxed),
+            scavenge::stat_heavy_pickup.load(std::memory_order_relaxed),
+            scavenge::stat_corpse_loot.load(std::memory_order_relaxed)};
+}
+
 Stats snapshot_stats() noexcept {
     Stats s{};
+    s.crush_escapes = crush_avoidance::stat_crush_escapes;
+    s.hazard_priorities = crush_avoidance::stat_hazard_priorities;
     s.smoke_veh = auto_smoke::stat_veh_smoke;
     s.smoke_inf = auto_smoke::stat_inf_smoke;
     s.smoke_med = auto_smoke::stat_med_smoke;
@@ -176,6 +210,9 @@ Stats snapshot_stats() noexcept {
 }
 
 void after_hooks_removed() {
+    scavenge::after_hooks_removed();
+    recrew_weapons::after_hooks_removed();
+    crush_avoidance::after_hooks_removed();
     movement_recovery::after_hooks_removed();
     squad_logistics::after_hooks_removed();
     combat_logistics::after_hooks_removed();
@@ -190,7 +227,8 @@ void after_hooks_removed() {
 
 bool runtime_allowed_flag() noexcept {
     return tactical_infantry::runtime_allowed && engine_fixes::runtime_allowed && combat_logistics::runtime_allowed &&
-           squad_logistics::runtime_allowed && movement_recovery::runtime_allowed;
+           squad_logistics::runtime_allowed && movement_recovery::runtime_allowed && crush_avoidance::runtime_allowed &&
+           hit_the_dirt::runtime_allowed && recrew_weapons::runtime_allowed && scavenge::runtime_allowed;
 }
 
 } // namespace goh::tu_infantry

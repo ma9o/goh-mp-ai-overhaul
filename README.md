@@ -1,6 +1,6 @@
 # Gates of Hell: MP AI Overhaul
 
-Host-only native AI overhaul for **Call to Arms: Gates of Hell - Ostfront** (Steam build `26734796`). Nothing in `resource/` or `.pak` files is touched, so vanilla multiplayer clients can join a modded host without installing the mod. Should also work in singleplayer, skirmish, and Conquest but it's only been tested in multiplayer so far. 
+Host-only native AI overhaul for **Call to Arms: Gates of Hell - Ostfront** (Steam build `26734796`). Nothing in `resource/` or `.pak` files is touched, so vanilla multiplayer clients can join a modded host without installing the mod. Designed for multiplayer, singleplayer, skirmish, and Conquest; single-player host smoke testing is underway on build `26734796` ([live verification log](research/notes/level1-live-verification-26734796.md)), while multiplayer verification of the newer modules is still ongoing.
 
 **Work in progress**: Still a lot of rough edges. Contributions welcome!
 
@@ -10,6 +10,8 @@ Everything below works in both **Hold Position** (the GoH default) and **Move at
 
 ### Combat & targeting
 
+- **Attack Move** resumes sooner once infantry, vehicles or guns lose a viable target. A tank still halts for a visible enemy in range or a target it is actively engaging. [Build contract](research/notes/combat-hazards-26734796.md)
+- **Explicit Attack** gives a living target up to 14 seconds to reappear in fog of war. At close range, infantry with a loaded firearm keep shooting a visible enemy when the game would otherwise switch them to a fistfight. [Build contract](research/notes/combat-hazards-26734796.md)
 - **[Target prioritization & shell economy](research/notes/target-prioritization-26734796.md)**
   - Ranks visible enemies by weapon/ammo effectiveness, range, threat (including armor targeting nearby allies), penetrability, and clear line of fire, demoting defanged or impenetrable vehicles.
   - Vehicles with a `>= 37 mm` cannon use an eligible mounted MG first against a lone soldier instead of wasting a shell.
@@ -28,8 +30,12 @@ Everything below works in both **Hold Position** (the GoH default) and **Move at
 
 ### Infantry survival, tactics & grenades
 
-- **Faster weapon changes.** A soldier who spots armor can ready a carried anti-tank weapon sooner and keep it in hand while the vehicle is nearby. When infantry close in, a soldier carrying a launcher or an empty gun can switch back to a firearm. [Build contract](research/notes/combat-logistics-26734796.md)
-- **Grenade clearance.** Soldiers check the landing point before throwing a lethal grenade on their own and hold the throw if it would endanger themselves or nearby allies. Explicit Attack orders, Attack Ground orders, and manual throws take precedence. Pure smoke grenades can still screen friendly troops. [Build contract](research/notes/combat-logistics-26734796.md)
+- **Blast reactions.** A soldier trapped within a live grenade’s blast radius goes prone after escape fails. Idle soldiers on Hold Position also go prone under nearby heavy explosions when there is no enemy within 10 m. [Build contract](research/notes/combat-hazards-26734796.md)
+- **Vehicle clearance.** Infantry can sidestep a moving vehicle, including a friendly tank reversing under Direct Control. A nearby live grenade takes priority over nearby fire for a soldier who is clear of the flames. A vehicle already on top of the soldier keeps priority over the grenade. [Build contract](research/notes/combat-hazards-26734796.md)
+- **[Faster weapon changes](research/notes/combat-logistics-26734796.md)**
+  - Soldiers who spot armor ready a carried anti-tank weapon sooner and keep it in hand while the vehicle is nearby; when infantry close in, a soldier carrying a launcher or an empty gun switches back to a firearm.
+- **[Grenade friendly-fire clearance](research/notes/combat-logistics-26734796.md)**
+  - Checks the landing point before an autonomous lethal grenade throw and holds the throw if it would endanger the thrower or nearby allies. Explicit Attack orders, Attack Ground orders, manual throws, and pure smoke grenades are unaffected.
 - **[Early flying-grenade dodge](research/notes/grenade-escape-26734796.md)** *(overrides Hold Position)*
   - Tracks armed grenades in flight, predicts where they will land, and wakes nearby soldiers before impact while ignoring outbound throws landing safely away.
   - Sprints standing away from both the blast and known enemies instead of crouching into nearby cover, while preserving a player's own move order when it already runs safely clear of the blast ([build contract](research/notes/survival-logistics-improvements-26734796.md)).
@@ -41,7 +47,7 @@ Everything below works in both **Hold Position** (the GoH default) and **Move at
   - Stabilizes advance/hold/fallback posture so squads stop oscillating, pulls exposed rifle/SMG soldiers out of the open against armor, and coordinates alternating squad bounds (medics, heavy weapons, and their ammo-carrying assistants stay together on overwatch rather than bounding apart).
   - Ranks cover by threat screening and line of fire (crossing open ground only when no cover fits), tries stance changes or sidesteps when blocked, holds screened cover through distant hits, and stops stale return walks. Selected squads keep priority.
   - **Overflow cover & post-dismount spread** ([build contract](research/notes/squad-tactics-improvements-26734796.md)): After a squad finishes a move onto a trench or wall that runs out of slots, uncovered overflow soldiers take distinct nearby cover (including tightly bounded snaps on Hold Position when at least two squadmates are already in cover). Recently dismounted Move-at-Will squads fan out into nearby cover instead of bunching behind the rear door.
-- **Doorway & wall-edge stall recovery** ([build contract](research/notes/movement-convoy-improvements-26734796.md))
+- **[Doorway & wall-edge stall recovery](research/notes/movement-convoy-improvements-26734796.md)**
   - Infantry and pushed guns that stall against a doorway or wall edge during a move try up to two short side or back-out nudges to clear the snag, then resume their original destination. Any new player order immediately cancels recovery.
 - **[Local pursuit & flag-capture finish](research/notes/tactical-objectives-26734796.md)** *(Move at Will only)*
   - Idle squads follow recent enemy sightings within 50 m (55 m leash from their anchor) when morale and local strength allow.
@@ -58,41 +64,47 @@ Everything below works in both **Hold Position** (the GoH default) and **Move at
   - Idle medics claim the nearest reachable downed ally within 36 m (one medic per patient), backing off temporarily from unreachable or failed revives so they can move on to other casualties ([build contract](research/notes/survival-logistics-improvements-26734796.md)).
   - If out of smoke, fetches one smoke grenade from an idle ally within 24 m (preferring spare stacks; never taking another medic's last smoke), throws a screen, waits for the plume, and revives — or revives unscreened if no donor is nearby and no enemy is within 25 m.
   - On `Hold Position`, walks back to post afterward unless interrupted or enemies close within 10 m.
-- **Squad ammo, bandages, and battlefield scavenging.** An idle soldier can bring compatible ammunition to a nearby gunner running low, or a bandage to a wounded ally who has run out. Squadmates get first choice. When no living ally has spare rounds — including for picked-up weapons — a soldier running low can scavenge compatible loose ammo from a safe nearby fallen soldier, ground box, or idle friendly vehicle within 20 m and return to post on Hold Position. [Build contract](research/notes/combat-logistics-26734796.md) · [Scavenging contract](research/notes/survival-logistics-improvements-26734796.md)
+- **Battlefield weapons and first aid.** Disarmed soldiers and soldiers who have exhausted their firearms can pick up a usable dropped gun. Regular riflemen can stow their rifle to pick up a loaded machine gun or anti-tank weapon. Infantry can also collect compatible ammunition or bandages from fallen troops. They wait until both the soldier and the supplies are clear of nearby enemies, then return to their post on Hold Position. [Build contract](research/notes/repair-recrew-scavenge-26734796.md)
+- **[Squad ammo, bandages & battlefield scavenging](research/notes/combat-logistics-26734796.md)** *(any stance; Hold Position returns to post)*
+  - Idle soldiers bring compatible ammunition to a nearby gunner running low or a bandage to a wounded ally who has run out, giving squadmates first choice.
+  - When no living ally has spare rounds — including for picked-up weapons — soldiers running low scavenge compatible loose ammo from a safe nearby fallen soldier, ground box, or idle friendly vehicle within 20 m and return to post on Hold Position ([scavenging contract](research/notes/survival-logistics-improvements-26734796.md)).
 - **[Auto-Resupply](research/notes/auto-resupply-26734796.md)** *(any stance; Hold Position returns to post)*
   - Dry infantry, crewed guns, and vehicles (including any empty turret on multi-cannon tanks) move up to 60 m to the nearest safe friendly flag, ammo truck, or crate (25 m enemy buffer; up to four units spaced around the point) and wait until topped off.
   - On `Hold Position`, walks back to post afterward unless interrupted or enemies close within 10 m.
 
 ### Armored vehicles & crews
 
-- **Safer dismounts.** When the crew or a nearby ally has spotted enemies, dismounting passengers favor an open exit on the far side of the vehicle. Damaged or burning transports can unload their passengers. A stopped or immobilized transport can also unload under a close anti-tank threat. [Build contract](research/notes/combat-logistics-26734796.md)
-- **Stationary tank facing** ([build contract](research/notes/tank-facing-26734796.md))
+- **[Safer dismounts & emergency transport unload](research/notes/combat-logistics-26734796.md)**
+  - When the crew or a nearby ally has spotted enemies, dismounting passengers favor an open exit on the far side of the vehicle.
+  - Damaged or burning transports — as well as stopped or immobilized transports under a close anti-tank threat — unload their passengers automatically.
+- **[Stationary tank facing](research/notes/tank-facing-26734796.md)**
   - A stationary tracked tank can turn its hull in place toward a threat spotted by its crew or a nearby ally. It turns only when the change would substantially reduce its estimated exposure. The turret keeps its own aim.
   - Works on Hold Position and Move at Will. Your move, attack, and face orders take priority. On Hold Fire, the tank stays quiet unless it has recently taken a hit or the contact is already attacking or threatening it.
 - **[Tank obstacle crushing & front-armor reversing](research/notes/tank-crusher-26734796.md)**
   - Tracked tanks push through fences and crushable cover in combat instead of detouring around them.
   - Short pullbacks (`<= 45 m`, up to `135°` turns) reverse with frontal armor facing known enemies within 180 m instead of turning around.
-- **Vehicle convoy spacing & passing** ([build contract](research/notes/movement-convoy-improvements-26734796.md))
+- **[Vehicle convoy spacing & passing](research/notes/movement-convoy-improvements-26734796.md)**
   - Following vehicles pause briefly instead of ramming into a moving friendly leader, and pass cleanly around a stopped friendly vehicle when open ground permits before resuming their destination. On narrow roads or bridges they hold behind the leader instead of swerving into obstacles.
+- **Field repairs for trucks, halftracks, armored cars and crewed guns.** Crews can repair a broken engine, wheel, track, gun or shield. An enemy visible within 25 m keeps the crew aboard for minor repairs. A working two-man gun keeps its gunner while the other crewman repairs. [Build contract](research/notes/repair-recrew-scavenge-26734796.md)
+- **Recrewing heavy weapons.** Idle infantry can man an intact, supplied gun belonging to the same player. Hold Position limits volunteers to 8 m. A surviving crewman who deliberately dismounts gives the gun a 30-second pause before volunteers can board. [Build contract](research/notes/repair-recrew-scavenge-26734796.md)
 - **[Tank Auto-Repair](research/notes/tank-auto-repair-26734796.md)** *(any stance; crew re-board automatically)*
   - **Broken hull:** Tracks the crew across delayed ejections, sends crew out in parallel (up to available kits and damaged parts) starting with the hull, and re-boards them once seats unlock.
   - **Turret/cannon/mantlet + broken track:** Sends up to two crew (preferring kit carriers, mechanics, and non-gunners while keeping working cannon gunners seated) to repair guns -> turrets -> mantlet -> remaining parts past vanilla's two-attempt cap before re-boarding.
   - Backs off briefly after manual crew disembarks (25 s) or repairer casualties (8 s).
-- **Automatic crew seat swaps and passenger refill** ([build contract](research/notes/tank-crew-fill-26734796.md))
+- **[Automatic crew seat swaps & passenger refill](research/notes/tank-crew-fill-26734796.md)**
   - Surviving crew move from the least critical occupied seat to cover a vacancy. For example, a commander can take over the main gun, then a hull rider can fill the commander's seat. Main gunner and driver take priority, followed by loader, commander, and secondary gun crews.
   - Tank hull riders, halftrack and APC passengers, and soldiers seated in armored cars or trucks can fill vacancies. Crewed guns can redistribute their crew while deployed. Roof gunners keep their posts, and crews stay put while a gun is being pushed or towed.
   - A driver with no movement order can take the gun when immobilized or facing a visible enemy. A lone gunner can return to the wheel for a move order if the vehicle is mobile. Both swaps give an available passenger first choice and have a three-second cooldown.
   - Passenger fills favor crewmen and mechanics first, ordinary infantry next, and medics or soldiers carrying live AT gear last. They leave room for returning repairers, respect allied ownership, and pause for 10 seconds after a manual crew disembark.
 
-### Engine fixes and lull reloading
+### Engine fixes & lull reloading
 
-- After self-healing, a soldier with an empty hand can draw the weapon they put away. Infantry caught in a fire can move to reachable ground outside the flames.
-- Defenders can break a line of windowpanes when every obstruction is breakable glass. Soldiers on Hold Position can rise in place for a clear shot or to defend themselves at close range.
-- Infantry can top up magazines at or below 35% during a lull. A visible enemy within 35 m takes precedence. Player-owned units can keep their firing order through a reload.
-- Repairers keep their kit after an interrupted, unfinished repair and can choose separate damaged components. Followers and boarding troops tolerate small destination changes before replanning.
-- Player-owned units can remember a target for up to 20 seconds. A burning vehicle that can still fight remains a candidate, and a nearby contact can no longer hide a more useful target from the target-prioritization module.
-
-These changes have been checked offline on Steam build `26734796`. Live host and client verification is pending. [Build contract](research/notes/engine-fixes-26734796.md)
+- **[Engine fixes & lull reloading](research/notes/engine-fixes-26734796.md)**
+  - After self-healing, a soldier with an empty hand draws the weapon they put away. Infantry caught in a fire move to reachable ground outside the flames.
+  - Defenders can break a line of windowpanes when every obstruction is breakable glass. Soldiers on Hold Position can rise in place for a clear shot or to defend themselves at close range.
+  - Infantry top up magazines at or below 35% during a lull while a visible enemy within 35 m takes precedence; player-owned units keep their firing order through a reload.
+  - Repairers keep their kit after an interrupted, unfinished repair and pick separate damaged components. Followers and boarding troops tolerate small destination changes before replanning.
+  - Player-owned units remember a target for up to 20 seconds. A burning vehicle that can still fight remains a candidate, and a nearby contact no longer hides a more useful target from the target-prioritization module.
 
 ## Loading the mod
 
@@ -106,21 +118,49 @@ These changes have been checked offline on Steam build `26734796`. Live host and
    - **Linux / macOS (Proton / Wine):** Set Steam launch options to `WINEDLLOVERRIDES="version=n,b" %command%`.
    - **Multiplayer:** Only the **host** installs the mod; vanilla clients need no files.
    - **Uninstall:** Remove `version.dll` and `goh_ai_mod.dll` from `binaries/x64/`.
-   - *Note:* Drop-in `version.dll` auto-loading is still awaiting a launch smoke test on build `26734796`; `goh_ai_mod.dll` can also be injected directly into a running `call_to_arms.exe` with any x64 DLL injector.
+   - *Note:* Drop-in `version.dll` auto-loading has been verified live on build `26734796` (single-player host; see [live verification log](research/notes/level1-live-verification-26734796.md)). `goh_ai_mod.dll` can also be injected directly into a running `call_to_arms.exe` with any x64 DLL injector.
 
 ### Optional configuration (`goh_ai.ini`)
 
-No config file is required — everything runs with balanced defaults out of the box. To customize behavior, place a `goh_ai.ini` file beside the DLL:
+No config file is required — everything runs with balanced defaults out of the box. To customize behavior, place a `goh_ai.ini` file beside the DLL. Changes under `[modules]`, `[tuning]`, and `[logging]` (`level`, `flush_ms`) hot-reload once per second while the game is running; `filename` and `[smoke]` are read at startup.
 
-- **`[modules]`:** Enable or disable any individual module (e.g., `auto_smoke = false`, `tactical_objectives = false`).
-  - Crew refill defaults to enabled. Set `internal_crew_swap = false` for passenger fills only, `nontank_crew_fill = false` to limit the feature to tracked tanks, or `tank_crew_fill = false` to disable all crew transfers by this module.
-  - Set `engine_fixes = false` to disable the pack, or `lull_reload = false` to disable only proactive reloading. Under `[tuning]`, `lull_reload_ratio` accepts 0.10–0.75 and defaults to 0.35.
-  - The five combat and logistics switches default on. Set `fast_weapon_swap`, `grenade_ff_guard`, `safe_disembark`, `transport_unload`, or `squad_logistics` to `false` to disable that feature. Under `[tuning]`, `squad_share_radius_m` sets donor search range (default 18 m, range 6–40 m).
-  - Additional combat, tactics, and movement switches also default on: `ammo_scavenge`, `tank_target_memory`, `cannon_aim_settle`, `allegiance_guard`, `overflow_cover`, `weapon_team_cohesion`, `mg_crew_small_arms`, `movement_recovery`, and `convoy_spacing`. Under `[tuning]`, customize `scavenge_radius_m` (default 20 m, range 6–40 m), `tank_memory_hold_s` (default 5 s, range 1–15 s), `cannon_settle_max_s` (default 1.8 s, range 0.3–5 s), `overflow_cover_radius_m` (default 8 m, range 3–20 m), `movement_stall_s` (default 2.5 s, range 1–8 s), and `convoy_gap_m` (default 8 m, range 4–20 m).
-  - Set `tank_facing = false` to disable automatic hull turns. Under `[tuning]`, `tank_facing_min_angle_deg` sets the smallest turn to consider (default 24°, range 15–60°).
-- **`[tuning]`:** Adjust search radii, cooldowns, and grenade detection range (invalid or extreme values are safely clamped).
-- **`[logging]`:** Set log verbosity (`off`, `error`, `summary`, or `verbose`; defaults to `summary`) and optional log filename beside the DLL.
-- **`[smoke]`:** Optionally list extra non-WP smoke grenade or launcher names from third-party mods (`extra_grenades`, `extra_programs`); White Phosphorus and explosive items remain strictly blocked.
+- **`[modules]`** *(all default `true`; set any key to `false` to disable)*:
+  - **Combat & targeting:** `advance_responsive`, `attack_order_polish`, `target_prioritization`, `penetration_at`, `soft_cover_lof`, `attack_detour`, `tank_target_memory`, `cannon_aim_settle`, `allegiance_guard`
+  - **Infantry & tactics:** `hit_the_dirt`, `crush_avoidance`, `grenade_dodge`, `close_grenade`, `tactical_infantry`, `tactical_objectives`, `fast_weapon_swap`, `grenade_ff_guard`, `overflow_cover`, `weapon_team_cohesion`, `mg_crew_small_arms`, `movement_recovery`
+  - **Support & logistics:** `battlefield_scavenge`, `recrew_weapons`, `auto_smoke`, `auto_medic`, `auto_resupply`, `squad_logistics`, `ammo_scavenge`
+  - **Vehicles & crews:** `nontank_auto_repair`, `tank_facing`, `tank_crusher`, `convoy_spacing`, `tank_auto_repair`, `safe_disembark`, `transport_unload`, `tank_crew_fill` *(master switch for `internal_crew_swap` and `nontank_crew_fill`)*
+  - **Engine fixes & reloading:** `engine_fixes`, `lull_reload`
+- **`[tuning]`:** Adjust search radii, cooldowns, and thresholds (invalid or extreme values are safely clamped).
+  <details>
+  <summary>All tuning keys, defaults, and valid ranges</summary>
+
+  | Key | Default | Range |
+  |---|---:|---:|
+  | `grenade_detect_radius_m` | `22` | `6–60` m |
+  | `grenade_danger_radius_m` | `5` | `2–20` m |
+  | `smoke_vehicle_cooldown_s` | `25` | `5–120` s |
+  | `smoke_infantry_cooldown_s` | `25` | `5–120` s |
+  | `medic_search_radius_m` | `36` | `10–100` m |
+  | `squad_share_radius_m` | `18` | `6–40` m |
+  | `recrew_search_radius_m` | `28` | `8–50` m |
+  | `scavenge_search_radius_m` | `16` | `6–35` m |
+  | `scavenge_radius_m` | `20` | `6–40` m |
+  | `resupply_search_radius_m` | `60` | `15–150` m |
+  | `objectives_pursue_radius_m` | `50` | `15–120` m |
+  | `objectives_cap_radius_m` | `35` | `10–80` m |
+  | `lull_reload_ratio` | `0.35` | `0.10–0.75` |
+  | `tank_facing_min_angle_deg` | `24` | `15–60°` |
+  | `tank_memory_hold_s` | `5` | `1–15` s |
+  | `cannon_settle_max_s` | `1.8` | `0.3–5` s |
+  | `overflow_cover_radius_m` | `8` | `3–20` m |
+  | `movement_stall_s` | `2.5` | `1–8` s |
+  | `convoy_gap_m` | `8` | `4–20` m |
+  | `crew_fill_emit_backoff_s` | `10` | `1–60` s |
+  | `soft_cover_log_interval_ms` | `1000` | `100–60000` ms |
+
+  </details>
+- **`[logging]`:** `level` (`off`, `error`, `summary`, or `verbose`; defaults to `summary`), `filename` (log filename beside the DLL; defaults to `goh_ai.log`), and `flush_ms` (`0–10000` ms; defaults to `500`).
+- **`[smoke]`:** Optionally list extra non-WP smoke grenade or launcher names from third-party mods (`extra_grenades`, `extra_programs`, comma-separated); White Phosphorus and explosive items remain strictly blocked.
 
 ## Acknowledgments
 

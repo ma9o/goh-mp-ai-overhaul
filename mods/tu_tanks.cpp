@@ -16,6 +16,7 @@
 #include "tank_crusher_module.hpp"
 #include "tank_facing_module.hpp"
 #include "safe_disembark_module.hpp"
+#include "recrew_weapons_module.hpp"
 #include "convoy_spacing_module.hpp"
 
 namespace goh::tu_tanks {
@@ -101,7 +102,14 @@ void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) 
                                 : ai_support::Identity{};
     next(actor, ctx);
     if (runtime::global_accepting.load(std::memory_order_acquire)) {
-        if (vehicle_id.ptr && !ai_support::resolve(world, vehicle_id)) return;
+        if (vehicle_id.ptr) {
+            ai_support::World current{};
+            if (!ai_support::callback(actor, current) || current.scene != world.scene ||
+                !ai_support::resolve(current, vehicle_id))
+                return;
+            world = current;
+            recrew_weapons::on_vehicle_observe(world, actor);
+        }
         tank_auto_repair::on_actor_post_quant(actor);
         if (vehicle_id.ptr && config::active().modules.transport_unload) {
             if (!ai_support::resolve(world, vehicle_id)) return;
@@ -113,6 +121,10 @@ void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) 
         tank_facing::on_actor_post_quant(actor);
         if (vehicle_id.ptr && ai_support::resolve(world, vehicle_id)) convoy_spacing::on_actor_post_quant(actor);
     }
+}
+
+std::uint32_t nontank_repair_dispatches() noexcept {
+    return tank_auto_repair::stat_nontank_dispatch.load(std::memory_order_relaxed);
 }
 
 Stats snapshot_stats() noexcept {

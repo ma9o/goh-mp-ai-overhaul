@@ -5,6 +5,7 @@
 //   - mods/actor_coordinator.hpp (priority arbitration, preemption callbacks, scene/clock invalidation)
 //   - mods/game_classifiers.hpp (unified classifiers, WP deny-list + INI smoke extensibility, live carried AT scan)
 
+#include "../../mods/ai_modules.hpp"
 #include "actor_coordinator.hpp"
 #include "config_and_log.hpp"
 #include "dynamic_store.hpp"
@@ -157,12 +158,27 @@ void test_config_and_log() {
     const auto fixes_default = parse_ini("");
     assert(fixes_default.modules.engine_fixes && fixes_default.modules.lull_reload);
     assert(fixes_default.tuning.lull_reload_ratio == .35f);
+    assert(fixes_default.tuning.recrew_search_radius_m == 28.f &&
+           fixes_default.tuning.scavenge_search_radius_m == 16.f);
+    const auto low = parse_ini("[tuning]\nrecrew_search_radius_m=-1\nscavenge_search_radius_m=0");
+    const auto high = parse_ini("[tuning]\nrecrew_search_radius_m=55\nscavenge_search_radius_m=40");
+    const auto adjusted = parse_ini("[tuning]\nrecrew_search_radius_m=20.5\nscavenge_search_radius_m=14");
+    assert(low.tuning.recrew_search_radius_m == 8.f && low.tuning.scavenge_search_radius_m == 6.f);
+    assert(high.tuning.recrew_search_radius_m == 50.f && high.tuning.scavenge_search_radius_m == 35.f);
+    assert(adjusted.tuning.recrew_search_radius_m == 20.5f && adjusted.tuning.scavenge_search_radius_m == 14.f);
     const auto fixes_off = parse_ini("[modules]\nengine_fixes=off\nlull_reload=false\n[tuning]\nlull_reload_ratio=-1");
     assert(!fixes_off.modules.engine_fixes && !fixes_off.modules.lull_reload &&
            fixes_off.tuning.lull_reload_ratio == .1f);
     assert(parse_ini("[tuning]\nlull_reload_ratio=8").tuning.lull_reload_ratio == .75f);
     assert(parse_ini("[tuning]\nlull_reload_ratio=nan").tuning.lull_reload_ratio == .35f);
-    for (const auto& [name, toggle] : std::array<std::pair<const char*, bool ModuleToggles::*>, 5>{{
+    for (const auto& [name, toggle] : std::array<std::pair<const char*, bool ModuleToggles::*>, 12>{{
+             {"nontank_auto_repair", &ModuleToggles::nontank_auto_repair},
+             {"recrew_weapons", &ModuleToggles::recrew_weapons},
+             {"battlefield_scavenge", &ModuleToggles::battlefield_scavenge},
+             {"advance_responsive", &ModuleToggles::advance_responsive},
+             {"attack_order_polish", &ModuleToggles::attack_order_polish},
+             {"hit_the_dirt", &ModuleToggles::hit_the_dirt},
+             {"crush_avoidance", &ModuleToggles::crush_avoidance},
              {"fast_weapon_swap", &ModuleToggles::fast_weapon_swap},
              {"grenade_ff_guard", &ModuleToggles::grenade_ff_guard},
              {"safe_disembark", &ModuleToggles::safe_disembark},
@@ -209,14 +225,14 @@ void test_config_and_log() {
     assert(defaults.ammo_scavenge && defaults.tank_target_memory && defaults.cannon_aim_settle &&
            defaults.allegiance_guard && defaults.overflow_cover && defaults.weapon_team_cohesion &&
            defaults.mg_crew_small_arms && defaults.movement_recovery && defaults.convoy_spacing);
-    const auto tier12 = parse_ini(
-        "[modules]\n"
-        "ammo_scavenge=false\ntank_target_memory=0\ncannon_aim_settle=off\nallegiance_guard=no\n"
-        "overflow_cover=false\nweapon_team_cohesion=false\nmg_crew_small_arms=false\n"
-        "movement_recovery=false\nconvoy_spacing=false\n"
-        "[tuning]\n"
-        "scavenge_radius_m=99\ntank_memory_hold_s=0.1\ncannon_settle_max_s=99\n"
-        "overflow_cover_radius_m=1\nmovement_stall_s=99\nconvoy_gap_m=1\n");
+    const auto tier12 =
+        parse_ini("[modules]\n"
+                  "ammo_scavenge=false\ntank_target_memory=0\ncannon_aim_settle=off\nallegiance_guard=no\n"
+                  "overflow_cover=false\nweapon_team_cohesion=false\nmg_crew_small_arms=false\n"
+                  "movement_recovery=false\nconvoy_spacing=false\n"
+                  "[tuning]\n"
+                  "scavenge_radius_m=99\ntank_memory_hold_s=0.1\ncannon_settle_max_s=99\n"
+                  "overflow_cover_radius_m=1\nmovement_stall_s=99\nconvoy_gap_m=1\n");
     assert(!tier12.modules.ammo_scavenge && !tier12.modules.tank_target_memory && !tier12.modules.cannon_aim_settle &&
            !tier12.modules.allegiance_guard && !tier12.modules.overflow_cover && !tier12.modules.weapon_team_cohesion &&
            !tier12.modules.mg_crew_small_arms && !tier12.modules.movement_recovery && !tier12.modules.convoy_spacing);
@@ -251,6 +267,22 @@ void test_config_and_log() {
     goh::log::configure(s);
     assert(goh::log::enabled(goh::log::Level::verbose));
 
+    // Publishing a live edit updates every reader's POD view and keeps startup-owned text fixed.
+    const auto old_filename = goh::log::state().filename;
+    active().smoke_extra_grenades = {"startup_only"};
+    auto update = parse_ini("[modules]\nauto_smoke=false\n[tuning]\nmedic_search_radius_m=46\n"
+                            "[logging]\nfilename=renamed.log\nlevel=error\nflush_ms=210\n"
+                            "[smoke]\nextra_grenades=hot_list");
+    published().publish(update);
+    goh::log::configure(update);
+    std::thread live_reader([] {
+        const auto& current = active();
+        assert(!current.modules.auto_smoke && current.tuning.medic_search_radius_m == 46);
+        assert(current.smoke_extra_grenades == std::vector<std::string>{"startup_only"});
+    });
+    live_reader.join();
+    assert(goh::log::state().filename == old_filename && goh::log::state().flush_ms == 210);
+    assert(!goh::log::enabled(goh::log::Level::summary));
     // Restore default config.
     reset_defaults();
     goh::log::configure(active());
@@ -368,8 +400,13 @@ void test_pe_pattern_and_rtti_resolver() {
         assert(entry == 0x2408u);
         reset_table();
     };
+    check_entry(".?AUeCollect@Order@@", table().vt.collect_order, 0x01109BB8);
+    check_entry(".?AVeStuffExtender@Entity@@", table().vt.stuff_ext, 0x010FD200);
     check_entry(".?AVeCannonExtender@Entity@@", table().vt.cannon_ext, 0x0110F040);
     check_entry(".?AVeChassisTrack@Actor@@", table().vt.chassis_track, 0x01105E80);
+    check_entry(".?AUeAdvance@Order@@", table().vt.advance_order, 0x0110A070);
+    check_entry(".?AVeCrushScannerVehicle@Actor@@", table().vt.crush_scanner_vehicle, 0x01110BC0);
+    check_entry(".?AVeHS_RootSoldier@Human@@", table().vt.root_soldier, 0x01110CD0);
     check_entry(".?AUeRotate@Order@@", table().vt.rotate_order, 0x0110C760);
     check_entry(".?AUeMove@Order@@", table().vt.move_order, 0x0110C810);
     check_entry(".?AUeMoveToCover@Order@@", table().vt.move_to_cover, 0x01109C60);
@@ -477,6 +514,17 @@ void test_actor_coordinator() {
         assert(c.can_act(participant, Module::auto_medic, Priority::auto_medic, 1, 215));
         c.release(participant, Module::squad_logistics);
     }
+
+    static_assert(static_cast<unsigned>(Module::recrew_weapons) == 13 && static_cast<unsigned>(Module::scavenge) == 14);
+    static_assert(static_cast<unsigned>(Module::count) == 15 && static_cast<unsigned>(Priority::scavenge) == 28 &&
+                  static_cast<unsigned>(Priority::recrew_weapons) == 32);
+    assert(c.claim(s_obj_actor, 1, Module::scavenge, Priority::scavenge, 216, 10));
+    assert(!c.can_act(s_obj_actor, Module::tactical_infantry, Priority::tactical_infantry, 1, 216));
+    assert(c.claim(s_obj_actor, 1, Module::auto_resupply, Priority::auto_resupply, 216, 10));
+    assert(c.claim(s_obj_actor, 1, Module::recrew_weapons, Priority::recrew_weapons, 216, 10));
+    assert(!c.can_act(s_obj_actor, Module::auto_resupply, Priority::auto_resupply, 1, 216));
+    assert(c.claim(s_obj_actor, 1, Module::squad_logistics, Priority::squad_logistics, 216, 10));
+    c.release(s_obj_actor, Module::squad_logistics);
 
     // Movement recovery (18) and convoy spacing (15) stay below tactical infantry (20) and support modules.
     assert(c.claim(s_obj_actor, 1, Module::convoy_spacing, Priority::convoy_spacing, 220, 5));
@@ -599,6 +647,9 @@ void test_classifiers_and_carried_at() {
 } // namespace
 
 int main() {
+    static_assert(goh::tu_combat::kHookCount == 23 && goh::tu_infantry::kHookCount == 46 &&
+                  goh::tu_tanks::kHookCount == 9);
+    static_assert(1 + goh::tu_combat::kHookCount + goh::tu_infantry::kHookCount + goh::tu_tanks::kHookCount == 79);
     test_dynamic_stores();
     test_config_and_log();
     test_pe_pattern_and_rtti_resolver();

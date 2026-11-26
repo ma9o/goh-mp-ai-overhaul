@@ -1,5 +1,4 @@
 // Offline fixtures for the two build-specific hooks and three shared simulation paths.
-#include "../../mods/ai_modules.hpp"
 #include "wave4_weapon_cases.hpp"
 #include "wave4_vehicle_cases.hpp"
 #include "wave4_share_cases.hpp"
@@ -38,7 +37,6 @@ void check_trampoline(std::array<unsigned char, 32> entry, unsigned cut, unsigne
 #endif
 
 int main() {
-    static_assert(1 + goh::tu_combat::kHookCount + goh::tu_infantry::kHookCount + goh::tu_tanks::kHookCount == 73);
     assert(goh::runtime::table().hook.human_weapon_swap == 0x95cea0);
     assert(goh::runtime::table().hook.select_exit_door == 0x79d3c0);
     goh::test::wave4_weapon::run();

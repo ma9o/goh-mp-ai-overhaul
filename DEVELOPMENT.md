@@ -29,7 +29,7 @@ Every module in `mods/` must keep host and vanilla clients in sync:
 - **Host-only, serial main thread:** Check `!IsRemoteClient()`, `!Core::IsQuantWorkerThread()`, and live `Actor::eHumanBrain` / `Actor::eVehicleBrain` vtables (never `*Client` stubs or worker/render threads).
 - **Replicating outputs only:** Act through host brain policy fields, direct goals, or native orders/setters that emit wire commands under `IsHostEmit()`. Never write raw chassis, cover, position, bone, health, or ammo fields.
 - **Respect authority & RNG:** Bail on Direct Control, brain inhibition (`(brain+0x39C & 0x3F) != 0`), and manual chassis/weaponry flags. Never draw from engine RNG (`synced_global` or default thread RNG) or poll RNG-drawing helpers.
-- **Clean lifecycle:** Roll back partial hook staging in reverse order, drain all 73 active hooks (one coordinator, 20 combat, 43 infantry and nine tank hooks) cleanly via `runtime::global_inflight` in `ShutdownAndUnload`, release heap-backed state tables after unhook, and read/write optional `goh_ai.ini` and logs beside the loaded DLL (never hardcoded local paths).
+- **Clean lifecycle:** Roll back partial hook staging in reverse order, drain all 79 active hooks (one coordinator, 23 combat, 46 infantry and nine tank hooks) cleanly via `runtime::global_inflight` in `ShutdownAndUnload`, release heap-backed state tables after unhook, and read/write optional `goh_ai.ini` and logs beside the loaded DLL (never hardcoded local paths).
 
 ## Building, linting, and testing
 
@@ -78,6 +78,12 @@ done
 
 `test_wave4_combat_logistics_26734796.cpp` covers weapon changes, safe exit selection, passenger unloads and squad transfers. The grenade-release cases run in `test_close_grenade_26734796.cpp`. To check both Wave 4 entries with MinHook's instruction copier, build the Wave 4 fixture with `-DGOH_WAVE4_TRAMPOLINES` and the same MinHook objects and platform definitions used by the penetration fixture. [Build contract](research/notes/combat-logistics-26734796.md)
 
+`test_wave5_combat_hazards_26734796.cpp` covers Advance and Attack orders, blast reactions, crush avoidance and hazard priority. The six-entry trampoline check uses `-DGOH_WAVE5_TRAMPOLINES` with the same MinHook objects and platform definitions as Wave 4. Pass six binary files as arguments, each containing the first 64 bytes at the corresponding RVA in the fingerprinted PE. The argument order is `0x8E79F0`, `0x904930`, `0xA7B5F0`, `0x91F2C0`, `0x91EA20`, `0x96E260`. The fixture checks instruction boundaries, jump-back destinations and detour relays. The architecture suite checks the four module switches, vtable contracts and 79-hook total. [Build contract](research/notes/combat-hazards-26734796.md)
+
+Wave 6 uses the existing post-quant callbacks and repair hooks. Run `test_wave6_repair_recrew_scavenge_26734796.cpp` with the standard sanitizer and warning flags above. It exercises non-tank and gun repair dispatch, same-player seat claims, manual exit detection, weapon collection, corpse transfer ownership and Hold Position returns. The architecture suite checks the switches, tuning limits, coordinator priorities and the unchanged 79-hook total. [Build contract](research/notes/repair-recrew-scavenge-26734796.md)
+
+On non-Windows hosts, compile MinHook’s `hde64.c` with the sanitizer flags too. HDE reads immediates and displacements directly from arbitrary byte offsets in the x86 instruction stream. In its C-only Windows shim, declare `UINT16`, `UINT32` and `UINT64` as 16-, 32- and 64-bit unsigned types with Clang’s `__attribute__((aligned(1)))`. This models those byte-aligned reads on the host and keeps UBSan alignment checks enabled for the entire suite.
+
 Extra fixture flags on non-Windows hosts:
 
 - `test_tactical_infantry_26734796.cpp`: `-DGOH_TACTICAL_ADAPTER_FIXTURES`
@@ -105,6 +111,33 @@ python3 research/scripts/verify_fine_map.py \
   --exports-dir local-work/exports/build-26734796 \
   --resources-dir "$GOH_RESOURCES"
 ```
+
+## Level 1 live verification
+
+For Steam build 26734796, place the built `goh_ai_mod.dll` and `version.dll` beside `binaries/x64/call_to_arms.exe`. With Steam running and the game closed, start a full single-player verification run.
+
+```sh
+python3 scripts/live_harness.py run --suite full --speed fast --restore-options
+```
+
+The command installs the overlay, enables telemetry, activates `ai_test_harness:0` in the player profile and launches the game with `-no_reload_caching`. It compiles a Win32 UI helper with MinGW GCC into `local-work/build-ai/`, skips the intro, selects Bootcamp → Vehicle Control, and dismisses the loading prompt. It waits for the final GEM marker and completion witness, closes the game, and saves the three logs, table and JSON grade under `local-work/level1/runs/`. Exit status 0 means every check passed, 1 means a run check failed, and 2 means setup failed.
+
+Each compound phase and calibration probe starts with a wide overview centered on its units and scenery. The mission scales the camera distance to fit the initial positions, including actors that enter later in the phase.
+
+Use `--profile PATH` to select among profiles and `--game-dir PATH` or `GOH_GAME_DIR` for another Steam library. CrossOver defaults to the Steam bottle. Use `--wine PATH` or `--bottle NAME` for another installation. The game window receives normalized menu clicks using the English UI. `--restore-options` restores the prior mod selection on exit while preserving other option changes. Otherwise `clean` restores the saved selection and removes the overlay.
+
+The serial observer opens the configured JSONL on the first actor callback. It checks the INI once per second for module, tuning, logging and telemetry changes. The regular log filename and extra smoke lists are set at startup. For a calibration run or a separate install and grade, use the commands below.
+
+```sh
+python3 scripts/live_harness.py run --suite calibration --speed very_fast --set medic_search_radius_m=40 --json
+python3 scripts/live_harness.py install --suite full --speed fast --write-ini
+python3 scripts/live_harness.py grade --suite full --game-log "/path/to/log/game.log"
+python3 scripts/live_harness.py clean
+```
+
+For a manual install, activate the mod and restart Vehicle Control after switching suites. Standalone grading uses the latest telemetry session or mission restart. Disable the overlay before returning to multiplayer.
+
+The build 26734796 run record includes the full-suite failures, crew-seat retry counts and ten measured calibration boundaries. [Live verification results](research/notes/level1-live-verification-26734796.md)
 
 ## Static analysis & game updates
 

@@ -7,6 +7,8 @@
 #include <windows.h>
 #endif
 
+#include "live_telemetry.hpp"
+
 #include <algorithm>
 #include <atomic>
 #include <cctype>
@@ -49,6 +51,13 @@ struct ModuleToggles {
     bool tank_facing{true};
     bool engine_fixes{true};
     bool lull_reload{true};
+    bool advance_responsive{true};
+    bool attack_order_polish{true};
+    bool hit_the_dirt{true};
+    bool crush_avoidance{true};
+    bool nontank_auto_repair{true};
+    bool recrew_weapons{true};
+    bool battlefield_scavenge{true};
     bool fast_weapon_swap{true};
     bool grenade_ff_guard{true};
     bool safe_disembark{true};
@@ -77,6 +86,8 @@ struct Tuning {
     float medic_search_radius_m{36.0f};
     float squad_share_radius_m{18.0f};
     float scavenge_radius_m{20.0f};
+    float recrew_search_radius_m{28.0f};
+    float scavenge_search_radius_m{16.0f};
     float resupply_search_radius_m{60.0f};
     float objectives_pursue_radius_m{50.0f};
     float objectives_cap_radius_m{35.0f};
@@ -243,6 +254,20 @@ inline Settings parse_ini(std::string_view text) {
                             m.lull_reload = detail::parse_bool(val, m.lull_reload);
                         else if (key == "tank_facing")
                             m.tank_facing = detail::parse_bool(val, m.tank_facing);
+                        else if (key == "advance_responsive")
+                            m.advance_responsive = detail::parse_bool(val, m.advance_responsive);
+                        else if (key == "attack_order_polish")
+                            m.attack_order_polish = detail::parse_bool(val, m.attack_order_polish);
+                        else if (key == "hit_the_dirt")
+                            m.hit_the_dirt = detail::parse_bool(val, m.hit_the_dirt);
+                        else if (key == "nontank_auto_repair")
+                            m.nontank_auto_repair = detail::parse_bool(val, m.nontank_auto_repair);
+                        else if (key == "recrew_weapons")
+                            m.recrew_weapons = detail::parse_bool(val, m.recrew_weapons);
+                        else if (key == "battlefield_scavenge")
+                            m.battlefield_scavenge = detail::parse_bool(val, m.battlefield_scavenge);
+                        else if (key == "crush_avoidance")
+                            m.crush_avoidance = detail::parse_bool(val, m.crush_avoidance);
                         else if (key == "fast_weapon_swap")
                             m.fast_weapon_swap = detail::parse_bool(val, m.fast_weapon_swap);
                         else if (key == "grenade_ff_guard")
@@ -291,6 +316,11 @@ inline Settings parse_ini(std::string_view text) {
                         else if (key == "smoke_infantry_cooldown_s")
                             t.smoke_infantry_cooldown_s =
                                 detail::parse_float(val, t.smoke_infantry_cooldown_s, 5.0f, 120.0f);
+                        else if (key == "recrew_search_radius_m")
+                            t.recrew_search_radius_m = detail::parse_float(val, t.recrew_search_radius_m, 8.f, 50.f);
+                        else if (key == "scavenge_search_radius_m")
+                            t.scavenge_search_radius_m =
+                                detail::parse_float(val, t.scavenge_search_radius_m, 6.f, 35.f);
                         else if (key == "medic_search_radius_m")
                             t.medic_search_radius_m = detail::parse_float(val, t.medic_search_radius_m, 10.0f, 100.0f);
                         else if (key == "squad_share_radius_m")
@@ -343,9 +373,18 @@ inline Settings parse_ini(std::string_view text) {
     return s;
 }
 
-inline Settings& active() noexcept {
+inline Settings& startup_settings() noexcept {
     static Settings instance{};
     return instance;
+}
+
+inline live::PublishedSettings<Settings>& published() {
+    static live::PublishedSettings<Settings> settings;
+    return settings;
+}
+
+inline Settings& active() {
+    return published().view(startup_settings());
 }
 
 inline void reset_defaults() {
@@ -354,7 +393,8 @@ inline void reset_defaults() {
 
 #if defined(_WIN32)
 inline bool load_beside_module(HMODULE self_module, const wchar_t* ini_name = L"goh_ai.ini") {
-    active() = Settings{};
+    auto& startup = startup_settings();
+    startup = Settings{};
     if (!self_module || !ini_name) return false;
     wchar_t path[4096]{};
     const DWORD n = GetModuleFileNameW(self_module, path, static_cast<DWORD>(std::size(path)));
@@ -373,8 +413,8 @@ inline bool load_beside_module(HMODULE self_module, const wchar_t* ini_name = L"
         contents.append(buf, read_n);
     }
     std::fclose(f);
-    active() = parse_ini(contents);
-    active().loaded_from_file = true;
+    startup = parse_ini(contents);
+    startup.loaded_from_file = true;
     return true;
 }
 #endif
@@ -389,6 +429,7 @@ struct State {
     std::mutex mutex;
     std::atomic<std::uint8_t> min_level{static_cast<std::uint8_t>(Level::summary)};
     FILE* file{};
+    bool configured{};
     std::uint32_t flush_ms{500};
     std::uint64_t last_flush_ms{};
 #if defined(_WIN32)
@@ -407,7 +448,10 @@ inline void configure(const config::Settings& s) {
     std::lock_guard<std::mutex> lock(st.mutex);
     st.min_level.store(static_cast<std::uint8_t>(s.log_level), std::memory_order_release);
     st.flush_ms = s.log_flush_ms;
-    if (!s.log_filename.empty()) st.filename = s.log_filename;
+    if (!st.configured) {
+        if (!s.log_filename.empty()) st.filename = s.log_filename;
+        st.configured = true;
+    }
 }
 
 #if defined(_WIN32)

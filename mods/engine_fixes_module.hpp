@@ -1,6 +1,7 @@
 #pragma once
 #include "engine_fixes_shared.hpp"
 #include "engine_fixes_policy.hpp"
+#include "hit_the_dirt_module.hpp"
 #include "tactical_infantry_module.hpp"
 
 namespace goh::engine_fixes {
@@ -183,6 +184,7 @@ inline int stance_choice(Address brain, int requested) {
         return -1;
     c.self = read<tactical_infantry::XY>(c.actor, 0x74);
     const float metres = pr::distance(read<pr::Vec3>(c.actor, 0x74), read<pr::Vec3>(c.sub, 0x28)) / c.w.length;
+    if (metres >= 7.5f && hit_the_dirt::is_hitting_dirt(c.actor, c.w.now)) return -1;
     return p::hold_stance(ti::stance(c), requested, metres, [&](int pose) { return queries.probe_stance(c, pose); });
 }
 inline Byte allow(Address brain, int requested) {

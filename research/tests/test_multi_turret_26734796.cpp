@@ -27,7 +27,7 @@ template <std::size_t N> struct Mem {
     void str(std::size_t off, std::string_view text) {
         const auto len = text.size();
         if (len <= 15)
-            std::memcpy(bytes.data() + off, text.data(), len);
+            std::memcpy(bytes.data() + off, text.data(), text.size());
         else
             put(off, reinterpret_cast<Address>(text.data()));
         put(off + 0x10, len);
@@ -255,7 +255,8 @@ void test_tank_auto_repair_multi_turret() {
     assert(rp::tier(rp::Scenario::turret_track, "gun1", 1) == 0);
     assert(rp::tier(rp::Scenario::turret_track, "aux_turret1", 1) == 1);
     assert(rp::tier(rp::Scenario::turret_track, "mantlet", 1) == 2);
-    assert(rp::tier(rp::Scenario::turret_track, "trackleft", 1) == 3);
+    assert(rp::tier(rp::Scenario::turret_track, "engine", 1) == 3);
+    assert(rp::tier(rp::Scenario::turret_track, "trackleft", 1) == 4);
 
     // Cannon gunner seat protection: M3 Lee (gunner=37mm, gunner3=75mm) vs ordinary tank (gunner3=bow MG).
     Mem<0xE00> lee, sherman;

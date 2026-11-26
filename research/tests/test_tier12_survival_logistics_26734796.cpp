@@ -341,8 +341,10 @@ void sources_and_selection(FakeImage& image) {
     pack.human.actor.put(0x74, s::Vec3{9, 0, 0});
     corpse.human.actor.put(0x74, s::Vec3{8, 0, 0});
     assert(!sh::scavenge_source(w, receiver.ptr(), corpse.ptr()));
-    corpse.human.vit.put(0x174, 2u);
-    assert(sh::scavenge_source(w, receiver.ptr(), corpse.ptr()));
+    for (unsigned incapacitated : {2u, 6u}) {
+        corpse.human.vit.put(0x174, incapacitated);
+        assert(!sh::scavenge_source(w, receiver.ptr(), corpse.ptr()));
+    }
     corpse.human.vit.put(0x174, 1u);
     assert(sh::scavenge_source(w, receiver.ptr(), corpse.ptr()));
     assert(sh::scavenge_source(w, receiver.ptr(), pack.ptr()));
@@ -358,6 +360,24 @@ void sources_and_selection(FakeImage& image) {
         return pick.donor.key.ptr;
     };
     assert(select() == corpse.ptr());
+    // The battlefield search owns nearby bodies while both features are active.
+    sh::Job local_corpse{};
+    assert(sh::prefer_scavenge(w, receiver.ptr(), need, local_corpse));
+    assert(sh::battlefield_corpse(w, receiver.ptr(), local_corpse));
+    goh::config::active().modules.battlefield_scavenge = false;
+    assert(!sh::battlefield_corpse(w, receiver.ptr(), local_corpse));
+    goh::config::active().modules.battlefield_scavenge = true;
+    corpse.human.actor.put(0x74, s::Vec3{17, 0, 0});
+    assert(!sh::battlefield_corpse(w, receiver.ptr(), local_corpse));
+    corpse.human.actor.put(0x74, s::Vec3{8, 0, 0});
+    static Address reserved = 0;
+    reserved = corpse.ptr();
+    auto& coordinator = goh::coord::instance();
+    coordinator.register_provider(goh::coord::Module::scavenge, goh::coord::Priority::scavenge,
+                                  [](Address source) { return source == reserved; });
+    assert(select() == pack.ptr());
+    coordinator.register_provider(goh::coord::Module::scavenge, goh::coord::Priority::scavenge, nullptr);
+
     auto& claim = sh::jobs[0];
     claim.scavenge = true;
     claim.donor.key = s::identity(corpse.ptr());
@@ -571,8 +591,7 @@ void scavenging_delivery(FakeImage& image) {
     InventoryCalls::from = pack.box.ptr();
     InventoryCalls::to = receiver.box.ptr();
     auto submit = [&] {
-        return s::exchange_amount<sh::ReceiverInventoryCalls<InventoryCalls>>(pack.ptr(), receiver.ptr(),
-                                                                              pack.item.ptr(), 2);
+        return s::exchange_amount<InventoryCalls>(pack.ptr(), receiver.ptr(), pack.item.ptr(), 2, receiver.ptr());
     };
     assert(med::begin_owned_exchange(j.transfer, receiver.ptr(), submit));
     assert(InventoryCalls::owner == receiver.ptr() && InventoryCalls::quantity == 2);

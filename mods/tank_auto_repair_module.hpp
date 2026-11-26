@@ -16,7 +16,8 @@ inline void (*log_sink)(const char* fmt, ...)
 #endif
     = nullptr;
 inline std::atomic<unsigned> stat_dispatch_full{}, stat_dispatch_turret_track{}, stat_crew_emitted{},
-    stat_excrew_assigned{}, stat_repair_chained{}, stat_reboard_queued{}, stat_picker_overrides{};
+    stat_excrew_assigned{}, stat_repair_chained{}, stat_reboard_queued{}, stat_picker_overrides{},
+    stat_nontank_dispatch{};
 
 namespace detail {
 using sim::read;
@@ -26,8 +27,12 @@ using support::span;
 using Byte = std::uint8_t;
 using Tick = std::uint32_t;
 inline Address base{};
+inline Address native_address(Address image, Address rva) {
+    return image + rva;
+}
+inline auto resolve_native = &native_address;
 template <class Fn> inline Fn native(Address rva) {
-    return reinterpret_cast<Fn>(base + rva);
+    return reinterpret_cast<Fn>(resolve_native(base, rva));
 }
 constexpr Address human_vt = 0x110FF88, vehicle_vt = 0x101FD68, smart_vt = 0x10225B0, repair_vt = 0x110D0E8,
                   board_vt = 0x110B590, exchange_vt = 0x10224F8, avoid_vt = 0x110D278, sequence_vt = 0x110D490;
@@ -88,7 +93,7 @@ struct Tank {
     std::array<Crew, crew_cap> crew{};
     Scenario scenario{};
     Byte player{};
-    bool serviced{}, announced{}, body_was_broken{};
+    bool is_tank{}, serviced{}, announced{}, body_was_broken{};
     Tick last_tick{}, death_until{}, ejection_until{};
 };
 // Short actor IDs route callbacks in O(1). Every hint is checked against the live triple.
@@ -121,13 +126,17 @@ inline Tank* find(Address actor) {
         if (t.key.matches(actor)) return &t;
     return nullptr;
 }
+inline bool enabled(bool is_tank) {
+    const auto& modules = config::active().modules;
+    return is_tank ? modules.tank_auto_repair : modules.nontank_auto_repair;
+}
 inline Crew* member(Address actor, Tank*& tank) {
     if (!actor) return nullptr;
     const auto* h = members.find(read<std::uint16_t>(actor, 0xDAA));
     if (!h || !h->tank || h->tank > tanks.size()) return nullptr;
     auto& t = tanks[h->tank - 1];
     auto& c = t.crew[h->slot];
-    if (!t.key || !c.key.matches(actor)) return nullptr;
+    if (!t.key || !enabled(t.is_tank) || !c.key.matches(actor)) return nullptr;
     tank = &t;
     return &c;
 }
@@ -191,8 +200,15 @@ inline bool safety(Address a) {
     if (!def || !tags.valid(0x60, 4096)) return false;
     for (const char* name : {"destroyed", "exploded", "abandoned", "no_auto_repair"})
         if (support::tag(tags, name) || support::tag(span(def, 0x330), name)) return false;
-    const auto type = support::native_string(a + 0xDE8 + 0x40);
-    return classify::is_tank_or_bullet_class(type) || support::tag(span(def, 0x330), "tank");
+    const bool is_tank = support::tank_class(a);
+    if (!enabled(is_tank)) return false;
+    if (is_tank) return true;
+    if (!(read<Byte>(a, 0x30) & 8) || support::owner(a) >= 18 || (read<unsigned>(a, 0x1C0) & (1u << 28)) ||
+        (read<unsigned>(b, 0x39C) & (1u << 28)) || (!(read<unsigned>(a, 0xDB4) & 0x100) && !find(a)) ||
+        native<support::Test>(runtime::table().fn.excluded_vehicle)(a))
+        return false;
+    const auto cannon = support::extender(a, runtime::table().vt.cannon_ext, base);
+    return !cannon || !read<int>(cannon, 0xC30);
 }
 inline std::string_view component_name(Address def) {
     const auto names = span(def, 0x328);
@@ -209,21 +225,28 @@ inline bool damage(Address row) {
     const auto state = read<Byte>(row, 0x24);
     if (state != 1 && !(state == 0 && read<float>(row, 0x14) < read<float>(row, 0x1C))) return false;
     int duration{};
-    native<int* (*)(Address, int*)>(0x8AACF0)(row, &duration);
+    native<int* (*)(Address, int*)>(runtime::table().fn.repair_duration)(row, &duration);
     return duration >= read<int>(base, 0x14A490C);
 }
 struct Damage {
     Span rows{};
     int body{-1}, total{}, free{};
-    bool tracks{}, broken_track{}, weapon{}, working_gun{};
+    bool is_tank{}, is_cannon{}, tracks{}, broken_track{}, wheels{}, broken_wheel{}, broken_engine{}, weapon{},
+        working_gun{};
     Scenario trigger() const {
         if (body == 1) return Scenario::full;
-        return body == 0 && broken_track && weapon ? Scenario::turret_track : Scenario::none;
+        if (body != 0) return Scenario::none;
+        if (is_tank) return broken_track && weapon ? Scenario::turret_track : Scenario::none;
+        if (weapon || broken_wheel || (!is_cannon && (broken_engine || broken_track))) return Scenario::turret_track;
+        return Scenario::none;
     }
 };
 inline bool inspect(Address a, Damage& d) {
+    d.is_tank = support::tank_class(a);
+    d.is_cannon = support::extender(a, runtime::table().vt.cannon_ext, base) != 0;
     d.rows = span(a, 0xB90);
     if (!d.rows.valid(0x28, 1024)) return false;
+    bool intact_cannon_part = false;
     for (auto p = d.rows.first; p != d.rows.end; p += 0x28) {
         const auto def = read<Address>(p);
         if (!def || read<Address>(p, 8) != a) return false;
@@ -232,18 +255,31 @@ inline bool inspect(Address a, Damage& d) {
         const auto state = read<Byte>(p, 0x24);
         if (n == "body") d.body = state;
         if (gun(n) && state == 0) d.working_gun = true;
-        if (n == "trackleft" || n == "trackright" || support::tag(span(def, 0x328), "track")) {
+        const auto names = span(def, 0x328);
+        if (n == "trackleft" || n == "trackright" || support::tag(names, "track") ||
+            (!d.is_tank && n.substr(0, 5) == "track")) {
             d.tracks = true;
             d.broken_track |= state == 1;
         }
+        const bool wheel = n.substr(0, 5) == "wheel" || support::tag(names, "wheel");
+        if (wheel) {
+            d.wheels = true;
+            d.broken_wheel |= state == 1;
+        }
+        if (n == "engine" && state == 1) d.broken_engine = true;
         const bool hurt = damage(p);
-        if ((gun(n) || turret(n) || n == "mantlet") && (state == 1 || hurt)) d.weapon = true;
+        const bool assembly = gun(n) || turret(n) || n == "mantlet" || (!d.is_tank && d.is_cannon && n == "shield");
+        if (assembly && (state == 1 || hurt)) d.weapon = true;
+        if (d.is_cannon && (assembly || wheel) && state == 0) intact_cannon_part = true;
         if (hurt) {
             ++d.total;
             if (!(read<Byte>(p, 0x25) & 1)) ++d.free;
         }
     }
-    return d.tracks && (d.body == 0 || d.body == 1);
+    // A gun without a hull row must remain inspectable after its last repair so its crew can board again.
+    if (d.body == -1 && !d.is_tank && d.is_cannon && (intact_cannon_part || (d.total && (d.weapon || d.broken_wheel))))
+        d.body = 0;
+    return (!d.is_tank || d.tracks) && (d.body == 0 || d.body == 1);
 }
 inline bool ready(Address a) {
     auto b = brain_of(a, human_vt);
@@ -300,11 +336,16 @@ inline Claims claims(const World& w, Address a, Span rows, Address except = 0) {
     });
     return c;
 }
-inline int tier(Scenario s, std::string_view n, Byte state) {
+inline int tier(Scenario s, std::string_view n, Byte state, Span names = {}) {
     if (s == Scenario::turret_track) {
         if (gun(n)) return 0;
         if (turret(n)) return 1;
         if (n == "mantlet") return 2;
+        if (n == "engine") return 3;
+        if (state == 1 && (n.substr(0, 5) == "track" || n.substr(0, 5) == "wheel" || support::tag(names, "track") ||
+                           support::tag(names, "wheel")))
+            return 4;
+        return state == 1 ? 5 : 6;
     }
     return state == 1 ? 3 : 4;
 }
@@ -361,7 +402,9 @@ inline Address global_pick(const Address* arg, bool (*damaged)(Address) = damage
 inline Address pick(const Address* arg) {
     Guard guard;
     World w{};
-    if (!serial_world(w) || !config::active().modules.tank_auto_repair) return global_pick(arg);
+    if (!serial_world(w) ||
+        (!config::active().modules.tank_auto_repair && !config::active().modules.nontank_auto_repair))
+        return global_pick(arg);
     const auto o = *arg, a = read<Address>(o, 0x68), owner = read<Address>(o, 8);
     Tank* t = nullptr;
     auto human = owner ? owner - 0xAF0 : 0;
@@ -389,7 +432,7 @@ inline Address pick(const Address* arg) {
         auto def = read<Address>(p);
         auto comp = component_name(def);
         if (comp.empty()) continue;
-        int rank = tier(d.body == 1 ? Scenario::full : t->scenario, comp, read<Byte>(p, 0x24));
+        int rank = tier(d.body == 1 ? Scenario::full : t->scenario, comp, read<Byte>(p, 0x24), span(def, 0x328));
         int priority = read<int>(def, 0x344);
         bool taken = claimed.used[(p - d.rows.first) / 0x28];
         if (!best || taken < best_claim ||
@@ -494,7 +537,7 @@ inline Tank* reserve(Address a) {
             t.player = static_cast<Byte>(support::owner(a));
             return &t;
         }
-    if (auto* t = tanks.append_slot()) {
+    if (auto* t = store::try_append_slot(tanks)) {
         *t = {};
         t->key = key(a);
         t->player = static_cast<Byte>(support::owner(a));
@@ -812,11 +855,20 @@ inline bool unassigned_work(const Damage& d, const Claims& taken) {
         if (!taken.used[(p - d.rows.first) / 0x28] && !(read<Byte>(p, 0x25) & 1) && damage(p)) return true;
     return false;
 }
+inline bool may_dismount(Address vehicle, const World& w, Scenario scenario, const Damage& d, const Crew& c,
+                         int living_crew) {
+    if (d.is_tank) return true;
+    if (!support::free_slot(vehicle)) return false;
+    if (scenario != Scenario::turret_track) return true;
+    if (c.role == 2 && d.working_gun && living_crew >= 2) return false;
+    return !support::visible_near(vehicle, 25.f * w.length);
+}
 inline void service(Tank& t, Address a, const World& w, Damage d) {
     if (t.player != support::owner(a)) {
         t = {};
         return;
     }
+    t.is_tank = d.is_tank;
     if (!snapshot(t, a)) return;
     if (std::none_of(t.crew.begin(), t.crew.end(), [](const Crew& c) { return bool(c.key); })) {
         t = {};
@@ -900,6 +952,7 @@ inline void service(Tank& t, Address a, const World& w, Damage d) {
             }
             continue;
         }
+        if (c.seat >= 0 && !may_dismount(a, w, t.scenario, d, c, s.living_crew)) continue;
         bool ok = c.seat >= 0 ? emit(t, c, v.human, a, v.ability.rate) : smart(c, v.human, a);
         if (!ok) {
             c.retry = w.now + w.duration(1);
@@ -910,6 +963,7 @@ inline void service(Tank& t, Address a, const World& w, Damage d) {
             t.announced = true;
             const bool isFull = t.scenario == Scenario::full;
             const auto n = isFull ? ++stat_dispatch_full : ++stat_dispatch_turret_track;
+            if (!d.is_tank) ++stat_nontank_dispatch;
             if (log_sink) {
                 log_sink("TANK AUTO-REPAIR %s #%u: tank=0x%llx body=%d dmg=%d free=%d liveCrew=%d kits=%d desired=%d",
                          isFull ? "FULL" : "TURRET+TRACK", n, static_cast<unsigned long long>(a), d.body, d.total,
@@ -938,8 +992,7 @@ inline void dispatch(Address state) {
 inline void on_actor_post_quant(Address actor) {
     using namespace detail;
     Guard guard;
-    if (!active.load() || !config::active().modules.tank_auto_repair || !actor || runtime::is_quant_worker(base))
-        return;
+    if (!active.load() || !actor || runtime::is_quant_worker(base)) return;
     serial.store(GetCurrentThreadId(), std::memory_order_relaxed);
     if (coordinating) return;
     World w{};
@@ -953,6 +1006,11 @@ inline void on_actor_post_quant(Address actor) {
     }
     last_clock = w.now;
     if (!sim::has_actor(actor)) return;
+    if ((read<Byte>(actor, 0x30) & 8) &&
+        (!config::active().modules.tank_auto_repair || !config::active().modules.nontank_auto_repair)) {
+        if (auto* old = find(actor); old && !enabled(old->is_tank)) *old = {};
+        if (!enabled(support::tank_class(actor))) return;
+    }
     struct Scope {
         Scope() {
             coordinating = true;
@@ -1014,7 +1072,7 @@ inline bool prepare_hooks(Address image, const char* measured_sha256, Create cre
     }
     base = image;
     stat_dispatch_full = stat_dispatch_turret_track = stat_crew_emitted = stat_excrew_assigned = stat_repair_chained =
-        stat_reboard_queued = stat_picker_overrides = 0;
+        stat_reboard_queued = stat_picker_overrides = stat_nontank_dispatch = 0;
     active.store(true);
     coord::instance().register_provider(coord::Module::tank_auto_repair, coord::Priority::tank_auto_repair, &is_busy);
     return true;
@@ -1027,12 +1085,12 @@ inline bool is_busy(Address actor) {
 }
 inline bool has_active_episode(Address actor) {
     const auto* t = detail::active.load() ? detail::find(actor) : nullptr;
-    return t && t->scenario != detail::Scenario::none;
+    return t && detail::enabled(t->is_tank) && t->scenario != detail::Scenario::none;
 }
 inline std::size_t collect_returning_crew(Address tank, Address* out, std::size_t cap) {
     if (!detail::active.load() || !tank || !out || !cap) return 0;
     const auto* t = detail::find(tank);
-    if (!t) return 0;
+    if (!t || !detail::enabled(t->is_tank)) return 0;
     std::size_t count = 0;
     for (const auto& c : t->crew) {
         if (count >= cap) break;
@@ -1066,5 +1124,6 @@ inline void after_hooks_removed() {
     original_exec = nullptr;
     original_destroy = nullptr;
     original_dispatch = nullptr;
+    resolve_native = &native_address;
 }
 } // namespace goh::tank_auto_repair

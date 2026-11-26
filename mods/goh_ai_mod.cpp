@@ -1,9 +1,9 @@
 // Call to Arms - Gates of Hell (Steam build 26734796)
-// Unified AI Enhancement DLL coordinator (73 host-only replicating hooks across 4 TUs)
+// Unified AI Enhancement DLL coordinator (79 host-only replicating hooks across 4 TUs)
 //
 // Translation unit layout:
 //   - mods/goh_ai_mod.cpp  : PE SHA-256 + live RTTI verification, goh_ai.ini config,
-//                            leveled logging, eActor::slot23 dispatch, 73/73 inflight drain.
+//                            leveled logging, eActor::slot23 dispatch, 79/79 inflight drain.
 //   - mods/tu_combat.cpp   : Grenade Dodge, Soft-Cover LOF, Attack Detour,
 //                            Target Prioritization, Close-Range Grenades, Penetration AT.
 //   - mods/tu_infantry.cpp : AI Support, Auto-Smoke, Auto-Medic, Auto-Resupply,
@@ -26,6 +26,7 @@
 #include "ai_modules.hpp"
 #include "config_and_log.hpp"
 #include "game_runtime.hpp"
+#include "live_observer_26734796.hpp"
 
 #include <atomic>
 #include <cmath>
@@ -40,6 +41,7 @@ HANDLE g_InitThread = nullptr;
 goh::runtime::Address g_Base = 0;
 FnActorSlot23 g_OrigActorSlot23 = nullptr;
 goh::runtime::HookGate g_ActorSlotGate{};
+goh::live::Observer g_Observer;
 
 int CreateHookAdapter(void* target, void* detour, void** trampoline) {
     return static_cast<int>(MH_CreateHook(target, detour, trampoline));
@@ -72,6 +74,10 @@ const char* LogLevelName(goh::log::Level lvl) noexcept {
 }
 
 void RunOrigSlot23(goh::runtime::Address actor, void*) {
+    g_Observer.observe(g_Base, actor, [](const goh::config::Settings& settings) {
+        goh::config::published().publish(settings);
+        goh::log::configure(settings);
+    });
     g_OrigActorSlot23(actor);
 }
 
@@ -147,6 +153,8 @@ DWORD WINAPI InitThread(LPVOID) {
         return 1;
     }
 
+    if (!g_Observer.attach(g_SelfModule, actual_sha))
+        goh::log::write(goh::log::Level::error, "Live observer could not attach to verified game module");
     goh::log::write(goh::log::Level::summary, "Initial state: remote=%u hostEmit=%u clock=%u L=%.1f G=%.7f",
                     static_cast<unsigned>(goh::runtime::is_remote_client(g_Base)),
                     static_cast<unsigned>(goh::runtime::is_host_emit(g_Base)), goh::runtime::read_clock(g_Base),
@@ -211,7 +219,7 @@ DWORD WINAPI InitThread(LPVOID) {
 
 } // namespace
 
-// Clean hot-unload helper (unhooks and drains all 73/73 hooks outside loader lock before FreeLibraryAndExitThread).
+// Clean hot-unload helper (unhooks and drains all 79/79 hooks outside loader lock before FreeLibraryAndExitThread).
 extern "C" __declspec(dllexport) DWORD WINAPI ShutdownAndUnload(LPVOID) {
     if (g_InitThread && WaitForSingleObject(g_InitThread, INFINITE) != WAIT_OBJECT_0) return ERROR_BUSY;
 
@@ -246,6 +254,8 @@ extern "C" __declspec(dllexport) DWORD WINAPI ShutdownAndUnload(LPVOID) {
     const auto c = goh::tu_combat::snapshot_stats();
     const auto i = goh::tu_infantry::snapshot_stats();
     const auto t = goh::tu_tanks::snapshot_stats();
+    const auto support = goh::tu_infantry::field_support_stats();
+    const auto nontank_repairs = goh::tu_tanks::nontank_repair_dispatches();
     CleanupAfterHooksRemoved();
 
     goh::log::write(
@@ -257,7 +267,9 @@ extern "C" __declspec(dllexport) DWORD WINAPI ShutdownAndUnload(LPVOID) {
         "faceRetarget=%u faceTimeout=%u tactOrd=%u ovfCov=%u dismSpr=%u atVolumes=%u atAmmo=%u atHolds=%u "
         "settleH=%u memH=%u objPursue=%u objCap=%u healRest=%u burnEsc=%u kitSave=%u winBrk=%u holdUp=%u lullRel=%u "
         "brdFix=%u eligFix=%u allyVeto=%u towSup=%u fastSwp=%u mslHold=%u ffVeto=%u mgDefer=%u safeDr=%u trUnld=%u "
-        "sqAmmo=%u sqBand=%u scav=%u mvNudge=%u mvRes=%u mvAbt=%u cvYld=%u cvPass=%u cvRes=%u) ===",
+        "sqAmmo=%u sqBand=%u scav=%u mvNudge=%u mvRes=%u mvAbt=%u cvYld=%u cvPass=%u cvRes=%u "
+        "advUnfrz=%u atkPrst=%u atkNoMel=%u trapHide=%u hitDirt=%u crshEsc=%u hazPrio=%u "
+        "repNonTank=%u recrew=%u rearm=%u heavyPickup=%u corpseLoot=%u) ===",
         c.dodges, c.player_escapes, c.soft_lof, c.soft_rej, c.det_inf, c.det_veh, i.smoke_veh, i.smoke_inf, i.smoke_med,
         i.smoke_rel, i.med_claim, i.med_fetch, i.med_smoke, i.med_rev, i.med_backoff, i.sup_trip, i.sup_refill,
         t.tank_ctx, t.tank_exp, t.tank_disc, t.tank_rev, t.rep_full, t.rep_tt, t.rep_emit, t.rep_assign, t.rep_chain,
@@ -266,7 +278,11 @@ extern "C" __declspec(dllexport) DWORD WINAPI ShutdownAndUnload(LPVOID) {
         c.at_ammo, c.at_holds, c.settle_holds, c.memory_holds, i.obj_pursue, i.obj_cap, i.heal, i.burn, i.kit, i.window,
         i.stance, i.reload, i.board, i.eligible, i.allegiance_veto, i.towed_gun_suppress, i.fast_swaps, i.missile_holds,
         c.ff_vetoes, c.mg_small_arms_defer, t.safe_doors, t.transport_unloads, i.squad_ammo, i.squad_bandages,
-        i.scavenge, i.move_nudge, i.move_resume, i.move_abort, t.convoy_yield, t.convoy_pass, t.convoy_resume);
+        i.scavenge, i.move_nudge, i.move_resume, i.move_abort, t.convoy_yield, t.convoy_pass, t.convoy_resume,
+        c.advance_unfreeze, c.attack_persists, c.melee_prevented, c.trapped_hides, c.hit_dirt, i.crush_escapes,
+        i.hazard_priorities, nontank_repairs, support.recrews, support.rearm, support.heavy_pickup,
+        support.corpse_loot);
+    g_Observer.close();
     goh::log::close();
     FreeLibraryAndExitThread(g_SelfModule, 0);
     return 0;
@@ -290,6 +306,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID reserved) {
             g_InitThread = nullptr;
         }
         goh::log::write(goh::log::Level::summary, "=== goh_ai unloaded ===");
+        g_Observer.close();
         goh::log::close();
     }
     return TRUE;

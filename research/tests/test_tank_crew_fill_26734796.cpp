@@ -266,16 +266,16 @@ void test_priority_and_stepwise_fill() {
     cf::on_actor_post_quant(t.actor.ptr());
     assert(h.moves.size() == 1);
 
-    // Tick 2: rifleman (slot 3) -> driver (slot 0), leaving medic on seat3!
-    h.world.now += 50;
+    // After the transfer settles, rifleman (slot 3) -> driver (slot 0), leaving medic on seat3.
+    h.world.now += 1500;
     cf::on_actor_post_quant(t.actor.ptr());
     assert(h.moves.size() == 2);
     assert(h.moves[1].src_place == 3 && h.moves[1].dst_place == 0);
     assert(cf::stat_transfers.load() == 2);
     assert(cf::stat_transfers_infantry.load() == 1);
 
-    // Tick 3: all crew slots full -> no move
-    h.world.now += 50;
+    // All crew slots full -> no move.
+    h.world.now += 1500;
     cf::on_actor_post_quant(t.actor.ptr());
     assert(h.moves.size() == 2);
 }
@@ -353,7 +353,7 @@ void test_returning_repairer_and_dedup() {
     FakeHuman rider2;
     rider2.setup(h.img.base(), 222, 42, 1, t.actor.ptr());
     t.set_slot(2, "seat1", "passenger", 0u, "", "seat01", rider2.actor.ptr(), 222);
-    h.world.now += 50;
+    h.world.now += 1500;
     cf::on_actor_post_quant(t.actor.ptr());
     assert(h.moves.size() == 1);
     assert(cf::stat_deferred_repair.load() == 1);
@@ -574,21 +574,21 @@ void test_breed_traits_and_additional_safety() {
 
     // Free gunner again -> basic_repair driver (slot 3, tier 3) beats rifle (tier 4) & bazooka (tier 5)!
     t.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
-    h.world.now += 50;
+    h.world.now += 1500;
     cf::on_actor_post_quant(t.actor.ptr());
     assert(h.moves.size() == 2);
     assert(h.moves[1].src_place == 3 && h.moves[1].dst_place == 0);
 
     // Free gunner again -> rifle (slot 2, tier 4) beats bazooka (slot 1, tier 5)!
     t.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
-    h.world.now += 50;
+    h.world.now += 1500;
     cf::on_actor_post_quant(t.actor.ptr());
     assert(h.moves.size() == 3);
     assert(h.moves[2].src_place == 2 && h.moves[2].dst_place == 0);
 
     // Free gunner again -> bazooka (slot 1, tier 5) fills last!
     t.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
-    h.world.now += 50;
+    h.world.now += 1500;
     cf::on_actor_post_quant(t.actor.ptr());
     assert(h.moves.size() == 4);
     assert(h.moves[3].src_place == 1 && h.moves[3].dst_place == 0);
@@ -677,12 +677,12 @@ void test_internal_then_passenger(bool returning_repairer) {
     h.expect_move(1, 1, 0);
     h.tick(t.actor.ptr(), 0);
     assert(h.moves.size() == 1);
+    h.tick(t.actor.ptr(), 1500);
     if (returning_repairer) {
-        h.tick(t.actor.ptr());
         assert(h.moves.size() == 1 && cf::stat_deferred_repair == 1);
         h.returning_list.clear();
+        h.tick(t.actor.ptr());
     }
-    h.tick(t.actor.ptr());
     h.expect_move(2, 2, 1);
     assert(cf::stat_transfers_internal == 1 && cf::stat_transfers_nontank == 0);
 }
@@ -768,10 +768,54 @@ void test_internal_donor_selection() {
     h.tick(t.actor.ptr());
     h.expect_move(1, 3, 0); // Preserve the trained commander and the main loader.
     commander.chassis.put<unsigned>(0x18, 1);
-    h.tick(t.actor.ptr());
+    h.tick(t.actor.ptr(), 1500);
     h.expect_move(2, 4, 1); // Charger covers driver while commander is in Direct Control.
     h.tick(t.actor.ptr());
     assert(h.moves.size() == 2);
+}
+
+void test_damaged_tank_keeps_bow_gunner() {
+    Harness h;
+    h.install();
+    FakeTank t;
+    t.setup(h.img.base(), 120, 23, 1);
+    Memory<0x28 * 3> parts;
+    Memory<0x360> gun_def;
+    Memory<0x60> gun_name;
+    std::memcpy(parts.data.data(), t.comp_rows.data.data(), 2 * 0x28);
+    parts.put<d::Byte>(0x28 + 0x24, 1); // Broken track.
+    gun_name.ename(0, "gun");
+    gun_def.put<Address>(0x328, gun_name.ptr());
+    gun_def.put<Address>(0x330, gun_name.ptr() + 0x60);
+    parts.put<Address>(2 * 0x28, gun_def.ptr());
+    parts.put<Address>(2 * 0x28 + 8, t.actor.ptr());
+    parts.put<d::Byte>(2 * 0x28 + 0x24, 1);
+    t.actor.put<Address>(0xB90, parts.ptr());
+    t.actor.put<Address>(0xB98, parts.ptr() + 3 * 0x28);
+    FakeHuman first, second, repairer1, repairer2;
+    first.setup(h.img.base(), 202, 32, 1, t.actor.ptr());
+    second.setup(h.img.base(), 203, 33, 1, t.actor.ptr());
+    h.returning_list = {repairer1.actor.ptr(), repairer2.actor.ptr()};
+    t.set_slot_count(5);
+    t.set_slot(0, "driver", "crew", 0x1000u, "driver", "", 0);
+    t.set_slot(1, "gunner", "crew", 0x1000u, "main", "", 0);
+    t.set_slot(2, "charger", "crew", 0x1000u, "", "", 0);
+    t.set_slot(3, "gunner3", "crew", 0x1000u, "bow", "", first.actor.ptr(), 202);
+    t.set_slot(4, "commander", "crew", 0x1000u, "around", "", 0);
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+    // The track is still broken. A repaired main gun is useful immediately.
+    parts.put<d::Byte>(2 * 0x28 + 0x24, 0);
+    h.tick(t.actor.ptr());
+    h.expect_move(1, 3, 1);
+    // Vanilla staffs the same bow MG with someone else. The best vacancy has
+    // changed too. Neither change should reset the weapon-seat backoff.
+    t.set_slot(3, "gunner3", "crew", 0x1000u, "bow", "", second.actor.ptr(), 203);
+    parts.put<d::Byte>(0x28 + 0x24, 0);
+    h.tick(t.actor.ptr(), 9999);
+    assert(h.moves.size() == 1);
+    h.tick(t.actor.ptr(), 1);
+    h.expect_move(2, 3, 0);
 }
 
 void test_wheeled_mobility_damage(std::size_t damaged_row) {
@@ -882,6 +926,46 @@ void test_cannon_guards() {
     assert(cf::stat_transfers_internal == 1 && cf::stat_transfers_nontank == 1);
 }
 
+void test_accepted_cannon_transfer_stalls() {
+    Harness h;
+    h.install();
+    h.apply_move_effect = false; // The order was accepted, but the charger is still in place.
+    FakeTank gun;
+    gun.setup(h.img.base(), 112, 22, 1);
+    gun.actor.ename(0xDE8, "cannon_small");
+    gun.actor.put<Address>(0xB98, gun.comp_rows.ptr());
+    FakeHuman charger, replacement;
+    charger.setup(h.img.base(), 304, 93, 1, gun.actor.ptr());
+    replacement.setup(h.img.base(), 305, 94, 1, gun.actor.ptr());
+    gun.set_slot_count(2);
+    gun.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
+    gun.set_slot(1, "charger", "crew", 0x1000u, "", "", charger.actor.ptr(), 304);
+
+    h.tick(gun.actor.ptr());
+    h.expect_move(1, 1, 0);
+    h.tick(gun.actor.ptr(), 7);
+    assert(h.moves.size() == 1);
+    unsigned calls = 1;
+    for (unsigned remaining : {1493u, 5000u, 10000u, 10000u}) {
+        h.tick(gun.actor.ptr(), remaining - 1);
+        assert(h.moves.size() == calls);
+        h.tick(gun.actor.ptr(), 1);
+        h.expect_move(++calls, 1, 0);
+    }
+
+    // The new charger waits for the per-vehicle cooldown and starts a fresh retry sequence.
+    gun.set_slot(1, "charger", "crew", 0x1000u, "", "", replacement.actor.ptr(), 305);
+    h.tick(gun.actor.ptr(), 1499);
+    assert(h.moves.size() == calls);
+    h.tick(gun.actor.ptr(), 1);
+    h.expect_move(++calls, 1, 0);
+    h.apply_move_effect = true;
+    h.tick(gun.actor.ptr(), 1500);
+    h.expect_move(++calls, 1, 0);
+    h.tick(gun.actor.ptr(), 10000);
+    assert(h.moves.size() == calls && cf::stat_transfer_failures == 0);
+}
+
 } // namespace
 
 int main() {
@@ -897,12 +981,14 @@ int main() {
     test_internal_then_passenger(true);
     test_emergency_swap_timing();
     test_internal_donor_selection();
+    test_damaged_tank_keeps_bow_gunner();
     test_wheeled_mobility_damage(0); // Engine.
     test_wheeled_mobility_damage(1); // Wheel.
     test_nontank_passengers("halftrack", "gunner", "seat01");
     test_nontank_passengers("truck", "driver", "");
     test_nontank_passengers("armoredcar", "gunner", "");
     test_cannon_guards();
+    test_accepted_cannon_transfer_stalls();
     std::printf("test_tank_crew_fill_26734796: ALL PASSED\n");
     return 0;
 }

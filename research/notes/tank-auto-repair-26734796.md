@@ -1,5 +1,7 @@
 # Tank Auto-Repair on Steam build 26734796
 
+Wave 6 extends these same five hooks to ground vehicles and deployed crewed guns. The independent `nontank_auto_repair` switch covers wheels, engines and weapon assemblies. The underlying tank damage triggers and player-order checks still apply to their original actors. [Non-tank repair and recrewing contract](repair-recrew-scavenge-26734796.md)
+
 **Static implementation for the x64 game executable.** The module admits SHA-256 `81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a`. It exposes a post-quant entry point for the loader. Private-lobby admission, agreement between a host and a vanilla peer, and live unload remain untested. `runtime_allowed` is false. [Module](../../mods/tank_auto_repair_module.hpp) · [Fine map](../artifacts/build-26734796/tank-auto-repair-26734796.json) · [Validation receipt](../artifacts/build-26734796/tank-auto-repair-26734796-validation.json)
 
 ## Dispatch and completion

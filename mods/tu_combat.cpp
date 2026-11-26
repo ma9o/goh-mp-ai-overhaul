@@ -3,6 +3,7 @@
 //   - Features 2 & 3: Soft-Cover LOF & Attack Detour (5 hooks)
 //   - Target Prioritization & Multi-Turret (7 hooks)
 //   - Close-Range Anti-Vehicle Grenades (1 hook)
+//   - Advance and Attack orders (2 hooks), explosion signals (1 hook)
 //   - Armor Penetration AT Aim & Ammo Selection (2 hooks)
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -12,6 +13,8 @@
 
 #include "ai_modules.hpp"
 #include "config_and_log.hpp"
+#include "combat_orders_module.hpp"
+#include "hit_the_dirt_module.hpp"
 #include "grenade_dodge_module.hpp"
 #include "lof_detour_module.hpp"
 #include "penetration_at_module.hpp"
@@ -69,7 +72,11 @@ bool stage_hooks(runtime::Address base, const char* sha, HookCreateFn create, Ho
         log::write(log::Level::summary, "Penetration AT 2 hooks staged cleanly");
     }
 
-    return g_GrenadeOk && g_LofOk && g_TargetPrioOk && g_CloseGrenadeOk && g_PenAtOk;
+    const bool orders_ok = combat_orders::prepare_hooks(base, sha, create, remove);
+    if (!orders_ok) log::write(log::Level::error, "Combat order hook staging failed");
+    const bool dirt_ok = hit_the_dirt::prepare_hooks(base, sha, create, remove);
+    if (!dirt_ok) log::write(log::Level::error, "Explosion signal hook staging failed");
+    return g_GrenadeOk && g_LofOk && g_TargetPrioOk && g_CloseGrenadeOk && g_PenAtOk && orders_ok && dirt_ok;
 }
 
 void connect() {
@@ -81,6 +88,8 @@ bool drain_quiescence() {
 }
 
 void deactivate() noexcept {
+    hit_the_dirt::deactivate();
+    combat_orders::deactivate();
     grenade_dodge::deactivate();
     lof_detour::deactivate();
     target_prio::deactivate();
@@ -89,8 +98,9 @@ void deactivate() noexcept {
 }
 
 std::uint32_t inflight_count() noexcept {
-    return grenade_dodge::inflight_count() + lof_detour::inflight_count() + target_prio::inflight_count() +
-           close_grenade::inflight_count() + penetration_at::inflight_count();
+    return combat_orders::inflight_count() + hit_the_dirt::inflight_count() + grenade_dodge::inflight_count() +
+           lof_detour::inflight_count() + target_prio::inflight_count() + close_grenade::inflight_count() +
+           penetration_at::inflight_count();
 }
 
 void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) {
@@ -114,8 +124,43 @@ void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) 
     }
 }
 
+double nearest_tracked_grenade_m(runtime::Address scene, runtime::Tick now, runtime::Vec3 pos, float length) {
+    auto& state = grenade_dodge::detail::state();
+    std::lock_guard<std::mutex> lock(state.mutex);
+    double nearest = std::numeric_limits<double>::quiet_NaN();
+    if (state.scene == scene) {
+        for (const auto& grenade : state.grenades) {
+            if (now - grenade.last_tick > 300) continue;
+            const auto distance = std::hypot(double(pos.x) - grenade.land_x, double(pos.y) - grenade.land_y) / length;
+            nearest = std::fmin(nearest, distance);
+        }
+    }
+    return nearest;
+}
+
+WeaponTargets vehicle_weapon_targets(runtime::Address brain) {
+    namespace pr = target_prio::detail;
+    WeaponTargets result{};
+    const auto rows = pr::span(brain, 0x3b8);
+    if (!rows.valid(pr::row_size) || rows.size(pr::row_size) > 32) return result;
+    for (auto row = rows.first; row != rows.end; row += pr::row_size) {
+        const auto weapon = runtime::read<runtime::Address>(row, 8);
+        const auto target = pr::active_entity(weapon);
+        if (!target) continue;
+        const auto kind = pr::row_kind(weapon);
+        if (kind == pr::RowKind::mg && !result.mg) result.mg = target;
+        if (kind == pr::RowKind::main_gun && !result.cannon) result.cannon = target;
+    }
+    return result;
+}
+
 Stats snapshot_stats() noexcept {
     Stats s{};
+    s.advance_unfreeze = combat_orders::stat_advance_unfreeze;
+    s.attack_persists = combat_orders::stat_attack_persists;
+    s.melee_prevented = combat_orders::stat_melee_prevented;
+    s.trapped_hides = hit_the_dirt::stat_trapped_hides;
+    s.hit_dirt = hit_the_dirt::stat_hit_dirt;
     s.ff_vetoes = close_grenade::stat_ff_vetoes.load(std::memory_order_relaxed);
     s.mg_small_arms_defer = close_grenade::stat_mg_small_arms_defer.load(std::memory_order_relaxed);
     s.dodges = grenade_dodge::total_dodges();
@@ -133,6 +178,8 @@ Stats snapshot_stats() noexcept {
 }
 
 void after_hooks_removed() {
+    hit_the_dirt::after_hooks_removed();
+    combat_orders::after_hooks_removed();
     penetration_at::after_hooks_removed();
     close_grenade::disconnect();
     target_prio::after_hooks_removed();
