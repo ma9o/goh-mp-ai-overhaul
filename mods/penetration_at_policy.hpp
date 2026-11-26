@@ -116,6 +116,10 @@ inline ShellPriority shell_priority(Shell kind, const Outcome& o, bool chambered
 inline bool ready_soon(bool ready, bool timed, float seconds_remaining) {
     return ready || (timed && std::isfinite(seconds_remaining) && seconds_remaining < 1.5f);
 }
+inline bool actively_reloading(bool flags_reloading, bool timed, float seconds_remaining) {
+    return flags_reloading ||
+           (timed && std::isfinite(seconds_remaining) && seconds_remaining > 0.f && seconds_remaining <= 20.f);
+}
 inline bool subcaliber_improves(float proposed, float standard, bool chambered) {
     return chambered || (std::isfinite(proposed) && proposed > standard);
 }

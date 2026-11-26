@@ -26,6 +26,32 @@ The opportunistic `grenade_ff_guard` check stayed informational (`ff_vetoes=14` 
 - **`fast_weapon_swap`:** Starting `launcher` with `panzerfaust_60` in hand and revealing a harmless enemy infantryman right before `armor_contact` exercises stock's 5–10 s weapon-take lockout (`brain+0x47C`), reliably triggering `fast_swaps=2`.
 - **`authority/hold_fire`:** The earlier `9.21 m` move on MID 304 was traced to an authorized return-to-post `squad_logistics` ammo share to `mobile` (whose stripped kit lacked spare K98 clips). Keeping `hold_fire` outside the squad and stocking `mobile`/`molotov` clips brought both `authority/hold` and `authority/hold_fire` to **`0.00 m`**.
 
+## Company-scale E2E battle on flat symmetric arena (`sweep-5nh459y6/`)
+
+The four-phase `calibration` suite was replaced by one continuous 300-second combined-arms company battle (`e2e`: 102 force-value points across 46 scored units per side across 3 lanes and 3 reinforcement waves) on a flattened, cleared `z = 0` symmetric arena overlay (`map`, `map.net`, `map.ply`, `map.grs` generated read-only from stock `single.pak` into `mods/ai_test_harness/`), driven at `8×` native simulation speed via `[testing] sim_speed` (`~48–50 s` wall time per 345 s trial) with uncapped low graphics restored byte-for-byte on exit.
+
+Flat-arena `vanilla` vs `vanilla` baselines confirmed near-exact symmetry with a slight ~1–5 pt first-updater edge for West P2 (`55.30` in `sweep-0_m8uwte/`, `51.21` in `sweep-5nh459y6/`); single-side E2E sweeps therefore default to placing our modded AI on the disadvantaged East side (`Player 3`, `ai_player_mask=8`), scored from East's perspective.
+
+### Three additional live-discovered armor combat bugs fixed
+
+The flat symmetric arena surfaced three armor bugs that dropped initial `default-sideA` to `32.77` (`40.98` crossover):
+1. **`tank_crew_fill` native `ePlacer` reload-request fight:** Verified `ePlacer::Request` (`0x7945A0`) / `Release` (`0x794780`) / `SatisfyRequest` (`0x795290`) live request list (`placer+0x50..+0x58`, stride `0x348`, `satisfied` byte `+0x341`). Skipped pulling crew from actively requested seats (such as `charger` during `charger_Reload`) and replaced single-slot transfer history with a 4-slot per-slot escalating backoff (`5 s → 10 s → 25 s`) in [tank_crew_fill_policy.hpp](../../mods/tank_crew_fill_policy.hpp) and [tank_crew_fill_module.hpp](../../mods/tank_crew_fill_module.hpp).
+2. **`penetration_at` target-wiping & mid-reload cancellation:** Fixed `select_volume` calling `0x853240` (blanking the target) when `trials >= 1` on tanks with `>= 5` volumes — now tries the top 3 ranked volumes and always falls back to `original_volume` — and updated `near_ready` to preserve in-progress penetrating reloads (`charger+0x14 & 0x14` / positive remaining time) before checking `charged->count == 0` in [penetration_at_module.hpp](../../mods/penetration_at_module.hpp) and [penetration_at_policy.hpp](../../mods/penetration_at_policy.hpp).
+3. **`tank_auto_repair` suicidal crew dismounts:** Counted dispatched/assigned crew in `census()` busy tally, capped `turret_track` repair dismounts to `living_crew - 1` so intact-hull tanks are never abandoned, and removed the `is_tank` bypass in `may_dismount()` to protect the gunner and delay dismounts while taking active close fire (`sensor+0x2F4`) with a working main gun in [tank_auto_repair_module.hpp](../../mods/tank_auto_repair_module.hpp).
+
+### Flat-arena side-swapped verification (`sweep-5nh459y6/`, post-fix)
+
+| Metric | `vanilla` (`mask=0`) | `default` (`mask=4,8`) | Best |
+|---|---:|---:|---|
+| Valid trials | 1/1 | 2/2 | |
+| **E2E force-value score (`50` = parity)** | `50.00` (raw West `51.21`) | **`70.80`** (`sideA 74.33`, `sideB 67.27`) | **`default`** |
+| **Delta vs vanilla** | `+0.00` | **`+20.80`** | |
+| Remaining force value Modded−Vanilla (pp) | `+0.0` | **`+41.6`** | |
+| Infantry survival / HP Modded−Vanilla (pp) | `+0.0 / +0.0` | **`+11.8 / +10.9`** | |
+| Vehicle survival / hull HP Modded−Vanilla (pp) | `+0.0 / +0.0` | **`+61.1 / +48.2`** | |
+| Support survival / HP Modded−Vanilla (pp) | `+0.0 / +0.0` | **`+83.3 / +80.2`** | |
+| Mean force-value exchange ratio | `1.00×` (raw West `1.05×`) | **`1.98×`** (`2.05×` West, `1.91×` East) | |
+
 ## Mirrored AI-vs-AI tactical benchmark & live combat bug fixes
 
 The retired ten-probe boundary suite (`run-5ygnppcs/`) was replaced by four mirrored, no-god-mode combined-arms engagements (`calibration`) pitting **Player 2 (West, `control AI`)** against **Player 3 (East, `control AI`)** with identical German forces and reflected cover, temporarily run at Heroic difficulty (`1.0` accuracy, `0.7` health for both teams) and `{fog_of_war fog_off}` (restored byte-for-byte on exit). An opt-in `[testing] ai_player_mask` filter (`0` = stock vs stock, `4` = Player 2 only, `8` = Player 3 only, default `0xFFFFFFFF` = all players) lets only one side use our AI modules while the telemetry observer records both sides. Running with `--swap-sides` averages each modded profile across both West (`mask=4`) and East (`mask=8`), cancelling residual terrain asymmetry (`50.00` = exact vanilla parity).
@@ -84,6 +110,7 @@ Local evidence directories live under `local-work/level1/runs/`. Each contains t
 
 | Run | Evidence directory | Result |
 |---|---|---|
+| Flat-arena E2E sweep (post-armor fixes) | `sweeps/sweep-5nh459y6/` | **PASS (`0` runaways, 8/8 checks)** — `vanilla` raw West `51.21` (paired `50.00`); `default` **`70.80`** (`+20.80`, `sideA 74.33`, disadvantaged East `sideB 67.27`, `+61.1 pp` veh surv, `1.98×` exchange) |
 | Post-fix AI-vs-AI sweep | `sweeps/sweep-fze384yc/` | **PASS (`0` runaways)** — `default` **`56.60`** (`+6.60`, `sustained_logistics 70.33`, `combined_assault 63.77`, `+21.4 pp` veh / `+66.7 pp` support surv), `tight` `51.61` (`infantry_grenade_line 78.42`) |
 | Pre-`penetration_at` sweep | `sweeps/sweep-vxj2u_mk/` | **PASS** — verified `tank_crew_fill` bounce fix and exposed `penetration_at` chambered-shell unload bug (`sustained_logistics 22.61`) |
 | `default` vs `tactical` sweep | `sweeps/sweep-ilcpscqr/` | **PASS** — `default 52.58` (`armor_flank_ambush 68.31`) vs `tactical 38.61` (`7 m` grenade panic radius) |
@@ -94,9 +121,10 @@ Local evidence directories live under `local-work/level1/runs/`. Each contains t
 | First T-34 desant full | `runs/run-ru_p7imi/` | **31/33** (first 79-hook Waves 5+6 run confirming T-34 desant + `gunner3` fix + `lof_detour`) |
 | Earlier baselines | `runs/run-_fjh_n9q/`, `runs/run-js27z3da/` | Pre-T-34-desant / pre-expend-dry baselines (`28/33` full, `24/25` calibration) |
 
-All live runs and sweeps completed in `call_to_arms.exe` and closed cleanly, restoring `goh_ai.ini` and the user's `options.set` byte for byte with no leftover backup. All 79 Python tests, all 19 ASan/UBSan C++ suites, and `./scripts/lint_cpp.sh --all-files --werror` (50 C++ files) passed.
+All live runs and sweeps completed in `call_to_arms.exe` and closed cleanly, restoring `goh_ai.ini` and the user's `options.set` byte for byte with no leftover backup. All 81 Python tests, all affected ASan/UBSan C++ suites, and `./scripts/lint_cpp.sh --werror` passed.
 
 ```sh
 scripts/live_harness.py run --suite full --speed fast --restore-options
-scripts/live_harness.py sweep --profiles vanilla,default,tight --runs 1 --swap-sides --speed fast --restore-options
+scripts/live_harness.py sweep --speed fast --restore-options
+scripts/live_harness.py sweep --profiles vanilla,default --runs 1 --swap-sides --speed fast --restore-options
 ```

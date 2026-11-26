@@ -52,7 +52,7 @@ def observation(mid, tick, **kw):
     return row("actor_snapshot", tick, **{**data, **kw})
 
 
-def fixture(suite, tuning=None):
+def fixture(suite):
     rows = [
         row(
             "session_start",
@@ -64,7 +64,7 @@ def fixture(suite, tuning=None):
         )
     ]
     markers = []
-    for index, p in enumerate(m.phases_for(suite, tuning)):
+    for index, p in enumerate(m.phases_for(suite)):
         begin = 100 * (index + 1)
         markers.extend([f"GOH_L1_BEGIN_{p.name}", f"GOH_L1_END_{p.name}"])
         keys = [k[0] for k in grader.CHECKS[p.name].values()]
@@ -106,18 +106,7 @@ def fixture(suite, tuning=None):
 
 
 
-TACTICAL_NAMES = (
-    "tac_infantry_grenade_line",
-    "tac_armor_flank_ambush",
-    "tac_sustained_logistics",
-    "tac_combined_assault",
-)
-TACTICAL_KNOBS = (
-    "grenade_danger_radius_m medic_search_radius_m squad_share_radius_m smoke_infantry_cooldown_s overflow_cover_radius_m",
-    "tank_facing_min_angle_deg smoke_vehicle_cooldown_s tank_memory_hold_s cannon_settle_max_s crew_fill_emit_backoff_s",
-    "resupply_search_radius_m medic_search_radius_m recrew_search_radius_m scavenge_search_radius_m squad_share_radius_m lull_reload_ratio",
-    "movement_stall_s convoy_gap_m objectives_pursue_radius_m attack_detour soft_cover_lof transport_unload safe_disembark close_grenade fast_weapon_swap crush_avoidance",
-)
+BATTLE_NAME = "e2e_combined_arms_battle"
 ROSTERS = tuple(f"{team}_{group}" for team in ("friendly", "enemy") for group in ("infantry", "vehicles", "support"))
 
 
@@ -139,37 +128,31 @@ def action_timeline(phase):
     return elapsed, result
 
 
-def tactical_fixture():
+def e2e_fixture():
+    phase, = m.phases_for("e2e")
+    t = phase.tactical
+    start, tps = 100, 10
+    end = start + 300 * tps
     rows = [row("session_start", 0, exe="call_to_arms.exe", build=26734796, sha256=m.SHA, local_day_ms=0)]
-    markers = []
-    begin = 100
-    tps = 10
-    for phase in m.phases_for("calibration"):
-        t = phase.tactical
-        end = begin + t.duration_s * tps
-        markers.extend(f"GOH_L1_{edge}_{phase.name}" for edge in ("BEGIN", "END"))
-        # The observer never emits the hidden driver/gunner seats, scenery, etc.
-        units = unit_records(phase)
-        for group in ROSTERS:
-            for role in getattr(t, group):
-                mid = phase.mids[role]
-                obj = units[mid]
-                x, y = map(float, obj[3][1:])
-                player = int(next(n[1] for n in obj[4:] if n[0] == "Player"))
-                for tick in (begin, end):
-                    rows.append(observation(
-                        mid, tick, player=player, is_human=obj[0] == "Human", pos_x=x, pos_y=y,
-                        control=0, ticks_per_second=tps, ms=tick * 25,
-                    ))
-        begin = end + 3 * tps
-    markers.append("GOH_L1_DONE_calibration")
-    done = (90 + m.SUITES.index("calibration")) * 100 + 1
-    rows.append(observation(done, begin, ticks_per_second=tps, ms=begin * 25))
-    return sorted(rows, key=lambda r: r["sim_tick"]), "\n".join(markers)
+    units = unit_records(phase)
+    for role in t.points:
+        mid = phase.mids[role]
+        obj = units[mid]
+        x, y = map(float, obj[3][1:])
+        player = int(next(n[1] for n in obj[4:] if n[0] == "Player"))
+        arrival = start + t.waves[role] * tps
+        # Regular snapshots under the 8x benchmark default. Interior crew never appear.
+        for tick in (*range(arrival, end, 4 * tps), end):
+            rows.append(observation(mid, tick, player=player, control=0, is_human=obj[0] == "Human",
+                                    pos_x=x, pos_y=y, ticks_per_second=tps, ms=tick * 100 // 8))
+    done = end + 3 * tps
+    rows.append(observation(9401, done, ticks_per_second=tps, ms=done * 100 // 8))
+    markers = "\n".join((f"GOH_L1_BEGIN_{phase.name}", f"GOH_L1_END_{phase.name}", "GOH_L1_DONE_e2e"))
+    return sorted(rows, key=lambda r: r["sim_tick"]), markers
 
 
-def tactical_grade(rows, markers):
-    return grade(sorted(rows, key=lambda r: r["sim_tick"]), "calibration", markers=markers)
+def e2e_grade(rows, markers, log=None):
+    return grade(sorted(rows, key=lambda r: r["sim_tick"]), "e2e", markers=markers, log=log)
 
 
 def desant_line(suite):
@@ -183,10 +166,10 @@ def fixture_log(suite):
     return LOG + (desant_line(suite) if suite in ("armor", "full") else "")
 
 
-def grade(rows, suite="full", log=None, markers=None, tuning=None):
+def grade(rows, suite="full", log=None, markers=None):
     if log is None:
         log = fixture_log(suite)
-    return grader.grade(map(json.dumps, rows), log, markers, suite, tuning)
+    return grader.grade(map(json.dumps, rows), log, markers, suite)
 
 
 class MissionTests(unittest.TestCase):
@@ -267,7 +250,7 @@ class MissionTests(unittest.TestCase):
                         self.assertIn(m.command("delete", p.selector("phase")), text)
 
     def test_overview_frames_each_phase_at_its_begin_marker(self):
-        for suite in ("full", "calibration"):
+        for suite in ("full", "e2e"):
             root = m.parse(m.generate(suite))
             helpers = next(h for h in root[1:] if h[0] == "Helpers")
             cameras = next(h[1:] for h in helpers[1:] if h[0] == "cameras")
@@ -472,141 +455,181 @@ class MissionTests(unittest.TestCase):
         )
 
 
-class TacticalMissionTests(unittest.TestCase):
-    def test_mirrored_combatants_crew_cover_and_diplomacy(self):
-        text = m.generate("calibration", "fast")
-        self.assertEqual(text, m.generate("calibration", "fast", {"medic_search_radius_m": 52}))
+class E2EMissionTests(unittest.TestCase):
+    def setUp(self):
+        self.phase, = m.phases_for("e2e")
+        self.roster = self.phase.tactical
+        self.objects = unit_records(self.phase)
+        self.records = mission_records(self.phase)
+
+    def test_single_mirrored_company_and_witness(self):
+        self.assertEqual(m.SUITES, ("full", "infantry", "armor", "close_at", "e2e"))
+        p, t = self.phase, self.roster
+        self.assertEqual((p.name, t.duration_s, t.friendly_player, t.enemy_player), (BATTLE_NAME, 300, 2, 3))
+        text = m.generate("e2e", "fast")
+        objects = m.validate(text)
+        self.assertGreater(len(p.mids), 99)
+        self.assertTrue(all(4000 <= mid < 4500 for mid in p.mids.values()))
+        self.assertEqual(len(set(p.mids.values())), len(p.mids))
+        spectator = [r for r in objects if ["Player", "0"] in r]
+        self.assertEqual(len(spectator), 1)
+        self.assertIn(["MID", "9401"], spectator[0])
         root = m.parse(text)
-        m.validate(text)
+        players = next(n for n in root[1:] if n[0] == "Players")
+        self.assertIn(["user", "0"], players)
+        self.assertEqual({n[1]: n[2] for n in players[1:] if n[0] == "alias"},
+                         {"0": "player", "1": "ai", "2": "west_ai", "3": "east_ai"})
         matrix = next(n[1:] for n in m.nodes(root) if n[0] == "diplomacy")
         for a, b in ((2, 3), (3, 2), (0, 2), (2, 0), (0, 3), (3, 0)):
             self.assertEqual(matrix[a * 8 + b], "1")
-        phases = m.phases_for("calibration")
-        self.assertEqual(tuple(p.name for p in phases), TACTICAL_NAMES)
-        seen = set()
-        for phase, duration, knobs in zip(phases, (65, 75, 85, 75), TACTICAL_KNOBS):
-            with self.subTest(phase=phase.name):
-                t = phase.tactical
-                self.assertEqual((t.friendly_player, t.enemy_player), (2, 3))
-                self.assertEqual(action_timeline(phase)[0], duration)
-                self.assertEqual(t.duration_s, duration)
-                self.assertEqual(set(t.knobs), set(knobs.split()))
-                self.assertTrue(seen.isdisjoint(phase.mids.values()))
-                seen.update(phase.mids.values())
-                units = unit_records(phase)
-                records = mission_records(phase)
-                brains = {n[1]: n[2] for n in records if n[0] == "Brain"}
-                kits = {n[1]: n[2:] for n in records if n[0] == "Inventory"}
-                links = {n[1]: n[2] for n in records if n[0] == "Link"}
-                scored = [role for k in ROSTERS for role in getattr(t, k)]
-                self.assertEqual(len(scored), len(set(scored)))
-                for group in ("infantry", "vehicles", "support"):
-                    friendly = getattr(t, "friendly_" + group)
-                    enemy = getattr(t, "enemy_" + group)
-                    self.assertEqual({r.removeprefix("a_") for r in friendly}, {r.removeprefix("b_") for r in enemy})
-                left = {r[2:] for r in phase.mids if r.startswith("a_")}
-                right = {r[2:] for r in phase.mids if r.startswith("b_")}
-                self.assertEqual(left, right)
-                for name in left:
-                    a, b = (units[phase.mids[side + name]] for side in ("a_", "b_"))
-                    self.assertEqual(a[:2], b[:2], name)
-                    self.assertEqual(float(a[3][1]), -float(b[3][1]), name)
-                    self.assertEqual(float(a[3][2]), float(b[3][2]), name)
-                    self.assertEqual(kits.get(a[2]), kits.get(b[2]), name)
-                    if a[0] == "Human":
-                        self.assertTrue(a[1].startswith(m.GER))
-                    if a[2] in brains:
-                        self.assertIn(["Player", "2"], a)
-                        self.assertIn(["Player", "3"], b)
-                        self.assertEqual(brains[a[2]], brains[b[2]])
-                        self.assertIn(["control", "AI"], brains[a[2]])
-                    if "a_" + name in scored:
-                        self.assertNotIn(["Impregnability", "full"], a)
-                        self.assertNotIn(["Impregnability", "full"], b)
-                        if a[2] in links:
-                            self.assertTrue(links[a[2]][1].startswith("seat"))
-                    if "throw" in name:
-                        self.assertNotIn("a_" + name, scored)
-                # Item grants and waypoint orders can differ even with identical
-                # spawn records. Compare their recipients, timing and destinations.
-                inventories = {"a": [], "b": []}
-                orders = {"a": [], "b": []}
-                points = {n[0]: tuple(map(float, n[1][1:3]))
-                          for n in m.parse("{mission " + " ".join(phase.waypoints) + "}")[1:]}
-                for when, action in action_timeline(phase)[1]:
-                    if action[0] not in ("inventory", "actor_to_waypoint"):
-                        continue
-                    label = next(n[1] for n in action[1] if n[0] == "tag").removeprefix(f"h{phase.index}_")
-                    side, role = label.split("_", 1)
-                    if action[0] == "inventory":
-                        inventories[side].append((when, role, action[2:]))
-                    else:
-                        x, y = points[next(n[1] for n in action if n[0] == "waypoint")]
-                        orders[side].append((when, role, x if side == "a" else -x, y))
-                self.assertEqual(sorted(inventories["a"]), sorted(inventories["b"]))
-                self.assertEqual(sorted(orders["a"]), sorted(orders["b"]))
-                self.assertEqual(t.anchor_xy, (-t.enemy_anchor_xy[0], t.enemy_anchor_xy[1]))
+        flags = [n for n in objects if n[:2] == ["Entity", "flag_point_1"]]
+        self.assertEqual([list(map(float, f[3][1:])) for f in flags], [[0, 320]])
+        self.assertFalse(any(n[0] == "Player" for n in flags[0][4:]))
 
-    def test_equal_force_compositions_and_seated_passengers(self):
-        line, armor, logistics, assault = m.phases_for("calibration")
+        brains = {r[1]: r[2] for r in self.records if r[0] == "Brain"}
+        kits = {r[1]: r[2:] for r in self.records if r[0] == "Inventory"}
+        teams = [{r[2:] for r in p.mids if r.startswith(side)} for side in ("a_", "b_")]
+        self.assertEqual(*teams)
+        for name in teams[0]:
+            a, b = (self.objects[p.mids[side + name]] for side in ("a_", "b_"))
+            self.assertEqual(a[:2], b[:2], name)
+            x, y = map(float, a[3][1:3])
+            self.assertEqual(list(map(float, b[3][1:3])), [-x, y], name)
+            self.assertTrue(-1150 <= x <= 0 and -50 <= y <= 720, name)
+            self.assertEqual(kits.get(a[2]), kits.get(b[2]), name)
+            if a[0] == "Human":
+                self.assertTrue(a[1].startswith(m.GER))
+            if a[2] in brains:
+                self.assertIn(["Player", "2"], a)
+                self.assertIn(["Player", "3"], b)
+                self.assertEqual(brains[a[2]], brains[b[2]])
+                self.assertIn(["control", "AI"], brains[a[2]])
+                self.assertNotIn(["Impregnability", "full"], a)
+                self.assertNotIn(["Impregnability", "full"], b)
 
-        def models(phase, group):
-            units = unit_records(phase)
-            return Counter(units[phase.mids[r]][1].rsplit("/", 1)[-1] for r in getattr(phase.tactical, group))
+    def test_deployments_and_points_by_lane_and_wave(self):
+        p, t = self.phase, self.roster
+        scored = [role for g in ROSTERS for role in getattr(t, g)]
+        self.assertEqual(set(scored), set(t.points))
+        self.assertEqual(len(scored), len(t.points))
+        self.assertEqual(set(t.waves), set(scored))
+        weights = {"panzer4d": 10, "t3476_40": 10, "sdkfz251c": 5, "45mm_m37": 5,
+                   "ba64": 3, "blitz3_6_art_ammo": 3, "medic": 2}
+        expected_counts = {(0, "south"): 7, (0, "center"): 12, (0, "north"): 7,
+                           (90, "south"): 4, (90, "center"): 6, (90, "north"): 5,
+                           (180, "north"): 5}
+        lane_bounds = {"south": (-20, 180), "center": (200, 440), "north": (460, 700)}
+        tags = {r[-1]: set(r[1:-1]) for r in self.records if r[0] == "Tags"}
+        links = {r[1]: r[2] for r in self.records if r[0] == "Link"}
+        duration, actions = action_timeline(p)
+        self.assertEqual(duration, 300)
+        reveals = {p.tag("entry"): 0}
+        reveals.update({
+            next(n[1] for n in r[1] if n[0] == "tag"): when
+            for when, r in actions if r[0] == "entity_state" and ["inactive", "off"] in r
+        })
+        self.assertEqual(set(reveals.values()), {0, 90, 180})
+        for side in ("friendly", "enemy"):
+            roles = [r for kind in ("infantry", "vehicles", "support") for r in getattr(t, side + "_" + kind)]
+            counts, wave_points = Counter(), Counter()
+            for role in roles:
+                obj = self.objects[p.mids[role]]
+                model = obj[1].rsplit("/", 1)[-1]
+                self.assertEqual(t.points[role], weights.get(model, 1), role)
+                hint = links.get(obj[2])
+                actor = hint[0] if hint else obj[2]
+                stages = tags[actor].intersection(reveals)
+                self.assertEqual(len(stages), 1, role)
+                deploy = reveals[stages.pop()]
+                self.assertEqual(t.waves[role], deploy, role)
+                y = float(obj[3][2])
+                lane, = (lane for lane, (lo, hi) in lane_bounds.items() if lo <= y <= hi)
+                counts[deploy, lane] += 1
+                wave_points[deploy] += t.points[role]
+            self.assertEqual(counts, expected_counts)
+            self.assertEqual(wave_points, {0: 58, 90: 30, 180: 14})
+            self.assertEqual(tuple(len(getattr(t, side + "_" + k)) for k in ("infantry", "vehicles", "support")),
+                             (34, 9, 3))
+            models = Counter(self.objects[p.mids[r]][1] for r in getattr(t, side + "_vehicles"))
+            self.assertEqual(models, {"panzer4d": 2, "t3476_40": 2, "sdkfz251c": 2, "ba64": 2, "45mm_m37": 1})
 
-        self.assertEqual(models(line, "friendly_infantry"), {"smg_1": 1, "rifleman_1": 3, "mgun_1": 1, "antitank_1": 1})
-        self.assertEqual(models(line, "friendly_support"), {"medic": 1})
-        self.assertEqual(models(armor, "friendly_vehicles"), {"panzer4d": 1, "t3476_40": 1, "45mm_m37": 1})
-        self.assertEqual(len(armor.tactical.friendly_infantry), 4)
-        self.assertEqual(models(logistics, "friendly_infantry"), {"smg_1": 2, "rifleman_1": 2})
-        self.assertEqual(models(logistics, "friendly_vehicles"), {"45mm_m37": 1, "ba64": 1})
-        self.assertEqual(models(logistics, "friendly_support"), {"medic": 1, "blitz3_6_art_ammo": 1})
-        self.assertEqual(models(assault, "friendly_vehicles"), {"panzer4d": 1, "sdkfz251c": 1})
-        self.assertEqual(len(assault.tactical.friendly_infantry), 8)
-        flag, = (n for n in mission_records(assault) if n[:2] == ["Entity", "flag_point_1"])
-        self.assertEqual(float(flag[3][1]), 0)
-        self.assertFalse(any(n[0] == "Player" for n in flag[3:]))
-        for phase, model, score_riders in ((armor, "t3476_40", False), (assault, "sdkfz251c", True)):
-            records = mission_records(phase)
-            for player, roster in ((2, phase.tactical.friendly_infantry), (3, phase.tactical.enemy_infantry)):
-                hull = next(n[2] for n in records if n[:2] == ["Entity", model] and ["Player", str(player)] in n)
-                seats = {n[2][1]: int(n[1], 16) - 0x8000 for n in records if n[0] == "Link" and n[2][0] == hull}
-                for seat in ("seat1", "seat2", "seat3", "seat4"):
-                    self.assertEqual(seats[seat] in {phase.mids[r] for r in roster}, score_riders)
+        scored_mids = {p.mids[r] for r in scored}
+        for hull in (r for r in self.objects.values() if r[1] in ("sdkfz251c", "t3476_40")):
+            passengers = [int(eid, 16) - 0x8000 for eid, (carrier, seat) in links.items()
+                          if carrier == hull[2] and seat.startswith("seat")]
+            self.assertEqual(len(passengers), 4)
+            for rider in passengers:
+                self.assertEqual(rider in scored_mids, hull[1] == "sdkfz251c")
+        for eid, (_, seat) in links.items():
+            if not seat.startswith("seat"):
+                self.assertNotIn(int(eid, 16) - 0x8000, scored_mids)
 
-    def test_both_lines_get_timed_grenades_and_equal_supply(self):
-        line, armor, logistics, assault = m.phases_for("calibration")
-        throws = [(time, a) for time, a in action_timeline(line)[1]
-                  if a[0] == "actor_fire" and ["attack", "position"] in a]
-        self.assertEqual(sorted(time for time, _ in throws), [6, 6, 18, 18])
-        wp = {n[0]: tuple(map(float, n[1][1:3])) for n in m.parse("{mission " + " ".join(line.waypoints) + "}")[1:]}
-        for time in (6, 18):
-            aims = [wp[next(n[1] for n in action if n[0] == "waypoint")] for when, action in throws if when == time]
-            for center in (line.tactical.anchor_xy, line.tactical.enemy_anchor_xy):
-                self.assertAlmostEqual(min(math.dist(center, xy) for xy in aims) / m.SCALE,
-                                       0 if time == 6 else 7, delta=1)
-        for side, anchor in (("a_", "anchor_xy"), ("b_", "enemy_anchor_xy")):
-            for phase, role, dist in ((line, "medic", 24), (logistics, "medic", 26), (logistics, "truck", 40)):
-                obj = unit_records(phase)[phase.mids[side + role]]
-                xy = tuple(map(float, obj[3][1:]))
-                self.assertAlmostEqual(math.dist(xy, getattr(phase.tactical, anchor)) / m.SCALE, dist, delta=1)
-            records = mission_records(logistics)
-            for role in ("smg1", "smg2", "rifle1", "rifle2"):
-                eid = hex(0x8000 + logistics.mids[side + role])
-                box = next(n[2] for n in records if n[:2] == ["Inventory", eid])
-                self.assertIn(["clear"], box)
-                self.assertEqual(sum("filled" in item and ["user", "hand_right"] in item for item in box[2:]), 1)
-                for item in box[2:]:
-                    if "ammo" in item:
-                        self.assertLessEqual(int(item[item.index("ammo") + 1]), 5)
-        self.assertEqual(" ".join(logistics.objects).count('{Extender "supply_zone" {enabled}{current 0}}'), 2)
+    def test_symmetric_orders_cover_and_low_ammo(self):
+        p, t = self.phase, self.roster
+        waypoints = {n[0]: tuple(map(float, n[1][1:3]))
+                     for n in m.parse("{mission " + " ".join(p.waypoints) + "}")[1:]}
+        orders = {"a": [], "b": []}
+        grants = {"a": [], "b": []}
+        for when, action in action_timeline(p)[1]:
+            if action[0] not in ("inventory", "actor_to_waypoint"):
+                continue
+            tag = next(n[1] for n in action[1] if n[0] == "tag")
+            side, role = tag.removeprefix(f"h{p.index}_").split("_", 1)
+            if action[0] == "inventory":
+                grants[side].append((when, role, action[2:]))
+            else:
+                x, y = waypoints[next(n[1] for n in action if n[0] == "waypoint")]
+                orders[side].append((when, role, x if side == "a" else -x, y))
+        self.assertEqual(sorted(orders["a"]), sorted(orders["b"]))
+        self.assertEqual(sorted(grants["a"]), sorted(grants["b"]))
+        for when, model in ((0, "north_tank"), (90, "north2_tank")):
+            self.assertIn((when, model, [["action", "add"], ["item", "repair_kit"], ["amount", "4"]]), grants["a"])
+        self.assertIn((0, "south_donor", [["action", "add"], ["item", "mgun_ger", "belt", "ammo"],
+                                          ["amount", "100"]]), grants["a"])
+        final_orders = [(x, y) for when, _, x, y in orders["a"] if when >= 180]
+        self.assertGreaterEqual(len(final_orders), 2)
+        self.assertTrue(all(math.hypot(x, y - 320) < 100 for x, y in final_orders))
+        for start, stop in ((0, 90), (90, 180), (180, 300)):
+            self.assertTrue(any(start <= when < stop for when, *_ in orders["a"]))
+        south = {obj[1] for obj in self.objects.values() if -20 <= float(obj[3][2]) <= 180}
+        self.assertTrue({"sandbag_structured_straight", "dutch_brick_wall01_straight_short", "fence-wood_3"} <= south)
+        self.assertEqual(" ".join(p.objects).count('{Extender "supply_zone" {enabled}{current 0}}'), 2)
+        kits = {r[1]: r[2] for r in self.records if r[0] == "Inventory"}
+        linked = {r[1] for r in self.records if r[0] == "Link"}
+        for side in ("a", "b"):
+            def unit(role):
+                return self.objects[p.mids[f"{side}_{role}"]]
+
+            # Medics hold behind rear cover within 36 m of the lane fighting line;
+            # the ammo truck sits >12 m outside its aura yet within resupply radius.
+            for rear, front, meters in (("south_medic", "south_leader", 3.5), ("center_medic", "center_smg1", 8.25),
+                                        ("center_truck", "center_smg1", 19.75)):
+                rear_x = abs(float(unit(rear)[3][1]))
+                front_x = abs(float(unit(front)[3][1]))
+                self.assertAlmostEqual((rear_x - front_x) / 20, meters, delta=1)
+            mg_box = kits[unit("south_mg")[2]]
+            self.assertIn(["clear"], mg_box)
+            spare, = (item for item in mg_box if "belt" in item)
+            self.assertLessEqual(int(spare[4]), 5)
+        for team in ("friendly", "enemy"):
+            loads = []
+            for role in getattr(t, team + "_infantry"):
+                obj = self.objects[p.mids[role]]
+                if obj[2] in linked or t.waves[role] or not 200 <= float(obj[3][2]) <= 440:
+                    continue
+                kit = kits[obj[2]]
+                self.assertIn(["clear"], kit)
+                self.assertFalse(any("ammo" in item for item in kit))
+                weapon, = [item[1] for item in kit if "filled" in item and ["user", "hand_right"] in item]
+                loads.append(weapon)
+            self.assertEqual(Counter(loads), {"mp40_unfolded": 2, "k98": 2})
 
     def test_stock_archives_and_baked_terrain(self):
         try:
             game = cli.game_dir()
         except (FileNotFoundError, ValueError):
             self.skipTest("requires local Gates of Hell stock archives (GOH_GAME_DIR)")
-        for suite in ("full", "calibration"):
+        for suite in ("full", "e2e"):
             with self.subTest(suite=suite):
                 m.check_stock(game, m.generate(suite))
 
@@ -764,148 +787,120 @@ class GraderTests(unittest.TestCase):
                 self.assertEqual(cli.main(args), 1)
 
 
-class TacticalGradeTests(unittest.TestCase):
+class E2EGradeTests(unittest.TestCase):
     def setUp(self):
-        self.rows, self.markers = tactical_fixture()
-        self.phases = m.phases_for("calibration")
+        self.rows, self.markers = e2e_fixture()
+        self.phase, = m.phases_for("e2e")
+        self.roster = self.phase.tactical
 
-    def last(self, phase, role):
-        return next(r for r in reversed(self.rows) if r.get("mid") == phase.mids[role])
+    def last(self, role):
+        return next(r for r in reversed(self.rows) if r.get("mid") == self.phase.mids[role])
 
-    def report(self):
-        return tactical_grade(self.rows, self.markers)
-
-    def test_last_five_sim_seconds_hp_and_scoped_activity(self):
-        line, armor = self.phases[:2]
-        a, b, c = (self.last(line, r) for r in line.tactical.friendly_infantry[:3])
-        end = b["sim_tick"]
-        # At 4x speed the stale sample is still inside five wall-clock seconds.
-        for r, ago in ((a, 6), (c, 4)):
-            tick = end - ago * r["ticks_per_second"]
-            r.update(sim_tick=tick, stats_tick=tick, ms=tick * 25)
-        b["hp_ratio"], c["hp_ratio"] = 0, .5
-        for role in line.tactical.enemy_infantry[:2]:
-            self.rows.remove(self.last(line, role))
-        self.last(line, "a_medic")["hp_ratio"] = 0
-        self.last(armor, "a_tank")["hp_ratio"] = .4
-        self.last(armor, "a_desant_tank")["hp_ratio"] = 0
-        # Temporary throwers and interior crew must not affect the scored rosters.
-        crew = next(int(n[1], 16) - 0x8000 for n in mission_records(armor)
-                    if n[0] == "Link" and n[2][1] == "driver")
-        armor_end = self.last(armor, "a_tank")["sim_tick"]
-        self.rows.append(observation(crew, armor_end, player=2, hp_ratio=0, ms=armor_end*25, ticks_per_second=10))
-        thrower = next(mid for role, mid in line.mids.items() if "throw" in role)
-        self.rows.append(observation(thrower, end, player=3, hp_ratio=.01, ms=end*25, ticks_per_second=10))
-        counters = {"dodges": 3, "sup_refill": 2, "rep_tt": 1, "recrews": 2, "scav_rearm": 4}
-        self.rows.append(row("stats_delta", end - 10, since_tick=end - 20, counters=counters))
-        self.rows.append(row("stats_delta", 101, since_tick=99, counters={"dodges": 20}))
-        report = self.report()
+    def result(self):
+        report = e2e_grade(self.rows, self.markers)
         self.assertTrue(report["passed"], [c for c in report["checks"] if not c["passed"]])
-        scenarios = report["tactical"]["scenarios"]
-        front = scenarios[line.name]
-        side_a, side_b = (front["sides"][side] for side in ("A", "B"))
-        self.assertEqual((side_a["player"], side_b["player"]), (2, 3))
-        self.assertEqual((side_a["infantry"]["alive"], side_b["infantry"]["alive"]), (4, 4))
-        self.assertEqual((side_a["infantry"]["total"], side_b["infantry"]["total"]), (6, 6))
-        self.assertAlmostEqual(side_a["infantry"]["mean_hp_pct"], 87.5)
-        self.assertAlmostEqual(side_a["infantry"]["remaining_hp_pct"], 350 / 6, delta=.01)
-        self.assertEqual((side_a["support"]["alive"], side_b["support"]["alive"]), (0, 1))
-        self.assertLess(front["score"], 50)
-        for key, value in counters.items():
-            self.assertEqual(front["activity"][key], value)
-        self.assertNotIn("activity", side_a)
-        self.assertNotIn("activity", side_b)
-        hull = scenarios[armor.name]["sides"]["A"]["vehicles"]
-        self.assertEqual((hull["alive"], hull["total"], hull["mean_hp_pct"]), (2, 3, 70))
+        outcome = report["tactical"]["scenarios"][BATTLE_NAME]
+        self.assertEqual(report["tactical"]["overall_score"], outcome["score"])
+        return outcome
 
-    def test_unsampled_early_casualty_and_absent_opposition(self):
-        line = self.phases[0]
-        lost = line.mids[line.tactical.enemy_infantry[0]]
-        self.rows = [r for r in self.rows if r.get("mid") != lost]
-        report = self.report()
-        self.assertTrue(report["passed"], [c for c in report["checks"] if not c["passed"]])
-        side_b = report["tactical"]["scenarios"][line.name]["sides"]["B"]
-        self.assertEqual(side_b["unobserved_roles"], [line.tactical.enemy_infantry[0]])
-        enemy = side_b["infantry"]
-        self.assertEqual((enemy["alive"], enemy["total"]), (5, 6))
-        enemy_mids = {line.mids[r] for k in ROSTERS if k.startswith("enemy") for r in getattr(line.tactical, k)}
-        self.rows = [r for r in self.rows if r.get("mid") not in enemy_mids]
-        invalid = self.report()
-        self.assertFalse(invalid["passed"])
-        self.assertIsNone(invalid["tactical"]["overall_score"])
-
-    def test_live_difficulty_and_ai_control(self):
-        start = "Start mission single/00-bootcamp/02_vehicle-control:0 on difficulty "
-        for difficulty, expected in (("heroic", True), ("easy", False)):
-            log = start + difficulty + " with options []\n" + self.markers
-            report = tactical_grade(self.rows, log)
-            self.assertEqual(report["passed"], expected)
-        line = self.phases[0]
-        self.last(line, line.tactical.enemy_infantry[0])["control"] = 1
-        report = self.report()
-        self.assertFalse(report["passed"])
-        self.assertIsNone(report["tactical"]["overall_score"])
-
-    def test_wipeout_earlier_than_final_window(self):
-        line = self.phases[0]
-        end = self.last(line, line.tactical.friendly_infantry[0])["sim_tick"]
-        for r in self.rows:
-            if r.get("mid") in line.mids.values() and r["sim_tick"] == end:
-                early = end - 100
-                r.update(sim_tick=early, stats_tick=early, ms=early * 25)
-        # No actors remain to emit end-of-phase snapshots. The ordered GEM
-        # markers and on-time next phase distinguish this mutual loss from a stalled run.
-        report = self.report()
-        self.assertTrue(report["passed"], [c for c in report["checks"] if not c["passed"]])
-        result = report["tactical"]["scenarios"][line.name]
-        for side in result["sides"].values():
-            self.assertEqual(side["infantry"]["alive"], 0)
-        self.assertEqual(result["score"], 50)
+    def test_weighted_damage_exchange_and_class_breakdown(self):
+        t = self.roster
+        tank = next(r for r in t.friendly_vehicles if t.points[r] == 10)
+        halftrack = next(r for r in t.friendly_vehicles if t.points[r] == 5)
+        for role, hp in ((tank, 0), (halftrack, .5), (t.enemy_infantry[0], 0),
+                         (next(r for r in t.enemy_support if t.points[r] == 2), 0)):
+            self.last(role)["hp_ratio"] = hp
+        # Explicitly observe a dead interior driver and a reserve rider. Neither belongs in either force.
+        scored_mids = {self.phase.mids[r] for r in t.points}
+        extras = [n[1] for n in mission_records(self.phase) if n[0] == "Link"
+                  and n[2][1] in ("driver", "seat1") and int(n[1], 16) - 0x8000 not in scored_mids]
+        for eid in extras:
+            self.rows.append(observation(int(eid, 16) - 0x8000, 3100, ms=38750, ticks_per_second=10,
+                                         player=2, control=0, hp_ratio=0))
+        self.assertTrue(extras)
+        result = self.result()
+        a, b = (result["sides"][k] for k in ("A", "B"))
+        self.assertEqual((a["player"], b["player"]), (2, 3))
+        for key, expected in (("deployed_pts", 102), ("alive_pts", 92), ("hp_weighted_pts", 89.5),
+                              ("remaining_pts", 91), ("lost_pts", 11)):
+            self.assertAlmostEqual(a["force_value"][key], expected)
+        self.assertAlmostEqual(b["force_value"]["remaining_pts"], 99)
+        self.assertAlmostEqual(result["score"], 50 + 50 * (91 - 99) / 102, delta=.01)
+        self.assertAlmostEqual(a["exchange_ratio"], 3 / 11, delta=.005)
+        self.assertAlmostEqual(b["exchange_ratio"], 11 / 3, delta=.005)
+        for side, totals in ((a, (34, 8, 3)), (b, (33, 9, 2))):
+            for kind, alive, deployed in zip(("infantry", "vehicles", "support"), totals, (34, 9, 3)):
+                self.assertEqual((side[kind]["alive"], side[kind]["total"]), (alive, deployed))
+        self.assertAlmostEqual(a["vehicles"]["remaining_hp_pct"], 100 * 7.5 / 9, delta=.01)
+        self.assertAlmostEqual(a["vehicles"]["mean_hp_pct"], 100 * 7.5 / 8, delta=.01)
 
     def test_exact_parity_and_reciprocal_decisive_wins(self):
-        tied = self.report()
-        self.assertTrue(tied["passed"], tied["checks"])
-        self.assertEqual(tied["tactical"]["overall_score"], 50.0)
-        for result in tied["tactical"]["scenarios"].values():
-            self.assertEqual(result["score"], 50.0)
-        scores = []
-        for losing_team in ("enemy", "friendly"):
-            self.rows, self.markers = tactical_fixture()
-            for phase in self.phases:
-                for group in ("infantry", "vehicles", "support"):
-                    for role in getattr(phase.tactical, losing_team + "_" + group):
-                        self.last(phase, role)["hp_ratio"] = 0
-            report = self.report()
-            self.assertTrue(report["passed"], report["checks"])
-            values = [r["score"] for r in report["tactical"]["scenarios"].values()]
-            overall = report["tactical"]["overall_score"]
-            self.assertAlmostEqual(overall, sum(values) / 4, delta=.01)
-            for score in values + [overall]:
-                with self.subTest(losing_team=losing_team, score=score):
-                    self.assertTrue(80 < score <= 100 if losing_team == "enemy" else 0 <= score < 20)
-            scores.append(overall)
-        self.assertAlmostEqual(sum(scores), 100)
-        table = grader.table(tied)
-        self.assertIn("50.0/100", table)
-        self.assertIn("A (P2)", table)
-        self.assertIn("B (P3)", table)
+        self.assertEqual(self.result()["score"], 50.0)
+        for loser, expected in ((3, 100.0), (2, 0.0)):
+            with self.subTest(loser=loser):
+                for r in self.rows:
+                    if r.get("player") in (2, 3):
+                        r["hp_ratio"] = float(r["player"] != loser)
+                self.assertEqual(self.result()["score"], expected)
 
-    def test_integrity_and_runaway_caps_on_tactical_runs(self):
-        self.assertTrue(self.report()["passed"])  # zero AI activity is valid for vanilla
-        end = self.last(self.phases[0], self.phases[0].tactical.friendly_infantry[0])["sim_tick"]
-        limit = grader.ACTION_LIMITS["crew_total"]
-        self.rows.append(row("stats_delta", end, since_tick=end - 10, counters={"crew_total": limit}))
-        self.assertTrue(self.report()["passed"])
-        self.rows[-1]["counters"]["crew_total"] += 1
-        runaway = self.report()
+    def test_final_five_sim_seconds_and_mutual_wipeout(self):
+        t = self.roster
+        lost, survivor = (self.phase.mids[r] for r in t.friendly_infantry[:2])
+        self.rows = [r for r in self.rows if not ((r.get("mid") == lost and r["sim_tick"] > 3040) or
+                                                  (r.get("mid") == survivor and r["sim_tick"] > 3060))]
+        self.last(t.friendly_infantry[1])["hp_ratio"] = .4
+        a = self.result()["sides"]["A"]["infantry"]
+        self.assertEqual(a["alive"], 33)
+        self.assertAlmostEqual(a["remaining_hp_pct"], 100 * 32.4 / 34, delta=.01)
+        self.rows = [r for r in self.rows if r.get("player") not in (2, 3) or r["sim_tick"] < 2980]
+        wiped = self.result()
+        self.assertEqual(wiped["score"], 50.0)
+        self.assertTrue(all(s["force_value"]["alive_pts"] == 0 for s in wiped["sides"].values()))
+
+    def test_absent_wave_or_opposition_and_missing_individual(self):
+        t = self.roster
+        lost = self.phase.mids[t.friendly_infantry[0]]
+        self.rows = [r for r in self.rows if r.get("mid") != lost]
+        self.assertEqual(self.result()["sides"]["A"]["infantry"]["alive"], 33)
+        final_wave = {self.phase.mids[r] for r in t.points if t.waves[r] == 180}
+        for keep in (lambda r: r.get("mid") not in final_wave, lambda r: r.get("player") != 3):
+            report = e2e_grade([r for r in self.rows if keep(r)], self.markers)
+            self.assertFalse(report["passed"])
+            self.assertIsNone(report["tactical"]["overall_score"])
+
+    def test_activity_shutdown_and_company_runaway_limits(self):
+        limit = grader.E2E_ACTION_LIMITS["crew_total"]
+        self.assertGreater(limit, grader.ACTION_LIMITS["crew_total"])
+        counters = {"crew_total": limit, "tank_face": 3, "natural_event": 4}
+        self.rows.append(row("stats_delta", 3090, ms=38625, since_tick=3080, counters=counters))
+        self.rows.append(row("stats_delta", 101, ms=1262, since_tick=99, counters={"tank_face": 20}))
+        self.assertEqual(self.result()["activity"], counters)
+        shutdown = "ShutdownAndUnload complete recrew=3 rearm=2 heavyPickup=1 corpseLoot=4"
+        report = e2e_grade(self.rows, self.markers, log=LOG + shutdown)
+        self.assertTrue(report["passed"], report["checks"])
+        totals = report["tactical"]["session_field_support_totals"]
+        self.assertEqual(sorted(totals.values()), [1, 2, 3, 4])
+        table = grader.table(report)
+        for token in ("50.0", "A (P2)", "B (P3)", "natural_event", "crew_total"):
+            self.assertIn(token, table)
+        counters["crew_total"] += 1
+        runaway = e2e_grade(self.rows, self.markers)
         self.assertFalse(runaway["passed"])
         self.assertIsNone(runaway["tactical"]["overall_score"])
         self.assertEqual(runaway["runaway_actions"][0]["counter"], "crew_total")
-        self.rows.pop()
-        self.assertFalse(tactical_grade(self.rows, self.markers[:-4])["passed"])
-        self.assertFalse(tactical_grade(self.rows[:-1], self.markers)["passed"])
+
+    def test_run_integrity(self):
+        self.assertFalse(e2e_grade(self.rows, self.markers[:-4])["passed"])
+        self.assertFalse(e2e_grade(self.rows[:-1], self.markers)["passed"])
+        stamp = "Start mission single/00-bootcamp/02_vehicle-control:0 on difficulty {} with options []\n"
+        for setting in ("easy", "heroic"):
+            self.assertEqual(e2e_grade(self.rows, stamp.format(setting) + self.markers)["passed"], setting == "heroic")
+        r = self.last(self.roster.enemy_infantry[0])
+        r["control"] = 1
+        self.assertFalse(e2e_grade(self.rows, self.markers)["passed"])
+        r["control"] = 0
         self.rows[0]["sha256"] = "stale"
-        self.assertFalse(self.report()["passed"])
+        self.assertFalse(e2e_grade(self.rows, self.markers)["passed"])
 
 
 class LaunchTests(unittest.TestCase):
@@ -933,8 +928,31 @@ class LaunchTests(unittest.TestCase):
         with patch.object(launch.time, "sleep"):
             self.assertTrue(launch.stop_game(session.ui, session, session))
 
-    def test_heroic_options_restore_exact_bytes(self):
+    def test_benchmark_graphics_and_exact_restore(self):
+        display = (b'{adapter "NVIDIA GeForce {Virtual}"}{resolution 1920 1080}'
+                   b'{window_mode borderless}{custom_video {preset ultra}{grass}}')
+        heavy = (b'{vertical_sync}{antialiasing temporal}{grass}{dof}{glow}{rim_light}{filmGrain}{specular}'
+                 b'{environment}{lens_refraction}{softIntersection}{fake_translucency}{alphaToCoverage}'
+                 b'{_ssao {mode high}}{lens_effects_options {glare {intensity 1}}}')
+        graphics = (b'{options {video ' + display + heavy + b'{preset ultra}{detail detail_high}'
+                    b'{shadow high}{filtering trilinear}{model_quality high}{fx_quality high}{water_quality high}}'
+                    b'{game {difficulty easy}{fog_of_war fog_on}}{audio {environment}}}')
+        patched = launch.benchmark_options(graphics)
+        self.assertEqual(launch.benchmark_options(patched), patched)
+        self.assertIn(display, patched)
+        self.assertIn(b"{audio {environment}}", patched)
+        root = m.parse("{mission " + patched.decode() + "}")[1]
+        video, game = (next(v[1:] for v in root[1:] if v[0] == k) for k in ("video", "game"))
+        self.assertEqual(game, [["difficulty", "heroic"], ["fog_of_war", "fog_off"]])
+        names = [v[0] for v in video]
+        removed = re.findall(rb"\{([a-zA-Z_]+)", heavy)
+        self.assertTrue(set(n.decode() for n in removed).isdisjoint(names))
+        for key, value in (("preset", "low"), ("detail", "detail_low"), ("shadow", "off"),
+                           ("filtering", "bilinear"), ("model_quality", "low"), ("fx_quality", "low"),
+                           ("water_quality", "low")):
+            self.assertEqual([v for v in video if v[0] == key], [[key, value]])
         originals = (
+            graphics,
             b'{options\r\n {game {difficulty easy}{fog 1}}\r\n {mods "other:0"}\r\n}\r\n',
             b'{options {game {fog 1}}}',
             b'{options {mods "ai_test_harness:0"}}',
@@ -950,12 +968,18 @@ class LaunchTests(unittest.TestCase):
                     self.assertIn(launch.TOKEN, data)
                     launch.profile_mod(options, cli.atomic_write, restore=True)
                     self.assertEqual(options.read_bytes(), original)
+            # Recover the player's bytes even if the game lost its options file while exiting.
+            launch.profile_mod(options, cli.atomic_write, heroic=True)
+            options.unlink()
+            launch.profile_mod(options, cli.atomic_write, restore=True, heroic=True)
+            self.assertEqual(options.read_bytes(), original)
 
-    def test_only_calibration_forces_heroic_and_restores_after_launch_failure(self):
+    def test_only_e2e_forces_heroic_and_restores_after_launch_failure(self):
         with (
             tempfile.TemporaryDirectory() as tmp,
             patch.object(cli, "verify_game"),
             patch.object(m, "check_stock"),
+            patch.object(m, "flat_arena", return_value={}),
             patch.object(launch, "wine_prefix", return_value=([], {})),
             patch.object(launch, "build_helper", return_value="fixture-ui"),
             patch.object(launch.subprocess, "run") as preflight,
@@ -967,14 +991,18 @@ class LaunchTests(unittest.TestCase):
             binaries.mkdir(parents=True)
             for dll in ("goh_ai_mod.dll", "version.dll"):
                 (binaries / dll).touch()
-            original = b"{options\r\n {game {difficulty easy}{fog_of_war fog_realistic}}\r\n}\r\n"
+            original = (b"{options\r\n {game {difficulty easy}{fog_of_war fog_realistic}}\r\n"
+                        b" {video {preset high}{vertical_sync}{resolution 1366 768}{window_mode windowed}}}\r\n")
             options = root / "options.set"
+            ini = binaries / "goh_ai.ini"
+            personal_ini = b"; personal\r\n[testing]\r\nsim_speed=15.5\r\n"
+            ini.write_bytes(personal_ini)
             preflight.return_value.returncode = 3
             backup = options.with_name("options.set.ai_test_harness.bak")
             for suite, difficulty, fow, pending in (
                 ("full", b"easy", b"fog_realistic", False),
-                ("calibration", b"heroic", b"fog_off", False),
-                ("calibration", b"heroic", b"fog_off", True),
+                ("e2e", b"heroic", b"fog_off", False),
+                ("e2e", b"heroic", b"fog_off", True),
             ):
                 with self.subTest(suite=suite, pending=pending):
                     options.write_bytes(original)
@@ -988,18 +1016,27 @@ class LaunchTests(unittest.TestCase):
                     at_launch = []
 
                     def failed_start(*args, **kwargs):
-                        at_launch.append(options.read_bytes())
+                        cfg = configparser.ConfigParser()
+                        cfg.read(ini)
+                        at_launch.append((options.read_bytes(), cfg.getfloat("testing", "sim_speed")))
                         raise OSError("offline launcher fixture")
 
                     spawn.side_effect = failed_start
                     args = SimpleNamespace(profile=options, timeout=5, game_log=root / "game.log",
                                            restore_options=False, suite=suite, speed="normal")
-                    report = launch.run(args, root, {}, cli, evidence=evidence)
+                    speed = 0 if pending else 12.5
+                    settings = cli.overrides([f"testing.sim_speed={speed}"]) if suite == "e2e" else {}
+                    report = launch.run(args, root, settings, cli, evidence=evidence)
                     self.assertFalse(report["passed"])
-                    self.assertEqual(len(at_launch), 1)
-                    self.assertIn(b"{difficulty " + difficulty + b"}", at_launch[0])
-                    self.assertIn(b"{fog_of_war " + fow + b"}", at_launch[0])
-                    if suite == "calibration":
+                    (active_options, active_speed), = at_launch
+                    self.assertEqual(active_speed, speed if suite == "e2e" else 15.5)
+                    self.assertEqual(ini.read_bytes(), personal_ini)
+                    self.assertIn(b"{difficulty " + difficulty + b"}", active_options)
+                    self.assertIn(b"{fog_of_war " + fow + b"}", active_options)
+                    self.assertIn(b"{resolution 1366 768}{window_mode windowed}", active_options)
+                    self.assertEqual(b"{vertical_sync}" in active_options, suite == "full")
+                    if suite == "e2e":
+                        self.assertIn(b"{preset low}", active_options)
                         self.assertEqual(options.read_bytes(), before)
                         self.assertEqual(backup.exists(), pending)
                         if pending:
@@ -1130,7 +1167,9 @@ class SweepTests(unittest.TestCase):
             cfg = configparser.ConfigParser()
             cfg.read_string(launch.render_profile(settings).decode())
             self.assertTrue(cfg.getboolean("telemetry", "enabled"))
-            self.assertEqual(int(cfg["testing"]["ai_player_mask"], 0), 0 if name == "vanilla" else 4)
+            self.assertEqual(cfg.getfloat("testing", "sim_speed"), 8)
+            self.assertLessEqual(cfg.getint("telemetry", "snapshot_interval_ms"), 250)
+            self.assertEqual(int(cfg["testing"]["ai_player_mask"], 0), 0 if name == "vanilla" else 8)
             self.assertEqual(set(cfg["modules"]), module_keys)
             for key in module_keys:
                 self.assertEqual(cfg.getboolean("modules", key), name != "vanilla" and (name, key) != ("local", "recrew_weapons"))
@@ -1151,6 +1190,29 @@ class SweepTests(unittest.TestCase):
                     "bad:testing.ai_player_mask=4294967296", "bad:testing.ai_player_mask=-1"):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 launch.sweep_profiles("default", [bad])
+
+    def test_sim_speed_boundaries_and_validation(self):
+        for speed in (0, .25, 1, 8.5, 20):
+            cfg = configparser.ConfigParser()
+            cfg.read_string(launch.render_profile(launch.sweep_profiles("vanilla", sim_speed=speed)["vanilla"]).decode())
+            self.assertEqual(cfg.has_option("testing", "sim_speed"), speed > 0)
+            if speed:
+                self.assertEqual(cfg.getfloat("testing", "sim_speed"), speed)
+            self.assertEqual(launch.launch_timeout("e2e", cfg, None), 1620 if speed == .25 else 720)
+            self.assertEqual(launch.launch_timeout("e2e", cfg, 60), 60)
+            self.assertEqual(launch.launch_timeout("full", cfg, None), 720)
+            self.assertEqual(float(cli.overrides([f"testing.sim_speed={speed}"])[("testing", "sim_speed")]), speed)
+        for bad in ("-1", "0.24", "20.001", "nan", "inf", "invalid"):
+            with self.subTest(bad=bad):
+                with self.assertRaises(ValueError):
+                    launch.sweep_profiles("default", sim_speed=bad)
+                with self.assertRaises(ValueError):
+                    cli.overrides(["testing.sim_speed=" + bad])
+                with self.assertRaises(ValueError):
+                    launch.render_profile({("testing", "sim_speed"): bad})
+        with patch.object(launch, "sweep") as sweep, contextlib.redirect_stderr(StringIO()):
+            self.assertEqual(cli.main(["sweep", "--sim-speed", "-2"]), 2)
+            sweep.assert_not_called()
 
     def test_original_ini_restored_on_success_and_error(self):
         data = launch.render_profile(launch.sweep_profiles("vanilla")["vanilla"])
@@ -1174,22 +1236,27 @@ class SweepTests(unittest.TestCase):
                             self.assertEqual(ini.read_bytes(), original)
 
     def test_multi_trial_comparison_and_cli_archives(self):
-        rows, markers = tactical_fixture()
+        rows, markers = e2e_fixture()
         worn = deepcopy(rows)
-        line, armor = m.phases_for("calibration")[:2]
-        for mid, hp in ((armor.mids["a_tank"], .5), (armor.mids["a_desant_tank"], 0), (line.mids["a_medic"], 0)):
+        phase, = m.phases_for("e2e")
+        t = phase.tactical
+        tanks = [role for role in t.enemy_vehicles if t.points[role] == 10]
+        medic = next(role for role in t.enemy_support if t.points[role] == 2)
+        for role, hp in ((tanks[0], .5), (tanks[1], 0), (medic, 0)):
+            mid = phase.mids[role]
             next(r for r in reversed(worn) if r.get("mid") == mid)["hp_ratio"] = hp
-        baseline = tactical_grade(worn, markers)
+        baseline = e2e_grade(worn, markers)
         for r in rows:
-            if r.get("player") == 3:
+            if r.get("player") == 2:
                 r["hp_ratio"] = 0
-        victory = tactical_grade(rows, markers)
-        vscore = victory["tactical"]["overall_score"]
-        bscore = baseline["tactical"]["overall_score"]
+        victory = e2e_grade(rows, markers)
+        # Single-side E2E sweeps evaluate from the disadvantaged East side (Side B, Player 3).
+        vscore = round(100 - victory["tactical"]["overall_score"], 2)
+        bscore = round(100 - baseline["tactical"]["overall_score"], 2)
         self.assertGreater(vscore, bscore)
         reports = {"vanilla": [baseline, victory], "custom": [victory, victory]}
         trials = [
-            {"profile": name, "run": index, "report": r}
+            {"profile": name, "run": index, "side": "B", "report": r}
             for name, rr in reports.items() for index, r in enumerate(rr, 1)
         ]
         comparison = launch.compare_trials(trials)
@@ -1197,38 +1264,39 @@ class SweepTests(unittest.TestCase):
         better = comparison["profiles"]["custom"]
         self.assertAlmostEqual(vanilla["score"], (vscore + bscore) / 2, delta=.02)
         self.assertEqual((vanilla["runs"], vanilla["valid_runs"]), (2, 2))
-        # Seven vehicles and three support units deploy per side per trial. In
-        # trial one Side A loses a tank and a medic, and another tank has 50% HP.
+        # Nine vehicles and three support units deploy per side per trial. In
+        # trial one Side B (evaluated East P3) loses a tank and a medic, and another tank has 50% HP.
         self.assertEqual(vanilla["sides"]["A"]["infantry_survival_pct"], 100)
-        self.assertAlmostEqual(vanilla["sides"]["A"]["vehicle_survival_pct"], 100 * 13 / 14, delta=.01)
-        self.assertAlmostEqual(vanilla["sides"]["A"]["vehicle_hp_pct"], 100 * 12.5 / 14, delta=.01)
+        self.assertAlmostEqual(vanilla["sides"]["A"]["vehicle_survival_pct"], 100 * 17 / 18, delta=.01)
+        self.assertAlmostEqual(vanilla["sides"]["A"]["vehicle_hp_pct"], 100 * 16.5 / 18, delta=.01)
         self.assertAlmostEqual(vanilla["sides"]["A"]["support_survival_pct"], 100 * 5 / 6, delta=.01)
         self.assertEqual(vanilla["sides"]["B"]["vehicle_hp_pct"], 50)
-        self.assertAlmostEqual(vanilla["advantage_pp"]["vehicle_hp_pct"], 100 * 12.5 / 14 - 50, delta=.01)
+        self.assertAlmostEqual(vanilla["advantage_pp"]["vehicle_hp_pct"], 100 * 16.5 / 18 - 50, delta=.01)
         self.assertAlmostEqual(better["delta_vs_vanilla"], (vscore - bscore) / 2, delta=.02)
         self.assertEqual(comparison["best"]["overall"], ["custom"])
-        self.assertEqual(comparison["best"]["scenarios"], {s: ["custom"] for s in TACTICAL_NAMES})
-        for s in TACTICAL_NAMES:
-            expected = sum(r["tactical"]["scenarios"][s]["score"] for r in reports["vanilla"]) / 2
-            self.assertAlmostEqual(vanilla["scenarios"][s], expected, delta=.02)
+        self.assertEqual(comparison["best"]["scenarios"], {BATTLE_NAME: ["custom"]})
+        self.assertAlmostEqual(vanilla["scenarios"][BATTLE_NAME], (vscore + bscore) / 2, delta=.02)
         failed = dict(victory, passed=False)
-        invalid = launch.compare_trials([*trials, {"profile": "broken", "run": 1, "report": failed}])
+        invalid = launch.compare_trials([*trials, {"profile": "broken", "run": 1, "side": "B", "report": failed}])
         self.assertEqual(invalid["profiles"]["broken"]["valid_runs"], 0)
         self.assertNotIn("broken", invalid["best"]["overall"])
+        self.assertEqual(cli.run_settings("e2e", {})[launch.PLAYER_MASK], "8")
 
         # Use the real profile writer, installer, and archiver against a temporary
         # game directory. Replace the UI preflight and process session with fixtures.
         counts = Counter()
 
         def fake_session(args, harness, binaries, options, ui, prefix, env, evidence):
-            self.assertEqual((args.suite, args.speed), ("calibration", "fast"))
+            self.assertEqual((args.suite, args.speed), ("e2e", "fast"))
             self.assertTrue(args.restore_options)
             data = (binaries / "goh_ai.ini").read_bytes()
             self.assertEqual(data, (evidence / "goh_ai.ini").read_bytes())
             cfg = configparser.ConfigParser()
             cfg.read_string(data.decode())
             self.assertFalse(cfg.has_option("tuning", "movement_stall_s"))
+            self.assertEqual(cfg.getfloat("testing", "sim_speed"), 12.5)
             name = "custom" if cfg.getboolean("modules", "tactical_infantry") else "vanilla"
+            self.assertEqual(cfg.getint("testing", "ai_player_mask"), 8 if name == "custom" else 0)
             report = dict(reports[name][counts[name]], evidence_dir=str(evidence))
             counts[name] += 1
             return report
@@ -1242,6 +1310,7 @@ class SweepTests(unittest.TestCase):
             patch.object(launch, "_record_run", side_effect=fake_session) as session,
             patch.object(cli, "verify_game"),
             patch.object(m, "check_stock"),
+            patch.object(m, "flat_arena", return_value={}),
         ):
             game = Path(tmp) / "game"
             binaries = game / "binaries/x64"
@@ -1256,7 +1325,7 @@ class SweepTests(unittest.TestCase):
             preflight.return_value.returncode = 3  # UI preflight found no running game
             args = ["sweep", "--game-dir", str(game), "--player-profile", str(options),
                     "--profiles", "vanilla", "--profile", "custom:medic_search_radius_m=30",
-                    "--runs", "2", "--speed", "fast", "--restore-options"]
+                    "--runs", "2", "--speed", "fast", "--sim-speed", "12.5", "--restore-options"]
             out = StringIO()
             with contextlib.redirect_stdout(out):
                 self.assertEqual(cli.main(args), 0)
@@ -1265,9 +1334,12 @@ class SweepTests(unittest.TestCase):
             sweeps = Path(tmp) / "local-work/level1/sweeps"
             archive, = sweeps.glob("sweep-*")
             saved = json.loads((archive / "summary.json").read_text())
+            self.assertEqual(saved["evaluated_side"], "B")
+            self.assertEqual(saved["ai_player_masks"], {"vanilla": 0, "custom": 8})
             self.assertEqual(saved["profiles"], comparison["profiles"])
             self.assertEqual(len(list(archive.rglob("grade.json"))), 4)
             self.assertEqual(len(list(archive.rglob("grade.txt"))), 4)
+            self.assertIn("East−West (pp)", out.getvalue())
             self.assertIn((archive / "comparison.txt").read_text().strip(), out.getvalue())
 
             def interrupted(*unused):
@@ -1288,7 +1360,7 @@ class SweepTests(unittest.TestCase):
     def test_swap_sides_cancels_map_bias_and_flips_masks(self):
         # Simulate a map where West (Side A) loses in vanilla (terrain bias), while modded AI
         # performs better on whichever side it plays so the side-swapped mean beats 50.0 parity.
-        base_rows, markers = tactical_fixture()
+        base_rows, markers = e2e_fixture()
 
         def scaled(p2_hp, p3_hp):
             rows = deepcopy(base_rows)
@@ -1297,17 +1369,24 @@ class SweepTests(unittest.TestCase):
                     r["hp_ratio"] = p2_hp
                 elif r.get("player") == 3:
                     r["hp_ratio"] = p3_hp
-            return tactical_grade(rows, markers)
+            return e2e_grade(rows, markers)
 
         west_vanilla = scaled(0.4, 1.0)
         mod_west = scaled(0.7, 1.0)
         mod_east = scaled(0.2, 1.0)
+        # If the profile changes nothing, a biased physical west score cancels against the east result.
+        self.assertLess(west_vanilla["tactical"]["overall_score"], 50)
+        unchanged = [{"profile": "default", "side": s, "report": west_vanilla} for s in ("A", "B")]
+        neutral = launch.compare_trials(unchanged)["profiles"]["default"]
+        self.assertEqual(neutral["score"], 50)
+        self.assertTrue(all(delta == 0 for delta in neutral["advantage_pp"].values()))
         seen_masks = []
 
         def fake_session(args, harness, binaries, options, ui, prefix, env, evidence):
             cfg = configparser.ConfigParser()
             cfg.read_string((binaries / "goh_ai.ini").read_text())
             mask = cfg.getint("testing", "ai_player_mask")
+            self.assertEqual(cfg.getfloat("testing", "sim_speed"), 8)
             seen_masks.append(mask)
             report = west_vanilla if mask == 0 else (mod_west if mask == 4 else mod_east)
             return dict(report, evidence_dir=str(evidence))
@@ -1321,6 +1400,7 @@ class SweepTests(unittest.TestCase):
             patch.object(launch, "_record_run", side_effect=fake_session),
             patch.object(cli, "verify_game"),
             patch.object(m, "check_stock"),
+            patch.object(m, "flat_arena", return_value={}),
         ):
             game = Path(tmp) / "game"
             binaries = game / "binaries/x64"
@@ -1340,6 +1420,11 @@ class SweepTests(unittest.TestCase):
             saved = json.loads((archive / "summary.json").read_text())
             self.assertTrue(saved["passed"])
             self.assertTrue(saved["swap_sides"])
+            self.assertEqual(len(list(archive.rglob("grade.json"))), 3)
+            self.assertEqual(saved["profiles"]["vanilla"]["runs"], 1)
+            baseline, = (t for t in saved["trials"] if t["profile"] == "vanilla")
+            self.assertEqual(baseline["west_score"], west_vanilla["tactical"]["overall_score"])
+            self.assertEqual(baseline["score"], 50)
             self.assertEqual(saved["ai_player_masks"], {"vanilla": 0, "default": "4,8"})
             self.assertAlmostEqual(saved["profiles"]["vanilla"]["score"], 50.0, delta=0.01)
             expected_default = (mod_west["tactical"]["overall_score"]
@@ -1370,6 +1455,7 @@ class InstallTests(unittest.TestCase):
             tempfile.TemporaryDirectory() as tmp,
             patch.object(cli, "verify_game"),
             patch.object(m, "check_stock"),
+            patch.object(m, "flat_arena", return_value={"map": b"{map\n}\n", "map.net": b"net", "map.ply": b"ply", "map.grs": b"grs"}),
         ):
             game = Path(tmp).resolve()
             ini = game / "binaries/x64/goh_ai.ini"
@@ -1382,12 +1468,15 @@ class InstallTests(unittest.TestCase):
                 {"0.mi", "mod.info"},
             )
             descriptor = game / "mods" / cli.MOD / "mod.info"
-            descriptor.write_text(cli.LEGACY_INFO)
             cli.install(
                 game,
-                "calibration",
+                "e2e",
                 "fast",
-                cli.overrides(["medic_search_radius_m=42", "logging.level=verbose"]),
+                cli.overrides(["medic_search_radius_m=42", "logging.level=verbose", "testing.sim_speed=12"]),
+            )
+            self.assertEqual(
+                {p.name for p in (game / "mods").rglob("*") if p.is_file()},
+                {"0.mi", "mod.info", "map", "map.net", "map.ply", "map.grs"},
             )
             self.assertIn('{name "ai_test_harness"}', descriptor.read_text())
             self.assertIn('{minGameVersion "1.069"}', descriptor.read_text())
@@ -1395,10 +1484,17 @@ class InstallTests(unittest.TestCase):
             self.assertIn("extra_grenades=original", ini.read_text())
             self.assertIn("enabled=true", ini.read_text())
             self.assertIn("medic_search_radius_m=42", ini.read_text())
+            cfg = configparser.ConfigParser()
+            cfg.read(ini)
+            self.assertEqual(cfg.getfloat("testing", "sim_speed"), 12)
+            self.assertEqual(target.read_text(), m.generate("e2e", "fast"))
+            # Switching back to a component suite strips the flat arena files cleanly.
+            cli.install(game, "full", "normal", {})
             self.assertEqual(
-                target.read_text(),
-                m.generate("calibration", "fast", {"medic_search_radius_m": 42}),
+                {p.name for p in (game / "mods").rglob("*") if p.is_file()},
+                {"0.mi", "mod.info"},
             )
+            cli.install(game, "e2e", "fast", {})
             extra = game / "mods" / cli.MOD / "personal"
             extra.touch()
             with self.assertRaises(ValueError):
@@ -1408,6 +1504,77 @@ class InstallTests(unittest.TestCase):
             cli.clean(game)
             self.assertTrue(ini.exists())
             self.assertFalse(target.exists())
+            self.assertFalse((game / "mods" / cli.MOD).exists())
+
+    def test_flat_arena_flatteners_strip_props_and_zero_elevation(self):
+        import struct
+        import zipfile
+
+        stock_map = (
+            "{map\r\n"
+            "\t{Land {Position 0 0}}\r\n"
+            "\t{Clips {\"[auto]\"\r\n"
+            "\t\t{camera -1394.91 -5000 1401.79 5000}\r\n"
+            "\t\t{pather -1394.83 -5000 1400.56 5000}\r\n"
+            "\t}}\r\n"
+            "\t{Ocean {active 0}\r\n"
+            "\t\t{zlevel 0}\r\n"
+            "\t}\r\n"
+            "\t{Entity \"tree_1\" 0x2001\r\n"
+            "\t\t{Position 10 20 30}\r\n"
+            "\t}\r\n"
+            "\t{Inventory 0x4074 {box {clear}}}\r\n"
+            "}\r\n"
+        ).encode("latin1")
+        stock_net = (
+            struct.pack("<BBHHff", 5, 2, 2, 3, 10.0, 15.0)
+            + b"MAP0\x01\x01\x06groundGRID"
+            + b"".join(struct.pack("<hBB", 42, 7, 20) for _ in range(6))
+        )
+        verts = b"".join(
+            struct.pack("<6fI4f", float(i * 50), float(i * -50), 33.5, 0.2, -0.3, 0.9, 0xFF112233, 1.0, 2.0, 3.0, 4.0)
+            for i in range(3)
+        )
+        stock_ply = (
+            b"BPLYBNDS" + struct.pack("<6f", -100.0, -100.0, -30.0, 100.0, 100.0, 110.0)
+            + b"VERT" + struct.pack("<II", 3, 44) + verts
+            + b"IND4" + struct.pack("<IIII", 3, 0, 1, 2)
+        )
+        stock_grs = (
+            b"GRASVER-\x02\x00\x00\x00SEED\x01\x02\x03\x04PMAP"
+            + struct.pack("<I", 1) + b"\x04tall"
+            + struct.pack("<4if", -1, -1, 1, 1, 20.0)
+            + (b"\x01\x02\x03\x04\x05" * 4)
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            game = Path(tmp)
+            pak = game / "resource/map/single.pak"
+            pak.parent.mkdir(parents=True)
+            with zipfile.ZipFile(pak, "w") as z:
+                z.writestr(f"{m.MAP_DIR}/map", stock_map)
+                z.writestr(f"{m.MAP_DIR}/map.net", stock_net)
+                z.writestr(f"{m.MAP_DIR}/map.ply", stock_ply)
+                z.writestr(f"{m.MAP_DIR}/map.grs", stock_grs)
+            arena = m.flat_arena(game)
+
+        out_map = arena["map"].decode("latin1")
+        self.assertNotIn("Entity", out_map)
+        self.assertNotIn("Inventory", out_map)
+        self.assertIn("{zlevel -100}", out_map)
+        self.assertIn("{camera -1400 -5000 1400 5000}", out_map)
+        self.assertIn("{pather -1400 -5000 1400 5000}", out_map)
+
+        grid_off = arena["map.net"].index(b"GRID") + 4
+        self.assertEqual(arena["map.net"][grid_off:], b"\x00\x00\x01\x01" * 6)
+
+        self.assertEqual(struct.unpack_from("<6f", arena["map.ply"], 8), (-100.0, -100.0, -0.5, 100.0, 100.0, 0.5))
+        vstart = arena["map.ply"].index(b"VERT") + 12
+        for i in range(3):
+            x, y, z, nx, ny, nz, rgba, u1, v1, u2, v2 = struct.unpack_from("<6fI4f", arena["map.ply"], vstart + i * 44)
+            self.assertEqual((x, y, z, nx, ny, nz, rgba), (float(i * 50), float(i * -50), 0.0, 0.0, 0.0, 1.0, 0xFF7F7F7F))
+            self.assertEqual((u1, v1, u2, v2), (1.0, 2.0, 3.0, 4.0))
+
+        self.assertEqual(arena["map.grs"][-20:], b"\x00" * 20)
 
     def test_refuses_symlink_or_unknown_mod(self):
         with tempfile.TemporaryDirectory() as tmp:

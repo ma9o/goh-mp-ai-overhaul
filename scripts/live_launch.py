@@ -41,6 +41,12 @@ BUILTIN_PROFILES = {
     "wide": (10, 52, 28, 85, 40, 24, 15),
 }
 PLAYER_MASK = ("testing", "ai_player_mask")
+# West (P2, mask 4) holds a slight first-updater edge on the flat symmetric arena;
+# single-side E2E runs put our modded AI on the disadvantaged East side (P3, mask 8).
+DEFAULT_MODDED_MASK = "8"
+SIM_SPEED = ("testing", "sim_speed")
+# At 20x, 200 ms of wall time spans four simulation seconds.
+E2E_TELEMETRY = {("telemetry", "enabled"): "true", ("telemetry", "snapshot_interval_ms"): "200"}
 
 
 def player_mask(value):
@@ -53,8 +59,21 @@ def player_mask(value):
     return str(mask)
 
 
-def sweep_profiles(selected, custom=()):
+def sim_speed_value(value):
+    try:
+        speed = float(value)
+    except (TypeError, ValueError):
+        speed = math.nan
+    if speed == 0:
+        return "0"
+    if not 0.25 <= speed <= 20:
+        raise ValueError("sim_speed must be 0 (stock) or between 0.25 and 20")
+    return str(speed)
+
+
+def sweep_profiles(selected, custom=(), sim_speed=8.0):
     """Each profile starts from DLL defaults, independent of the player's INI."""
+    speed = sim_speed_value(sim_speed)
     names = [name.strip() for name in selected.split(",")]
     if len(names) != len(set(names)):
         raise ValueError("duplicate profile in --profiles")
@@ -75,6 +94,8 @@ def sweep_profiles(selected, custom=()):
                 raise ValueError(f"invalid or repeated override {item!r}")
             if (section, key) == PLAYER_MASK:
                 value = player_mask(value)
+            elif (section, key) == SIM_SPEED:
+                value = sim_speed_value(value)
             elif section == "modules" and key in MODULE_KEYS:
                 value = value.lower()
                 if value in ("on", "yes", "1"):
@@ -102,14 +123,19 @@ def sweep_profiles(selected, custom=()):
         enabled = "false" if name == "vanilla" else "true"
         profiles[name] = {
             **{("modules", key): enabled for key in MODULE_KEYS},
-            ("telemetry", "enabled"): "true",
-            PLAYER_MASK: "0" if name == "vanilla" else "4",
+            **E2E_TELEMETRY,
+            PLAYER_MASK: "0" if name == "vanilla" else DEFAULT_MODDED_MASK,
+            SIM_SPEED: speed,
             **overrides[name],
         }
     return profiles
 
 
 def render_profile(settings):
+    settings = dict(settings)
+    speed = sim_speed_value(settings.pop(SIM_SPEED, 0))
+    if speed != "0":
+        settings[SIM_SPEED] = speed
     lines = []
     for section in ("telemetry", "testing", "modules", "tuning"):
         lines.append(f"[{section}]")
@@ -162,46 +188,74 @@ def set_mod(data, enabled):
     if not enabled:
         return data
     end = data.rstrip().rfind(b"}")
-    if end < 0 or not data.lstrip().startswith(b"{options") or data[end + 1 :].strip():
+    if end < 0 or not data.removeprefix(b"\xef\xbb\xbf").lstrip().startswith(b"{options") or data[end + 1 :].strip():
         raise ValueError("unexpected options.set root")
     newline = b"\r\n" if b"\r\n" in data else b"\n"
     return data[:end] + b"\t{mods " + TOKEN + b"}" + newline + data[end:]
 
 
-def _set_game_option(data, name, value):
-    """Replace or insert a key inside {options {game ...}}, preserving surrounding syntax."""
+# Direct children of the GEM video block. Keep the adapter, window mode,
+# resolution subtree and options in other sections byte-for-byte intact.
+LOW_VIDEO = {
+    b"preset": b"low", b"detail": b"detail_low", b"shadow": b"off",
+    b"filtering": b"bilinear", b"model_quality": b"low", b"fx_quality": b"low",
+    b"water_quality": b"low", b"bumpType": b"none", b"water_reflection": b"none",
+    b"clip_distance": b"0.25", b"fxaa": b"0", b"hdr": b"0", b"bloom": b"0",
+    b"waterBump": b"0", b"vls": b"0",
+}
+VIDEO_FLAGS = (
+    b"vertical_sync antialiasing grass dof glow rim_light filmGrain specular environment "
+    b"lens_refraction softIntersection fake_translucency alphaToCoverage _ssao lens_effects_options"
+).lower().split()
+
+
+def benchmark_options(data):
+    """Patch the E2E game and video settings, including nested effect blocks."""
+    # Locate whole brace records, skipping braces in strings and GEM comments.
     tokens = rb';[^\r\n]*|"(?:[^"\\]|\\.)*"|\{\s*([^\s{}"]*)|\}'
-    stack = []
     spans = {}
-    root = (b"options",)
-    game = (*root, b"game")
-    wanted = {root, game, (*game, name), (*root, name)}
+    stack = []
     for token in re.finditer(tokens, data):
         if token[1] is not None:
             stack.append((token[1].lower(), token.start()))
-        elif token[0] == b"}" and stack:
-            key = tuple(part for part, _ in stack)
+        elif token[0] == b"}":
+            if not stack:
+                raise ValueError("unbalanced options.set")
+            path = tuple(name for name, _ in stack)
             _, start = stack.pop()
-            if key in wanted:
-                if key in spans:
-                    raise ValueError(f"ambiguous {name.decode()} or game block in options.set")
-                spans[key] = start, token.start()
-    if stack or root not in spans:
+            if len(path) <= 3:
+                spans.setdefault(path, []).append((start, token.end()))
+    root = (b"options",)
+    if stack or len(spans.get(root, ())) != 1:
         raise ValueError("unexpected options.set root")
-    replacement = b"{" + name + b" " + value + b"}"
-    for key in ((*game, name), (*root, name)):
-        if key in spans:
-            start, end = spans[key]
-            return data[:start] + replacement + data[end + 1:]
-    end = spans.get(game, spans[root])[1]
-    block = replacement if game in spans else b"{game " + replacement + b"}"
-    return data[:end] + block + data[end:]
 
-
-def heroic_options(data):
-    """Set Heroic difficulty and disable spectator Fog of War for mirrored AI-vs-AI runs."""
-    data = _set_game_option(data, b"difficulty", b"heroic")
-    return _set_game_option(data, b"fog_of_war", b"fog_off")
+    edits = []
+    for section, settings in ((b"game", {b"difficulty": b"heroic", b"fog_of_war": b"fog_off"}),
+                              (b"video", LOW_VIDEO)):
+        path = (*root, section)
+        parents = spans.get(path, ())
+        if len(parents) > 1:
+            raise ValueError(f"ambiguous {section.decode()} block in options.set")
+        missing = []
+        for name, value in settings.items():
+            block = b"{" + name + b" " + value + b"}"
+            existing = spans.get((*path, name.lower()), ())
+            if existing:
+                edits.append((*existing[0], block))
+                edits.extend((lo, hi, b"") for lo, hi in existing[1:])
+            else:
+                missing.append(block)
+        if missing:
+            addition = b" ".join(missing)
+            if not parents:
+                addition = b"{" + section + b" " + addition + b"}"
+            pos = (parents or spans[root])[0][1] - 1
+            edits.append((pos, pos, addition))
+    for name in VIDEO_FLAGS:
+        edits.extend((lo, hi, b"") for lo, hi in spans.get((*root, b"video", name), ()))
+    for lo, hi, replacement in sorted(edits, reverse=True):
+        data = data[:lo] + replacement + data[hi:]
+    return data
 
 
 def options_backup(path):
@@ -210,27 +264,30 @@ def options_backup(path):
 
 def profile_mod(path, write, restore=False, *, heroic=False):
     backup = options_backup(path)
-    data = path.read_bytes()
     if restore:
         if not backup.exists():
             return
         original = backup.read_bytes()
-        # Preserve settings the player or game changed during the run.
-        # The game serializes the mods block on multiple lines when it exits.
+        data = path.read_bytes() if path.exists() else None
         atoms = re.compile(rb'"(?:[^"\\]|\\.)*"|[{}]|[^\s{}"]+')
-        active = set_mod(original, True)
-        actual = atoms.findall(data)
-        same_options = heroic or actual == atoms.findall(active)
-        if not same_options and b"heroic" in data:
-            same_options = actual == atoms.findall(heroic_options(active))
-        changed = original if same_options else set_mod(data, False)
+        changed = original
+        # Component runs retain unrelated options the game saved on exit.
+        if not heroic and data is not None:
+            active = set_mod(original, True)
+            actual = atoms.findall(data)
+            same_options = actual == atoms.findall(active)
+            if not same_options and b"heroic" in data:
+                same_options = actual == atoms.findall(benchmark_options(active))
+            if not same_options:
+                changed = set_mod(data, False)
         if data != changed:
             write(path, changed)
         backup.unlink()
     else:
+        data = path.read_bytes()
         changed = set_mod(data, True)
         if heroic:
-            changed = heroic_options(changed)
+            changed = benchmark_options(changed)
         if heroic or data != changed:
             if not backup.exists():
                 with backup.open("xb") as out:
@@ -386,13 +443,26 @@ def wait_witness(path, offset, mid, deadline):
     raise ValueError("completion marker arrived without a sampled completion witness")
 
 
+def launch_timeout(suite, config, requested):
+    if requested is not None:
+        return requested
+    if suite == "e2e":
+        try:
+            speed = config.getfloat("testing", "sim_speed", fallback=0)
+        except ValueError:
+            speed = 0  # The native parser also accepts "off".
+        if 0.25 <= speed < 1:
+            return 720 + math.ceil(300 * (1 / speed - 1))
+    return 720
+
+
 def run(a, game, settings, harness, *, evidence=None, profile_ini=None):
     harness.verify_game(game)
     options = profile_options(a.profile)
     binaries = game / "binaries/x64"
     if not all((binaries / name).is_file() for name in ("version.dll", "goh_ai_mod.dll")):
         raise ValueError("install the built version.dll and goh_ai_mod.dll beside call_to_arms.exe")
-    if a.timeout <= 0 or settings.get(("telemetry", "enabled"), "true").lower() not in (
+    if (a.timeout is not None and a.timeout <= 0) or settings.get(("telemetry", "enabled"), "true").lower() not in (
         "true",
         "on",
         "yes",
@@ -444,7 +514,7 @@ def _record_run(a, harness, binaries, options, ui, prefix, env, evidence):
     errors = []
     process = None
     stopped = True
-    benchmark = a.suite == "calibration"
+    benchmark = a.suite == "e2e"
     # A functional run may have left the overlay selected. Preserve its
     # pending backup as well as the profile actually in use at trial entry.
     prior_selection = options.read_bytes() if benchmark and options_backup(options).exists() else None
@@ -458,26 +528,28 @@ def _record_run(a, harness, binaries, options, ui, prefix, env, evidence):
                 stdout=out,
                 stderr=subprocess.STDOUT,
             )
-            deadline = time.monotonic() + a.timeout
+            deadline = time.monotonic() + launch_timeout(a.suite, cfg, a.timeout)
             drive(ui, process, log, a.suite, deadline)
             mid = (90 + harness.mission.SUITES.index(a.suite)) * 100 + 1
             wait_witness(telemetry, offsets[telemetry], mid, deadline)
     except (ValueError, OSError, subprocess.SubprocessError) as exc:
         errors.append(str(exc))
     finally:
-        if process:
-            try:
-                stopped = stop_game(ui, process, log)
-            except (OSError, subprocess.SubprocessError) as exc:
-                errors.append(str(exc))
+        try:
+            if process:
                 stopped = False
-            if not stopped:
-                errors.append("game is still open after the exit request")
-        if stopped and (benchmark or a.restore_options):
-            if prior_selection is not None:
-                harness.atomic_write(options, prior_selection)
-            else:
-                profile_mod(options, harness.atomic_write, restore=True, heroic=benchmark)
+                try:
+                    stopped = stop_game(ui, process, log)
+                except (OSError, subprocess.SubprocessError) as exc:
+                    errors.append(str(exc))
+                if not stopped:
+                    errors.append("game is still open after the exit request")
+        finally:
+            if benchmark or (stopped and a.restore_options):
+                if prior_selection is not None:
+                    harness.atomic_write(options, prior_selection)
+                else:
+                    profile_mod(options, harness.atomic_write, restore=True, heroic=benchmark)
 
     for src, name in ((telemetry, "goh_telemetry.jsonl"), (ai, "goh_ai.log")):
         with (evidence / name).open("wb") as dst:
@@ -517,9 +589,11 @@ def pooled_side(scenarios, side):
         deployed = sum(u["total"] for u in units)
         alive = sum(u["alive"] for u in units)
         metrics[label + "_survival_pct"] = 100 * alive / deployed if deployed else None
-        if group != "support":
-            hp = math.fsum(u["remaining_hp_pct"] * u["total"] for u in units if u["total"])
-            metrics[label + "_hp_pct"] = hp / deployed if deployed else None
+        hp = math.fsum(u["remaining_hp_pct"] * u["total"] for u in units if u["total"])
+        metrics[label + "_hp_pct"] = hp / deployed if deployed else None
+    values = [s["sides"][side] for s in scenarios]
+    metrics["force_value_pct"] = mean(s["force_value"]["remaining_pct"] for s in values) if values else None
+    metrics["exchange_ratio"] = mean(s["exchange_ratio"] for s in values) if values else None
     return metrics
 
 
@@ -550,17 +624,19 @@ def compare_trials(trials, planned_runs=None):
         groups.setdefault(trial["profile"], []).append(trial)
     profiles = {}
     for name, items in groups.items():
+        complete = [t for t in items if t["report"]["passed"] and t["report"]["tactical"]["overall_score"] is not None]
+        # A symmetric control needs one physical launch. Both perspectives
+        # enter its paired comparison, while the archive retains the raw west score.
         valid = [
-            orient_tactical(t["report"]["tactical"], t.get("side", "A"))
-            for t in items
-            if t["report"]["passed"] and t["report"]["tactical"]["overall_score"] is not None
+            orient_tactical(t["report"]["tactical"], side)
+            for t in complete for side in (("A", "B") if t.get("side") == "both" else (t.get("side", "B"),))
         ]
         scenarios = [s for result in valid for s in result["scenarios"].values()]
 
         sides = {side: pooled_side(scenarios, side) for side in ("A", "B")}
         profiles[name] = {
             "runs": len(items),
-            "valid_runs": len(valid),
+            "valid_runs": len(complete),
             "score": mean(t["overall_score"] for t in valid) if valid else None,
             "scenarios": {
                 phase: mean(t["scenarios"][phase]["score"] for t in valid)
@@ -569,7 +645,7 @@ def compare_trials(trials, planned_runs=None):
             "sides": sides,
             "advantage_pp": {
                 key: a - sides["B"][key] if a is not None and sides["B"][key] is not None else None
-                for key, a in sides["A"].items()
+                for key, a in sides["A"].items() if key.endswith("_pct")
             },
         }
 
@@ -591,7 +667,15 @@ def compare_trials(trials, planned_runs=None):
         return [name for name, score in scores.items() if math.isclose(score, top, abs_tol=1e-9)]
 
     phases = dict.fromkeys(phase for p in profiles.values() for phase in p["scenarios"])
+    seen_sides = {t.get("side", "B") for t in trials}
+    evaluated_side = (
+        "both" if "both" in seen_sides
+        else next(iter(seen_sides)) if len(seen_sides) == 1
+        else "mixed" if seen_sides
+        else "B"
+    )
     return {
+        "evaluated_side": evaluated_side,
         "profiles": profiles,
         "best": {
             "overall": winners({name: p["score"] for name, p in eligible.items()}),
@@ -614,27 +698,40 @@ def comparison_table(summary):
 
     if "ai_player_masks" in summary:
         rows.append(["AI player mask", *(str(summary["ai_player_masks"][name]) for name in profiles), ""])
-    metric("Head-to-head score (50 = parity)", (p["score"] for p in profiles.values()), best["overall"])
+    metric("E2E force-value score (50 = parity)", (p["score"] for p in profiles.values()), best["overall"])
     if "vanilla" in profiles:
         metric("Delta vs vanilla", (p["delta_vs_vanilla"] for p in profiles.values()), fmt="+.2f")
-    delta_label = " Modded−Vanilla (pp)" if summary.get("swap_sides") else " A−B (pp)"
+    evaluated = "both" if summary.get("swap_sides") else summary["evaluated_side"]
+    header, delta_label = {
+        "both": (
+            "Mirrored AI vs AI (side-swapped crossover: Modded plays West P2 + East P3 vs Vanilla)",
+            " Modded−Vanilla (pp)",
+        ),
+        "B": (
+            "Mirrored AI vs AI   Evaluated = Side B / Player 3 (east, disadvantaged) vs Side A / Player 2 (west)",
+            " East−West (pp)",
+        ),
+        "A": (
+            "Mirrored AI vs AI   Evaluated = Side A / Player 2 (west) vs Side B / Player 3 (east)",
+            " West−East (pp)",
+        ),
+        "mixed": (
+            "Mirrored AI vs AI   Each profile scored for its modded side (West P2 mask 4 / East P3 mask 8)",
+            " Modded−Vanilla (pp)",
+        ),
+    }[evaluated]
     for label, key in (
+        ("Remaining force value", "force_value_pct"),
         ("Infantry survival", "infantry_survival_pct"),
         ("Infantry HP", "infantry_hp_pct"),
         ("Vehicle survival", "vehicle_survival_pct"),
         ("Vehicle hull HP", "vehicle_hp_pct"),
         ("Support survival", "support_survival_pct"),
+        ("Support HP", "support_hp_pct"),
     ):
         metric(label + delta_label, (p["advantage_pp"][key] for p in profiles.values()), fmt="+.1f")
-    for phase, winners in best["scenarios"].items():
-        metric(phase.removeprefix("tac_").replace("_", " "),
-               (p["scenarios"].get(phase) for p in profiles.values()), winners)
+    metric("Mean force-value exchange ratio", (p["sides"]["A"]["exchange_ratio"] for p in profiles.values()))
     widths = [max(map(len, col)) for col in zip(*rows)]
-    header = (
-        "Mirrored AI vs AI (side-swapped crossover: Modded plays West P2 + East P3 vs Vanilla)"
-        if summary.get("swap_sides")
-        else "Mirrored AI vs AI   Side A = Player 2 (west)   Side B = Player 3 (east)"
-    )
     lines = [header]
     lines.extend("  ".join(v.ljust(w) for v, w in zip(row, widths)).rstrip() for row in rows)
     if "evidence_dir" in summary:
@@ -651,38 +748,60 @@ def sweep(a, game, profiles, harness):
     out = Path(tempfile.mkdtemp(prefix="sweep-", dir=root))
     trials = []
 
+    single_sides = {
+        "A" if (int(s[PLAYER_MASK]) & 12) == 4 else "B"
+        for s in profiles.values()
+        if (int(s[PLAYER_MASK]) & 12) in (4, 8)
+    }
+    default_side = "A" if single_sides == {"A"} else "B"
+
     def profile_sides(settings):
         mask = int(settings[PLAYER_MASK])
-        if swap_sides and mask == 4:
-            return (("A", "4"), ("B", "8"))
-        return (("A", str(mask)),)
+        if swap_sides:
+            if (mask & 12) in (4, 8):
+                other_players = mask & ~12
+                return (("A", str(other_players | 4)), ("B", str(other_players | 8)))
+            return (("both", str(mask)),)
+        if (mask & 12) == 4:
+            return (("A", str(mask)),)
+        if (mask & 12) == 8:
+            return (("B", str(mask)),)
+        return ((default_side, str(mask)),)
 
-    planned = {
-        name: a.runs * (2 if (swap_sides and int(s[PLAYER_MASK]) in (0, 4)) else 1)
-        for name, s in profiles.items()
-    }
+    assignments = {name: profile_sides(s) for name, s in profiles.items()}
+    assigned_sides = {side for sides in assignments.values() for side, _ in sides}
+    evaluated_side = (
+        "both" if swap_sides
+        else next(iter(assigned_sides)) if len(assigned_sides) == 1
+        else "mixed"
+    )
+    planned = {name: a.runs * len(sides) for name, sides in assignments.items()}
     mask_labels = {
-        name: "4,8" if (swap_sides and int(s[PLAYER_MASK]) == 4) else int(s[PLAYER_MASK])
-        for name, s in profiles.items()
+        name: ",".join(mask for _, mask in sides) if len(sides) > 1 else int(sides[0][1])
+        for name, sides in assignments.items()
     }
+
+    def trial_summary(t):
+        report = t["report"]
+        score = report.get("tactical", {}).get("overall_score")
+        compared = score
+        if score is not None and t["side"] != "A":
+            compared = 50.0 if t["side"] == "both" else round(100 - score, 2)
+        return {
+            "profile": t["profile"], "run": t["run"], "side": t["side"],
+            "passed": report["passed"], "west_score": score, "score": compared,
+            "directory": Path(report["evidence_dir"]).name,
+        }
 
     def save():
-        summary = compare_trials(trials, planned if swap_sides else a.runs)
+        summary = compare_trials(trials, planned)
         summary.update(
             suite=a.suite, speed=a.speed, runs_per_profile=a.runs, requested_profiles=list(profiles),
-            difficulty="heroic", swap_sides=swap_sides, ai_player_masks=mask_labels,
+            difficulty="heroic", swap_sides=swap_sides, evaluated_side=evaluated_side, ai_player_masks=mask_labels,
+            sim_speed=a.sim_speed, profile_sim_speeds={n: float(s[SIM_SPEED]) for n, s in profiles.items()},
             evidence_dir=str(out),
             passed=len(trials) == sum(planned.values()) and all(t["report"]["passed"] for t in trials),
-            trials=[{
-                "profile": t["profile"], "run": t["run"], "side": t.get("side", "A"),
-                "passed": t["report"]["passed"],
-                "score": (
-                    orient_tactical(t["report"]["tactical"], t.get("side", "A"))["overall_score"]
-                    if t["report"].get("tactical") and t["report"]["tactical"].get("overall_score") is not None
-                    else None
-                ),
-                "directory": Path(t["report"]["evidence_dir"]).name,
-            } for t in trials],
+            trials=[trial_summary(t) for t in trials],
         )
         harness.atomic_write(out / "summary.json", (json.dumps(summary, indent=2, allow_nan=False) + "\n").encode())
         harness.atomic_write(out / "comparison.txt", (comparison_table(summary) + "\n").encode())
@@ -690,8 +809,8 @@ def sweep(a, game, profiles, harness):
 
     for repetition in range(1, a.runs + 1):
         for name, settings in profiles.items():
-            for side, mask in profile_sides(settings):
-                suffix = f"-side{side}" if (swap_sides and int(settings[PLAYER_MASK]) == 4) else ""
+            for side, mask in assignments[name]:
+                suffix = f"-side{side}" if len(assignments[name]) > 1 else ""
                 evidence = out / f"trial-{repetition:02d}-{name}{suffix}"
                 evidence.mkdir()
                 run_settings = {**settings, PLAYER_MASK: mask}
@@ -712,9 +831,5 @@ def sweep(a, game, profiles, harness):
                     raise
                 archive_grade(report, harness.live_grade)
                 trials.append({"run": repetition, "profile": name, "side": side, "report": report})
-                # For vanilla (mask=0) under swap-sides, mirror both perspectives of the
-                # symmetric baseline so its reference score is exact 50.00 parity.
-                if swap_sides and int(settings[PLAYER_MASK]) == 0:
-                    trials.append({"run": repetition, "profile": name, "side": "B", "report": report})
                 summary = save()
     return summary

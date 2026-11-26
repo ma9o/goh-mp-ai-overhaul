@@ -4,6 +4,7 @@ import json
 import math
 import re
 from collections import Counter, defaultdict
+from statistics import median
 
 if __package__:
     from . import live_mission as mission
@@ -55,8 +56,13 @@ ACTION_LIMITS = {
 }
 
 
+# Five minutes with overlapping formations and reinforcements: allow four
+# short engagement windows at twice the concurrent force size.
+E2E_ACTION_LIMITS = {key: 8 * limit for key, limit in ACTION_LIMITS.items()}
+
+
 def latest(lines):
-    header, rows, tuning, errors = {}, [], {}, []
+    header, rows, errors = {}, [], []
     for i, line in enumerate(lines, 1):
         if not line.strip():
             continue
@@ -69,15 +75,15 @@ def latest(lines):
                     raise ValueError(f"invalid {key}")
             kind = row["event"]
             if kind == "session_start":
-                header, rows, tuning, errors = {}, [], {}, []
+                header, rows, errors = {}, [], []
                 if (
                     type(row.get("local_day_ms")) is not int
                     or not 0 <= row["local_day_ms"] < 86400000
                 ):
                     raise ValueError("invalid local clock")
-                header, rows, tuning, errors = row, [], {}, []
+                header, rows, errors = row, [], []
             elif kind == "scene_reset":
-                rows, errors = list(tuning.values()), []
+                rows, errors = [], []
             elif header:
                 if kind == "module_event" and (
                     not isinstance(row.get("module"), str)
@@ -109,8 +115,6 @@ def latest(lines):
                     for key in ("pos_x", "pos_y", "ticks_per_second"):
                         if not finite(row.get(key)):
                             raise ValueError(f"missing or invalid snapshot {key}")
-                if kind == "module_event" and row.get("module") == "tuning":
-                    tuning[row["action"]] = row
                 rows.append(row)
         except (KeyError, ValueError, TypeError) as e:
             errors.append(f"JSONL line {i}: {e}")
@@ -157,149 +161,107 @@ def desant_transfers(log, header, samples):
     return count
 
 
-def clamp(value):
-    return min(1.0, max(0.0, value))
+def final_sample_window(samples, rate):
+    """Allow a complete observer sampling interval at accelerated simulation speeds."""
+    # stats_tick identifies each wall-clock batch, even if the sampled actor
+    # callbacks span multiple simulation ticks. A sparse fixture or a gap at
+    # wipeout alone cannot establish a regular sampling cadence.
+    batches = sorted({r["stats_tick"] for r in samples})
+    gaps = [b - a for a, b in zip(batches, batches[1:])]
+    interval = median(gaps) if len(gaps) >= 5 else 0
+    # The native 500 ms interval at the maximum 20x speed spans 10 sim s.
+    # Widely separated observations cannot extend the life of a missing unit.
+    if interval > 11 * rate:
+        interval = 0
+    return max(5 * rate, math.ceil(interval * 11 / 10))
 
 
-def tactical_side(p, actors, cutoff, end, player, infantry_roles, vehicle_roles, support_roles, anchor, advance_roles):
+def force_value(p, actors, player, roster, start, end, rate, window):
+    t = p.tactical
+    deployed_pts = alive_pts = hp_weighted_pts = 0
+    seen_waves = set()
     missing = []
     invalid = []
     wrong_control = []
-
-    def survivors(roles, human=None):
-        alive = {}
+    side = {"player": player}
+    for kind, roles in roster:
+        hp_values = []
         for role in roles:
-            samples = actors[p.mids[role]]
+            weight = t.points[role]
+            wave = t.waves[role]
+            deployed_pts += weight
+            # The first combat sample and activation can fall in adjacent
+            # sampling batches. Ignore any hidden pre-reinforcement records.
+            samples = [
+                r for r in actors[p.mids[role]]
+                if start + wave * rate - window <= r["sim_tick"] <= end
+            ]
             own = [r for r in samples if r["player"] == player]
             if not own:
                 missing.append(role)
                 continue
+            seen_waves.add(wave)
             if any(r["control"] != 0 for r in own):
                 wrong_control.append(role)
-            recent = sorted(
-                (r for r in samples if cutoff <= r["sim_tick"] <= end),
-                key=lambda r: (r["sim_tick"], r["ms"]),
-            )
+            recent = sorted((r for r in samples if r["sim_tick"] >= end - window),
+                            key=lambda r: (r["sim_tick"], r["ms"]))
+            # A captured gun no longer contributes to its original side.
             if not recent or recent[-1]["player"] != player:
                 continue
-            # A captured gun no longer contributes to its original team's strength.
-            last = recent[-1]
-            hp = next((r["hp_ratio"] for r in reversed(recent) if finite(r.get("hp_ratio"))), None)
-            observed_type = last.get("is_human")
-            if hp is None or type(observed_type) is not bool or (human is not None and observed_type != human):
+            hp = next((r["hp_ratio"] for r in reversed(recent)
+                       if r["player"] == player and finite(r.get("hp_ratio"))), None)
+            human = recent[-1].get("is_human")
+            if hp is None or type(human) is not bool or (kind != "support" and human != (kind == "infantry")):
                 invalid.append(role)
             elif hp > 0:
-                alive[role] = {**last, "hp_ratio": clamp(hp)}
-        return alive
-
-    def health(alive, deployed):
-        hp = math.fsum(r["hp_ratio"] for r in alive.values())
-        return {
-            "alive": len(alive),
-            "total": len(deployed),
-            "survival_pct": 100 * len(alive) / len(deployed) if deployed else None,
-            "mean_hp_pct": 100 * hp / len(alive) if alive else None,
-            "remaining_hp_pct": 100 * hp / len(deployed) if deployed else None,
+                hp = min(1.0, hp)
+                hp_values.append(hp)
+                alive_pts += weight
+                hp_weighted_pts += weight * hp
+        health, alive, total = math.fsum(hp_values), len(hp_values), len(roles)
+        side[kind] = {
+            "alive": alive, "total": total,
+            "survival_pct": 100 * alive / total if total else None,
+            "remaining_hp_pct": 100 * health / total if total else None,
+            "mean_hp_pct": 100 * health / alive if alive else None,
         }
 
-    infantry = survivors(infantry_roles, True)
-    vehicles = survivors(vehicle_roles, False)
-    support = survivors(support_roles)
-    if p.tactical.role_kind == "defense":
-        distances = [
-            math.hypot(r["pos_x"] - anchor[0], r["pos_y"] - anchor[1]) / mission.SCALE
-            for r in infantry.values()
-        ]
-        distance = sum(distances) / len(distances) if distances else None
-        discipline = {
-            "kind": "defense",
-            "mean_distance_m": distance,
-            "fraction": clamp((44 - distance) / 22) if distance is not None else 0,
-        }
-    else:
-        spawns = dict(zip(p.mids, p.positions))
-        advance, gains = [], []
-        front = infantry | vehicles
-        for role in advance_roles or front:
-            if role not in front:
-                continue
-            r = front[role]
-            start_x = spawns[role][0]
-            path = p.tactical.target_x - start_x
-            if path:
-                dx = r["pos_x"] - start_x
-                advance.append(math.copysign(1, path) * dx / mission.SCALE)
-                gains.append(clamp(dx / path))
-        discipline = {
-            "kind": "assault",
-            "mean_progress_m": sum(advance) / len(advance) if advance else None,
-            "fraction": sum(gains) / len(gains) if gains else 0,
-        }
-
-    issues = []
-    if set(missing).issuperset(infantry_roles + vehicle_roles):
-        issues.append(f"no Player {player} combatants observed")
+    remaining_pts = 0.6 * alive_pts + 0.4 * hp_weighted_pts
+    side["force_value"] = {
+        "deployed_pts": deployed_pts, "alive_pts": alive_pts, "hp_weighted_pts": hp_weighted_pts,
+        "remaining_pts": remaining_pts, "remaining_pct": 100 * remaining_pts / deployed_pts,
+        "lost_pts": deployed_pts - remaining_pts,
+    }
+    side["unobserved_roles"] = missing
+    issues = [f"no Player {player} units observed for the {w}s wave"
+              for w in sorted(set(t.waves.values()) - seen_waves)]
     if invalid:
         issues.append("invalid final HP or actor type: " + ", ".join(invalid))
     if wrong_control:
         issues.append(f"expected AI control on Player {player}: " + ", ".join(wrong_control))
-    return {
-        "player": player,
-        "infantry": health(infantry, infantry_roles),
-        "vehicles": health(vehicles, vehicle_roles),
-        "support": {
-            "alive": len(support), "total": len(support_roles),
-            "survival_pct": 100 * len(support) / len(support_roles) if support_roles else None,
-            "units": {r: r in support for r in support_roles},
-        },
-        "unobserved_roles": missing,
-        "discipline": discipline,
-    }, issues
+    return side, issues
 
 
-def tactical_outcome(p, actors, cutoff, end, delta, extended_counters):
+def battle_outcome(p, actors, start, end, rate, window, delta):
     t = p.tactical
-    side_a, issues_a = tactical_side(p, actors, cutoff, end, t.friendly_player, t.friendly_infantry,
-                                     t.friendly_vehicles, t.friendly_support, t.anchor_xy, t.friendly_advance)
-    side_b, issues_b = tactical_side(p, actors, cutoff, end, t.enemy_player, t.enemy_infantry,
-                                     t.enemy_vehicles, t.enemy_support, t.enemy_anchor_xy, t.enemy_advance)
-    advantages = {}
-    for kind in ("infantry", "vehicles"):
-        a, b = side_a[kind], side_b[kind]
-        advantages[kind] = None
-        if a["total"] and b["total"]:
-            advantages[kind] = (0.6 * (a["survival_pct"] - b["survival_pct"])
-                                + 0.4 * (a["remaining_hp_pct"] - b["remaining_hp_pct"]))
-    combat = [v for v in advantages.values() if v is not None]
-    margin = sum(combat) / len(combat)
-    advantages["support"] = None
-    if t.friendly_support and t.enemy_support:
-        advantages["support"] = side_a["support"]["survival_pct"] - side_b["support"]["survival_pct"]
-        margin = 0.9 * margin + 0.1 * advantages["support"]
-
-    activity = {k: delta[k] for k in (
-        "dodges", "med_rev", "sup_refill", "rep_tt", "rep_full", "crew_total", "smoke_rel",
-        "smoke_veh", "scavenge", "det_inf", "fast_swaps", "tank_face", "crush_escapes",
-        "squad_ammo", "reload", "transport_unloads", "safe_doors", "obj_pursue",
-        "overflow_cover", "settle_holds", "memory_holds", "move_nudge", "convoy_yield",
-    )}
-    # The current observer exports squad-logistics scavenge. Its dedicated
-    # field-support breakdown is only printed at shutdown, across all phases.
-    for k in ("recrews", "scav_rearm", "scav_heavy_pickup", "scav_corpse_loot"):
-        activity[k] = delta.get(k)
-    activity.update({k: delta[k] for k in extended_counters})
-
+    a, issues_a = force_value(p, actors, t.friendly_player, (
+        ("infantry", t.friendly_infantry), ("vehicles", t.friendly_vehicles), ("support", t.friendly_support),
+    ), start, end, rate, window)
+    b, issues_b = force_value(p, actors, t.enemy_player, (
+        ("infantry", t.enemy_infantry), ("vehicles", t.enemy_vehicles), ("support", t.enemy_support),
+    ), start, end, rate, window)
+    av, bv = a["force_value"], b["force_value"]
+    a["exchange_ratio"] = bv["lost_pts"] / max(1, av["lost_pts"])
+    b["exchange_ratio"] = av["lost_pts"] / max(1, bv["lost_pts"])
     return {
-        "score": round(50 + margin / 2, 2),
-        "sides": {"A": side_a, "B": side_b},
-        "advantage_pct": advantages,
-        "activity": activity,
-        "activity_scope": "all players in this phase",
-        "knobs": list(t.knobs),
+        "score": round(50 + (av["remaining_pct"] - bv["remaining_pct"]) / 2, 2),
+        "sides": {"A": a, "B": b}, "activity": dict(sorted(delta.items())),
+        "activity_scope": "all players during the battle",
+        "final_window_s": window / rate if rate > 0 else None,
     }, issues_a + issues_b
 
 
-def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
+def grade(lines, ai_log, game_log=None, suite="full"):
     header, rows, errors = latest(lines)
     checks = []
     scenarios = {}
@@ -350,21 +312,19 @@ def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
     actors = defaultdict(list)
     for r in snapshots:
         actors[r["mid"]].append(r)
-    phases = mission.phases_for(suite, tuning)
+    phases = mission.phases_for(suite)
     expected = [f"{edge}_{p.name}" for p in phases for edge in ("BEGIN", "END")] + [
         "DONE_" + suite
     ]
-    markers_ok = False
-    if game_log is not None or suite == "calibration":
+    if game_log is not None or suite == "e2e":
         markers = re.findall(r"\bGOH_L1_((?:BEGIN|END|DONE)_\w+)\b", game_log or "")
-        markers_ok = markers[-len(expected):] == expected
         check(
             "run",
             "GEM boundaries",
-            markers_ok,
+            markers[-len(expected):] == expected,
             f"{len(markers)} markers, expecting {len(expected)} in order",
         )
-    if suite == "calibration" and "Start mission " in (game_log or ""):
+    if suite == "e2e" and "Start mission " in (game_log or ""):
         # A launched trial always has this line. Standalone marker extracts
         # can still be used to score a synthetic observation stream.
         starts = re.findall(r"\bStart mission single/00-bootcamp/02_vehicle-control:0\b([^\r\n]*)", game_log)
@@ -373,37 +333,22 @@ def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
         check("run", "heroic difficulty", loaded == "heroic", f"game.log reported {loaded}")
 
     witness = actors[(90 + mission.SUITES.index(suite)) * 100 + 1]
-    groups = []
-    for p in phases:
-        roles = p.mids
-        if p.tactical:
-            t = p.tactical
-            roles = (t.friendly_infantry + t.friendly_vehicles + t.friendly_support
-                     + t.enemy_infantry + t.enemy_vehicles + t.enemy_support)
-        groups.append([r for role in roles for r in actors[p.mids[role]]])
-    extended_counters = {
-        k for r in rows if r["event"] == "stats_delta" for k in r["counters"]
-        if k == "recrews" or k.startswith("scav_")
-    }
     previous_end = -1
-    for index, (p, group) in enumerate(zip(phases, groups)):
+    for p in phases:
+        roles = p.tactical.points if p.tactical else p.mids
+        group = [r for role in roles for r in actors[p.mids[role]]]
         ticks = [r["sim_tick"] for r in group]
         start, end = min(ticks, default=-1), max(ticks, default=-1)
         if p.tactical:
-            timed_transition = False
             rates = {r["ticks_per_second"] for r in group}
             rate = rates.pop() if len(rates) == 1 else 0
-            if 1 <= rate <= 1_000_000:
-                # All combatants can die early. GEM deletes the phase, waits
-                # three simulation seconds, then activates the next roster.
-                following = groups[index + 1] if index + 1 < len(groups) else witness
-                expected_end = start + round(p.tactical.duration_s * rate)
-                if following:
-                    next_start = min(r["sim_tick"] for r in following)
-                    prior_end = next_start - round(3 * rate)
-                    timed_transition = markers_ok and abs(prior_end - expected_end) <= 5 * rate
-                    expected_end = min(expected_end, prior_end)
-                end = max(end, expected_end)
+            window = final_sample_window(group, rate)
+            expected_end = start + round(p.tactical.duration_s * rate)
+            # The completion witness activates after 3 s of empty battlefield.
+            # This anchors the terminal observation even after a mutual wipe.
+            witness_end = min((r["sim_tick"] for r in witness), default=-1) - round(3 * rate)
+            timed_transition = bool(witness) and abs(witness_end - expected_end) <= window
+            end = min(expected_end, witness_end) if timed_transition else expected_end
         check(
             p.name,
             "observation window",
@@ -420,9 +365,10 @@ def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
                 delta.update(r["counters"])
         if start < end:
             phase_counts[p.name] = delta
-        high = {k for k, limit in ACTION_LIMITS.items() if delta[k] > limit}
+        limits = E2E_ACTION_LIMITS if p.tactical else ACTION_LIMITS
+        high = {k for k, limit in limits.items() if delta[k] > limit}
         phase_overruns = [
-            {"phase": p.name, "counter": k, "count": delta[k], "limit": ACTION_LIMITS[k]}
+            {"phase": p.name, "counter": k, "count": delta[k], "limit": limits[k]}
             for k in sorted(high)
         ]
         overruns.extend(phase_overruns)
@@ -508,26 +454,15 @@ def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
                     f"{len(samples)} samples, maximum displacement {displacement:.2f} m",
                 )
         if p.tactical:
-            cutoff = end - 5 * rate
-            outcome, issues = tactical_outcome(p, actors, cutoff, end, delta, extended_counters)
+            outcome, issues = battle_outcome(p, actors, start, end, rate, window, delta)
             outcome["runaway_actions"] = phase_overruns
-            evidence = "final window sampled"
-            if not any(cutoff <= r["sim_tick"] <= end for r in snapshots):
-                # A mutual wipe can leave no actor available to call the
-                # observer. The next activation can still bracket the fight.
-                last_by_mid = {r["mid"]: r for r in sorted(group, key=lambda r: (r["sim_tick"], r["ms"]))}
-                if timed_transition:
-                    evidence = "terminal absence confirmed by scheduled next activation"
-                elif last_by_mid and all(finite(r.get("hp_ratio")) and r["hp_ratio"] <= 0
-                                         for r in last_by_mid.values()):
-                    evidence = "all observed actors last sampled dead"
-                else:
-                    issues.append("no final five-second observations or confirmed terminal absence")
             if not 1 <= rate <= 1_000_000:
                 issues.append("invalid simulation clock")
+            if not timed_transition:
+                issues.append(f"expected a completion witness after {p.tactical.duration_s}s of combat")
             missing = sum(len(side["unobserved_roles"]) for side in outcome["sides"].values())
-            check(p.name, "tactical observations", not issues,
-                  " / ".join(issues) or f"both sides sampled, {evidence}, {missing} roles never observed")
+            check(p.name, "battle observations", not issues, " / ".join(issues) or
+                  f"all waves observed on both sides, {missing} individual roles never sampled")
             if issues:
                 outcome["score"] = None
             scenarios[p.name] = outcome
@@ -536,9 +471,9 @@ def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
                 p.name,
                 "runaway/" + k,
                 False,
-                f"{k}={delta[k]} (limit {ACTION_LIMITS[k]})",
+                f"{k}={delta[k]} (limit {limits[k]})",
             )
-    if suite != "calibration":
+    if suite != "e2e":
         vetoes = sum(d["ff_vetoes"] for d in phase_counts.values())
         observations.append(
             {
@@ -592,45 +527,39 @@ def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
                 ("recrews", "scav_rearm", "scav_heavy_pickup", "scav_corpse_loot"),
                 map(int, shutdown.groups())))
         report["tactical"] = tactical
-    else:
-        report["calibration"] = []
     return report
 
 
-def tactical_table(tactical, passed):
-    def strength(item, pct_key):
-        if not item["total"]:
-            return "—"
-        pct = item[pct_key]
-        suffix = f"  {pct:.0f}%" if pct is not None else ""
-        return f"{item['alive']}/{item['total']}{suffix}"
-
-    rows = [("Engagement", "A score", "Side", "Inf alive / HP", "Hull alive / HP", "Support alive", "Position")]
-    activity = []
-    for name, result in tactical["scenarios"].items():
-        score = "—" if result["score"] is None else f"{result['score']:.1f}"
-        for label, side in result["sides"].items():
-            d = side["discipline"]
-            if d["kind"] == "defense":
-                distance, unit = d["mean_distance_m"], "from line"
-            else:
-                distance, unit = d["mean_progress_m"], "advance"
-            rows.append((
-                name if label == "A" else "", score if label == "A" else "", f"{label} (P{side['player']})",
-                strength(side["infantry"], "mean_hp_pct"), strength(side["vehicles"], "mean_hp_pct"),
-                strength(side["support"], "survival_pct"), "—" if distance is None else f"{distance:.1f} m {unit}",
-            ))
-        counts = ", ".join(f"{k}={v}" for k, v in result["activity"].items() if v)
-        activity.append(f"  {name}  {counts or 'no recorded actions'}")
+def battle_table(tactical, passed):
+    result, = tactical["scenarios"].values()
+    rows = [("Side", "Infantry", "Vehicles", "Support", "Alive pts", "HP pts",
+             "Remaining value", "Exchange")]
+    for label, side in result["sides"].items():
+        classes = []
+        for key in ("infantry", "vehicles", "support"):
+            units = side[key]
+            classes.append(f"{units['alive']}/{units['total']} {units['remaining_hp_pct']:.1f}%")
+        value = side["force_value"]
+        rows.append((f"{label} (P{side['player']})", *classes, f"{value['alive_pts']:g}",
+                     f"{value['hp_weighted_pts']:.1f}",
+                     f"{value['remaining_pts']:.1f}/{value['deployed_pts']} ({value['remaining_pct']:.1f}%)",
+                     f"{side['exchange_ratio']:.2f}×"))
     widths = [max(map(len, column)) for column in zip(*rows)]
     lines = ["  ".join(value.ljust(w) for value, w in zip(row, widths)).rstrip() for row in rows]
     overall = tactical["overall_score"]
-    score = f"{overall:.1f}/100" if passed and overall is not None else "unavailable (failed run checks)"
+    score = f"{overall:.2f}/100" if passed and overall is not None else "unavailable (failed run checks)"
+    activity = result["activity"]
+    lines.append("AI activity across both sides")
+    if activity:
+        items = [f"{k}={v}" for k, v in activity.items()]
+        lines.extend("  " + ", ".join(items[i:i + 5]) for i in range(0, len(items), 5))
+    else:
+        lines.append("  No actions recorded")
     if "session_field_support_totals" in tactical:
         totals = tactical["session_field_support_totals"]
-        activity.append("  DLL session totals  " + ", ".join(f"{k}={v}" for k, v in totals.items()))
-    return ["Head-to-head tactical scorecard (50.0 = tie, higher favors Side A)", *lines,
-            f"Overall Tactical Score  {score}", "Recorded AI actions (phase totals across all players)", *activity]
+        lines.append("  DLL shutdown totals  " + ", ".join(f"{k}={v}" for k, v in totals.items()))
+    return [f"E2E force-value score  {score}  (50 = parity, higher favors Side A / West P2)",
+            "Unit classes show survivors/deployed and remaining roster HP.", *lines]
 
 
 def table(report):
@@ -667,7 +596,7 @@ def table(report):
     )
     if "tactical" in report:
         failures = [line for row, line in zip(rows, lines) if row[2] == "FAIL"]
-        lines = [*tactical_table(report["tactical"], report["passed"]), *failures]
+        lines = [*battle_table(report["tactical"], report["passed"]), *failures]
     else:
         summary += f" | authority {status}"
     return "\n".join([*lines, summary])

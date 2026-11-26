@@ -65,6 +65,8 @@ class Observer {
     Writer writer_;
     Files files_;
     bool attached_{};
+    bool speed_applied_{};
+    runtime::Tick last_speed_tick_{};
 
 public:
     bool attach(HMODULE dll, std::string_view verified_sha) {
@@ -111,6 +113,18 @@ public:
             }
             return true;
         });
+        const float sim_speed = config::active().sim_speed;
+        if (sim_speed > 0.0f && (!speed_applied_ || w.now != last_speed_tick_)) {
+            const auto mgr = base + globals.quant_manager;
+            const float target = 1.0f / sim_speed;
+            const float current = read<float>(mgr, 0x50);
+            if (std::isfinite(current) && std::fabs(current - target) > 0.005f) {
+                using FnSetSlowdown = void(__fastcall*)(runtime::Address, runtime::Address, float, float);
+                runtime::native<FnSetSlowdown>(base, runtime::table().fn.set_slowdown)(mgr, mgr, target, 1.0f);
+            }
+            last_speed_tick_ = w.now;
+            speed_applied_ = true;
+        }
         if (!writer_.active()) return;
         if (writer_.stats_due(now))
             writer_.stats(
@@ -122,6 +136,8 @@ public:
     void close() {
         writer_.close();
         attached_ = false;
+        speed_applied_ = false;
+        last_speed_tick_ = 0;
     }
 };
 } // namespace goh::live

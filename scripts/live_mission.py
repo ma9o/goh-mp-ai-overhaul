@@ -9,12 +9,14 @@ from pathlib import Path
 
 SHA = "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a"
 MEMBER = "single/00-bootcamp/02_vehicle-control/0.mi"
+MAP_DIR = "single/00-bootcamp/02_vehicle-control"
+MAP_FILES = ("map", "map.net", "map.ply", "map.grs")
 MI = Path("resource/map") / MEMBER
 SCALE = 20.0
 INF = "infantry_combined_ops"
 ARM = "armor_combined_ops"
 CLOSE = "close_at_and_authority"
-SUITES = ("full", "infantry", "armor", "close_at", "calibration")
+SUITES = ("full", "infantry", "armor", "close_at", "e2e")
 SPEEDS = ("normal", "fast", "very_fast")
 GER = "mp/ger/mid/"
 RUS = "mp/rus/mid/"
@@ -33,9 +35,6 @@ SEATS = {
     "blitz3_6_art_ammo": "driver",
 }
 ENVIRONMENT = "goh/single/02-ger/1944_09_yugoslavia/01"
-# These vehicles are in the baked map itself, outside the .mi overlay.
-PARKED_VEHICLES = {"0x2009": "gaz_fuel", "0x200a": "gaz_fuel",
-                   "0x4074": "blitz3_6", "0x4075": "blitz3_6", "0x4076": "kubelwagen"}
 
 
 def command(name, body=""):
@@ -59,25 +58,26 @@ def overview_cut(name):
     )
 
 
-@dataclass(frozen=True)
+@dataclass
 class Tactical:
-    """Scored roles only. Coordinates are GEM world units, distances use SCALE."""
-    role_kind: str
-    duration_s: int
-    anchor_xy: tuple[float, float]
-    knobs: tuple[str, ...]
-    enemy_anchor_xy: tuple[float, float]
+    """Battle manifest. Named combatants carry their original value through all three waves."""
+    duration_s: int = 300
     friendly_player: int = 2
     enemy_player: int = 3
-    friendly_infantry: tuple[str, ...] = ()
-    friendly_vehicles: tuple[str, ...] = ()
-    friendly_support: tuple[str, ...] = ()
-    enemy_infantry: tuple[str, ...] = ()
-    enemy_vehicles: tuple[str, ...] = ()
-    enemy_support: tuple[str, ...] = ()
-    friendly_advance: tuple[str, ...] = ()
-    enemy_advance: tuple[str, ...] = ()
-    target_x: float | None = None
+    friendly_infantry: list[str] = field(default_factory=list)
+    friendly_vehicles: list[str] = field(default_factory=list)
+    friendly_support: list[str] = field(default_factory=list)
+    enemy_infantry: list[str] = field(default_factory=list)
+    enemy_vehicles: list[str] = field(default_factory=list)
+    enemy_support: list[str] = field(default_factory=list)
+    points: dict[str, int] = field(default_factory=dict)
+    waves: dict[str, int] = field(default_factory=dict)
+
+    def deploy(self, player, role, group, points, wave):
+        side = "friendly" if player == self.friendly_player else "enemy"
+        getattr(self, f"{side}_{group}").append(role)
+        self.points[role] = points
+        self.waves[role] = WAVE_START[wave]
 
 
 @dataclass
@@ -92,6 +92,8 @@ class Phase:
     positions: list = field(default_factory=list)
     mids: dict = field(default_factory=dict)
     tactical: Tactical | None = None
+    mid_base: int | None = None
+    capacity: int = 99
 
     def overview(self):
         xs, ys = zip(*self.positions)
@@ -128,9 +130,10 @@ class Phase:
         linked=False,
         wave="entry",
     ):
-        if role in self.mids or len(self.mids) >= 99:
+        if role in self.mids or len(self.mids) >= self.capacity:
             raise ValueError(f"duplicate role or phase capacity exceeded: {role}")
-        mid = self.index * 100 + len(self.mids) + 1
+        base = self.index * 100 if self.mid_base is None else self.mid_base
+        mid = base + len(self.mids) + 1
         self.mids[role] = mid
         self.positions.append((x, y))
         eid = hex(0x8000 + mid)
@@ -478,13 +481,22 @@ def close_at():
     return p
 
 
-@dataclass(frozen=True)
+WAVE_START = {"entry": 0, "wave2": 90, "wave3": 180}
+VEHICLE_POINTS = {
+    "panzer4d": 10, "t3476_40": 10, "sdkfz251c": 5, "45mm_m37": 5,
+    "ba64": 3, "blitz3_6_art_ammo": 3,
+}
+FRAG = '"m24" "grenade"'
+
+
+@dataclass
 class BattleSide:
-    """Coordinates and headings are authored for the west force and reflected across x=0."""
+    """Author positions and headings on the west side and reflect them across x=0."""
     phase: Phase
     label: str
     player: int
     direction: int
+    wave: str = "entry"
 
     def role(self, name):
         return f"{self.label}_{name}"
@@ -492,199 +504,205 @@ class BattleSide:
     def roles(self, names):
         return tuple(self.role(name) for name in names)
 
-    def x(self, x):
-        return self.direction * x
-
     def yaw(self, degrees):
         return degrees if self.direction == 1 else 180 - degrees
 
-    def human(self, role, breed, x, y, yaw=0, groups=(), **kw):
-        self.phase.human(self.role(role), breed, self.x(x), y, self.player,
-                         yaw=self.yaw(yaw), groups=self.roles(groups), **kw)
+    def human(self, name, breed, x, y, groups=(), **kw):
+        role = self.role(name)
+        self.phase.human(role, breed, self.direction * x, y, self.player, yaw=self.yaw(0),
+                         groups=self.roles(groups), wave=self.wave, **kw)
+        if breed == "medic":
+            self.phase.tactical.deploy(self.player, role, "support", 2, self.wave)
+        else:
+            self.phase.tactical.deploy(self.player, role, "infantry", 1, self.wave)
+        return role
 
-    def vehicle(self, role, model, x, y, yaw=0, groups=(), rider_groups=(), **kw):
-        self.phase.vehicle(self.role(role), model, self.x(x), y, self.player, yaw=self.yaw(yaw),
-                           groups=self.roles(groups), rider_groups=self.roles(rider_groups), **kw)
+    def vehicle(self, name, model, x, y, yaw=0, riders=0, **kw):
+        role = self.role(name)
+        self.phase.vehicle(role, model, self.direction * x, y, self.player, yaw=self.yaw(yaw),
+                           wave=self.wave, riders=riders, **kw)
+        group = "support" if model == "blitz3_6_art_ammo" else "vehicles"
+        self.phase.tactical.deploy(self.player, role, group, VEHICLE_POINTS[model], self.wave)
+        # Halftrack assault seats are visible to the observer. Tank hull riders
+        # can be promoted into invisible crew stations, so they stay crew reserves.
+        if model == "sdkfz251c":
+            for i in range(1, riders + 1):
+                self.phase.tactical.deploy(self.player, f"{role}_seat{i}", "infantry", 1, self.wave)
+        return role
 
-    def cover(self, role, model, x, y, yaw=0):
-        self.phase.add(self.role(role), model, self.x(x), y, yaw=self.yaw(yaw))
+    def cover(self, name, model, x, y, yaw=0):
+        self.phase.add(self.role(name), model, self.direction * x, y, yaw=self.yaw(yaw))
 
-    def advance(self, role, x, y, z):
-        self.phase.advance(self.role(role), self.x(x), y, z)
-
-
-def engagement(name, index, kind, duration, anchor, knobs, infantry, vehicles=(), support=(), advance=()):
-    p = Phase(name, index)
-    a, b = BattleSide(p, "a", 2, 1), BattleSide(p, "b", 3, -1)
-    p.tactical = Tactical(
-        role_kind=kind, duration_s=duration, anchor_xy=anchor, enemy_anchor_xy=(-anchor[0], anchor[1]),
-        knobs=knobs, friendly_player=a.player, enemy_player=b.player,
-        friendly_infantry=a.roles(infantry), enemy_infantry=b.roles(infantry),
-        friendly_vehicles=a.roles(vehicles), enemy_vehicles=b.roles(vehicles),
-        friendly_support=a.roles(support), enemy_support=b.roles(support),
-        friendly_advance=a.roles(advance), enemy_advance=b.roles(advance),
-        target_x=0 if kind == "assault" else None,
-    )
-    return p, (a, b)
+    def advance(self, name, x, y):
+        self.phase.advance(self.role(name), self.direction * x, y, 0)
 
 
-def grenade_line():
-    p, sides = engagement(
-        "tac_infantry_grenade_line", 4, "defense", 65, (-360, 240),
-        ("grenade_danger_radius_m", "medic_search_radius_m", "squad_share_radius_m",
-         "smoke_infantry_cooldown_s", "overflow_cover_radius_m"),
-        infantry=("leader", "rifle1", "rifle2", "donor", "mg", "at"), support=("medic",),
-    )
+def assault_kit(p, role):
+    p.kit(role, '"k98" filled {cell 0 0}', '"panzerfaust_60" "weapon" filled {cell 0 2}{user "hand_right"}',
+          '"rifle_ger" "clip" "ammo" 30 {cell 0 3}')
+    p.inventory(role, AT, 2)
+    p.inventory(role, SMOKE, 2)
+
+
+def assault_halftrack(s, name, x, y):
+    role = s.vehicle(name, "sdkfz251c", x, y, riders=4)
+    assault_kit(s.phase, role + "_seat1")
+    for seat in ("seat2", "seat3", "seat4"):
+        passenger = role + "_" + seat
+        s.phase.inventory(passenger, AT, 2)
+        s.phase.inventory(passenger, SMOKE, 2)
+
+
+def battle_terrain(s):
+    # Symmetric 3-lane obstacle layout on the flat z=0 arena.
+    # South lane: urban CQB walls, sandbags, soft wooden fence, and rear aid cover.
+    s.cover("south_wall", "dutch_brick_wall01_straight_short", -285, 34, yaw=90)
+    s.cover("south_fence", "fence-wood_3", -205, 115)
+    s.cover("south_bags", "sandbag_structured_straight", -110, 30)
+    s.cover("south_mid_wall", "dutch_brick_wall01_straight_short", -110, 100, yaw=90)
+    s.cover("south_inner_wall", "dutch_brick_wall01_straight_short", -68, 155, yaw=90)
+    s.cover("south_aid_wall", "dutch_brick_wall01_straight_short", -395, 75, yaw=90)
+    # East-west sightline dividers keeping center vehicles from immediately sniping south CQB.
+    s.cover("south_div_inner", "dutch_brick_wall01_straight_short", -120, 190)
+    s.cover("south_div_outer", "dutch_brick_wall01_straight_short", -240, 190)
+    # Center lane: flag-flank cover and rear aid-station wall.
+    s.cover("center_bags", "sandbag_structured_straight", -150, 235)
+    s.cover("center_wall", "dutch_brick_wall01_straight_short", -120, 390, yaw=90)
+    s.cover("center_aid_wall", "dutch_brick_wall01_straight_short", -395, 252, yaw=90)
+    # North lane: armor corridor with crushable wooden fences and AT-gun sandbags.
+    s.cover("north_fence", "fence-wood_3", -325, 605)
+    s.cover("north_bags", "sandbag_structured_straight", -240, 485)
+    s.cover("north_flank_fence", "fence-wood_3", -200, 675)
+    s.cover("north_at_bags", "sandbag_structured_straight", -390, 688)
+
+
+def first_wave(s):
+    p = s.phase
+    south = ("south_squad",)
+    s.human("south_leader", "smg_1", -380, 75, groups=south)
+    for name, y in (("south_rifle1", 15), ("south_rifle2", 142), ("south_donor", 107)):
+        role = s.human(name, RIFLE, -385, y, groups=south)
+        p.inventory(role, SMOKE, 2)
+        p.inventory(role, FRAG, 2)
+    p.inventory(s.role("south_donor"), BELT, 100)
+    mg = s.human("south_mg", "mgun_1", -410, 89, groups=south)
+    p.kit(mg, '"mg34_belt" {cell 0 0}{user "hand_right"}', f"{BELT} 3 {{cell 0 3}}")
+    assault_kit(p, s.human("south_at", "antitank_1", -385, 171, groups=south))
+    p.squad(s.role("south_squad"))
+    # Protected aid station 19.5 m behind the South fighting line (inside 36 m medic radius).
+    s.human("south_medic", "medic", -450, 75, mode="hold")
+
+    for i, name in enumerate(("smg1", "rifle1", "smg2", "rifle2")):
+        smg = i % 2 == 0
+        role = s.human("center_" + name, "smg_1" if smg else RIFLE, -285, 210 + 28*i,
+                       groups=("center_front",))
+        # Replace the entire breed inventory. Only the loaded 32-round MP40
+        # magazine or five K98 rounds are available until the unit resupplies.
+        weapon = "mp40_unfolded" if smg else "k98"
+        p.kit(role, f'"{weapon}" filled {{cell 0 0}}{{user "hand_right"}}',
+              '"bandage_ger" 2 {cell 3 2}')
+    p.squad(s.role("center_front"))
+    s.human("center_medic", "medic", -450, 252, mode="hold")
+    s.vehicle("center_truck", "blitz3_6_art_ammo", -680, 252, mode="hold",
+              body='{Extender "supply_zone" {enabled}{current 0}}')
+    assault_halftrack(s, "center_halftrack", -620, 340)
+    s.vehicle("center_car", "ba64", -530, 416)
+
+    tank = s.vehicle("north_tank", "panzer4d", -570, 537)
+    p.inventory(tank, '"repair_kit"', 4)
+    s.vehicle("north_desant", "t3476_40", -710, 642, riders=4)
+    s.vehicle("north_gun", "45mm_m37", -430, 688, yaw=-37, mode="hold")
+    for i in range(4):
+        s.human(f"north_screen{i+1}", RIFLE if i % 2 == 0 else "smg_1",
+                -407 - (i % 2)*38, 473 + 33*i, groups=("north_screen",))
+    p.squad(s.role("north_screen"))
+
+
+def second_wave(s):
+    p = s.phase
+    for i, (name, breed) in enumerate((("smg", "smg_1"), ("rifle", RIFLE),
+                                       ("at", "antitank_1"), ("mg", "mgun_1"))):
+        role = s.human("south2_" + name, breed, -1000, 22 + i*42, groups=("south2_squad",))
+        p.inventory(role, SMOKE, 2)
+        p.inventory(role, FRAG, 2)
+        if name == "at":
+            p.inventory(role, AT, 2)
+    p.squad(s.role("south2_squad"))
+    assault_halftrack(s, "center2_halftrack", -990, 344)
+    s.vehicle("center2_car", "ba64", -1020, 428)
+    tank = s.vehicle("north2_tank", "panzer4d", -1085, 569)
+    p.inventory(tank, '"repair_kit"', 4)
+    for i in range(4):
+        s.human(f"north2_escort{i+1}", RIFLE if i % 2 == 0 else "smg_1",
+                -973 - (i % 2)*38, 478 + i*29, groups=("north2_escort",))
+    p.squad(s.role("north2_escort"))
+
+
+def third_wave(s):
+    s.vehicle("north3_desant", "t3476_40", -1115, 668, riders=4)
+    for i in range(4):
+        role = s.human(f"north3_assault{i+1}", "antitank_1" if i == 0 else "smg_1",
+                       -985 - (i % 2)*34, 599 + i*31, groups=("north3_assault",))
+        if i == 0:
+            assault_kit(s.phase, role)
+        else:
+            s.phase.inventory(role, SMOKE, 2)
+            s.phase.inventory(role, AT, 2)
+    s.phase.squad(s.role("north3_assault"))
+
+
+def e2e():
+    p = Phase("e2e_combined_arms_battle", 4, tactical=Tactical(), mid_base=4000, capacity=500)
+    sides = (BattleSide(p, "a", 2, 1), BattleSide(p, "b", 3, -1))
+    p.objective("center", 0, 320, player=None)
     for s in sides:
-        s.human("leader", "smg_1", -360, 205, groups=("squad",))
-        for role, y in (("rifle1", 110), ("rifle2", 328), ("donor", 370)):
-            s.human(role, RIFLE, -360, y, groups=("squad",))
-            p.inventory(s.role(role), SMOKE, 2)
-            p.inventory(s.role(role), '"m24" "grenade"', 2)
-        p.inventory(s.role("donor"), BELT, 100)
-        s.human("mg", "mgun_1", -360, 240, groups=("squad",))
-        p.kit(s.role("mg"), '"mg34_belt" {cell 0 0}{user "hand_right"}', f"{BELT} 3 {{cell 0 3}}")
-        s.human("at", "antitank_1", -360, 158, groups=("squad",))
-        p.inventory(s.role("at"), AT, 2)
-        s.human("medic", "medic", -840, 240)
-        s.cover("sandbags", "sandbag_structured_straight", -332, 195)
-        s.cover("sandbags_south", "sandbag_structured_straight", -332, 123)
-        s.cover("fence", "fence-wood_3", -332, 341)
-        p.squad(s.role("squad"))
-        s.human("thrower", RIFLE, -20, 280, mode="hold", fire="hold",
-                wave="grenadiers", body="{Impregnability full}")
-        p.kit(s.role("thrower"), '"f1" "grenade" 2 {cell 0 0}{user "hand_right"}')
-    # Each grenadier is just inside the stock F1's 20.7 m range from the
-    # opposite MG. Height pairs come from map.net at the two mirrored aim points.
-    for wait, enemy_x, heights in ((6, 360, (3, 1)), (10, 220, (-2, 9))):
-        p.actions.append(delay(wait))
-        p.reveal("grenadiers")
-        for s, z in zip(sides, heights):
-            p.act("actor_state", s.role("thrower"), "{fire_mode open}")
-            p.act("actor_fire", s.role("thrower"),
-                  "{attack position}" + p.point(s.x(enemy_x), 240, z) + "{burst_mode once}{time 2}")
-        p.actions.append(delay(2))
-        for s in sides:
-            p.act("actor_state", s.role("thrower"), "{fire_mode hold}")
-        p.act("entity_state", "grenadiers", "{inactive on}")
-    p.act("delete", "grenadiers", "")
-    p.actions.append(delay(45))
+        battle_terrain(s)
+        first_wave(s)
+        s.advance("south_squad", -60, 86)
+        s.advance("center_front", -150, 245)
+        s.advance("north_screen", -45, 490)
+    # Armor follows the forward screen. Staggered waypoints keep the two
+    # vehicles in each lane off one another's destinations.
+    p.actions.append(delay(3))
+    for s in sides:
+        s.advance("center_car", -68, 414)
+        s.advance("north_tank", -60, 545)
+    p.actions.append(delay(4))
+    for s in sides:
+        s.advance("center_halftrack", -62, 340)
+        s.advance("north_desant", -70, 634)
+
+    p.actions.append(delay(83))  # t=90, first reinforcements
+    p.reveal("wave2")
+    for s in sides:
+        s.wave = "wave2"
+        second_wave(s)
+        s.advance("south2_squad", -15, 122)
+        s.advance("north2_escort", -75, 518)
+    p.actions.append(delay(3))
+    for s in sides:
+        s.advance("center2_car", -165, 414)
+        s.advance("north2_tank", -170, 569)
+    p.actions.append(delay(4))
+    for s in sides:
+        s.advance("center2_halftrack", -150, 349)
+
+    p.actions.append(delay(83))  # t=180, final push off the northern flank
+    p.reveal("wave3")
+    for s in sides:
+        s.wave = "wave3"
+        third_wave(s)
+        s.advance("north3_assault", -20, 322)
+    p.actions.append(delay(4))
+    for s in sides:
+        s.advance("north3_desant", -65, 295)
+    p.actions.append(delay(116))
     return p
 
 
-def flank_ambush():
-    screen = tuple(f"screen{i + 1}" for i in range(4))
-    p, sides = engagement(
-        "tac_armor_flank_ambush", 5, "assault", 75, (-390, 115),
-        ("tank_facing_min_angle_deg", "smoke_vehicle_cooldown_s", "tank_memory_hold_s",
-         "cannon_settle_max_s", "crew_fill_emit_backoff_s"),
-        infantry=screen, vehicles=("tank", "desant_tank", "gun"), advance=(*screen, "tank", "desant_tank"),
-    )
-    for s in sides:
-        s.vehicle("tank", "panzer4d", -390, 115)
-        p.inventory(s.role("tank"), '"repair_kit"', 4)
-        # Each hull rider is a crew reserve. Interior stations are invisible to the observer.
-        s.vehicle("desant_tank", "t3476_40", -500, 305, riders=4)
-        # The gun bears on the opposing Panzer at 37 degrees across its route.
-        s.vehicle("gun", "45mm_m37", -350, 670, yaw=-37, mode="hold")
-        for i, role in enumerate(screen):
-            s.human(role, RIFLE if i % 2 == 0 else "smg_1",
-                    -305 - 20 * (i % 2), 155 + 45 * i, groups=("screen",))
-        s.advance("tank", 0, 115, -6)
-        s.advance("desant_tank", 0, 305, -5)
-        s.advance("screen", 0, 215, -6)
-    p.actions.append(delay(75))
-    return p
-
-
-def sustained_logistics():
-    frontline = ("smg1", "rifle1", "smg2", "rifle2")
-    p, sides = engagement(
-        "tac_sustained_logistics", 6, "defense", 85, (-260, 260),
-        ("resupply_search_radius_m", "medic_search_radius_m", "recrew_search_radius_m",
-         "scavenge_search_radius_m", "squad_share_radius_m", "lull_reload_ratio"),
-        infantry=frontline, vehicles=("gun", "car"), support=("medic", "truck"),
-    )
-    for s in sides:
-        for i, role in enumerate(frontline):
-            smg = i % 2 == 0
-            s.human(role, "smg_1" if smg else RIFLE, -260, 175 + 55 * i, groups=("squad", "line"))
-            weapon = "mp40_unfolded" if smg else "k98"
-            # Clear breed ammo. The only rounds available before contact are
-            # the loaded 32-round MP40 magazine or the five in the K98.
-            p.kit(s.role(role), f'"{weapon}" filled {{cell 0 0}}{{user "hand_right"}}',
-                  '"bandage_ger" 2 {cell 3 2}')
-        p.squad(s.role("squad"))
-        s.vehicle("gun", "45mm_m37", -370, 120, mode="hold", groups=("line",))
-        s.vehicle("car", "ba64", -350, 405, groups=("line",))
-        s.human("medic", "medic", -780, 260, mode="hold", groups=("line",))
-        s.vehicle("truck", "blitz3_6_art_ammo", -1060, 260, mode="hold",
-                  body='{Extender "supply_zone" {enabled}{current 0}}')
-    # Both fronts close on the center, break contact for recovery, and
-    # re-engage. Surviving troops and their inventories persist throughout.
-    p.actions.append(delay(2))
-    for s in sides:
-        s.advance("squad", -80, 260, -3)
-        s.advance("car", -130, 405, -2)
-    p.actions.append(delay(22))
-    for s in sides:
-        p.act("actor_state", s.role("line"), "{fire_mode hold}")
-        s.advance("squad", -260, 260, 5)
-        s.advance("car", -350, 405, 6)
-    p.actions.append(delay(20))
-    for s in sides:
-        p.act("actor_state", s.role("line"), "{fire_mode open}")
-        s.advance("squad", -80, 260, -3)
-        s.advance("car", -130, 405, -2)
-    p.actions.append(delay(41))
-    return p
-
-
-def combined_assault():
-    passengers = tuple(f"halftrack_seat{i + 1}" for i in range(4))
-    escorts = tuple(f"escort{i + 1}" for i in range(4))
-    p, sides = engagement(
-        "tac_combined_assault", 7, "assault", 75, (-500, 270),
-        ("movement_stall_s", "convoy_gap_m", "objectives_pursue_radius_m",
-         "attack_detour", "soft_cover_lof", "transport_unload", "safe_disembark",
-         "close_grenade", "fast_weapon_swap", "crush_avoidance"),
-        infantry=(*passengers, *escorts), vehicles=("halftrack", "tank"),
-        advance=(*passengers, *escorts, "halftrack", "tank"),
-    )
-    p.objective("assault", 0, 270, player=None)
-    for s in sides:
-        s.vehicle("halftrack", "sdkfz251c", -500, 265, riders=4, rider_groups=("passengers",))
-        p.kit(s.role(passengers[0]), '"k98" filled {cell 0 0}',
-              '"panzerfaust_60" "weapon" filled {cell 0 2}{user "hand_right"}',
-              '"rifle_ger" "clip" "ammo" 30 {cell 0 3}')
-        for role in passengers:
-            p.inventory(s.role(role), AT, 2)
-            p.inventory(s.role(role), SMOKE, 2)
-        s.vehicle("tank", "panzer4d", -710, 270)
-        for i, role in enumerate(escorts):
-            s.human(role, "smg_1" if i % 2 == 0 else RIFLE,
-                    -440, 145 + 65 * i, groups=("escorts",))
-        s.cover("wall", "dutch_brick_wall01_straight_short", -160, 155, yaw=90)
-        s.cover("wall2", "dutch_brick_wall01_straight_short", -160, 215, yaw=90)
-        s.cover("sandbags", "sandbag_structured_straight", -160, 345)
-        s.advance("halftrack", 0, 270, -6)
-        s.advance("tank", 0, 465, -4)
-        s.advance("escorts", 0, 365, -5)
-    p.actions.append(delay(30))
-    for s, opponent in zip(sides, reversed(sides)):
-        p.act("action", s.role("passengers"),
-              f"{{drop orders}}{{action attack}}{{target {{tag {p.tag(opponent.role('escorts'))}}}}}")
-    p.actions.append(delay(45))
-    return p
-
-
-def calibration():
-    return [grenade_line(), flank_ambush(), sustained_logistics(), combined_assault()]
-
-
-def phases_for(suite, tuning=None):
-    if suite == "calibration":
-        return calibration()
+def phases_for(suite):
+    if suite == "e2e":
+        return [e2e()]
     constructors = {"infantry": infantry, "armor": armor, "close_at": close_at}
     return (
         [f() for f in constructors.values()]
@@ -772,8 +790,6 @@ def validate(text):
     for n in nodes(root):
         for atom in n:
             if isinstance(atom, str) and atom.startswith("0x") and atom not in ids:
-                if n == ["Tags", "harness_all", atom] and atom in PARKED_VEHICLES:
-                    continue
                 raise ValueError(f"undefined entity {atom}")
         if n[0] == "tag" and n[1] not in labels:
             raise ValueError(f"undefined tag {n[1]}")
@@ -790,10 +806,10 @@ def validate(text):
     return objects
 
 
-def generate(suite="full", speed="normal", tuning=None):
+def generate(suite="full", speed="normal"):
     if speed not in SPEEDS or suite not in SUITES:
         raise ValueError("unknown suite or speed")
-    phases = phases_for(suite, tuning)
+    phases = phases_for(suite)
     actions = [
         command(
             "entity_state",
@@ -832,15 +848,14 @@ def generate(suite="full", speed="normal", tuning=None):
     cameras = [p.overview() for p in phases]
     phases.append(witness)
     aliases = '{Players {user 0}{alias 0 "player"}{alias 1 "ai"}'
-    if suite == "calibration":
-        aliases += '{alias 2 "modded_ai"}{alias 3 "vanilla_ai"}'
+    if suite == "e2e":
+        aliases += '{alias 2 "west_ai"}{alias 3 "east_ai"}'
     else:
         aliases += '{alias 2 "enemy"}'
     rows = [
         "{mission",
         *(o for p in phases for o in p.objects),
         *(r for p in phases for r in p.relations),
-        *(f'{{Tags "harness_all" {eid}}}' for eid in PARKED_VEHICLES if suite == "calibration"),
         f'{{Environment "{ENVIRONMENT}"}}',
         "{Helpers",
         "{cameras", *cameras, "}",
@@ -866,22 +881,125 @@ def generate(suite="full", speed="normal", tuning=None):
     return text
 
 
+def flatten_map_text(stock_map):
+    """Strip stock map entities/inventories, sink Ocean below z=0, and symmetrize X clip bounds."""
+    text = stock_map.decode("latin1")
+    newline = "\r\n" if "\r\n" in text else "\n"
+    kept = []
+    depth = 0
+    skipping = False
+    in_ocean = False
+    in_clips = False
+    for line in text.splitlines():
+        s = line.strip()
+        if depth == 1:
+            if s.startswith(("{Entity", "{Inventory")):
+                skipping = True
+            elif s.startswith("{Ocean"):
+                in_ocean = True
+            elif s.startswith("{Clips"):
+                in_clips = True
+        if not skipping:
+            if in_ocean and s.startswith("{zlevel "):
+                line = re.sub(r"\{zlevel\s+[^}]+\}", "{zlevel -100}", line)
+            elif in_clips and s.startswith(("{camera ", "{pather ")):
+                line = re.sub(
+                    r"(\{(?:camera|pather)\s+)[-0-9.]+\s+([-0-9.]+)\s+[-0-9.]+\s+([-0-9.]+)\}",
+                    r"\1-1400 \2 1400 \3}",
+                    line,
+                )
+            kept.append(line)
+        depth += s.count("{") - s.count("}")
+        if depth == 1:
+            skipping = False
+            in_ocean = False
+            in_clips = False
+    if depth != 0:
+        raise ValueError("unbalanced stock map file")
+    return (newline.join(kept) + newline).encode("latin1")
+
+
+def flatten_map_net(stock_net):
+    """Flatten every map.net cell to height=0 and uniform ground material (map0=1, map1=1)."""
+    if stock_net[:2] != b"\x05\x02":
+        raise ValueError("unexpected map.net version header")
+    width, height = struct.unpack_from("<HH", stock_net, 2)
+    grid_off = stock_net.index(b"GRID") + 4
+    if len(stock_net) - grid_off != width * height * 4:
+        raise ValueError("unexpected map.net grid length")
+    return stock_net[:grid_off] + (b"\x00\x00\x01\x01" * (width * height))
+
+
+def flatten_map_ply(stock_ply):
+    """Flatten every BPLY terrain vertex to z=0, normal=(0,0,1), and neutral grey vertex color."""
+    if stock_ply[:8] != b"BPLYBNDS":
+        raise ValueError("unexpected map.ply header")
+    out = bytearray(stock_ply)
+    # BNDS = <6f: minX, minY, minZ, maxX, maxY, maxZ (offsets 8..32).
+    struct.pack_into("<f", out, 16, -0.5)
+    struct.pack_into("<f", out, 28, 0.5)
+    vert_off = stock_ply.index(b"VERT")
+    vcount, vstride = struct.unpack_from("<II", out, vert_off + 4)
+    vstart = vert_off + 12
+    vend = vstart + vcount * vstride
+    if vstride != 44 or vend + 4 > len(out) or out[vend : vend + 4] not in (b"IND4", b"INDX"):
+        raise ValueError("unexpected map.ply VERT layout")
+    flat_tail = struct.pack("<4fI", 0.0, 0.0, 0.0, 1.0, 0xFF7F7F7F)
+    for pos in range(vstart + 8, vend, 44):
+        out[pos : pos + 20] = flat_tail
+    return bytes(out)
+
+
+def flatten_map_grs(stock_grs):
+    """Clear all decorative grass cells from map.grs while keeping its grid bounds intact."""
+    if stock_grs[:4] != b"GRAS":
+        raise ValueError("unexpected map.grs header")
+    pmap = stock_grs.index(b"PMAP") + 4
+    count = struct.unpack_from("<I", stock_grs, pmap)[0]
+    off = pmap + 4
+    for _ in range(count):
+        off += 1 + stock_grs[off]
+    x0, y0, x1, y1, _step = struct.unpack_from("<4if", stock_grs, off)
+    grid_off = off + 20
+    expected = (x1 - x0) * (y1 - y0) * 5
+    if x1 <= x0 or y1 <= y0 or len(stock_grs) - grid_off != expected:
+        raise ValueError("unexpected map.grs grid layout")
+    return stock_grs[:grid_off] + (b"\x00" * expected)
+
+
+def flat_arena(game):
+    """Build the 4 flat z=0 symmetric map overlay files from stock single.pak (read-only)."""
+    pak_path = game / "resource/map/single.pak"
+    with zipfile.ZipFile(pak_path) as pak:
+        return {
+            "map": flatten_map_text(pak.read(f"{MAP_DIR}/map")),
+            "map.net": flatten_map_net(pak.read(f"{MAP_DIR}/map.net")),
+            "map.ply": flatten_map_ply(pak.read(f"{MAP_DIR}/map.ply")),
+            "map.grs": flatten_map_grs(pak.read(f"{MAP_DIR}/map.grs")),
+        }
+
+
 def check_stock(game, text):
     """Validate model/item catalogue, baked terrain and scene-ID namespace from the installed archives."""
     objects = validate(text)
+    flat_e2e = "GOH_L1_DONE_e2e" in text
     resource = game / "resource"
     with zipfile.ZipFile(resource / "map/single.pak") as pak:
         pak.getinfo(MEMBER)
         stock = pak.read(MEMBER.replace("0.mi", "map")).decode("latin1")
         grid = pak.read(MEMBER.replace("0.mi", "map.net"))
+    if flat_e2e:
+        flat_arena(game)
     width, height, ox, oy = struct.unpack_from("<HHff", grid, 2)
     offset = grid.index(b"GRID") + 4
     if len(grid) - offset != width * height * 4 or grid[:2] != b"\x05\x02":
         raise ValueError("unexpected map.net grid")
-    map_models = {eid: model for model, eid in re.findall(r'\{Entity "([^"]+)" (0x[0-9a-f]+)', stock)}
-    for eid, model in PARKED_VEHICLES.items():
-        if f'{{Tags "harness_all" {eid}}}' in text and map_models.get(eid) != model:
-            raise ValueError(f"missing stock map vehicle: {model} {eid}")
+    map_models = (
+        {}
+        if flat_e2e
+        else {eid: model for model, eid in re.findall(r'\{(?:Entity|Human) "([^"]+)" (0x[0-9a-f]+)', stock)}
+    )
+    stock_mids = set() if flat_e2e else {int(mid) for mid in re.findall(r'\{MID\s+(\d+)\}', stock)}
     with zipfile.ZipFile(resource / "gamelogic.pak") as pak:
         logic = set(pak.namelist())
     models = set()
@@ -901,13 +1019,17 @@ def check_stock(game, text):
         )
         if not valid or eid in map_models:
             raise ValueError(f"unknown model or map ID collision: {model} {eid}")
-        pos = next(f for f in fields if f[0] == "Position")
-        x, y = map(float, pos[1:3])
-        heights = [
-            elevation(x + dx, y + dy) for dx in (-10, 0, 10) for dy in (-10, 0, 10)
-        ]
-        if max(heights) - min(heights) > 10:
-            raise ValueError(f"steep spawn footprint at {x}, {y} for {model}")
+        for f in fields:
+            if f[0] == "MID" and int(f[1]) in stock_mids:
+                raise ValueError(f"stock map MID collision: {model} {f[1]}")
+        if not flat_e2e:
+            pos = next(f for f in fields if f[0] == "Position")
+            x, y = map(float, pos[1:3])
+            heights = [
+                elevation(x + dx, y + dy) for dx in (-10, 0, 10) for dy in (-10, 0, 10)
+            ]
+            if max(heights) - min(heights) > 10:
+                raise ValueError(f"steep spawn footprint at {x}, {y} for {model}")
     stuff = {Path(n).name for n in logic if n.startswith("set/stuff/")}
     for n in nodes(parse(text)):
         if n[0] == "item":

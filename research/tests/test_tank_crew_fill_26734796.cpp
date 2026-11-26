@@ -960,7 +960,7 @@ void test_accepted_cannon_transfer_stalls() {
     gun.set_slot(1, "charger", "crew", 0x1000u, "", "", charger.actor.ptr(), 304);
     h.tick(gun.actor.ptr(), 1);
     h.expect_move(++calls, 1, 0);
-    for (unsigned remaining : {5000u, 10000u, 10000u}) {
+    for (unsigned remaining : {5000u, 10000u, 25000u}) {
         // The boarder transiently removes the charger (or blinks gunner occupied), then bounces him back.
         gun.set_slot(1, "charger", "crew", 0x1000u, "", "", 0);
         gun.set_slot(0, "gunner", "crew", 0x1000u, "main", "", charger.actor.ptr(), 304);
@@ -983,7 +983,7 @@ void test_accepted_cannon_transfer_stalls() {
     h.apply_move_effect = true;
     h.tick(gun.actor.ptr(), 1500);
     h.expect_move(++calls, 1, 0);
-    h.tick(gun.actor.ptr(), 10000);
+    h.tick(gun.actor.ptr(), 25000);
     assert(h.moves.size() == calls && cf::stat_transfer_failures == 0);
 
     // A crewman who disappears on the first attempt leaves no permanent retry record.
@@ -994,9 +994,76 @@ void test_accepted_cannon_transfer_stalls() {
     h.expect_move(++calls, 1, 0);
     gun.set_slot(1, "charger", "crew", 0x1000u, "", "", 0);
     h.tick(gun.actor.ptr(), 4999);
-    assert(d::states[0].last_transfer.src == 1);
+    assert(d::states[0].recent_transfers[0].src == 1 || d::states[0].recent_transfers[1].src == 1);
     h.tick(gun.actor.ptr(), 1);
-    assert(d::states[0].last_transfer.src == -1 && h.moves.size() == calls);
+    bool any_charger_entry = false;
+    for (const auto& entry : d::states[0].recent_transfers)
+        if (entry.human_id == 304) any_charger_entry = true;
+    assert(!any_charger_entry && h.moves.size() == calls);
+}
+
+void test_active_placer_request_and_multi_crew_backoff() {
+    Harness h;
+    h.install();
+    FakeTank t;
+    t.setup(h.img.base(), 113, 23, 1);
+    t.set_slot_count(3);
+
+    FakeHuman c1, c2;
+    c1.setup(h.img.base(), 310, 95, 1, t.actor.ptr());
+    c2.setup(h.img.base(), 311, 96, 1, t.actor.ptr());
+    t.set_slot(0, "driver", "crew", 0x1000u, "driver", "", 0);
+    t.set_slot(1, "gunner", "crew", 0x1000u, "main", "", 0);
+    t.set_slot(2, "charger", "crew", 0x1000u, "", "", c1.actor.ptr(), 310);
+
+    // Native ePlacer active request (placer + 0x50..0x58, stride 0x348) holding "charger" (satisfied @ +0x341).
+    Memory<0x60> req_name{};
+    req_name.ename(0x00, "charger");
+    Memory<0x348> req{};
+    req.put<Address>(0x318, req_name.ptr());
+    req.put<Address>(0x320, req_name.ptr() + 0x60);
+    req.put<d::Byte>(0x341, 1);
+    t.placer.put<Address>(0x50, req.ptr());
+    t.placer.put<Address>(0x58, req.ptr() + 0x348);
+
+    // While stock actively requests "charger" (e.g. cannon reload), do NOT yank c1 out of charger.
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+
+    // Once the request is no longer satisfied or released, promotion succeeds cleanly.
+    req.put<d::Byte>(0x341, 0);
+    h.tick(t.actor.ptr());
+    h.expect_move(1, 2, 1);
+    t.placer.put<Address>(0x50, 0);
+    t.placer.put<Address>(0x58, 0);
+
+    // Multi-crew bounce isolation: alternating c1 (charger->gunner) and c2 (charger->driver)
+    // must keep independent retry timers instead of erasing each other.
+    h.tick(t.actor.ptr(), 5000); // Retire c1's earlier successful transfer record.
+    h.apply_move_effect = false;
+    t.set_slot(0, "driver", "crew", 0x1000u, "driver", "", 0);
+    t.set_slot(1, "gunner", "crew", 0x1000u, "main", "", 0);
+    t.set_slot(2, "charger", "crew", 0x1000u, "", "", c1.actor.ptr(), 310);
+    h.tick(t.actor.ptr(), 50);
+    h.expect_move(2, 2, 1); // c1 attempt 1
+    h.tick(t.actor.ptr(), 1500);
+    h.expect_move(3, 2, 1); // c1 attempt 2 -> 5s backoff
+
+    // Second crewman c2 tries charger->driver (gunner temporarily occupied), must NOT erase c1's 5s backoff.
+    t.set_slot(1, "gunner", "crew", 0x1000u, "main", "", c1.actor.ptr(), 310);
+    t.set_slot(2, "charger", "crew", 0x1000u, "", "", c2.actor.ptr(), 311);
+    h.tick(t.actor.ptr(), 1500);
+    h.expect_move(4, 2, 0); // c2 attempt 1
+
+    // Put c1 back in charger and vacate gunner while c1's 5s backoff still has 2s left -> must skip!
+    t.set_slot(1, "gunner", "crew", 0x1000u, "main", "", 0);
+    t.set_slot(2, "charger", "crew", 0x1000u, "", "", c1.actor.ptr(), 310);
+    h.tick(t.actor.ptr(), 1500);
+    assert(h.moves.size() == 4);
+
+    // Once c1's 5s backoff elapses (1500+1500+2000 = 5000ms), c1 retries once -> 10s backoff.
+    h.tick(t.actor.ptr(), 2000);
+    h.expect_move(5, 2, 1);
 }
 
 } // namespace
@@ -1022,6 +1089,7 @@ int main() {
     test_nontank_passengers("armoredcar", "gunner", "");
     test_cannon_guards();
     test_accepted_cannon_transfer_stalls();
+    test_active_placer_request_and_multi_crew_backoff();
     std::printf("test_tank_crew_fill_26734796: ALL PASSED\n");
     return 0;
 }

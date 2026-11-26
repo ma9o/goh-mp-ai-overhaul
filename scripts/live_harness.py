@@ -24,9 +24,6 @@ else:
 
 GAME = "Call to Arms - Gates of Hell"
 MOD = "ai_test_harness"
-LEGACY_INFO = (
-    '{mod\n {name "AI Test Harness (local)"}\n {desc "Level 1 verification - Vehicle Control bootcamp"}\n}\n'
-)
 INFO = (
     '{mod\n {name "ai_test_harness"}\n {desc "Level 1 verification - Vehicle Control bootcamp"}\n'
     ' {minGameVersion "1.069"}\n {maxGameVersion "1.069"}\n}\n'
@@ -78,6 +75,8 @@ def overrides(args):
             section, key = k.split(".")
         elif k == "ai_player_mask":
             section, key = live_launch.PLAYER_MASK
+        elif k == "sim_speed":
+            section, key = live_launch.SIM_SPEED
         elif k in ("enabled", "snapshot_interval_ms", "flush_ms", "filename"):
             section, key = "telemetry", k
         elif k in live_launch.MODULE_KEYS:
@@ -88,6 +87,8 @@ def overrides(args):
             section, key = "tuning", k
         if (section, key) == live_launch.PLAYER_MASK:
             v = live_launch.player_mask(v)
+        elif (section, key) == live_launch.SIM_SPEED:
+            v = live_launch.sim_speed_value(v)
         elif section not in ("telemetry", "modules", "tuning", "logging", "smoke"):
             raise ValueError("unknown section " + section)
         result[section, key] = v
@@ -113,15 +114,21 @@ def atomic_write(path, data):
             temp.unlink(missing_ok=True)
 
 
+def arena_paths(game, base):
+    rel_dir = base.relative_to(game) / mission.MI.parent
+    return {name: safe_child(game, rel_dir / name) for name in mission.MAP_FILES}
+
+
 def overlay(game):
     base = safe_child(game, Path("mods") / MOD)
     info = safe_child(game, base.relative_to(game) / "mod.info")
     file = safe_child(game, base.relative_to(game) / mission.MI)
+    arena = arena_paths(game, base)
     if base.exists():
-        allowed = {info, file, *file.parents}
+        allowed = {info, file, *arena.values(), *file.parents}
         if (
             not info.is_file()
-            or info.read_bytes() not in (INFO.encode(), LEGACY_INFO.encode())
+            or info.read_bytes() != INFO.encode()
             or any(p not in allowed or p.is_symlink() for p in base.rglob("*"))
         ):
             raise ValueError(f"unrecognized contents in {base}")
@@ -155,18 +162,21 @@ def merged_ini(path, settings):
 
 
 def run_settings(suite, overrides):
-    defaults = {("telemetry", "enabled"): "true"}
-    if suite == "calibration":
-        defaults[live_launch.PLAYER_MASK] = "4"
+    defaults = (
+        {**live_launch.E2E_TELEMETRY, live_launch.PLAYER_MASK: live_launch.DEFAULT_MODDED_MASK}
+        if suite == "e2e" else {("telemetry", "enabled"): "true"}
+    )
     return {**defaults, **overrides}
 
 
 def install(game, suite, speed, settings, write_ini=False):
     verify_game(game)
     base, info, target = overlay(game)
+    arena_targets = arena_paths(game, base)
     ini = safe_child(game, Path("binaries/x64/goh_ai.ini"))
     text = mission.generate(suite, speed)
     mission.check_stock(game, text)
+    arena_data = mission.flat_arena(game) if suite == "e2e" else {}
     patch = merged_ini(ini, run_settings(suite, settings)) if write_ini or settings else None
     if not base.exists():
         base.parent.mkdir(exist_ok=True)
@@ -174,11 +184,16 @@ def install(game, suite, speed, settings, write_ini=False):
             root = Path(staging) / MOD
             atomic_write(root / "mod.info", INFO.encode())
             atomic_write(root / mission.MI, text.encode())
+            for name, payload in arena_data.items():
+                atomic_write(root / mission.MI.parent / name, payload)
             root.rename(base)
     else:
-        if info.read_bytes() != INFO.encode():
-            atomic_write(info, INFO.encode())
         atomic_write(target, text.encode())
+        for name, dst in arena_targets.items():
+            if name in arena_data:
+                atomic_write(dst, arena_data[name])
+            else:
+                dst.unlink(missing_ok=True)
     if patch is not None:
         atomic_write(ini, patch)
     return target
@@ -186,9 +201,12 @@ def install(game, suite, speed, settings, write_ini=False):
 
 def clean(game, options=None):
     base, info, target = overlay(game)
-    benchmark = options and target.is_file() and "GOH_L1_DONE_calibration" in target.read_text(encoding="utf-8")
+    arena_targets = arena_paths(game, base)
+    benchmark = options and target.is_file() and "GOH_L1_DONE_e2e" in target.read_text(encoding="utf-8")
     if base.exists():
         target.unlink(missing_ok=True)
+        for dst in arena_targets.values():
+            dst.unlink(missing_ok=True)
         for folder in target.parents:
             if folder == base:
                 break
@@ -239,9 +257,11 @@ def main(argv=None):
         if name in ("clean", "run"):
             p.add_argument("--profile", help="player profile directory or options.set")
         if name == "sweep":
-            p.set_defaults(suite="calibration")
-            p.add_argument("--profiles", default="vanilla,default,tight,tactical,wide",
-                           help="comma-separated tuning profiles")
+            p.add_argument("--suite", choices=("e2e",), default="e2e")
+            p.add_argument("--sim-speed", type=float, default=8.0,
+                           help="DLL simulation multiplier (default 8; 0 for stock, or 0.25–20)")
+            p.add_argument("--profiles", default="default",
+                           help="comma-separated tuning profiles (default: default on East P3 mask 8; add vanilla sporadically after scenario edits)")
             p.add_argument("--profile", dest="custom", action="append", default=[],
                            metavar="NAME:KEY=VALUE,...", help="define and include a custom tuning profile")
             p.add_argument("--player-profile", dest="profile", help="player profile directory or options.set")
@@ -249,16 +269,17 @@ def main(argv=None):
             p.add_argument(
                 "--swap-sides",
                 action="store_true",
-                help="run modded profiles on both West (P2, mask=4) and East (P3, mask=8) to cancel terrain bias",
+                help="run modded profiles on both West (P2, mask=4) and East (P3, mask=8) to cancel side bias",
             )
         if name in ("run", "sweep"):
             p.add_argument("--wine", help="Wine or CrossOver wine executable")
             p.add_argument("--bottle", default="Steam", help="CrossOver bottle (default Steam)")
-            p.add_argument("--timeout", type=int, default=720, help="timeout per game launch in seconds")
+            p.add_argument("--timeout", type=int,
+                           help="timeout per launch in seconds (default 720, longer for sub-1× E2E runs)")
             p.add_argument(
                 "--restore-options",
                 action="store_true",
-                help="restore prior mod selection on exit (calibration always restores the player profile)",
+                help="restore prior mod selection on exit (E2E always restores the player profile)",
             )
         if name == "grade":
             p.add_argument("--telemetry", type=Path, help="JSONL from the DLL")
@@ -267,7 +288,7 @@ def main(argv=None):
             p.add_argument(
                 "--game-log",
                 type=Path,
-                help="game.log with ordered GOH_L1 markers (required for standalone tactical grading)",
+                help="game.log with ordered GOH_L1 markers (required for standalone E2E grading)",
             )
             p.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
@@ -283,7 +304,7 @@ def main(argv=None):
             print(clean(game_dir(a.game_dir), options))
             return 0
         if a.cmd == "sweep":
-            profiles = live_launch.sweep_profiles(a.profiles, a.custom)
+            profiles = live_launch.sweep_profiles(a.profiles, a.custom, a.sim_speed)
             summary = live_launch.sweep(a, game_dir(a.game_dir), profiles, sys.modules[__name__])
             print(json.dumps(summary, indent=2) if a.json else live_launch.comparison_table(summary))
             return 0 if summary["passed"] else 1

@@ -106,7 +106,7 @@ struct TankState {
         unsigned human_id{};
         short src{-1}, dst{-1};
         Tick retry_until{};
-        bool retried{};
+        std::uint8_t attempts{};
     };
     support::Identity entity{};
     std::uint16_t route{};
@@ -116,7 +116,7 @@ struct TankState {
     Tick driver_gunner_swap_until{};
     Tick secondary_gunner_until{};
     Tick defer_stat_until{};
-    TransferAttempt last_transfer{};
+    std::array<TransferAttempt, 4> recent_transfers{};
     bool serviced{};
     bool matches(Address a) const {
         return entity.ptr && entity.matches(a) && read<std::uint16_t>(a, 0xDAA) == route;
@@ -369,6 +369,20 @@ inline void inspect_breed_traits(Address human, pol::PassengerFacts& out) {
     }
 }
 
+inline bool slot_actively_requested(Address placer, std::string_view slot_name) {
+    if (slot_name.empty()) return false;
+    const auto requests = span(placer, 0x50);
+    if (!requests.valid(0x348, 256)) return false;
+    for (auto req = requests.first; req != requests.end; req += 0x348) {
+        if (!read<Byte>(req, 0x341)) continue;
+        const auto names = span(req, 0x318);
+        if (!names.valid(0x60, 64)) continue;
+        for (auto p = names.first; p != names.end; p += 0x60)
+            if (support::native_string(p + 0x40) == slot_name) return true;
+    }
+    return false;
+}
+
 inline pol::SlotFacts read_slot(Address slot, short index) {
     pol::SlotFacts s{};
     s.name = support::native_string(slot + 0x40);
@@ -448,13 +462,15 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
         const auto index = static_cast<short>((slot - seats.first) / 0x298);
         auto facts = read_slot(slot, index);
         // Boarder::Move can transiently vacate src or blink dst occupied before bouncing the crewman back.
-        // Only retire last_transfer once its retry window has elapsed.
-        const auto& last = st->last_transfer;
-        if (!pending(last.retry_until, w.now) &&
-            ((index == last.dst && facts.occupied) ||
-             (index == last.src &&
-              (!facts.occupied || read<unsigned>(read<Address>(slot, 0x280), 0xC0) != last.human_id))))
-            st->last_transfer = {};
+        // Only retire a transfer record once its retry window has elapsed.
+        for (auto& last : st->recent_transfers) {
+            if (!last.human_id) continue;
+            if (!pending(last.retry_until, w.now) &&
+                ((index == last.dst && facts.occupied) ||
+                 (index == last.src &&
+                  (!facts.occupied || read<unsigned>(read<Address>(slot, 0x280), 0xC0) != last.human_id))))
+                last = {};
+        }
         if (facts.group != "crew") continue;
         if (facts.occupied) {
             ++ctx.occupied_crew_count;
@@ -486,6 +502,7 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
 
         if (crew) {
             candidate.slot.is_cannon_gunner = repair::detail::cannon_gunner_seat(tank, candidate.slot.name);
+            candidate.slot.actively_requested = slot_actively_requested(placer, candidate.slot.name);
             if (!pol::internal_source_available(candidate.slot, ctx)) continue;
             if (internal.slot.slot_index < 0 || pol::better_internal_source(candidate, internal)) internal = candidate;
         } else if (passenger.slot.slot_index < 0 || pol::better_passenger(candidate.passenger, passenger.passenger)) {
@@ -523,20 +540,33 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
     short src_place = src.slot.slot_index;
     short dst_place = dst.slot_index;
     const auto human = read<Address>(seats.first + static_cast<Address>(src_place) * 0x298, 0x280);
-    auto& last = st->last_transfer;
-    const bool same = last.human_id == src.passenger.entity_id && last.src == src_place && last.dst == dst_place;
-    if (same && last.retried && pending(last.retry_until, w.now)) return;
+    TankState::TransferAttempt* matched = nullptr;
+    TankState::TransferAttempt* free_entry = nullptr;
+    TankState::TransferAttempt* oldest_entry = nullptr;
+    for (auto& entry : st->recent_transfers) {
+        if (entry.human_id == src.passenger.entity_id && entry.src == src_place && entry.dst == dst_place) {
+            matched = &entry;
+            break;
+        }
+        if (!entry.human_id && !free_entry) free_entry = &entry;
+        if (!oldest_entry || static_cast<std::int32_t>(entry.retry_until - oldest_entry->retry_until) < 0)
+            oldest_entry = &entry;
+    }
+    if (matched && matched->attempts >= 2 && pending(matched->retry_until, w.now)) return;
 
     // Acceptance can precede the seat update. Give every move time to settle,
-    // and reserve the longer delays for a crewman still attempting the same move.
+    // and reserve escalating delays for a crewman still attempting the same move.
     const Byte moved = ops.boarder_move(boarder, tank, &src_place, tank, &dst_place);
     st->retry_until = w.now + w.duration(moved ? 1.5f : 1.f);
-    if (same) {
-        last.retry_until = w.now + w.duration(last.retried ? 10.f : 5.f);
-        last.retried = true;
+    if (matched) {
+        const std::uint8_t next_attempt = matched->attempts < 4 ? static_cast<std::uint8_t>(matched->attempts + 1) : 4;
+        const float delay_s = next_attempt == 2 ? 5.f : (next_attempt == 3 ? 10.f : 25.f);
+        matched->attempts = next_attempt;
+        matched->retry_until = w.now + w.duration(delay_s);
     } else {
+        auto* dst_entry = free_entry ? free_entry : oldest_entry;
         // Keep the first tuple across a transient vacancy. Its first retry uses the vehicle settle delay.
-        last = {src.passenger.entity_id, src_place, dst_place, w.now + w.duration(5.f)};
+        *dst_entry = {src.passenger.entity_id, src_place, dst_place, w.now + w.duration(5.f), 1};
     }
     if (!moved) {
         ++stat_transfer_failures;

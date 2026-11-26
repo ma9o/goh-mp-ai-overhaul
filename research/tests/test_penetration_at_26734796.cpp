@@ -83,6 +83,9 @@ void ammo() {
     using S = p::Shell;
     assert(p::ready_soon(true, false, 10) && p::ready_soon(false, true, 1.49f));
     assert(!p::ready_soon(false, true, 1.5f) && !p::ready_soon(false, false, 0) && !p::ready_soon(false, true, NAN));
+    assert(p::actively_reloading(true, false, 0) && p::actively_reloading(false, true, 5.5f));
+    assert(!p::actively_reloading(false, true, 0.f) && !p::actively_reloading(false, true, 25.f) &&
+           !p::actively_reloading(false, false, 3.f) && !p::actively_reloading(false, true, NAN));
     p::Outcome borderline;
     borderline.observe(p::Part::body, {100, 99, .9f});
     assert(!borderline.clean && rank(S::standard, borderline) > rank(S::explosive, tracks));

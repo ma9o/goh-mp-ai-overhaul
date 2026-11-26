@@ -130,6 +130,7 @@ struct BuildTable {
         Address collect_order = 0x008E2910;
         Address board_order = 0x008FADC0;
         Address boarder_move = 0x007A0240;
+        Address set_slowdown = 0x0066EC70;
     } fn;
 
     struct Hooks {
@@ -163,6 +164,7 @@ struct BuildTable {
         Address slope_default_b = 0x01495034;
         Address master_client = 0x015D2BE0;
         Address local_player = 0x014AEF38;
+        Address quant_manager = 0x01584520;
     } glob;
 
     struct Vtables {

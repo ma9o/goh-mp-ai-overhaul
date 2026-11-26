@@ -17,6 +17,7 @@ struct SlotFacts {
     bool reserved{};
     bool is_cannon_gunner{};
     std::int16_t slot_index{-1};
+    bool actively_requested{};
 };
 
 // Native ePlacer::IsPlaceAvailable (0x79C2F0) plus crew-group and
@@ -87,7 +88,7 @@ inline bool internal_destination_useful(const SlotFacts& s, const VehicleTactica
 }
 
 inline bool internal_source_available(const SlotFacts& s, const VehicleTacticalContext& ctx) {
-    return is_internal_crew_source(s) &&
+    return is_internal_crew_source(s) && !s.actively_requested &&
            !(secondary_gunner(s) && (ctx.main_gun_broken || ctx.secondary_gunner_backoff));
 }
 

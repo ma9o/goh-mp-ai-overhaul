@@ -136,32 +136,40 @@ python3 scripts/live_harness.py clean
 
 For a manual install, activate the mod and restart Vehicle Control after switching suites. Standalone grading uses the latest telemetry session or mission restart. Disable the overlay before returning to multiplayer.
 
-### Mirrored AI-vs-AI calibration and profile sweeps
+### Company-scale E2E battle and profile sweeps
 
-`calibration` pits Player 2 (Side A, west) against Player 3 (Side B, east) on Vehicle Control. Both use AI control, identical German forces, and reflected starting positions, cover and orders. Player 0 spectates. Both teams are hostile to each other and to the spectator. Each trial temporarily sets the player profile to Heroic (`{difficulty heroic}`) and `{fog_of_war fog_off}` (restored byte-for-byte on exit) so both teams get the same 1.0 accuracy and 0.7 health multiplier and the live battle stays visible to the spectator camera.
+Level 1 has two layers. The `full`, `infantry`, `armor`, and `close_at` suites exercise individual AI behaviors on the stock Vehicle Control map. The `e2e` suite grades one continuous 300-second battle on a flattened, cleared `z = 0` symmetric arena overlay (`map`, `map.net`, `map.ply`, `map.grs` generated read-only from stock `single.pak` into `mods/ai_test_harness/`, and removed automatically for component suites or `clean`). Player 2 (west) and Player 3 (east) command identical German forces mirrored across the central flag and symmetric lane cover. Player 0 spectates.
 
-| Engagement | Sim time | Outcome under test |
-|---|---:|---|
-| Infantry grenade line | 65 s | Each six-man squad holds its line with a rear medic and faces one direct and one off-axis F1 throw. |
-| Armor flank ambush | 75 s | Each side advances two tanks and four infantry under cover of a flanking AT gun. |
-| Sustained logistics | 85 s | Low-ammo infantry and a BA-64 clash, withdraw and re-engage with an AT gun, medic and supply truck on each side. |
-| Combined assault | 75 s | Loaded halftracks, supporting tanks and infantry escorts converge on a central flag. |
+| Simulation time | South · close quarters | Center · flag and road | North · armor flank |
+|---|---|---|---|
+| 0 s | Six infantry and a rear medic fight through walls, fences and sandbags. | A loaded halftrack and BA-64 support four low-ammo infantry, a medic and an ammo truck. | A Panzer IV, T-34 with hull riders, AT gun and four infantry enter. |
+| 90 s | Four infantry reinforce the line. | A second loaded halftrack and armored car advance. | A second Panzer IV and four escorts advance. |
+| 180–300 s | Survivors continue fighting. | The flag remains contested. | A T-34 with hull riders and four assault infantry push toward the flag. |
 
-Run one configuration, compare the five built-ins, or include a custom profile. `--runs` specifies repetitions per profile. Each repetition launches a fresh game for every selected profile.
+A sweep defaults to `e2e`, a single-side `default` Modded-vs-Vanilla run placing our modded AI on the slightly disadvantaged East side (Player 3, mask 8 vs Stock West P2), and 8× simulation speed (~1m 40s per trial on the flat symmetric arena), scored from East P3’s perspective (`> 50` means Modded East beat Vanilla West despite West’s slight ~1–5 pt first-updater edge). Only include `vanilla` (`--profiles vanilla,default`) or `--swap-sides` sporadically when changing the E2E scenario composition or checking a baseline. With `--swap-sides`, each repetition plays the modded profile once on the west (mask 4) and once on the east (mask 8) and averages from the modded side’s perspective, while `vanilla` disables all 40 modules (mask 0) and runs once per repetition (paired reference averages both perspectives to exactly 50; raw west score stays in the trial archive).
 
 ```sh
-scripts/live_harness.py run --suite calibration --speed fast --restore-options
-scripts/live_harness.py sweep --profiles vanilla,default,tight,tactical,wide --runs 1 --swap-sides --speed fast --restore-options
-scripts/live_harness.py sweep --profiles vanilla,default --profile local:medic_search_radius_m=30,modules.attack_detour=false --runs 3 --speed fast --restore-options
+# Fast day-to-day single-side E2E iteration (~1m 40s):
+scripts/live_harness.py sweep --speed fast --restore-options
+# Sporadic baseline / side-swapped check after scenario changes:
+scripts/live_harness.py sweep --profiles vanilla,default --swap-sides --runs 1 --speed fast --restore-options
+scripts/live_harness.py sweep --profiles default,tight,tactical,wide --profile local:medic_search_radius_m=30 --sim-speed 8 --speed fast
+scripts/live_harness.py run --suite e2e --set testing.sim_speed=8 --speed fast --restore-options
 ```
 
-Use a DLL that implements `[testing] ai_player_mask`. The observer records both teams. `vanilla` disables all 40 modules and sets mask `0` for a stock-vs-stock baseline. The other built-ins enable all modules and set mask `4` (Player 2 only), leaving Player 3 on stock AI. `default` uses DLL tuning defaults. Custom profiles also start with mask `4` and accept an explicit override such as `--profile east:testing.ai_player_mask=8` to put the improvements on Player 3. Pass `--swap-sides` to run each modded profile on both West (`ai_player_mask=4`, Player 2) and East (`ai_player_mask=8`, Player 3) and average from the modded side's perspective (exact `50.00` vanilla reference, cancelling residual terrain asymmetry). Without `--swap-sides`, scores use Player 2’s perspective. Use `--player-profile PATH` to select the player’s `options.set`. Calibration automatically restores its pretrial bytes after the game closes, including difficulty and mod selection.
+Use a DLL with `[testing] ai_player_mask` and `sim_speed`. The observer records both teams. `--sim-speed 0` keeps the mission’s stock speed setting. Values from 0.25 to 20 set the DLL’s simulation multiplier after mission start. Both `run` and `install` accept `--set testing.sim_speed=VALUE`. Automatic E2E runs temporarily set Heroic difficulty, disable fog and vertical sync, and apply low graphics. The display adapter, resolution and window mode retain their original settings. On exit the harness restores the pretrial `options.set` and `goh_ai.ini` bytes, including after a failed run.
 
-**50.0 means parity.** Each combat class compares the two teams using 60% survival rate and 40% remaining HP across its original roster. Infantry and vehicles have equal weight when both deploy. Support survival contributes 10% in scenarios with medics or supply vehicles. The scenario score is 50 plus half of Side A’s signed percentage-point advantage. The four scenarios contribute equally to the overall score. Absence from the last five simulation seconds or zero HP counts as a casualty. The grader checks the difficulty reported at mission start and verifies AI control on observed combatants. The scored infantry include the assault passengers. Interior crew, reserve hull riders and scripted throwers are excluded.
+**A score of 50 means parity.** Each side deploys 102 points across 46 scored units. Tanks are worth 10, halftracks and AT guns 5, armored cars and supply trucks 3, medics 2 and infantry 1. Halftrack passengers count as infantry. Interior crews and reserve tank riders are excluded. Remaining force value is 60% surviving points plus 40% HP-weighted points, expressed as a percentage of deployed points. The score is 50 plus half the difference between the two sides’ percentages. The exchange ratio divides opposing lost value by friendly lost value with a one-point minimum denominator.
 
-Find the side-to-side survival and HP margins, score change from `vanilla`, and scenario winners in `local-work/level1/sweeps/sweep-*/comparison.txt` and `summary.json`. Baseline runs measure natural variation on the stock terrain. Each completed trial archives its effective INI, logs, and per-side scorecard in `grade.json` and `grade.txt`. Action counters are phase-wide and runaway actions fail the trial. Rankings and baseline deltas require all requested trials for the profile to pass. To regrade a mirrored trial, pass its `--telemetry`, `--ai-log` and `--game-log` paths to `grade --suite calibration`.
+Each trial archives the effective INI, logs, class survival and remaining HP, action counters, shutdown recrew/scavenge totals when available, and integrity checks in its evidence directory. The sweep writes `summary.json` and `comparison.txt` under `local-work/level1/sweeps/sweep-*/`. Rankings and deltas against vanilla require all planned trials for the profile to pass. For offline validation, run the following commands against the installed game archives and Vehicle Control terrain.
 
-For offline stock validation, run `scripts/live_harness.py generate --suite calibration --game-dir "$GOH_GAME_DIR" > /dev/null` and repeat for `full`. This checks the executable fingerprint, installed stock archives and Vehicle Control terrain. The archived build 26734796 results describe earlier functional runs and the retired ten-probe suite. [Historical live verification results](research/notes/level1-live-verification-26734796.md)
+```sh
+scripts/live_harness.py generate --suite e2e --game-dir "$GOH_GAME_DIR" > /dev/null
+scripts/live_harness.py generate --suite full --game-dir "$GOH_GAME_DIR" > /dev/null
+local-work/compat-venv/bin/python -m unittest discover -s research/tests -v
+```
+
+Earlier functional runs are archived in the [Level 1 verification results](research/notes/level1-live-verification-26734796.md).
 
 ## Static analysis & game updates
 

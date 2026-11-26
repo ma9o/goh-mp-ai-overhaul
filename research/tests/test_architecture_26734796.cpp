@@ -131,6 +131,12 @@ void test_benchmark_player_mask() {
     active() = parse_ini("[testing]\nai_player_mask=0");
     actor[0xDA8] = 0;
     assert(!actor_ai_allowed(address) && !player_ai_enabled(0));
+    assert(parse_ini("").sim_speed == 0.0f);
+    assert(parse_ini("[testing]\nsim_speed=off").sim_speed == 0.0f);
+    assert(parse_ini("[testing]\nsim_speed=10").sim_speed == 10.0f);
+    assert(parse_ini("[testing]\nsim_speed=99").sim_speed == 20.0f);
+    assert(parse_ini("[testing]\nsim_speed=0.05").sim_speed == 0.25f);
+    assert(parse_ini("[testing]\nsim_speed=10\nsim_speed=0").sim_speed == 0.0f);
     reset_defaults();
 }
 

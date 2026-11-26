@@ -125,7 +125,7 @@ Everything below works in both **Hold Position** (the GoH default) and **Move at
 
 No config file is required — everything runs with balanced defaults out of the box. To customize behavior, place a `goh_ai.ini` file beside the DLL. Changes under `[modules]`, `[tuning]`, `[testing]`, and `[logging]` (`level`, `flush_ms`) hot-reload once per second while the game is running; `filename` and `[smoke]` are read at startup.
 
-- **Single-side benchmarks.** Under `[testing]`, set `ai_player_mask=0x1` for player 0 or `0x2` for player 1. Combine bits to enable several players. The default `0xFFFFFFFF` enables all players, and `0` gives a stock-AI comparison for both sides. Telemetry continues to record all players.
+- **Benchmarks & replay speed.** Under `[testing]`, set `ai_player_mask=0x1` for player 0 or `0x2` for player 1 (combine bits for multiple players; default `0xFFFFFFFF` enables all players, `0` runs stock AI on every side while telemetry keeps recording all players). Set `sim_speed` (`0` / `off` for stock speed, or `0.25–20`) to override the host simulation speed multiplier for accelerated AI-vs-AI benchmark runs.
 - **`[modules]`** *(all default `true`; set any key to `false` to disable)*:
   - **Combat & targeting:** `advance_responsive`, `attack_order_polish`, `target_prioritization`, `penetration_at`, `soft_cover_lof`, `attack_detour`, `tank_target_memory`, `cannon_aim_settle`, `allegiance_guard`
   - **Infantry & tactics:** `hit_the_dirt`, `crush_avoidance`, `grenade_dodge`, `close_grenade`, `tactical_infantry`, `tactical_objectives`, `fast_weapon_swap`, `grenade_ff_guard`, `overflow_cover`, `weapon_team_cohesion`, `mg_crew_small_arms`, `movement_recovery`

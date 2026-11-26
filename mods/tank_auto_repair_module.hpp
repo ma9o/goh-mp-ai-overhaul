@@ -806,7 +806,7 @@ inline void census(Tank& t, Address a, const World& w, const Damage& d, Span wal
             if (working(path)) {
                 ++s.busy;
                 s.counted[s.counted_size++] = h;
-            } else if (c.assigned && !path.board)
+            } else if ((c.assigned || c.dispatched) && !path.board)
                 ++s.busy;
             if (working(path) || path.board || c.smart) continue;
             if (!ready(h)) continue;
@@ -862,10 +862,16 @@ inline bool unassigned_work(const Damage& d, const Claims& taken) {
 }
 inline bool may_dismount(Address vehicle, const World& w, Scenario scenario, const Damage& d, const Crew& c,
                          int living_crew) {
-    if (d.is_tank) return true;
-    if (!support::free_slot(vehicle)) return false;
+    if (!d.is_tank && !support::free_slot(vehicle)) return false;
     if (scenario != Scenario::turret_track) return true;
     if (c.role == 2 && d.working_gun && living_crew >= 2) return false;
+    if (d.is_tank) {
+        if (!d.working_gun) return true;
+        const auto sen = read<Address>(vehicle, 0xDD0);
+        const bool under_fire =
+            sen && read<Address>(sen, 0x260) == vehicle && sim::recent(w, read<unsigned>(sen, 0x2F4), 5);
+        return !(under_fire && support::visible_near(vehicle, 40.f * w.length));
+    }
     return !support::visible_near(vehicle, 25.f * w.length);
 }
 inline void service(Tank& t, Address a, const World& w, Damage d) {
@@ -916,7 +922,8 @@ inline void service(Tank& t, Address a, const World& w, Damage d) {
     }
     if (!s.count) return;
     const auto cap = t.scenario == Scenario::full ? std::max(1, d.total) : 2;
-    int desired = std::min({s.live, s.kits, cap});
+    const int max_dismount = t.scenario == Scenario::turret_track ? std::max(0, s.living_crew - 1) : s.live;
+    int desired = std::min({s.live, s.kits, cap, max_dismount});
     const bool spare_gunner = t.scenario == Scenario::turret_track && s.living_crew > 2 && d.working_gun;
     for (std::size_t i = 0; i < s.count; ++i)
         s.candidates[i].ability = skill(s.candidates[i].human);

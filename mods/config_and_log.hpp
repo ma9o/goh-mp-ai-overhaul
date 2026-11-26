@@ -105,6 +105,7 @@ struct Tuning {
 
 struct Settings {
     std::uint32_t ai_player_mask{0xFFFFFFFFu};
+    float sim_speed{0.0f};
     LogLevel log_level{LogLevel::summary};
     std::string log_filename{"goh_ai.log"};
     std::uint32_t log_flush_ms{500};
@@ -233,7 +234,15 @@ inline Settings parse_ini(std::string_view text) {
                             s.log_flush_ms = detail::parse_u32(val, s.log_flush_ms, 0, 10000);
                         }
                     } else if (section == "testing") {
-                        if (key == "ai_player_mask") s.ai_player_mask = detail::parse_player_mask(val);
+                        if (key == "ai_player_mask")
+                            s.ai_player_mask = detail::parse_player_mask(val);
+                        else if (key == "sim_speed") {
+                            const std::string low = detail::to_lower(val);
+                            if (low == "0" || low == "0.0" || low == "off" || low == "false")
+                                s.sim_speed = 0.0f;
+                            else
+                                s.sim_speed = detail::parse_float(val, s.sim_speed, 0.25f, 20.0f);
+                        }
                     } else if (section == "modules") {
                         auto& m = s.modules;
                         if (key == "grenade_dodge")

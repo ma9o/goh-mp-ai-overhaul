@@ -397,12 +397,16 @@ inline bool open_top(Address target) {
 }
 inline bool near_ready(const World& w, Address weapon, Address ammo) {
     const Address charger = read<Address>(weapon, 0xb0);
-    if (native<pr::Unary>(0x820B50)(charger) != ammo) return false;
+    if (!charger || native<pr::Unary>(0x820B50)(charger) != ammo) return false;
+    const auto deadline = read<unsigned>(charger, 0x10);
+    const float remaining = static_cast<float>(static_cast<std::int32_t>(deadline - w.now)) / w.ticks;
+    // Keep an already in-progress reload of a cleanly penetrating shell even while
+    // the chamber count is 0 so target flickers cannot cancel and restart reloads.
+    const bool reloading = (read<Byte>(charger, 0x14) & 0x14) != 0;
+    if (p::actively_reloading(reloading, deadline != 0, remaining)) return true;
     auto charged = read<pr::Unary>(read<Address>(charger), 8)(charger);
     if (!charged || read<int>(charged, 0xdc) <= 0) return false;
-    const auto deadline = read<unsigned>(charger, 0x10);
-    return p::ready_soon(native<pr::Predicate>(0x81EDA0)(weapon) != 0, deadline != 0,
-                         static_cast<float>(static_cast<std::int32_t>(deadline - w.now)) / w.ticks);
+    return p::ready_soon(native<pr::Predicate>(0x81EDA0)(weapon) != 0, deadline != 0, remaining);
 }
 inline bool better(const Proposal& a, const Proposal& b) {
     if (a.tier != b.tier) return a.tier > b.tier;
@@ -638,25 +642,6 @@ inline Address selected_ammo(Address weapon, Address target) {
     auto charger = read<Address>(weapon, 0xb0);
     return charger ? native<pr::Unary>(0x820B50)(charger) : 0;
 }
-// An upper bound is sufficient to reserve the fallback's share of the five native trials.
-inline unsigned stock_trials(Address target, Address tag, unsigned limit) {
-    auto entries = pr::span(target, 0x510);
-    if (!entries.valid(8) || entries.size(8) > 4096) return limit;
-    unsigned count = 0;
-    for (auto i = entries.first; i != entries.end && count < limit; i += 8) {
-        auto v = read<Address>(i);
-        if (!v || !read<Address>(v, 0x30)) return limit;
-        auto part = read<Address>(v, 0x38);
-        if (part && read<Byte>(part, 0x24)) continue;
-        auto names = pr::span(read<Address>(v, 0x30), 0x398);
-        if (!names.valid(0x60) || names.size(0x60) > 128) return limit;
-        bool matches = !read<std::size_t>(tag, 0x50);
-        for (auto n = names.first; n != names.end && !matches; n += 0x60)
-            matches = native<Byte (*)(Address, Address)>(0x565340)(n, tag) != 0;
-        if (matches && !close_grenade::has(names, "no_target")) ++count;
-    }
-    return count;
-}
 inline void select_volume(Address out, Byte skip, Address weapon, Address target, Address tag, Address prev) {
     Guard guard;
     const auto brain = observer_brain();
@@ -680,25 +665,15 @@ inline void select_volume(Address out, Byte skip, Address weapon, Address target
     }
     const auto range = native<float (*)(Address, Address)>(0x81F710)(weapon, target);
     if (!std::isfinite(range) || !(range > 0)) return original_volume(out, skip, weapon, target, tag, prev);
-    // Spend the scheduled trial budget on ranked volumes. The last attempt goes
-    // through the stock resolver. Its narrow tag must name exactly one live volume.
+    // Try up to three top-ranked exposed weak spots first; if none passes the
+    // aimer's firing preview, always fall back to the native resolver instead of
+    // clearing the target to empty (0x853240) and blinding the gun.
     unsigned trials = 0;
-    for (unsigned i = 0; i < ranked.size && trials < 5; ++i) {
+    for (unsigned i = 0; i < ranked.size && trials < 3; ++i) {
         const auto& choice = ranked.ranked[i];
         bind(out, target, choice.volume);
         auto pos = native<const Vec3* (*)(Address)>(0x852810)(out);
         if (!pos || !(pr::distance(read<Vec3>(pr::scope.actor, 0x74), *pos) < range)) continue;
-        if (i + 1 == ranked.size || trials == 4) {
-            if (stock_trials(target, choice.name, 2) == 1) {
-                original_volume(out, 0, weapon, target, choice.name, out);
-                if (read<int>(out, 8)) {
-                    count(volumes, "volume");
-                    return;
-                }
-                ++trials;
-                break;
-            }
-        }
         ++trials;
         if (native<int (*)(Address, Address, Address, Address, Address, Address)>(0x833C30)(read<Address>(weapon, 0xa8),
                                                                                             out, 0, 0, 0, 0) == 3) {
@@ -706,10 +681,7 @@ inline void select_volume(Address out, Byte skip, Address weapon, Address target
             return;
         }
     }
-    if (!trials || stock_trials(target, tag, 5) <= 5 - trials)
-        return original_volume(out, skip, weapon, target, tag, prev);
-    // Use the native empty-target terminal at 0x92BA09. A second full resolver could replay up to five previews.
-    native<void (*)(Address)>(0x853240)(out);
+    return original_volume(out, skip, weapon, target, tag, prev);
 }
 struct SettleTrack {
     support::Identity actor{}, last_target{};
