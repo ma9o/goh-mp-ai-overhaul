@@ -104,7 +104,6 @@ std::uint32_t inflight_count() noexcept {
 }
 
 void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) {
-    grenade_dodge::on_actor_pre_quant(actor);
     struct TargetPrioScope {
         runtime::Address owner;
         explicit TargetPrioScope(runtime::Address a) noexcept : owner(a) {
@@ -115,6 +114,11 @@ void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) 
         }
     } tp_scope(actor);
 
+    if (!runtime::actor_ai_allowed(actor)) {
+        next(actor, ctx);
+        return;
+    }
+    grenade_dodge::on_actor_pre_quant(actor);
     const unsigned grenade_actor_id = close_grenade::poll_identity(actor);
     const unsigned squad_actor_id = close_grenade::poll_squad_identity(actor);
     next(actor, ctx);

@@ -438,7 +438,7 @@ inline bool choose_flag(const World& w, Address a, const Group& g, const GroupSt
     float best = std::numeric_limits<float>::infinity();
     for (unsigned i = 0; i < flag_count; ++i) {
         const auto& flag = flags[i];
-        if (!p::in_leash(Kind::cap, flag.xy, self, g.center, anchor, 50.f, cap_r)) continue;
+        if (!p::in_leash(Kind::cap, flag.xy, self, g.center, anchor, p::default_pursue_radius_m, cap_r)) continue;
         Address live = s::resolve(w, flag.entity);
         if (flag_state(live, a, mine) != FlagState::unfinished) continue;
         XY point = position(live, w);
@@ -479,7 +479,9 @@ inline bool choose(const World& w, Address a, const Group& g, const GroupState& 
     };
     if (const auto* enemy = contacts.pursue(self, g.center, anchor, force.mobile, force.at, now, available,
                                             config::active().tuning.objectives_pursue_radius_m)) {
-        if (force.self.support) return false;
+        if (force.self.support ||
+            (read<int>(read<Address>(a, 0xdc0), 0x24) && contacts.threatened(self, g.center, now)))
+            return false;
         out = {Kind::pursue, enemy->enemy, {}, enemy->xy};
         return true;
     }
@@ -724,7 +726,7 @@ inline void evaluate(const World& w, Address a, bool external) {
 inline void tick(Address actor, bool external_busy = false) {
     s::World w{};
     if (!detail::accepting.load() || !config::active().modules.tactical_objectives || !s::accepting.load() ||
-        !s::base || !s::callback(actor, w))
+        !s::base || !s::callback(actor, w) || !runtime::actor_ai_allowed(actor))
         return;
     auto scene = s::entity_scene(w);
     if (!scene) return;

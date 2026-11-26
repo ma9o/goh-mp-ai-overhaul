@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cerrno>
 #include <cctype>
 #include <cmath>
 #include <cstdarg>
@@ -80,7 +81,7 @@ struct ModuleToggles {
 
 struct Tuning {
     float grenade_detect_radius_m{22.0f};
-    float grenade_danger_radius_m{5.0f};
+    float grenade_danger_radius_m{4.0f};
     float smoke_vehicle_cooldown_s{25.0f};
     float smoke_infantry_cooldown_s{25.0f};
     float medic_search_radius_m{36.0f};
@@ -89,7 +90,7 @@ struct Tuning {
     float recrew_search_radius_m{28.0f};
     float scavenge_search_radius_m{16.0f};
     float resupply_search_radius_m{60.0f};
-    float objectives_pursue_radius_m{50.0f};
+    float objectives_pursue_radius_m{28.0f};
     float objectives_cap_radius_m{35.0f};
     float lull_reload_ratio{0.35f};
     float tank_facing_min_angle_deg{24.f};
@@ -103,6 +104,7 @@ struct Tuning {
 };
 
 struct Settings {
+    std::uint32_t ai_player_mask{0xFFFFFFFFu};
     LogLevel log_level{LogLevel::summary};
     std::string log_filename{"goh_ai.log"};
     std::uint32_t log_flush_ms{500};
@@ -172,6 +174,16 @@ inline void parse_csv_tokens(std::string_view v, std::vector<std::string>& out) 
     }
 }
 
+inline std::uint32_t parse_player_mask(std::string_view v) {
+    const std::string buf(trim(v));
+    if (buf.empty() || buf.front() == '-') return 0xFFFFFFFFu;
+    char* end{};
+    errno = 0;
+    const unsigned long value = std::strtoul(buf.c_str(), &end, 0);
+    if (errno == ERANGE || end != buf.data() + buf.size() || value > UINT32_MAX) return 0xFFFFFFFFu;
+    return static_cast<std::uint32_t>(value);
+}
+
 inline bool safe_log_filename(std::string_view name) noexcept {
     if (name.empty() || name.size() > 128) return false;
     for (char c : name) {
@@ -220,6 +232,8 @@ inline Settings parse_ini(std::string_view text) {
                         } else if (key == "flush_ms") {
                             s.log_flush_ms = detail::parse_u32(val, s.log_flush_ms, 0, 10000);
                         }
+                    } else if (section == "testing") {
+                        if (key == "ai_player_mask") s.ai_player_mask = detail::parse_player_mask(val);
                     } else if (section == "modules") {
                         auto& m = s.modules;
                         if (key == "grenade_dodge")
@@ -385,6 +399,11 @@ inline live::PublishedSettings<Settings>& published() {
 
 inline Settings& active() {
     return published().view(startup_settings());
+}
+
+inline bool player_ai_enabled(std::uint32_t player) noexcept {
+    const auto mask = active().ai_player_mask;
+    return mask == 0xFFFFFFFFu || (player < 32u && ((mask >> player) & 1u) != 0);
 }
 
 inline void reset_defaults() {

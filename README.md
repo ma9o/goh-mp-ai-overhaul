@@ -38,19 +38,20 @@ Everything below works in both **Hold Position** (the GoH default) and **Move at
   - Checks the landing point before an autonomous lethal grenade throw and holds the throw if it would endanger the thrower or nearby allies. Explicit Attack orders, Attack Ground orders, manual throws, and pure smoke grenades are unaffected.
 - **[Early flying-grenade dodge](research/notes/grenade-escape-26734796.md)** *(overrides Hold Position)*
   - Tracks armed grenades in flight, predicts where they will land, and wakes nearby soldiers before impact while ignoring outbound throws landing safely away.
+  - Soldiers leaving cover finish their escape sprint. Infantry dodging vehicles also keep running toward a safe destination as the vehicle passes. [Hazard response contract](research/notes/combat-hazards-26734796.md)
   - Sprints standing away from both the blast and known enemies instead of crouching into nearby cover, while preserving a player's own move order when it already runs safely clear of the blast ([build contract](research/notes/survival-logistics-improvements-26734796.md)).
 - **[Close-range anti-vehicle grenades & AT rush](research/notes/close-grenade-26734796.md)** *(throws in any stance; rush on Move at Will only)*
   - Prioritizes nearby vehicles and crewed guns over rifle targets, pre-equips when a vehicle closes within throw range `+7 m`, and bypasses vanilla's 5–10 s weapon-switch delay without dropping held AT launchers, AT rifles, or flamethrowers.
   - Coordinates one thrower per target with failure backoff, leads moving vehicles, and checks friendly blast clearance (without blocking throws that can't harm closed friendly armor).
   - Molotovs aim for intact engines on all vehicles (including cars); frag grenades target exposed crew and open-top vehicles, never closed tanks. When soldiers have a loaded rifle, SMG, or MG with a clear direct shot at an unshielded MG gunner, they shoot the crew instead of grenade-rushing into the arc of fire ([build contract](research/notes/squad-tactics-improvements-26734796.md)). On `Move at Will`, up to two carriers sprint along multi-angle paths (`+15 m`) into throw range while auto-smoke yields to them.
 - **[Tactical infantry & squad movement](research/notes/tactical-infantry-26734796.md)** *(Move at Will only, except overflow cover)*
-  - Stabilizes advance/hold/fallback posture so squads stop oscillating, pulls exposed rifle/SMG soldiers out of the open against armor, and coordinates alternating squad bounds (medics, heavy weapons, and their ammo-carrying assistants stay together on overwatch rather than bounding apart).
+  - Exposed riflemen can fall back from nearby or attacking armor when they have no infantry target in range. Soldiers keep good firing cover during squad bounds. Medics, heavy weapons and their ammo carriers stay together on overwatch.
   - Ranks cover by threat screening and line of fire (crossing open ground only when no cover fits), tries stance changes or sidesteps when blocked, holds screened cover through distant hits, and stops stale return walks. Selected squads keep priority.
   - **Overflow cover & post-dismount spread** ([build contract](research/notes/squad-tactics-improvements-26734796.md)): After a squad finishes a move onto a trench or wall that runs out of slots, uncovered overflow soldiers take distinct nearby cover (including tightly bounded snaps on Hold Position when at least two squadmates are already in cover). Recently dismounted Move-at-Will squads fan out into nearby cover instead of bunching behind the rear door.
 - **[Doorway & wall-edge stall recovery](research/notes/movement-convoy-improvements-26734796.md)**
   - Infantry and pushed guns that stall against a doorway or wall edge during a move try up to two short side or back-out nudges to clear the snag, then resume their original destination. Any new player order immediately cancels recovery.
 - **[Local pursuit & flag-capture finish](research/notes/tactical-objectives-26734796.md)** *(Move at Will only)*
-  - Idle squads follow recent enemy sightings within 50 m (55 m leash from their anchor) when morale and local strength allow.
+  - Idle squads follow recent enemy sightings within 28 m by default, up to 33 m from their anchor. Soldiers in cover hold their position while the group is threatened.
   - Once local threats clear, up to four squadmates finish an uncontested capture point within 35 m. Combat, grenades, and support jobs always take priority.
 
 ### Support & defensive reactions
@@ -78,7 +79,7 @@ Everything below works in both **Hold Position** (the GoH default) and **Move at
   - When the crew or a nearby ally has spotted enemies, dismounting passengers favor an open exit on the far side of the vehicle.
   - Damaged or burning transports — as well as stopped or immobilized transports under a close anti-tank threat — unload their passengers automatically.
 - **[Stationary tank facing](research/notes/tank-facing-26734796.md)**
-  - A stationary tracked tank can turn its hull in place toward a threat spotted by its crew or a nearby ally. It turns only when the change would substantially reduce its estimated exposure. The turret keeps its own aim.
+  - A stationary tracked tank can turn its hull in place toward a threat spotted by its crew or a nearby ally. It turns only when the change would substantially reduce its estimated exposure. The turret keeps its own aim. Against threats on opposite flanks, the hull favors the main gun’s target and pauses after an interrupted turn.
   - Works on Hold Position and Move at Will. Your move, attack, and face orders take priority. On Hold Fire, the tank stays quiet unless it has recently taken a hit or the contact is already attacking or threatening it.
 - **[Tank obstacle crushing & front-armor reversing](research/notes/tank-crusher-26734796.md)**
   - Tracked tanks push through fences and crushable cover in combat instead of detouring around them.
@@ -93,7 +94,7 @@ Everything below works in both **Hold Position** (the GoH default) and **Move at
   - Backs off briefly after manual crew disembarks (25 s) or repairer casualties (8 s).
 - **[Automatic crew seat swaps & passenger refill](research/notes/tank-crew-fill-26734796.md)**
   - Surviving crew move from the least critical occupied seat to cover a vacancy. For example, a commander can take over the main gun, then a hull rider can fill the commander's seat. Main gunner and driver take priority, followed by loader, commander, and secondary gun crews.
-  - Tank hull riders, halftrack and APC passengers, and soldiers seated in armored cars or trucks can fill vacancies. Crewed guns can redistribute their crew while deployed. Roof gunners keep their posts, and crews stay put while a gun is being pushed or towed.
+  - Tank hull riders, halftrack and APC passengers, and soldiers seated in armored cars or trucks can fill vacancies. Crewed guns can redistribute their crew while deployed. A failed seat change backs off for five seconds, then ten if the same crewman bounces back again. Roof gunners keep their posts, and crews stay put while a gun is being pushed or towed.
   - A driver with no movement order can take the gun when immobilized or facing a visible enemy. A lone gunner can return to the wheel for a move order if the vehicle is mobile. Both swaps give an available passenger first choice and have a three-second cooldown.
   - Passenger fills favor crewmen and mechanics first, ordinary infantry next, and medics or soldiers carrying live AT gear last. They leave room for returning repairers, respect allied ownership, and pause for 10 seconds after a manual crew disembark.
 
@@ -122,8 +123,9 @@ Everything below works in both **Hold Position** (the GoH default) and **Move at
 
 ### Optional configuration (`goh_ai.ini`)
 
-No config file is required — everything runs with balanced defaults out of the box. To customize behavior, place a `goh_ai.ini` file beside the DLL. Changes under `[modules]`, `[tuning]`, and `[logging]` (`level`, `flush_ms`) hot-reload once per second while the game is running; `filename` and `[smoke]` are read at startup.
+No config file is required — everything runs with balanced defaults out of the box. To customize behavior, place a `goh_ai.ini` file beside the DLL. Changes under `[modules]`, `[tuning]`, `[testing]`, and `[logging]` (`level`, `flush_ms`) hot-reload once per second while the game is running; `filename` and `[smoke]` are read at startup.
 
+- **Single-side benchmarks.** Under `[testing]`, set `ai_player_mask=0x1` for player 0 or `0x2` for player 1. Combine bits to enable several players. The default `0xFFFFFFFF` enables all players, and `0` gives a stock-AI comparison for both sides. Telemetry continues to record all players.
 - **`[modules]`** *(all default `true`; set any key to `false` to disable)*:
   - **Combat & targeting:** `advance_responsive`, `attack_order_polish`, `target_prioritization`, `penetration_at`, `soft_cover_lof`, `attack_detour`, `tank_target_memory`, `cannon_aim_settle`, `allegiance_guard`
   - **Infantry & tactics:** `hit_the_dirt`, `crush_avoidance`, `grenade_dodge`, `close_grenade`, `tactical_infantry`, `tactical_objectives`, `fast_weapon_swap`, `grenade_ff_guard`, `overflow_cover`, `weapon_team_cohesion`, `mg_crew_small_arms`, `movement_recovery`
@@ -137,7 +139,7 @@ No config file is required — everything runs with balanced defaults out of the
   | Key | Default | Range |
   |---|---:|---:|
   | `grenade_detect_radius_m` | `22` | `6–60` m |
-  | `grenade_danger_radius_m` | `5` | `2–20` m |
+  | `grenade_danger_radius_m` | `4` | `2–20` m |
   | `smoke_vehicle_cooldown_s` | `25` | `5–120` s |
   | `smoke_infantry_cooldown_s` | `25` | `5–120` s |
   | `medic_search_radius_m` | `36` | `10–100` m |
@@ -146,7 +148,7 @@ No config file is required — everything runs with balanced defaults out of the
   | `scavenge_search_radius_m` | `16` | `6–35` m |
   | `scavenge_radius_m` | `20` | `6–40` m |
   | `resupply_search_radius_m` | `60` | `15–150` m |
-  | `objectives_pursue_radius_m` | `50` | `15–120` m |
+  | `objectives_pursue_radius_m` | `28` | `15–120` m |
   | `objectives_cap_radius_m` | `35` | `10–80` m |
   | `lull_reload_ratio` | `0.35` | `0.10–0.75` |
   | `tank_facing_min_angle_deg` | `24` | `15–60°` |

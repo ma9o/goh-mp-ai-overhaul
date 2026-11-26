@@ -70,8 +70,9 @@ inline bool has_actor(Address a) noexcept {
            !(read<std::uint32_t>(a, 0x38) & 0xA20u); // retired, inactive, pending deletion
 }
 inline bool eligible(Address base, Address brain, Address actor) noexcept {
-    if (!has_actor(actor) || !brain || read<Address>(actor, 0xDC8) != brain || read<Address>(brain, 0x38) != actor ||
-        !(read<std::uint32_t>(actor, 0xDB4) & 0x100) || (read<std::uint32_t>(actor, 0x1C0) & (1u << 28)))
+    if (!has_actor(actor) || !runtime::actor_ai_allowed(actor) || !brain || read<Address>(actor, 0xDC8) != brain ||
+        read<Address>(brain, 0x38) != actor || !(read<std::uint32_t>(actor, 0xDB4) & 0x100) ||
+        (read<std::uint32_t>(actor, 0x1C0) & (1u << 28)))
         return false;
     const auto vt = read<Address>(brain);
     const bool is_human = (vt == base + 0x110FF88);

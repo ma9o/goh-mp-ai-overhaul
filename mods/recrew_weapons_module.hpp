@@ -428,8 +428,8 @@ inline void tick_serial(const World& w, Address actor) {
 
 inline void on_vehicle_observe(const World& observed, Address gun) {
     World current{};
-    if (detail::stopping.load() || !detail::ops.callback(gun, current) || observed.scene != current.scene ||
-        detail::busy || !config::active().modules.recrew_weapons)
+    if (detail::stopping.load() || !detail::ops.callback(gun, current) || !runtime::actor_ai_allowed(gun) ||
+        observed.scene != current.scene || detail::busy || !config::active().modules.recrew_weapons)
         return;
     detail::Scope scope;
     detail::refresh(current);
@@ -437,7 +437,9 @@ inline void on_vehicle_observe(const World& observed, Address gun) {
 }
 inline void tick(Address actor) {
     World w{};
-    if (!detail::ops.callback(actor, w) || !(read<Byte>(actor, 0x30) & 4) || detail::busy) return;
+    if (!detail::ops.callback(actor, w) || !runtime::actor_ai_allowed(actor) || !(read<Byte>(actor, 0x30) & 4) ||
+        detail::busy)
+        return;
     detail::Scope scope;
     detail::tick_serial(w, actor);
 }

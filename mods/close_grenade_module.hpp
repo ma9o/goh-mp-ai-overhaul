@@ -860,7 +860,7 @@ inline void poll_squad_settle(Address a, unsigned id) {
     Admission admission;
     if (!accepting || !squad_after_quant || id == UINT32_MAX || !base || pr::depth != 1 || a != pr::scope.actor ||
         !sim::serial_actor(a) || !sim::emitting_host(base) || !read<Address>(base + 0x15CA080) ||
-        native<Address (*)(const unsigned*)>(0xA7E740)(&id) != a)
+        native<Address (*)(const unsigned*)>(0xA7E740)(&id) != a || !runtime::actor_ai_allowed(a))
         return;
     squad_after_quant(a);
 }
@@ -868,7 +868,8 @@ inline void poll(Address a, unsigned id) {
     Admission admission;
     if (!accepting || !config::active().modules.close_grenade || id == UINT32_MAX || !base || pr::depth != 1 ||
         a != pr::scope.actor || !sim::serial_actor(a) || !sim::emitting_host(base) ||
-        !read<Address>(base + 0x15CA080) || native<Address (*)(const unsigned*)>(0xA7E740)(&id) != a)
+        !read<Address>(base + 0x15CA080) || native<Address (*)(const unsigned*)>(0xA7E740)(&id) != a ||
+        !runtime::actor_ai_allowed(a))
         return;
     Address brain = read<Address>(a, 0xDC8);
     if (!human_policy(brain)) return;

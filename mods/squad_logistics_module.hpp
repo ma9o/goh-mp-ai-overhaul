@@ -612,7 +612,7 @@ template <class Delivery> inline void progress(const World& w, Job& j, Delivery&
 }
 inline void tick(Address actor) {
     World w{};
-    if (!s::callback(actor, w) || ticking) return;
+    if (!s::callback(actor, w) || ticking || !runtime::actor_ai_allowed(actor)) return;
     struct Scope {
         Scope() {
             ++admissions;

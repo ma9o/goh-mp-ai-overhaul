@@ -95,32 +95,30 @@ std::uint32_t inflight_count() noexcept {
 void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) {
     tank_crusher::ActorScope tank_scope(actor);
     ai_support::World world{};
-    const auto vehicle_id = runtime::global_accepting.load(std::memory_order_acquire) &&
-                                    (runtime::read<runtime::Byte>(actor, 0x30) & 8) &&
-                                    ai_support::callback(actor, world) && ai_support::live_entity(actor)
-                                ? ai_support::identity(actor)
-                                : ai_support::Identity{};
-    next(actor, ctx);
-    if (runtime::global_accepting.load(std::memory_order_acquire)) {
-        if (vehicle_id.ptr) {
-            ai_support::World current{};
-            if (!ai_support::callback(actor, current) || current.scene != world.scene ||
-                !ai_support::resolve(current, vehicle_id))
-                return;
-            world = current;
-            recrew_weapons::on_vehicle_observe(world, actor);
-        }
-        tank_auto_repair::on_actor_post_quant(actor);
-        if (vehicle_id.ptr && config::active().modules.transport_unload) {
-            if (!ai_support::resolve(world, vehicle_id)) return;
-            safe_disembark::on_actor_post_quant(actor);
-            // Native SetOrder can synchronously change the scene roster.
-            if (!ai_support::resolve(world, vehicle_id)) return;
-        }
-        tank_crew_fill::on_actor_post_quant(actor);
-        tank_facing::on_actor_post_quant(actor);
-        if (vehicle_id.ptr && ai_support::resolve(world, vehicle_id)) convoy_spacing::on_actor_post_quant(actor);
+    if (!runtime::global_accepting.load(std::memory_order_acquire) || !ai_support::callback(actor, world) ||
+        !ai_support::live_entity(actor) || !runtime::actor_ai_allowed(actor)) {
+        next(actor, ctx);
+        return;
     }
+    const auto key = ai_support::identity(actor);
+    const bool vehicle = (runtime::read<runtime::Byte>(actor, 0x30) & 8) != 0;
+    next(actor, ctx);
+    ai_support::World current{};
+    if (!runtime::global_accepting.load(std::memory_order_acquire) || !ai_support::callback(actor, current) ||
+        current.scene != world.scene)
+        return;
+    const auto present = [&] { return ai_support::resolve(current, key) && runtime::actor_ai_allowed(actor); };
+    if (!present()) return;
+    if (vehicle) recrew_weapons::on_vehicle_observe(current, actor);
+    tank_auto_repair::on_actor_post_quant(actor);
+    if (!vehicle || !present()) return;
+    if (config::active().modules.transport_unload) {
+        safe_disembark::on_actor_post_quant(actor);
+        if (!present()) return;
+    }
+    tank_crew_fill::on_actor_post_quant(actor);
+    if (present()) tank_facing::on_actor_post_quant(actor);
+    if (present()) convoy_spacing::on_actor_post_quant(actor);
 }
 
 std::uint32_t nontank_repair_dispatches() noexcept {

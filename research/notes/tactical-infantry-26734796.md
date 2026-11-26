@@ -13,6 +13,8 @@
 | Blocked line of fire | With a four-second retry interval, first test whether a crouched or standing pose opens the shot. Otherwise evaluate paired lateral offsets at 2.5, 5 and 7.5 m. An endpoint needs dry, passable ground and a clear shot. Exposure, squad spacing and flank alignment break the choice. Prefer nearby validated cover, then a native point move. An unavailable segment result supplies no evidence of either a shot or defilade. |
 | Cover injury and idle fallback | Retain cover after a distant hit if the current threat is screened. A second visible, attacking or threatening enemy on an unscreened side restores the native injury decision. AI-controlled infantry in cover, recently engaged, or with a committed hostile observation within 60 m clears the idle return flag before stock fallback. Player-owned idle anchors stay under player control. |
 
+A soldier with an ineffective weapon falls back from armor only when exposed, the armor is threatening or within 28 m, and there is no visible soft target within 45 m. A soldier in cover with an effective shot in range keeps that firing position during squad bounds.
+
 Native event `0x10` reaches battle state slot 5 at `0x96B334`. The two slot bodies own the tactical deadline at `state+0x3EC`. Outdoors, advance and assault rearm for 4 s, fallback for 3 s and break contact for 2.5 s exposed or 5 s screened. In cover the corresponding values are 5.5 s, 5 s, and 2 s exposed or 4.5 s screened. Hold uses the same firing dwell as advance. The module also records a private firing dwell after completion. [Offline fixtures](../tests/test_tactical_infantry_26734796.cpp)
 
 ## Where the hooks run

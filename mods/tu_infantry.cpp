@@ -120,6 +120,10 @@ std::uint32_t inflight_count() noexcept {
 void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) {
     auto_smoke::ActorQuantScope smoke_scope(actor);
     ai_support::ActorQuantScope support_scope(actor);
+    if (!runtime::actor_ai_allowed(actor)) {
+        next(actor, ctx);
+        return;
+    }
     const auto support_actor_id = (runtime::global_accepting.load(std::memory_order_acquire) && ai_support::base &&
                                    ai_support::live_entity(actor))
                                       ? ai_support::identity(actor)
@@ -132,7 +136,9 @@ void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) 
         !ai_support::callback(actor, world))
         return;
     // These native order/inventory boundaries can synchronously remove or replace the actor.
-    const auto present = [&] { return ai_support::resolve(world, support_actor_id) != 0; };
+    const auto present = [&] {
+        return ai_support::resolve(world, support_actor_id) && runtime::actor_ai_allowed(actor);
+    };
     if (!present()) return;
     if (config::active().modules.hit_the_dirt && (runtime::read<runtime::Byte>(actor, 0x30) & 4)) {
         hit_the_dirt::on_human_post_quant(world, actor);

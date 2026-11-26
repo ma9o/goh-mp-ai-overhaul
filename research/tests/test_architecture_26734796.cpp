@@ -106,6 +106,34 @@ void test_dynamic_stores() {
     assert(atomic_arr.try_get() == nullptr);
 }
 
+void test_benchmark_player_mask() {
+    using namespace goh::config;
+    using goh::runtime::actor_ai_allowed;
+    constexpr auto all = UINT32_MAX;
+    assert(parse_ini("").ai_player_mask == all);
+    assert(parse_ini("[modules]\nai_player_mask=0").ai_player_mask == all);
+    assert(parse_ini("[testing]\nai_player_mask=10").ai_player_mask == 10u);
+    assert(parse_ini("[testing]\nai_player_mask=0X80000002 ; high bit").ai_player_mask == 0x80000002u);
+    for (const char* invalid : {"", "-", "-1", "0x", "nope", "2junk", "4294967296", "0x10000000000000000"}) {
+        assert(parse_ini(std::string("[testing]\nai_player_mask=1\nai_player_mask=") + invalid).ai_player_mask == all);
+    }
+    alignas(8) std::array<std::uint8_t, 0xDB0> actor{};
+    const auto address = reinterpret_cast<Address>(actor.data());
+    reset_defaults();
+    assert(player_ai_enabled(255) && actor_ai_allowed(0));
+    active() = parse_ini("[testing]\nai_player_mask=0x80000002");
+    assert(!actor_ai_allowed(0) && !actor_ai_allowed(1));
+    for (std::uint8_t player : {0, 1, 2, 31, 32, 255}) {
+        actor[0xDA8] = player;
+        const bool expected = player == 1 || player == 31;
+        assert(player_ai_enabled(player) == expected && actor_ai_allowed(address) == expected);
+    }
+    active() = parse_ini("[testing]\nai_player_mask=0");
+    actor[0xDA8] = 0;
+    assert(!actor_ai_allowed(address) && !player_ai_enabled(0));
+    reset_defaults();
+}
+
 void test_config_and_log() {
     using namespace goh::config;
 
@@ -272,12 +300,13 @@ void test_config_and_log() {
     active().smoke_extra_grenades = {"startup_only"};
     auto update = parse_ini("[modules]\nauto_smoke=false\n[tuning]\nmedic_search_radius_m=46\n"
                             "[logging]\nfilename=renamed.log\nlevel=error\nflush_ms=210\n"
-                            "[smoke]\nextra_grenades=hot_list");
+                            "[smoke]\nextra_grenades=hot_list\n[testing]\nai_player_mask=2");
     published().publish(update);
     goh::log::configure(update);
     std::thread live_reader([] {
         const auto& current = active();
         assert(!current.modules.auto_smoke && current.tuning.medic_search_radius_m == 46);
+        assert(!player_ai_enabled(0) && player_ai_enabled(1));
         assert(current.smoke_extra_grenades == std::vector<std::string>{"startup_only"});
     });
     live_reader.join();
@@ -651,6 +680,7 @@ int main() {
                   goh::tu_tanks::kHookCount == 9);
     static_assert(1 + goh::tu_combat::kHookCount + goh::tu_infantry::kHookCount + goh::tu_tanks::kHookCount == 79);
     test_dynamic_stores();
+    test_benchmark_player_mask();
     test_config_and_log();
     test_pe_pattern_and_rtti_resolver();
     test_hook_gate_multithreaded();

@@ -33,6 +33,7 @@ struct Lane {
     s::Identity vehicle{};
     XY origin{}, heading{};
     float length{}, radius{};
+    bool underfoot{};
     float clearance(XY p) const {
         float along = std::clamp(geom::dot(geom::delta(p, origin), heading), 0.f, length);
         return geom::distance(p, geom::offset(origin, heading, along, 0, 1)) - radius;
@@ -141,8 +142,9 @@ inline bool context(Address root, Context& c) {
 }
 inline bool eligible(const Context& c) {
     const Address b = c.brain, a = c.actor, root = c.root;
-    if (!s::live_entity(a) || !sim::has_actor(a) || !(read<Byte>(a, 0x30) & 4) || read<Address>(a, 0xDC8) != b ||
-        read<Address>(b) != image + runtime::table().vt.human_brain || read<Address>(b, 0xE0) != root ||
+    if (!s::live_entity(a) || !runtime::actor_ai_allowed(a) || !sim::has_actor(a) || !(read<Byte>(a, 0x30) & 4) ||
+        read<Address>(a, 0xDC8) != b || read<Address>(b) != image + runtime::table().vt.human_brain ||
+        read<Address>(b, 0xE0) != root ||
         read<Address>(root, 0x3E0) != image + runtime::table().vt.crush_scanner_vehicle ||
         read<Address>(root, 0x3E8) != b || (read<unsigned>(b, 0x398) & 3) > 1 || s::owner(a) >= 18 ||
         !read<std::uint16_t>(a, 0xDAA) || (read<unsigned>(a, 0xDB4) & 0x40100) != 0x100 ||
@@ -178,8 +180,12 @@ inline std::optional<Lane> threat(const Context& c, Address v) {
     const float hull = ops.hull(v);
     if (!std::isfinite(hull) || !(hull > 0)) return {};
     const float margin = sim::allies(w.base, s::owner(c.actor), s::owner(v)) ? .85f : 1.5f;
-    Lane lane{s::identity(v), m::xy(origin), geom::unit(motion), std::min(2.5f * speed, 10.f * w.length),
-              std::clamp(hull, 1.8f * w.length, 4.5f * w.length) + (margin + .5f) * w.length};
+    Lane lane{s::identity(v),
+              m::xy(origin),
+              geom::unit(motion),
+              std::min(2.5f * speed, 10.f * w.length),
+              std::clamp(hull, 1.8f * w.length, 4.5f * w.length) + (margin + .5f) * w.length,
+              geom::distance(m::xy(self), m::xy(origin)) <= hull + 1.2f * w.length};
     if (lane.clearance(m::xy(self)) > 0) return {};
     return lane;
 }
@@ -192,6 +198,34 @@ struct Record {
     bool armed{};
 };
 inline store::GrowableTable<Record, 16, 2048> records{};
+struct Escape {
+    s::Identity actor{};
+    Address order{};
+    XY goal{};
+    runtime::Tick issued{}, cooldown_until{};
+};
+inline store::GrowableTable<Escape, 16, 2048> escapes{};
+
+inline Escape* escape_state(const Context& c, bool create) {
+    Escape* free = nullptr;
+    for (auto& st : escapes) {
+        if (st.actor.matches(c.actor) && st.actor.mid == read<std::uint16_t>(c.actor, 0xDAA)) return &st;
+        if (!free && (!st.order || st.actor.ptr == c.actor || c.w.now - st.issued >= c.w.duration(2.5f))) free = &st;
+    }
+    if (!create) return nullptr;
+    return free ? free : store::try_append_slot(escapes);
+}
+inline bool keep_escape(const Context& c, const Threats& threats, const Escape* st) {
+    if (!st || !st->actor.matches(c.actor) || st->actor.mid != read<std::uint16_t>(c.actor, 0xDAA)) return false;
+    bool goal_clear = !threats.overflow, underfoot = false;
+    for (unsigned i = 0; i < threats.count; ++i) {
+        goal_clear &= threats.lanes[i].clearance(st->goal) > 0;
+        underfoot |= threats.lanes[i].underfoot;
+    }
+    const auto elapsed = c.w.now - st->issued;
+    if (read<Address>(c.brain, 0xF0) == st->order && goal_clear && elapsed < c.w.duration(2.5f)) return true;
+    return underfoot ? elapsed < c.w.duration(.5f) : static_cast<std::int32_t>(st->cooldown_until - c.w.now) > 0;
+}
 inline Address last_scene{};
 inline runtime::Tick last_tick{};
 // Read scene membership once per simulation tick (or an actor-count change).
@@ -231,6 +265,7 @@ inline void sync(const World& w) {
     const Address scene = s::entity_scene(w);
     if (last_scene != scene || w.now < last_tick) {
         records.clear();
+        escapes.clear();
         vehicles.valid = false;
     }
     last_scene = scene;
@@ -278,7 +313,8 @@ inline void update(Address scanner) {
     std::sort(threats.lanes.begin(), threats.lanes.begin() + threats.count,
               [](const Lane& a, const Lane& b) { return a.vehicle.id < b.vehicle.id; });
     const auto native = s::span(scanner, 0x18);
-    const bool arm = native.first == native.end && !read<Byte>(scanner, 0x10) && !threats.overflow;
+    const bool arm = native.first == native.end && !read<Byte>(scanner, 0x10) && !threats.overflow &&
+                     !keep_escape(c, threats, escape_state(c, false));
     *row = {scanner, c.brain, s::identity(c.actor), c.w.now, threats, arm};
     if (arm) runtime::write<Byte>(scanner, 0x10, 1);
 }
@@ -323,10 +359,15 @@ inline Address build(Address scanner) {
     if (!eligible(c) || !fresh(c, row)) return 0;
     auto threats = current_threats(c, row->threats);
     if (!threats.count || threats.overflow) return 0;
+    auto* st = escape_state(c, true);
+    if (!st || keep_escape(c, threats, st)) return 0;
     const auto goal = ops.escape(c.w, c.actor, threats);
     if (!goal) return 0;
     const auto result = sequence(*goal);
-    if (result) ++stat_crush_escapes;
+    if (result) {
+        *st = {row->actor, result, *goal, c.w.now, c.w.now + c.w.duration(1.5f)};
+        ++stat_crush_escapes;
+    }
     return result;
 }
 // The root can be entered directly. Check membership before dereferencing
@@ -420,6 +461,7 @@ inline void after_hooks_removed() {
     detail::original = {};
     detail::batch.reset();
     detail::records.release();
+    detail::escapes.release();
     detail::vehicles.valid = false;
     detail::last_scene = detail::last_tick = detail::image = 0;
     detail::ops = {};

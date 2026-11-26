@@ -57,7 +57,8 @@ void grenade_escape(FakeImage& image) {
     Boxer unit{};
     unit.setup(g::base, 7);
     auto& brain = unit.human.brain;
-    Memory<0x80> scanner{}, move{}, seq{}, task{}, avoid{}, grenade{}, second{};
+    Memory<0x80> scanner{}, move{}, seq{}, task{}, avoid{}, second{};
+    Memory<0xDC0> grenade{};
     Memory<0x80> task_data{};
     std::array<runtime::Vec3, 2> path{{{-20, 0, 0}, {100, 0, 0}}};
     Address child = move.ptr(), block = reinterpret_cast<Address>(&child);
@@ -178,6 +179,58 @@ void grenade_escape(FakeImage& image) {
     g::state().grenades.push_back(hazard);
     image.put(table.glob.scene_ptr, scanner.ptr());
     assert(!scanning() && g::state().grenades.empty());
+
+    // A covered actor should plan once, then let native ticks advance its child.
+    image.put(0x149E758, 20.f); // 20 simulation ticks/s
+    Memory<0x40> cover{};
+    Memory<0x180> slots{};
+    static Memory<0x70> escape_move{};
+    unit.human.actor.put(0xdc0, cover.ptr());
+    cover.put<int>(0x24, 1);
+    unit.human.chassis.put(0, slots.ptr());
+    const auto setter = reinterpret_cast<Address>(+[](Address, int, Byte) {});
+    slots.put(g::Off::kFootSetModeVOff, setter);
+    slots.put(g::Off::kFootSetTypeVOff, setter);
+    brain.put(0xf0, avoid.ptr());
+    avoid.put<Address>(0x30, 0);
+    table.fn.terrain_env = rva(+[](std::uint16_t* out, const float*) { return out; }, g::base);
+    table.fn.move_task_point = rva(+[](const float*, unsigned) { return escape_move.ptr(); }, g::base);
+    table.fn.order_attach_child = rva(
+        +[](Address parent, Address move_child) {
+            assert(move_child == escape_move.ptr() && !runtime::read<Address>(parent, 0x30));
+            runtime::write(parent, 0x30, move_child);
+        },
+        g::base);
+    const auto prior_mask = config::active().ai_player_mask;
+    config::active().ai_player_mask = 0;
+    Memory<0x310> sim{};
+    sim.put(0x308, grenade.ptr());
+    grenade.put<Byte>(0xda8, static_cast<Byte>((s::owner(unit.ptr()) + 1) % 18));
+    g::orig_sim_tick = +[](Address) {};
+    g::orig_sim_dtor = +[](Address, std::uint32_t) -> void* { return nullptr; };
+    table.fn.terrain_height = rva(+[](Address, const float*, int) { return 0.f; }, g::base);
+    g::hook_sim_tick(sim.ptr());
+    assert(g::state().grenades.size() == 1 && g::state().grenades.front().entity == grenade.ptr());
+    g::hook_sim_dtor(sim.ptr(), 0);
+    assert(g::state().grenades.empty());
+    g::hook_sim_tick(sim.ptr());
+    assert(!scanning() && g::hook_avoid_inner_tick(avoid.ptr()) == 17 && g::hook_avoid_plan_escape(avoid.ptr()) == 19);
+    config::active().ai_player_mask = 1u << s::owner(unit.ptr());
+    const auto dodges = gd::total_dodges();
+    assert(g::hook_avoid_inner_tick(avoid.ptr()) == 0 && gd::total_dodges() == dodges + 1 &&
+           avoid.get<Address>(0x30) == escape_move.ptr());
+    sim_time += 16;
+    assert(g::hook_avoid_inner_tick(avoid.ptr()) == 17 && g::hook_avoid_plan_escape(avoid.ptr()) == 1 &&
+           gd::total_dodges() == dodges + 1); // Existing child survives past the 0.8 s window.
+    avoid.put<Address>(0x30, 0);
+    assert(g::hook_avoid_inner_tick(avoid.ptr()) == 0 && gd::total_dodges() == dodges + 2);
+    avoid.put<Address>(0x30, 0); // A very short-lived child still cannot trigger replans every tick.
+    sim_time += 15;
+    assert(g::hook_avoid_inner_tick(avoid.ptr()) == 17 && g::hook_avoid_plan_escape(avoid.ptr()) == 1 &&
+           gd::total_dodges() == dodges + 2);
+    ++sim_time;
+    assert(g::hook_avoid_inner_tick(avoid.ptr()) == 0 && gd::total_dodges() == dodges + 3);
+    config::active().ai_player_mask = prior_mask;
     gd::after_hooks_removed();
     runtime::global_accepting = false;
     assert(!gd::total_player_escapes_preserved());

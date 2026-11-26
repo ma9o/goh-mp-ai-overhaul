@@ -167,7 +167,7 @@ inline bool has_secondary_row(Address brain, Address reserved_weapon) {
     return false;
 }
 inline bool authorized_actor(Address actor, Address brain) {
-    if (!actor || !brain) return false;
+    if (!actor || !brain || !runtime::actor_ai_allowed(actor)) return false;
     if (read<Address>(actor, 0xDC8) != brain || read<Address>(brain, 0x38) != actor) return false;
     Address vt = read<Address>(brain);
     if (vt != base + 0x110FF88 && vt != base + 0x101FD68) return false;

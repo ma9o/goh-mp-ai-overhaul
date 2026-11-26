@@ -84,7 +84,8 @@ struct Context {
 inline bool context(Address order, Address order_vt, Context& c) {
     if (!gate.active() || !runtime::is_host_main_thread(image) || !runtime::is_plausible_ptr(order)) return false;
     c.actor = ops.context(c.w);
-    if (!c.actor || read<Address>(order) != image + order_vt || read<Address>(order, 8) != c.actor + 0xaf0)
+    if (!c.actor || !runtime::actor_ai_allowed(c.actor) || read<Address>(order) != image + order_vt ||
+        read<Address>(order, 8) != c.actor + 0xaf0)
         return false;
     c.brain = read<Address>(c.actor, 0xdc8);
     c.human = read<Address>(c.brain) == image + runtime::table().vt.human_brain;

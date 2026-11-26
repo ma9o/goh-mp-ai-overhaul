@@ -21,7 +21,7 @@ template <class Fn> inline Fn function(Address rva) {
 inline Address current() {
     if (!gate.active() || !config::active().modules.engine_fixes || !ops.serial_actor) return 0;
     const auto actor = ops.serial_actor();
-    return actor && ops.host_main(image) ? actor : 0;
+    return actor && ops.host_main(image) && runtime::actor_ai_allowed(actor) ? actor : 0;
 }
 inline bool authorized(Address actor, Address brain, bool human_only = true) {
     if (!actor || current() != actor || !brain || read<Address>(actor, 0xdc8) != brain ||

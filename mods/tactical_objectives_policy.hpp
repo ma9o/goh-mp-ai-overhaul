@@ -9,6 +9,7 @@
 namespace goh::tactical_objectives::policy {
 using Key = std::uintptr_t;
 constexpr double never = -1e20;
+constexpr float default_pursue_radius_m = 28.f;
 struct XY {
     float x{}, y{};
     XY operator+(XY p) const {
@@ -64,7 +65,8 @@ struct Anchor {
             center(point);
     }
 };
-inline bool in_leash(Kind kind, XY target, XY self, XY center, XY anchor, float pursue_r = 50.f, float cap_r = 35.f) {
+inline bool in_leash(Kind kind, XY target, XY self, XY center, XY anchor, float pursue_r = default_pursue_radius_m,
+                     float cap_r = 35.f) {
     if (kind == Kind::cap)
         return within_radius(target, self, cap_r) && within_radius(target, center, cap_r) &&
                within_radius(target, anchor, cap_r);
@@ -145,7 +147,7 @@ struct Contacts {
     }
     template <class Available>
     const Observation* pursue(XY self, XY center, XY anchor, unsigned eligible, bool anti_armor, double now,
-                              Available available, float pursue_r = 50.f) const {
+                              Available available, float pursue_r = default_pursue_radius_m) const {
         const Observation* best = nullptr;
         float top = -std::numeric_limits<float>::infinity();
         if (incomplete) return nullptr;
@@ -165,7 +167,7 @@ struct Contacts {
         return best;
     }
     const Observation* pursue(XY self, XY center, XY anchor, unsigned eligible, bool anti_armor, double now,
-                              float pursue_r = 50.f) const {
+                              float pursue_r = default_pursue_radius_m) const {
         return pursue(
             self, center, anchor, eligible, anti_armor, now, [](const Observation&) { return true; }, pursue_r);
     }
@@ -173,8 +175,8 @@ struct Contacts {
 inline bool cap_allowed(const Contacts& contacts, XY flag, XY self, XY center, XY anchor, unsigned eligible,
                         bool has_pursue, double now, float cap_r = 35.f) {
     return !contacts.incomplete && !has_pursue && !contacts.threatened(self, center, now) &&
-           in_leash(Kind::cap, flag, self, center, anchor, 50.f, cap_r) && !within_radius(self, flag, 6.5f) &&
-           manageable(Kind::cap, contacts.danger(flag, 25, now), eligible, false);
+           in_leash(Kind::cap, flag, self, center, anchor, default_pursue_radius_m, cap_r) &&
+           !within_radius(self, flag, 6.5f) && manageable(Kind::cap, contacts.danger(flag, 25, now), eligible, false);
 }
 // A normal move finishes within 3 m of its endpoint. Choose a perimeter point
 // whose approach enters the capture zone before that arrival tolerance fires.
@@ -195,7 +197,7 @@ inline XY ring(XY target, XY center, float radius, float degrees) {
 }
 template <class Accept>
 bool destination(Kind kind, XY target, XY center, XY anchor, float range, unsigned slot, Accept accept,
-                 float pursue_r = 50.f, float cap_r = 35.f) {
+                 float pursue_r = default_pursue_radius_m, float cap_r = 35.f) {
     if (kind == Kind::cap) {
         for (float radius : {4.5f, 3.f, 5.5f})
             for (unsigned i = 0; i < 6; ++i) {

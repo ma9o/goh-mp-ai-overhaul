@@ -385,7 +385,8 @@ inline pol::SlotFacts read_slot(Address slot, short index) {
 
 inline bool eligible_occupant(Address human, Address vehicle, Address vehicle_brain, bool crew_inside,
                               bool same_player_crew_inside, Span walkers, Span seats, pol::PassengerFacts& pf) {
-    if (!(read<Byte>(human, 0x30) & 4) || !read<std::uint16_t>(human, 0xDAA)) return false;
+    if (!(read<Byte>(human, 0x30) & 4) || !read<std::uint16_t>(human, 0xDAA) || !runtime::actor_ai_allowed(human))
+        return false;
     const auto hb = brain_of(human, human_vt, true);
     if (!hb || vitality(human) != 0 || !available_seat(human, vehicle, hb)) return false;
     if (is_walking(walkers, human) || has_any_reservation(seats, human)) return false;
@@ -446,7 +447,13 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
     for (auto slot = seats.first; slot != seats.end; slot += 0x298) {
         const auto index = static_cast<short>((slot - seats.first) / 0x298);
         auto facts = read_slot(slot, index);
-        if ((index == st->last_transfer.src && !facts.occupied) || (index == st->last_transfer.dst && facts.occupied))
+        // Boarder::Move can transiently vacate src or blink dst occupied before bouncing the crewman back.
+        // Only retire last_transfer once its retry window has elapsed.
+        const auto& last = st->last_transfer;
+        if (!pending(last.retry_until, w.now) &&
+            ((index == last.dst && facts.occupied) ||
+             (index == last.src &&
+              (!facts.occupied || read<unsigned>(read<Address>(slot, 0x280), 0xC0) != last.human_id))))
             st->last_transfer = {};
         if (facts.group != "crew") continue;
         if (facts.occupied) {
@@ -518,7 +525,7 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
     const auto human = read<Address>(seats.first + static_cast<Address>(src_place) * 0x298, 0x280);
     auto& last = st->last_transfer;
     const bool same = last.human_id == src.passenger.entity_id && last.src == src_place && last.dst == dst_place;
-    if (same && pending(last.retry_until, w.now)) return;
+    if (same && last.retried && pending(last.retry_until, w.now)) return;
 
     // Acceptance can precede the seat update. Give every move time to settle,
     // and reserve the longer delays for a crewman still attempting the same move.
@@ -528,7 +535,8 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
         last.retry_until = w.now + w.duration(last.retried ? 10.f : 5.f);
         last.retried = true;
     } else {
-        last = {src.passenger.entity_id, src_place, dst_place};
+        // Keep the first tuple across a transient vacancy. Its first retry uses the vehicle settle delay.
+        last = {src.passenger.entity_id, src_place, dst_place, w.now + w.duration(5.f)};
     }
     if (!moved) {
         ++stat_transfer_failures;
@@ -575,7 +583,8 @@ inline void on_actor_post_quant(Address actor) {
     using namespace detail;
     Guard guard;
     if (!active.load(std::memory_order_acquire) || !config::active().modules.tank_crew_fill || !actor ||
-        !ops.is_worker || !ops.is_remote_client || !ops.read_world || ops.is_worker())
+        !ops.is_worker || !ops.is_remote_client || !ops.read_world || ops.is_worker() ||
+        !runtime::actor_ai_allowed(actor))
         return;
     if (coordinating) return;
     World w{};

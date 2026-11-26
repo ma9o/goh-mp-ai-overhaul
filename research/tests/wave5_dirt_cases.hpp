@@ -247,9 +247,10 @@ inline void grenades() {
     // New hazard at the same address. Stock gets one last escape attempt after
     // the sprint retry budget. Hide only if that attempt also fails.
     f->grenade.put<unsigned>(0xc0, 10);
-    gd_state.retries[f->order.ptr()] = {f->now, 6};
+    gd_state.retries[f->order.ptr()] = {f->now - f->world().duration(.8f), 6, h.actor.ptr() + 0xaf0, f->grenade.ptr()};
     f->stock_plan_ok = true;
     assert(!gd::hook_avoid_inner_tick(f->order.ptr()) && f->hides == 1 && f->plans == 1);
+    f->time(f->now + f->world().duration(.8f));
     f->stock_plan_ok = false;
     assert(!gd::hook_avoid_inner_tick(f->order.ptr()) && f->hides == 2 && f->plans == 2);
     assert(hit_the_dirt::stat_trapped_hides == 2);

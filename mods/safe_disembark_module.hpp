@@ -92,7 +92,7 @@ template <class Fn> inline Fn native(Address rva) {
 }
 
 inline bool available_passenger(Address human, Address vehicle) {
-    if (!crew::detail::has_seated_actor(human) || !(read<Byte>(human, 0x30) & 4) ||
+    if (!crew::detail::has_seated_actor(human) || !(read<Byte>(human, 0x30) & 4) || !runtime::actor_ai_allowed(human) ||
         !sim::allies(base, s::owner(vehicle), s::owner(human)) || crew::detail::vitality(human) ||
         !read<std::uint16_t>(human, 0xDAA))
         return false;

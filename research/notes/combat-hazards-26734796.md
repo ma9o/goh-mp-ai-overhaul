@@ -48,6 +48,10 @@ The build table verifies these additional complete-object vtables against the PE
 
 ## Authority, lifecycle and verification
 
+The crush scanner remembers each soldier’s issued escape order and destination. For 2.5 seconds it preserves that order while the destination is outside every current threat lane. A replacement normally waits at least 1.5 seconds. Only a vehicle within its hull radius plus 1.2 m can shorten that interval to 0.5 seconds. Scene changes and clock rewinds clear the records.
+
+The grenade escape order holds its movement child at `+0x30`. The stock order executor at `0x916100` advances that child. Subsequent calls through the hooked inner tick at `0x916570` can continue the stock escape. A soldier in cover can plan an escape when the child is absent and the same order, owner and grenade have gone 0.8 seconds without a plan. Projectile observations cover every player even during single-side benchmarks.
+
 The four independent, default-on INI switches are `advance_responsive`, `attack_order_polish`, `hit_the_dirt` and `crush_avoidance`. Decisions run under the verified host and serial simulation context. The receiving actor must have a live concrete brain and pass the ownership, inhibition and Direct Control guards. A manually driven vehicle is observed as a hazard to an independently authorized infantry actor. Replication uses stock movement, stance, FSM and order boundaries. Custom decisions draw no engine RNG.
 
 The unified DLL stages 79 hooks across coordinator (1), combat (23), infantry (46) and tanks (9). The six new detours participate in the global in-flight drain. Private state is released after hook removal. The shutdown counters are `advUnfrz`, `atkPrst`, `atkNoMel`, `trapHide`, `hitDirt`, `crshEsc` and `hazPrio`.

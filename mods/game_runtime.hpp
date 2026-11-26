@@ -7,6 +7,8 @@
 #include <windows.h>
 #endif
 
+#include "config_and_log.hpp"
+
 #include <algorithm>
 #include <atomic>
 #include <cmath>
@@ -59,6 +61,11 @@ template <class T> inline void write(Address address, std::size_t offset, const 
 
 inline bool is_plausible_ptr(Address p) noexcept {
     return p >= 0x10000ULL && p < 0x00007FFFFFFFFFFFULL && ((p & 3ULL) == 0);
+}
+
+inline bool actor_ai_allowed(Address actor) noexcept {
+    return config::active().ai_player_mask == 0xFFFFFFFFu ||
+           (is_plausible_ptr(actor) && config::player_ai_enabled(read<Byte>(actor, 0xDA8)));
 }
 
 template <class Fn> inline Fn native(Address base, Address rva) noexcept {

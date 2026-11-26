@@ -116,6 +116,7 @@ struct TrackedGrenade {
 struct OrderRetry {
     Tick last_tick{};
     int attempt{};
+    Address owner{}, grenade{};
 };
 
 struct RuntimeState {
@@ -180,7 +181,9 @@ inline bool is_passable_dry_terrain(float x, float y, bool is_human = true) noex
 }
 
 inline Address active_child(Address order, Address table) noexcept {
-    if (table == base + runtime::table().vt.move_task_order || table == base + runtime::table().vt.move_to_cover)
+    // AvoidGrenade::Exec (0x916100) ticks/releases its single child at +0x30.
+    if (table == base + runtime::table().vt.avoid_grenade || table == base + runtime::table().vt.move_task_order ||
+        table == base + runtime::table().vt.move_to_cover)
         return read<Address>(order, 0x30);
     return auto_smoke::orders::active_child(base, order);
 }
@@ -199,7 +202,7 @@ inline bool active_order_type(Address actor, Address brain, Address type) noexce
 inline bool is_eligible_human(Address actor, Address& out_brain, Address& out_chassis) noexcept {
     out_brain = 0;
     out_chassis = 0;
-    if (!is_plausible_ptr(actor)) return false;
+    if (!is_plausible_ptr(actor) || !runtime::actor_ai_allowed(actor)) return false;
     if ((read<std::uint32_t>(actor, Off::kActorFlags38) & 0x220u) != 0) return false;
     if ((read<std::uint32_t>(actor, Off::kEntityFlags1C0) & (1u << 28)) != 0) return false;
 
@@ -347,6 +350,10 @@ inline float danger_radius_m(Address object, Address offset) {
     return std::isfinite(radius) && radius >= 1.f && radius <= 20.f ? radius : 4.f;
 }
 
+inline float effective_danger_radius_m(Address order) noexcept {
+    return (std::max)(danger_radius_m(order, Off::kAvoidRadius), config::active().tuning.grenade_danger_radius_m);
+}
+
 inline bool is_threatened_by(const TrackedGrenade& g, float sx, float sy, float danger_radius, float max_detect_dist,
                              float& out_urgency_dist_sq) noexcept {
     const float dcx = sx - g.x;
@@ -431,7 +438,20 @@ inline bool compute_away_from_enemies(Address actor, float sx, float sy, Tick no
     return true;
 }
 
-inline int get_and_increment_retry(Address order, Tick now) {
+inline bool escape_plan_pending(Address order, Address owner, Address grenade, Tick now) {
+    if (active_child(order, read<Address>(order))) return true;
+    auto_smoke::World w{};
+    if (!auto_smoke::world(base, w)) return false;
+    const Tick window = (std::max)(1u, w.duration(.8f));
+    auto& st = state();
+    std::lock_guard<std::mutex> lock(st.mutex);
+    for (const auto& [key, entry] : st.retries) {
+        (void)key;
+        if (entry.owner == owner && entry.grenade == grenade && now - entry.last_tick < window) return true;
+    }
+    return false;
+}
+inline int get_and_increment_retry(Address order, Address owner, Address grenade, Tick now) {
     auto& st = state();
     std::lock_guard<std::mutex> lock(st.mutex);
     refresh_scene_locked(st, now);
@@ -444,16 +464,17 @@ inline int get_and_increment_retry(Address order, Tick now) {
         }
     }
     auto it = st.retries.find(order);
-    if (it != st.retries.end() && (now - it->second.last_tick) < 10000) {
+    if (it != st.retries.end() && it->second.owner == owner && it->second.grenade == grenade &&
+        (now - it->second.last_tick) < 10000) {
         it->second.last_tick = now;
         return it->second.attempt++;
     }
-    st.retries[order] = {now, 1};
+    st.retries[order] = {now, 1, owner, grenade};
     return 0;
 }
 
 inline bool is_actor_avoiding_live(Address actor) noexcept {
-    if (!base || !is_plausible_ptr(actor)) return false;
+    if (!base || !is_plausible_ptr(actor) || !runtime::actor_ai_allowed(actor)) return false;
     const Address brain = read<Address>(actor, Off::kActorBrain);
     if (!is_plausible_ptr(brain)) return false;
     return active_order_type(actor, brain, runtime::table().vt.avoid_grenade);
@@ -638,19 +659,23 @@ inline std::uint64_t __fastcall hook_avoid_inner_tick(Address order) {
     const bool fuse = armed(grenade) != 0;
     if (!fuse && !(can_hide && (read<unsigned>(grenade, 0x1c0) & (1u << 13)))) return orig_avoid_inner_tick(order);
     TrackedGrenade track{};
-    const bool tracked = grenade_position(grenade, runtime::read_clock(base), track);
+    const auto now = runtime::read_clock(base);
+    const bool tracked = grenade_position(grenade, now, track);
     const bool improve_escape = dodge && fuse && tracked;
     if (!improve_escape && !can_hide) return orig_avoid_inner_tick(order);
     const float sx = read<float>(actor, Off::kEntityPos), sy = read<float>(actor, Off::kEntityPos + 4);
-    const float L = can_hide ? w.length : spatial_scale(), radius = danger_radius_m(order, Off::kAvoidRadius);
+    const float L = can_hide ? w.length : spatial_scale(), radius = effective_danger_radius_m(order);
     runtime::XY goal{};
     if (player_destination(brain, goal) && safe_goal(goal, sx, sy, L, radius, track))
         return improve_escape ? 1 : orig_avoid_inner_tick(order);
     float urgency{};
     if (!is_threatened_by(track, sx, sy, (radius + 1.f) * L, 25.f * L, urgency)) return orig_avoid_inner_tick(order);
     const auto cover = read<Address>(actor, Off::kActorCover);
-    const bool plan_from_cover = improve_escape && is_plausible_ptr(cover) && read<int>(cover, 0x24) != 0;
-    if (improve_escape && (state == 1 || plan_from_cover)) runtime::write<int>(order, Off::kAvoidState, 0);
+    const bool in_cover = is_plausible_ptr(cover) && read<int>(cover, 0x24) != 0;
+    const bool pending = improve_escape && escape_plan_pending(order, owner, grenade, now);
+    const bool plan_from_cover = improve_escape && in_cover && !pending;
+    if (plan_from_cover || (improve_escape && !in_cover && state == 1 && !pending))
+        runtime::write<int>(order, Off::kAvoidState, 0);
     const auto actor_key = can_hide ? ai_support::identity(actor) : ai_support::Identity{};
     const auto grenade_key = can_hide ? ai_support::identity(grenade) : ai_support::Identity{};
     const auto result = plan_from_cover ? (hook_avoid_plan_escape(order) ? 0ULL : 2ULL) : orig_avoid_inner_tick(order);
@@ -698,17 +723,20 @@ inline Byte __fastcall hook_avoid_plan_escape(Address order) {
     const float sy = read<float>(actor, Off::kEntityPos + 4);
     const float L = spatial_scale();
 
-    const float ord_rad = danger_radius_m(order, Off::kAvoidRadius);
+    const float eff_rad = effective_danger_radius_m(order);
     TrackedGrenade tg_copy{};
     const bool has_tg = grenade_position(g_ent, now, tg_copy);
     const float hx = tg_copy.land_x, hy = tg_copy.land_y;
     const float g_cur_x = tg_copy.x, g_cur_y = tg_copy.y;
     const float gvx = tg_copy.vx, gvy = tg_copy.vy;
     runtime::XY goal{};
-    if (has_tg && player_destination(brain, goal) && safe_goal(goal, sx, sy, L, ord_rad, tg_copy)) return 0;
-    const int attempt = get_and_increment_retry(order, now);
+    if (has_tg && player_destination(brain, goal) && safe_goal(goal, sx, sy, L, eff_rad, tg_copy)) return 0;
+    // Stock's inner tick can itself call PlanEscape. Let the existing child or
+    // recent plan stand so a single grenade cannot re-trigger five times in a row.
+    if (has_tg && escape_plan_pending(order, owner_sub, g_ent, now)) return 1;
+    const int attempt = get_and_increment_retry(order, owner_sub, g_ent, now);
     if (attempt >= 5) return orig_avoid_plan_escape(order);
-    const float safe_rad = (ord_rad + 2.5f) * L;
+    const float safe_rad = (eff_rad + 2.5f) * L;
     const float qx = sx - hx;
     const float qy = sy - hy;
     const float dist_land = std::sqrt(qx * qx + qy * qy);
@@ -718,7 +746,7 @@ inline Byte __fastcall hook_avoid_plan_escape(Address order) {
 
     const bool flying_away = has_tg && (tg_copy.flight_time > 120.0f || ((std::sqrt(gvx * gvx + gvy * gvy) > 0.035f) &&
                                                                          (gvx * dcx + gvy * dcy <= 0.0f)));
-    if (dist_land >= safe_rad && (flying_away || dist_cur >= (ord_rad + 1.5f) * L)) {
+    if (dist_land >= safe_rad && (flying_away || dist_cur >= (eff_rad + 1.5f) * L)) {
         runtime::write<std::int32_t>(order, Off::kAvoidState, 1);
         return 1;
     }

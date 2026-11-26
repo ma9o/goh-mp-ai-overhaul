@@ -85,8 +85,8 @@ inline void count(std::atomic<unsigned>& counter, const char* action) {
 }
 inline bool context(Address brain, World& w, bool allow_attack = false) {
     return accepting.load() && config::active().modules.penetration_at && pr::depth == 1 &&
-           support::callback(pr::scope.actor, w) && pr::admitted(brain, true) &&
-           (allow_attack || !close_grenade::has_explicit_attack(brain));
+           support::callback(pr::scope.actor, w) && runtime::actor_ai_allowed(pr::scope.actor) &&
+           pr::admitted(brain, true) && (allow_attack || !close_grenade::has_explicit_attack(brain));
 }
 inline Address observer_brain() {
     return accepting.load() && pr::depth == 1 && pr::scope.actor && support::serial_thread() && support::host()
@@ -455,11 +455,18 @@ inline Options vehicle_options(const World& w, Address brain, Address s, std::in
                 return;
             }
             auto tag = (read<Byte>(rule, 0x394) & 2) ? rule + 0x330 : 0;
+            const bool ready = near_ready(w, weapon, a.def);
             Assessment rating;
             if (soft_vehicle) {
-                if (k != p::Shell::explosive) return;
-                rating.complete = true;
-                rating.outcome.component = true;
+                if (k != p::Shell::explosive) {
+                    if (!ready) return;
+                    rating.complete = true;
+                    rating.outcome.seen = true;
+                    rating.outcome.clean = true;
+                } else {
+                    rating.complete = true;
+                    rating.outcome.component = true;
+                }
             } else
                 rating = assess(w, weapon, target, a.def, profile, k, tag);
             out.capable |= k != p::Shell::explosive;
@@ -474,7 +481,7 @@ inline Options vehicle_options(const World& w, Address brain, Address s, std::in
                     open_choice = false;
                 if (soft_vehicle && !open_choice) return;
             }
-            int tier = p::shell_priority(k, rating.outcome, near_ready(w, weapon, a.def), open_choice);
+            int tier = p::shell_priority(k, rating.outcome, ready, open_choice);
             Proposal next{row, weapon, rule, a, tier, read<int>(rule, 0x390), rating.outcome.ratio};
             if (k == p::Shell::standard)
                 standard_penetration = (std::max)(standard_penetration, rating.outcome.penetration);
@@ -516,7 +523,8 @@ inline bool select_ammo(const pr::Assignment& a, Address subject, std::int16_t p
     if (!context(a.brain, w) || !pr::eligible_subject(a.brain, subject)) return false;
     auto target = read<Address>(subject, 0x18);
     auto type = close_grenade::vehicle(target);
-    bool soft = type == close_grenade::Vehicle::gun || type == close_grenade::Vehicle::car;
+    bool soft =
+        !pr::armoured_class(target) && (type == close_grenade::Vehicle::gun || type == close_grenade::Vehicle::car);
     if ((!soft && !pr::armoured_class(target)) || !read<Address>(target, 0xDC0)) return false;
     auto choices = vehicle_options(w, a.brain, subject, priority, true, soft);
     std::stable_sort(choices.rows.begin(), choices.rows.begin() + choices.used, better);

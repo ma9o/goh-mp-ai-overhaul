@@ -122,7 +122,7 @@ inline SetType posture_setter(Address chassis) {
     return reinterpret_cast<SetType>(read<Address>(read<Address>(chassis), 0x170));
 }
 inline bool trap_context(const s::World& w, Address order, Address actor, Address grenade) {
-    if (!authorized_thread() || w.base != image || serial_actor() != actor ||
+    if (!authorized_thread() || w.base != image || serial_actor() != actor || !runtime::actor_ai_allowed(actor) ||
         read<Address>(order) != image + runtime::table().vt.avoid_grenade || read<Address>(order, 8) != actor + 0xaf0 ||
         read<Address>(order, 0x38) != grenade || !s::live_entity(actor) || !s::live_entity(grenade))
         return false;

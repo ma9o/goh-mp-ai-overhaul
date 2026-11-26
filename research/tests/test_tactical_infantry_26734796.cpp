@@ -2,6 +2,7 @@
 #include "../../mods/tactical_infantry_policy.hpp"
 #if defined(_WIN32) || defined(GOH_TACTICAL_ADAPTER_FIXTURES)
 #include "../../mods/tactical_infantry_module.hpp"
+#include "vehicle_fixture_26734796.hpp"
 #endif
 #include <cassert>
 #include <cstdio>
@@ -215,11 +216,16 @@ void spacing_and_movement() {
     assert(p::at_rush_standoff(124.f, 240.f, 20.f) == 0.f);                   // dynamite blast > range rejected
     auto rot25 = p::rotate({1.f, 0.f}, 25.f);
     assert(rot25.x > .90f && rot25.x < .91f && rot25.y > .42f && rot25.y < .43f);
-    assert(p::ineffective_posture(p::advance, false, false, false) == p::fallback);
-    assert(p::ineffective_posture(p::hold, false, false, false) == p::fallback);
-    assert(p::ineffective_posture(p::hold, false, true, false) == p::hold);
-    assert(p::ineffective_posture(p::advance, true, false, false) == p::advance);
-    assert(p::ineffective_posture(p::advance, false, false, true) == p::advance);
+    const auto no_shot = [] { return false; };
+    const auto can_shoot = [] { return true; };
+    assert(p::ineffective_posture(p::advance, false, false, 0, 28.f, no_shot) == p::fallback);
+    assert(p::ineffective_posture(p::advance, false, false, 0, 28.1f, no_shot) == p::advance);
+    for (unsigned threat : {0x80u, 0x100u}) {
+        assert(p::ineffective_posture(p::hold, false, false, threat, 60.f, no_shot) == p::fallback);
+        assert(p::ineffective_posture(p::hold, true, false, threat, 15.f, no_shot) == p::hold);
+        assert(p::ineffective_posture(p::advance, false, true, threat, 15.f, no_shot) == p::advance);
+        assert(p::ineffective_posture(p::hold, false, false, threat, 15.f, can_shoot) == p::hold);
+    }
     assert(p::deadline(10, 50) == 60 && p::deadline(UINT32_MAX - 2, 50) == 1);
     assert(p::dwell(p::flee, false, false) == 2.5 && p::dwell(p::flee, false, true) == 5);
     assert(p::dwell(p::flee, true, true) == 4.5 && p::dwell(p::flee, true, false) == 2);
@@ -263,6 +269,73 @@ void cover_and_authority() {
 bool fixture_selected{};
 goh::ai_support::Byte selection_fixture(goh::ai_support::Address) {
     return fixture_selected;
+}
+void defensive_line() {
+    namespace d = goh::tactical_infantry::detail;
+    using goh::runtime::Address;
+    using goh::test::vehicle::Memory;
+    Memory<0xe60> defender, armor, enemy;
+    Memory<0x580> brain;
+    Memory<0x300> sensor;
+    Memory<0x80> main_contact, other;
+    armor.put<unsigned char>(0x30, 11);
+    armor.ename(0xde8, "armoredcar_l");
+    enemy.put<unsigned char>(0x30, 7);
+    enemy.ename(0xde8, "human");
+    defender.put(0xdd0, sensor.ptr());
+    std::array<Address, 2> observations{main_contact.ptr(), other.ptr()};
+    sensor.put(0x280, reinterpret_cast<Address>(observations.data()));
+    sensor.put(0x288, reinterpret_cast<Address>(observations.data() + observations.size()));
+    d::Context c{};
+    c.actor = defender.ptr();
+    c.brain = brain.ptr();
+    c.sub = main_contact.ptr();
+    c.w.length = 20.f;
+    c.now = 10;
+    main_contact.put(0x18, armor.ptr());
+    main_contact.put(0x14, 0x103u);
+    other.put(0x14, 3u);
+    other.put(0x10, 3u << 28);
+    other.put(0x18, enemy.ptr());
+    other.put(0x28, p::XY{900.f, 0});
+    assert(d::visible_soft_target(c));
+    other.put(0x28, p::XY{901.f, 0});
+    assert(!d::visible_soft_target(c));
+    other.put(0x28, p::XY{800.f, 0});
+    other.put(0x10, 1u << 28);
+    assert(!d::visible_soft_target(c));
+    other.put(0x10, 3u << 28);
+    other.put(0x14, 1u);
+    assert(!d::visible_soft_target(c));
+    other.put(0x14, 3u);
+    other.put(0x18, armor.ptr());
+    assert(!d::visible_soft_target(c));
+
+    // The squad assigned the defender to bound while his current target is in clear rifle range.
+    d::ActorState soldier{};
+    d::SquadState squad{};
+    c.soldier = &soldier;
+    c.team = &squad;
+    c.moving_element = true;
+    c.threat = {800.f, 0};
+    c.squad = squad.key = 42;
+    squad.mode = p::Mode::bound;
+    squad.phase_at = c.now;
+    soldier.role_at = soldier.sight_at = c.now;
+    soldier.covered = true;
+    soldier.visibility = p::Sight::open;
+    soldier.sight_target = c.sub;
+    brain.put(0x52c, int(p::advance));
+    brain.put(0x14c, 1200.f);
+    main_contact.put(0x18, enemy.ptr());
+    main_contact.put(0x28, c.threat);
+    assert(d::hold_shot(c) && !d::movement(c, 0));
+    assert(soldier.next_search == p::never && !squad.issued_bounds);
+    soldier.visibility = p::Sight::blocked;
+    assert(!d::hold_shot(c));
+    soldier.visibility = p::Sight::open;
+    main_contact.put(0x28, p::XY{1300.f, 0});
+    assert(!d::hold_shot(c));
 }
 void support_and_orders() {
     namespace d = goh::tactical_infantry::detail;
@@ -483,6 +556,7 @@ int main() {
     spacing_and_movement();
     cover_and_authority();
 #if defined(_WIN32) || defined(GOH_TACTICAL_ADAPTER_FIXTURES)
+    defensive_line();
     support_and_orders();
     lifecycle();
 #endif

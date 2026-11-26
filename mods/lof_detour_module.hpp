@@ -267,7 +267,7 @@ inline bool is_eligible_actor(Address actor, bool& out_is_human, Address& out_br
     out_is_human = false;
     out_brain = 0;
     out_chassis = 0;
-    if (!is_plausible_ptr(actor)) return false;
+    if (!is_plausible_ptr(actor) || !runtime::actor_ai_allowed(actor)) return false;
     if ((read<std::uint32_t>(actor, Off::kActorFlags38) & 0x220u) != 0) return false;
 
     const Address brain = read<Address>(actor, Off::kActorBrain);

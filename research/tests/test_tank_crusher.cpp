@@ -93,6 +93,7 @@ void worker_policy() {
     std::array<tc::Byte, 0x40> area{};
     const unsigned id = 11, area_id = 20;
     const auto key = actor_key(id, area_id);
+    ctx[0x68] = 3;
     put(ctx, 0x78, area_id);
     put(ctx, 0x7C, id);
     put(ctx, 0xD0, reinterpret_cast<tc::Address>(profile.data()));
@@ -112,6 +113,11 @@ void worker_policy() {
     host = true;
     std::thread worker([&] { assert(eval() == 12); });
     worker.join();
+    goh::config::active().ai_player_mask = 1u << 2;
+    assert(eval() == 250); // A previously admitted context follows the current benchmark filter.
+    goh::config::active().ai_player_mask = 1u << 3;
+    assert(eval() == 12);
+    goh::config::reset_defaults();
     ctx[0xE8] = 0x10;
     assert(eval() == 3);
     // Stock light_tank lacks BattleCrusher bit 0x10 but has unique Priority 4 at profile+0xF4.

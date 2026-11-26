@@ -157,37 +157,152 @@ def desant_transfers(log, header, samples):
     return count
 
 
-def measured(p, actors):
-    subject = actors[p.mids.get("subject", p.mids.get("mg"))]
-    if p.probe == "grenade_danger_radius_m":
-        values = [
-            r["grenade_land_m"] for r in subject if finite(r.get("grenade_land_m"))
+def clamp(value):
+    return min(1.0, max(0.0, value))
+
+
+def tactical_side(p, actors, cutoff, end, player, infantry_roles, vehicle_roles, support_roles, anchor, advance_roles):
+    missing = []
+    invalid = []
+    wrong_control = []
+
+    def survivors(roles, human=None):
+        alive = {}
+        for role in roles:
+            samples = actors[p.mids[role]]
+            own = [r for r in samples if r["player"] == player]
+            if not own:
+                missing.append(role)
+                continue
+            if any(r["control"] != 0 for r in own):
+                wrong_control.append(role)
+            recent = sorted(
+                (r for r in samples if cutoff <= r["sim_tick"] <= end),
+                key=lambda r: (r["sim_tick"], r["ms"]),
+            )
+            if not recent or recent[-1]["player"] != player:
+                continue
+            # A captured gun no longer contributes to its original team's strength.
+            last = recent[-1]
+            hp = next((r["hp_ratio"] for r in reversed(recent) if finite(r.get("hp_ratio"))), None)
+            observed_type = last.get("is_human")
+            if hp is None or type(observed_type) is not bool or (human is not None and observed_type != human):
+                invalid.append(role)
+            elif hp > 0:
+                alive[role] = {**last, "hp_ratio": clamp(hp)}
+        return alive
+
+    def health(alive, deployed):
+        hp = math.fsum(r["hp_ratio"] for r in alive.values())
+        return {
+            "alive": len(alive),
+            "total": len(deployed),
+            "survival_pct": 100 * len(alive) / len(deployed) if deployed else None,
+            "mean_hp_pct": 100 * hp / len(alive) if alive else None,
+            "remaining_hp_pct": 100 * hp / len(deployed) if deployed else None,
+        }
+
+    infantry = survivors(infantry_roles, True)
+    vehicles = survivors(vehicle_roles, False)
+    support = survivors(support_roles)
+    if p.tactical.role_kind == "defense":
+        distances = [
+            math.hypot(r["pos_x"] - anchor[0], r["pos_y"] - anchor[1]) / mission.SCALE
+            for r in infantry.values()
         ]
-        return min(values, default=None)
-    # Use the earliest co-sampled pair before autonomous movement/rotation.
-    target = actors[p.mids.get("target", p.mids.get("truck"))]
-    by_tick = {r["sim_tick"]: r for r in target}
-    for a in subject:
-        b = by_tick.get(a["sim_tick"])
-        if b is None:
-            continue
-        dx, dy = b["pos_x"] - a["pos_x"], b["pos_y"] - a["pos_y"]
-        if p.probe.endswith("_deg"):
-            if finite(a.get("heading_deg")):
-                return abs(
-                    math.remainder(
-                        a["heading_deg"] - math.degrees(math.atan2(dy, dx)), 360
-                    )
-                )
-        else:
-            return math.hypot(dx, dy) / mission.SCALE
-    return None
+        distance = sum(distances) / len(distances) if distances else None
+        discipline = {
+            "kind": "defense",
+            "mean_distance_m": distance,
+            "fraction": clamp((44 - distance) / 22) if distance is not None else 0,
+        }
+    else:
+        spawns = dict(zip(p.mids, p.positions))
+        advance, gains = [], []
+        front = infantry | vehicles
+        for role in advance_roles or front:
+            if role not in front:
+                continue
+            r = front[role]
+            start_x = spawns[role][0]
+            path = p.tactical.target_x - start_x
+            if path:
+                dx = r["pos_x"] - start_x
+                advance.append(math.copysign(1, path) * dx / mission.SCALE)
+                gains.append(clamp(dx / path))
+        discipline = {
+            "kind": "assault",
+            "mean_progress_m": sum(advance) / len(advance) if advance else None,
+            "fraction": sum(gains) / len(gains) if gains else 0,
+        }
+
+    issues = []
+    if set(missing).issuperset(infantry_roles + vehicle_roles):
+        issues.append(f"no Player {player} combatants observed")
+    if invalid:
+        issues.append("invalid final HP or actor type: " + ", ".join(invalid))
+    if wrong_control:
+        issues.append(f"expected AI control on Player {player}: " + ", ".join(wrong_control))
+    return {
+        "player": player,
+        "infantry": health(infantry, infantry_roles),
+        "vehicles": health(vehicles, vehicle_roles),
+        "support": {
+            "alive": len(support), "total": len(support_roles),
+            "survival_pct": 100 * len(support) / len(support_roles) if support_roles else None,
+            "units": {r: r in support for r in support_roles},
+        },
+        "unobserved_roles": missing,
+        "discipline": discipline,
+    }, issues
+
+
+def tactical_outcome(p, actors, cutoff, end, delta, extended_counters):
+    t = p.tactical
+    side_a, issues_a = tactical_side(p, actors, cutoff, end, t.friendly_player, t.friendly_infantry,
+                                     t.friendly_vehicles, t.friendly_support, t.anchor_xy, t.friendly_advance)
+    side_b, issues_b = tactical_side(p, actors, cutoff, end, t.enemy_player, t.enemy_infantry,
+                                     t.enemy_vehicles, t.enemy_support, t.enemy_anchor_xy, t.enemy_advance)
+    advantages = {}
+    for kind in ("infantry", "vehicles"):
+        a, b = side_a[kind], side_b[kind]
+        advantages[kind] = None
+        if a["total"] and b["total"]:
+            advantages[kind] = (0.6 * (a["survival_pct"] - b["survival_pct"])
+                                + 0.4 * (a["remaining_hp_pct"] - b["remaining_hp_pct"]))
+    combat = [v for v in advantages.values() if v is not None]
+    margin = sum(combat) / len(combat)
+    advantages["support"] = None
+    if t.friendly_support and t.enemy_support:
+        advantages["support"] = side_a["support"]["survival_pct"] - side_b["support"]["survival_pct"]
+        margin = 0.9 * margin + 0.1 * advantages["support"]
+
+    activity = {k: delta[k] for k in (
+        "dodges", "med_rev", "sup_refill", "rep_tt", "rep_full", "crew_total", "smoke_rel",
+        "smoke_veh", "scavenge", "det_inf", "fast_swaps", "tank_face", "crush_escapes",
+        "squad_ammo", "reload", "transport_unloads", "safe_doors", "obj_pursue",
+        "overflow_cover", "settle_holds", "memory_holds", "move_nudge", "convoy_yield",
+    )}
+    # The current observer exports squad-logistics scavenge. Its dedicated
+    # field-support breakdown is only printed at shutdown, across all phases.
+    for k in ("recrews", "scav_rearm", "scav_heavy_pickup", "scav_corpse_loot"):
+        activity[k] = delta.get(k)
+    activity.update({k: delta[k] for k in extended_counters})
+
+    return {
+        "score": round(50 + margin / 2, 2),
+        "sides": {"A": side_a, "B": side_b},
+        "advantage_pct": advantages,
+        "activity": activity,
+        "activity_scope": "all players in this phase",
+        "knobs": list(t.knobs),
+    }, issues_a + issues_b
 
 
 def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
     header, rows, errors = latest(lines)
     checks = []
-    metrics = []
+    scenarios = {}
     observations = []
     overruns = []
     phase_counts = {}
@@ -239,20 +354,56 @@ def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
     expected = [f"{edge}_{p.name}" for p in phases for edge in ("BEGIN", "END")] + [
         "DONE_" + suite
     ]
-    if game_log is not None:
-        markers = re.findall(r"\bGOH_L1_((?:BEGIN|END|DONE)_\w+)\b", game_log)
+    markers_ok = False
+    if game_log is not None or suite == "calibration":
+        markers = re.findall(r"\bGOH_L1_((?:BEGIN|END|DONE)_\w+)\b", game_log or "")
+        markers_ok = markers[-len(expected):] == expected
         check(
             "run",
             "GEM boundaries",
-            markers[-len(expected) :] == expected,
+            markers_ok,
             f"{len(markers)} markers, expecting {len(expected)} in order",
         )
+    if suite == "calibration" and "Start mission " in (game_log or ""):
+        # A launched trial always has this line. Standalone marker extracts
+        # can still be used to score a synthetic observation stream.
+        starts = re.findall(r"\bStart mission single/00-bootcamp/02_vehicle-control:0\b([^\r\n]*)", game_log)
+        difficulty = re.search(r"\bon difficulty (\w+)", starts[-1]) if starts else None
+        loaded = difficulty[1] if difficulty else "unknown"
+        check("run", "heroic difficulty", loaded == "heroic", f"game.log reported {loaded}")
 
-    previous_end = -1
+    witness = actors[(90 + mission.SUITES.index(suite)) * 100 + 1]
+    groups = []
     for p in phases:
-        group = [r for r in snapshots if r["mid"] in p.mids.values()]
+        roles = p.mids
+        if p.tactical:
+            t = p.tactical
+            roles = (t.friendly_infantry + t.friendly_vehicles + t.friendly_support
+                     + t.enemy_infantry + t.enemy_vehicles + t.enemy_support)
+        groups.append([r for role in roles for r in actors[p.mids[role]]])
+    extended_counters = {
+        k for r in rows if r["event"] == "stats_delta" for k in r["counters"]
+        if k == "recrews" or k.startswith("scav_")
+    }
+    previous_end = -1
+    for index, (p, group) in enumerate(zip(phases, groups)):
         ticks = [r["sim_tick"] for r in group]
         start, end = min(ticks, default=-1), max(ticks, default=-1)
+        if p.tactical:
+            timed_transition = False
+            rates = {r["ticks_per_second"] for r in group}
+            rate = rates.pop() if len(rates) == 1 else 0
+            if 1 <= rate <= 1_000_000:
+                # All combatants can die early. GEM deletes the phase, waits
+                # three simulation seconds, then activates the next roster.
+                following = groups[index + 1] if index + 1 < len(groups) else witness
+                expected_end = start + round(p.tactical.duration_s * rate)
+                if following:
+                    next_start = min(r["sim_tick"] for r in following)
+                    prior_end = next_start - round(3 * rate)
+                    timed_transition = markers_ok and abs(prior_end - expected_end) <= 5 * rate
+                    expected_end = min(expected_end, prior_end)
+                end = max(end, expected_end)
         check(
             p.name,
             "observation window",
@@ -270,15 +421,11 @@ def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
         if start < end:
             phase_counts[p.name] = delta
         high = {k for k, limit in ACTION_LIMITS.items() if delta[k] > limit}
-        for k in sorted(high):
-            overruns.append(
-                {
-                    "phase": p.name,
-                    "counter": k,
-                    "count": delta[k],
-                    "limit": ACTION_LIMITS[k],
-                }
-            )
+        phase_overruns = [
+            {"phase": p.name, "counter": k, "count": delta[k], "limit": ACTION_LIMITS[k]}
+            for k in sorted(high)
+        ]
+        overruns.extend(phase_overruns)
         reported = set()
         for name, keys in CHECKS.get(p.name, {}).items():
             bounds = high.intersection(keys)
@@ -360,77 +507,30 @@ def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
                     good and (not move or displacement <= (0.5 if role == "hold_fire" else 1.0)),
                     f"{len(samples)} samples, maximum displacement {displacement:.2f} m",
                 )
-        if p.probe:
-            key = p.probe
-            subject = actors[p.mids.get("subject", p.mids.get("mg"))]
-            v = measured(p, actors)
-            below = p.name.endswith("_below")
-            want = not below if key.endswith("_deg") else below
-            counter = mission.PROBES[key][-1]
-            value = delta[counter]
-            config_values = [
-                r
-                for r in rows
-                if r.get("module") == "tuning" and r.get("action") == key
-            ]
-            prior = [
-                r
-                for r in config_values
-                if group and r["ms"] <= min(s["ms"] for s in group)
-            ]
-            active = prior[-1].get("value") if prior else None
-            changes = any(
-                r.get("value") != active
-                and group
-                and min(s["ms"] for s in group)
-                <= r["ms"]
-                <= max(s["ms"] for s in group)
-                for r in config_values
-            )
-            seconds = 0.0
-            if len(subject) >= 2 and subject[0]["ticks_per_second"] > 0:
-                seconds = (
-                    subject[-1]["stats_tick"] - subject[0]["stats_tick"]
-                ) / subject[0]["ticks_per_second"]
-            correct_side = v is not None and (v < p.setting if below else v > p.setting)
-            # The 2 m placement floor coincides with the minimum configurable
-            # grenade threshold. A landing on that boundary is the inside probe.
-            if below and p.distance == p.setting and v is not None:
-                correct_side = v <= p.setting or math.isclose(v, p.setting, abs_tol=0.1)
-            configured = finite(active) and math.isclose(
-                active, p.setting, rel_tol=1e-6
-            )
-            ok = (
-                configured
-                and not changes
-                and correct_side
-                and seconds >= 8
-                and (value > 0) == want
-                and counter not in high
-            )
-            reported.add(counter)
-            metrics.append(
-                {
-                    "probe": key,
-                    "side": "below" if below else "above",
-                    "threshold": p.setting,
-                    "configured": active,
-                    "placed": p.distance,
-                    "measured": v,
-                    "unit": "deg" if key.endswith("_deg") else "m",
-                    "count": value,
-                    "expected_action": want,
-                    "observed_seconds": round(seconds, 2),
-                }
-            )
-            check(
-                p.name,
-                key,
-                ok,
-                f"threshold={active}, planned={p.distance:g}, measured={v} {'deg' if key.endswith('_deg') else 'm'}, "
-                f"actions={value}, expected={'>=1' if want else '0'}, {seconds:.1f}s"
-                + (f", limit {ACTION_LIMITS[counter]}" if counter in high else ""),
-            )
+        if p.tactical:
+            cutoff = end - 5 * rate
+            outcome, issues = tactical_outcome(p, actors, cutoff, end, delta, extended_counters)
+            outcome["runaway_actions"] = phase_overruns
+            evidence = "final window sampled"
+            if not any(cutoff <= r["sim_tick"] <= end for r in snapshots):
+                # A mutual wipe can leave no actor available to call the
+                # observer. The next activation can still bracket the fight.
+                last_by_mid = {r["mid"]: r for r in sorted(group, key=lambda r: (r["sim_tick"], r["ms"]))}
+                if timed_transition:
+                    evidence = "terminal absence confirmed by scheduled next activation"
+                elif last_by_mid and all(finite(r.get("hp_ratio")) and r["hp_ratio"] <= 0
+                                         for r in last_by_mid.values()):
+                    evidence = "all observed actors last sampled dead"
+                else:
+                    issues.append("no final five-second observations or confirmed terminal absence")
+            if not 1 <= rate <= 1_000_000:
+                issues.append("invalid simulation clock")
+            missing = sum(len(side["unobserved_roles"]) for side in outcome["sides"].values())
+            check(p.name, "tactical observations", not issues,
+                  " / ".join(issues) or f"both sides sampled, {evidence}, {missing} roles never observed")
+            if issues:
+                outcome["score"] = None
+            scenarios[p.name] = outcome
         for k in sorted(high - reported):
             check(
                 p.name,
@@ -466,23 +566,71 @@ def grade(lines, ai_log, game_log=None, suite="full", tuning=None):
             activity,
             " / ".join(activity) or "obj_pursue=0, obj_cap=0",
         )
-    witness = actors[(90 + mission.SUITES.index(suite)) * 100 + 1]
     check(
         "run",
         "mission completion",
         any(r["sim_tick"] > previous_end for r in witness),
         f"{len(witness)} completion witness samples",
     )
-    return {
+    report = {
         "suite": suite,
         "passed": all(c["passed"] for c in checks),
         "checks": checks,
-        "calibration": metrics,
         "observations": observations,
         "snapshots": len(snapshots),
         "actors": len({r["actor"] for r in snapshots}),
         "runaway_actions": overruns,
     }
+    if scenarios:
+        scores = [o["score"] for o in scenarios.values()]
+        tactical = {"scenarios": scenarios,
+                    "overall_score": round(sum(scores) / len(scores), 2) if report["passed"] else None}
+        shutdown = re.search(r"ShutdownAndUnload complete [^\n]*?recrew=(\d+) rearm=(\d+) "
+                             r"heavyPickup=(\d+) corpseLoot=(\d+)", log)
+        if shutdown:
+            tactical["session_field_support_totals"] = dict(zip(
+                ("recrews", "scav_rearm", "scav_heavy_pickup", "scav_corpse_loot"),
+                map(int, shutdown.groups())))
+        report["tactical"] = tactical
+    else:
+        report["calibration"] = []
+    return report
+
+
+def tactical_table(tactical, passed):
+    def strength(item, pct_key):
+        if not item["total"]:
+            return "—"
+        pct = item[pct_key]
+        suffix = f"  {pct:.0f}%" if pct is not None else ""
+        return f"{item['alive']}/{item['total']}{suffix}"
+
+    rows = [("Engagement", "A score", "Side", "Inf alive / HP", "Hull alive / HP", "Support alive", "Position")]
+    activity = []
+    for name, result in tactical["scenarios"].items():
+        score = "—" if result["score"] is None else f"{result['score']:.1f}"
+        for label, side in result["sides"].items():
+            d = side["discipline"]
+            if d["kind"] == "defense":
+                distance, unit = d["mean_distance_m"], "from line"
+            else:
+                distance, unit = d["mean_progress_m"], "advance"
+            rows.append((
+                name if label == "A" else "", score if label == "A" else "", f"{label} (P{side['player']})",
+                strength(side["infantry"], "mean_hp_pct"), strength(side["vehicles"], "mean_hp_pct"),
+                strength(side["support"], "survival_pct"), "—" if distance is None else f"{distance:.1f} m {unit}",
+            ))
+        counts = ", ".join(f"{k}={v}" for k, v in result["activity"].items() if v)
+        activity.append(f"  {name}  {counts or 'no recorded actions'}")
+    widths = [max(map(len, column)) for column in zip(*rows)]
+    lines = ["  ".join(value.ljust(w) for value, w in zip(row, widths)).rstrip() for row in rows]
+    overall = tactical["overall_score"]
+    score = f"{overall:.1f}/100" if passed and overall is not None else "unavailable (failed run checks)"
+    if "session_field_support_totals" in tactical:
+        totals = tactical["session_field_support_totals"]
+        activity.append("  DLL session totals  " + ", ".join(f"{k}={v}" for k, v in totals.items()))
+    return ["Head-to-head tactical scorecard (50.0 = tie, higher favors Side A)", *lines,
+            f"Overall Tactical Score  {score}", "Recorded AI actions (phase totals across all players)", *activity]
 
 
 def table(report):
@@ -515,6 +663,11 @@ def table(report):
     summary = (
         f"Overall {'PASS' if report['passed'] else 'FAIL'} | {passed} passed, {len(checks) - passed} failed | "
         f"{report.get('snapshots', '?')} snapshots, {report.get('actors', '?')} actors | "
-        f"runaway counters {thrashing} | authority {status}"
+        f"runaway counters {thrashing}"
     )
+    if "tactical" in report:
+        failures = [line for row, line in zip(rows, lines) if row[2] == "FAIL"]
+        lines = [*tactical_table(report["tactical"], report["passed"]), *failures]
+    else:
+        summary += f" | authority {status}"
     return "\n".join([*lines, summary])

@@ -58,7 +58,7 @@ struct TankFacingState {
     float active_target_yaw{};
     Vec3 issued_point{};
     Tick issued_tick{}, timeout_until{}, cooldown_until{}, backoff_until{};
-    Tick last_scan{}, threat_deadline{}, last_seen{};
+    Tick last_scan{}, last_seen{};
     XY last_origin{};
     bool scanned{}, sampled_origin{}, translating{};
 };
@@ -348,7 +348,7 @@ inline void service(const World& w, Address a, Address b, TankFacingState& st) {
     const bool own = owns_order(st, a, order);
     if (st.active_order && !own) {
         st.active_order = 0;
-        st.cooldown_until = w.now + w.duration(2.5f);
+        if (w.now - st.issued_tick < w.duration(1.5f)) st.backoff_until = w.now + w.duration(4.5f);
     }
     if (order && !own) return;
     if (own && !repair::detail::pending(st.timeout_until, w.now)) {
@@ -358,12 +358,9 @@ inline void service(const World& w, Address a, Address b, TankFacingState& st) {
         return;
     }
     if (st.translating || repair::detail::pending(st.backoff_until, w.now)) return;
-    const auto deadline = read<Tick>(b, 0x3F8);
-    const bool refreshed = deadline != st.threat_deadline && repair::detail::pending(deadline, w.now);
-    if (st.scanned && (st.last_scan == w.now || (!refreshed && w.now - st.last_scan < w.duration(0.4f)))) return;
+    if (st.scanned && static_cast<float>(w.now - st.last_scan) < .4f * w.ticks) return;
     st.scanned = true;
     st.last_scan = w.now;
-    st.threat_deadline = deadline;
     if (!free_to_turn(a, b, w)) return;
     float yaw{};
     if (!sim::finite(self) || !hull_yaw(a, yaw)) return;
@@ -395,11 +392,16 @@ inline void service(const World& w, Address a, Address b, TankFacingState& st) {
         return;
     }
     ops.set_order(b, next);
-    if (read<Address>(b, 0xF0) != next) return;
+    st.issued_tick = w.now;
+    st.cooldown_until = w.now + w.duration(4);
+    if (read<Address>(b, 0xF0) != next) {
+        st.active_order = 0;
+        st.backoff_until = w.now + w.duration(4.5f);
+        return;
+    }
     st.active_order = next;
     st.active_target_yaw = d.desired_yaw_rad;
     st.issued_point = point;
-    st.issued_tick = w.now;
     st.timeout_until = w.now + w.duration(8);
     ++stat_rotations;
     if (own) ++stat_retargets;
@@ -418,7 +420,9 @@ inline bool init(Address image, const char* sha) {
 inline void on_actor_post_quant(Address a) {
     using namespace detail;
     runtime::HookGuard guard(gate);
-    if (!gate.active() || !config::active().modules.tank_facing || !a || ops.is_worker(base) || issuing) return;
+    if (!gate.active() || !config::active().modules.tank_facing || !a || ops.is_worker(base) || issuing ||
+        !runtime::actor_ai_allowed(a))
+        return;
     World w{};
     if (ops.is_remote(base) || !ops.world(base, w)) {
         if (last_scene) reset();

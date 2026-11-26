@@ -131,12 +131,12 @@ inline bool enabled(bool is_tank) {
     return is_tank ? modules.tank_auto_repair : modules.nontank_auto_repair;
 }
 inline Crew* member(Address actor, Tank*& tank) {
-    if (!actor) return nullptr;
+    if (!actor || !runtime::actor_ai_allowed(actor)) return nullptr;
     const auto* h = members.find(read<std::uint16_t>(actor, 0xDAA));
     if (!h || !h->tank || h->tank > tanks.size()) return nullptr;
     auto& t = tanks[h->tank - 1];
     auto& c = t.crew[h->slot];
-    if (!t.key || !enabled(t.is_tank) || !c.key.matches(actor)) return nullptr;
+    if (!t.key || !enabled(t.is_tank) || !config::player_ai_enabled(t.player) || !c.key.matches(actor)) return nullptr;
     tank = &t;
     return &c;
 }
@@ -162,6 +162,7 @@ inline bool manual(Address a, Address b) {
 // Emit belongs to the vehicle. An observed occupied seat may carry the single
 // native placement inhibition until Exclude. Never issue an order to that brain.
 inline bool available_seat(Address human, Address tank, Address b) {
+    if (!runtime::actor_ai_allowed(human)) return false;
     const auto ch = read<Address>(human, 0xDE0), wp = read<Address>(human, 0xDD8);
     const auto flags = read<unsigned>(b, 0x39C), policy = read<unsigned>(b, 0x398);
     if (!ch || !wp || read<Address>(ch, 0x10) != human || read<unsigned>(ch, 0x18) || (read<Byte>(wp, 0x70) & 2) ||
@@ -179,6 +180,7 @@ inline unsigned vitality(Address a) {
     return vit ? read<Byte>(vit, 0x174) & 3 : 3;
 }
 inline bool human_policy(Address a) {
+    if (!runtime::actor_ai_allowed(a)) return false;
     const auto b = brain_of(a, human_vt);
     if (!b || vitality(a) || overridden(a, b)) return false;
     const auto mode = read<unsigned>(b, 0x398);
@@ -191,6 +193,7 @@ inline bool human_policy(Address a) {
     return !o;
 }
 inline bool safety(Address a) {
+    if (!runtime::actor_ai_allowed(a)) return false;
     const auto b = brain_of(a, vehicle_vt);
     if (!b || manual(a, b) || (read<unsigned>(b, 0x398) & 3) > 1 || !has_ability(a, 0x15ABBB0) ||
         has_ability(a, 0x15C6A58) || has_ability(a, 0x15C6A5C) || !(read<float>(a, 0x70) >= 0.34202014f))
@@ -621,7 +624,8 @@ inline void finish(Address cb, Address human) {
     Tank* t = nullptr;
     if (serial_world(w)) {
         auto c = member(human, t);
-        if (c && c->exit_callback == cb && read<Address>(cb, 0x28) == t->key.entity.ptr) {
+        if (c && c->exit_callback == cb && read<Address>(cb, 0x28) == t->key.entity.ptr &&
+            runtime::actor_ai_allowed(read<Address>(cb, 0x28))) {
             // Only our factory-created callback. Let the walker finish unlinking.
             // The coordinator installs SmartRepair on a fresh, idle ground borrow.
             c->exit_callback = 0;
@@ -640,6 +644,7 @@ inline int smart_exec(Address order, int phase) {
     auto c = member(human, t);
     if (!c || c->smart != order) return original_exec(order, phase);
     auto a = read<Address>(order, 0x58), b = brain_of(human, human_vt);
+    if (!runtime::actor_ai_allowed(a)) return original_exec(order, phase);
     if (b && overridden(human, b)) release(*c, w, human);
     if (!c->assigned || !a || !t->key.matches(a) || support::owner(a) != t->player ||
         support::owner(human) != c->player || !human_policy(human) || !safety(a))
@@ -992,7 +997,7 @@ inline void dispatch(Address state) {
 inline void on_actor_post_quant(Address actor) {
     using namespace detail;
     Guard guard;
-    if (!active.load() || !actor || runtime::is_quant_worker(base)) return;
+    if (!active.load() || !actor || runtime::is_quant_worker(base) || !runtime::actor_ai_allowed(actor)) return;
     serial.store(GetCurrentThreadId(), std::memory_order_relaxed);
     if (coordinating) return;
     World w{};

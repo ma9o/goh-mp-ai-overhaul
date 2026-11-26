@@ -271,7 +271,7 @@ template <class History> struct Controller {
     }
     bool context(Address a, World& w) {
         return a && gate.active() && image == s::base && s::accepting.load() && native.callback(a, w) &&
-               w.base == image;
+               runtime::actor_ai_allowed(a) && w.base == image;
     }
     bool same_world(const World& w) const {
         return environment == w.scene && scene && scene == s::entity_scene(w) && w.now >= clock;

@@ -26,7 +26,7 @@ void policy_math() {
     assert(near_value(p::armor_exposure(p::radians(125)), 1.6f));
     assert(near_value(p::armor_exposure(p::pi), 2.4f));
     p::ThreatSample t{p::pi, 80, T::heavy_at, true, true, true};
-    assert(near_value(p::threat_weight(t), 4.f * 2.f * 1.5f * 1.6f * 1.35f));
+    assert(near_value(p::threat_weight(t), 4.f * 2.f * 1.5f * 1.6f * 1.85f));
     for (float degrees : {90.f, 180.f, -75.f}) {
         t.bearing_rad = p::radians(degrees);
         auto result = p::evaluate_facing(0, &t, 1);
@@ -62,6 +62,13 @@ void policy_math() {
     assert(marginal.angle_error_rad >= p::radians(24) && marginal.improvement_ratio > 0 &&
            marginal.improvement_ratio < .25f);
     assert(!marginal.should_rotate);
+    // With heavy AT on opposite flanks, commit to the cannon's target even as the other flank closes.
+    p::ThreatSample flanks[] = {{p::radians(-90), 80, T::heavy_at, true, true},
+                                {p::radians(90), 80, T::heavy_at, true, true, true}};
+    const auto committed = p::evaluate_facing(0, flanks, 2);
+    assert(committed.should_rotate && near_value(committed.desired_yaw_rad, flanks[1].bearing_rad));
+    flanks[0].dist_m = 75;
+    assert(!p::evaluate_facing(committed.desired_yaw_rad, flanks, 2).should_rotate);
     t = {p::pi, 18, T::close_infantry, true, false};
     assert(!p::threat_weight(t));
     t.attacking_or_threatening = true;
@@ -76,13 +83,15 @@ void policy_math() {
     turn.should_rotate = true;
     turn.angle_error_rad = p::radians(50);
     turn.desired_yaw_rad = p::radians(28);
-    p::RotationGate gate{true, false, false, false, 0, 1.499f};
+    p::RotationGate gate{true, false, true, true, 0, 1.999f};
     assert(!p::can_issue_rotation(turn, gate));
-    gate.seconds_since_issue = 1.5f;
+    gate.seconds_since_issue = 2.f;
     assert(p::can_issue_rotation(turn, gate));
     turn.desired_yaw_rad = p::radians(27.9f);
     assert(!p::can_issue_rotation(turn, gate));
-    gate = {false, false, true, true};
+    gate = {false, false, true, true, 0, 1.999f};
+    assert(!p::can_issue_rotation(turn, gate));
+    gate.seconds_since_issue = 2.f;
     assert(p::can_issue_rotation(turn, gate));
     turn.angle_error_rad = p::radians(49.9f);
     assert(!p::can_issue_rotation(turn, gate));
@@ -278,6 +287,9 @@ void admission_and_guards() {
     f.worker = true;
     blocked();
     f.worker = false;
+    goh::config::active().ai_player_mask = 1u << 2;
+    blocked();
+    goh::config::active().ai_player_mask = 1u << 1;
     f.tick();
     assert(f.made == 1 && f.installed == 1 && tf::stat_rotations == 1);
     f.expect_point(10, 1020); // 50 game metres from (10,20,30), on Hold Position.
@@ -301,19 +313,34 @@ void perception_and_stealth() {
     f.clear_order();
     f.local.subject.put<unsigned>(0x14, 2);
     f.hit = true;
-    f.tick();
-    assert(f.installed == 2); // Recent hit, urgent heavy flank bypasses cooldown.
+    f.tick(2000);
+    assert(f.installed == 2); // Recent hit and an urgent flank after the hard cooldown.
     f.clear_order();
     f.hit = false;
     f.tank.brain.put<unsigned>(0x398, 1);
     f.local.subject.put<unsigned>(0x10, 1u << 28);
     f.local.subject.put<unsigned>(0x64, f.world.now - 10000);
-    f.tick(1);
+    f.tick(4000);
     assert(f.installed == 2);
     f.local.subject.put<unsigned>(0x64, f.world.now);
     f.tank.brain.put<unsigned>(0x3F8, f.world.now + 5000);
     f.tick(1);
-    assert(f.installed == 3); // Fresh deadline bypasses the scan interval.
+    assert(f.installed == 2); // A refreshed threat deadline still waits for the next scan.
+    f.tick(399);
+    assert(f.installed == 3);
+}
+
+void rapid_preemption() {
+    Fixture f;
+    f.tick(0);
+    assert(f.installed == 1);
+    f.tank.brain.put<Address>(0xF0, f.other_order.ptr());
+    f.tick(400);
+    f.clear_order();
+    f.tick(4499);
+    assert(f.installed == 1);
+    f.tick(1);
+    assert(f.installed == 2 && !tf::stat_retargets);
 }
 
 void vehicle_type_and_angle_setting() {
@@ -350,10 +377,12 @@ void lifecycle_and_hysteresis() {
     f.tick(0);
     assert(f.installed == 1);
     f.local.subject.put<Vec3>(0x28, {-1990, 20, 30});
-    f.tick(1499);
+    f.tick(1999);
     assert(f.installed == 1);
     f.tank.brain.put<unsigned>(0x3F8, f.world.now + 5000);
     f.tick(1);
+    assert(f.installed == 1); // The scan interval still applies at the hard cooldown boundary.
+    f.tick(399);
     assert(f.installed == 2 && tf::stat_retargets == 1);
     f.expect_point(-990, 20);
     f.local.subject.put<Vec3>(0x28, {-1990, 100, 30});
@@ -378,11 +407,11 @@ void lifecycle_and_hysteresis() {
     f.local.subject.put<Address>(0x18, 0);
     f.local.subject.put<float>(0x58, .5f);
     f.clear_order();
-    f.tick(2499);
+    f.tick(1600);
     assert(f.installed == 3);
     f.tank.brain.put<unsigned>(0x3F8, f.world.now + 5000);
-    f.tick(1);
-    assert(f.installed == 4); // Light AT waits through cooldown.
+    f.tick(400);
+    assert(f.installed == 4); // Light AT waits four seconds from issue.
     f.world.scene = f.scene2.ptr();
     f.tick();
     assert(f.installed == 4); // Surviving old order is foreign in the new scene.
@@ -534,6 +563,7 @@ int main() {
     policy_math();
     admission_and_guards();
     perception_and_stealth();
+    rapid_preemption();
     vehicle_type_and_angle_setting();
     {
         Fixture f;

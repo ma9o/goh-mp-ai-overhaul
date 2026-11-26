@@ -49,7 +49,7 @@ inline float threat_weight(const ThreatSample& t) noexcept {
         default: return 0.f;
     }
     return weight * std::clamp(160.f / std::max(t.dist_m, 20.f), 0.5f, 4.f) * (t.visible ? 1.5f : 0.85f) *
-           (t.attacking_or_threatening ? 1.6f : 1.f) * (t.is_main_target ? 1.35f : 1.f);
+           (t.attacking_or_threatening ? 1.6f : 1.f) * (t.is_main_target ? 1.85f : 1.f);
 }
 inline float armor_exposure(float abs_delta_rad) noexcept {
     if (abs_delta_rad <= radians(35)) return 0.15f + 0.35f * (abs_delta_rad / radians(35));
@@ -81,7 +81,7 @@ inline FacingDecision evaluate_facing(float current, const ThreatSample* threats
     auto consider = [&](float heading) {
         const float error = std::fabs(wrap_angle(heading - current));
         const float cost = exposure(heading);
-        const float objective = cost + 0.05f * error;
+        const float objective = cost + 0.12f * error;
         if (objective < best_objective) {
             best_objective = objective;
             d.desired_yaw_rad = wrap_angle(heading);
@@ -104,11 +104,10 @@ struct RotationGate {
     float active_target_yaw{}, seconds_since_issue{};
 };
 inline bool can_issue_rotation(const FacingDecision& d, const RotationGate& gate) noexcept {
-    if (!d.should_rotate) return false;
-    if (gate.owns_order)
-        return gate.seconds_since_issue >= 1.5f &&
-               std::fabs(wrap_angle(d.desired_yaw_rad - gate.active_target_yaw)) >= radians(28);
-    return !gate.backoff && (!gate.cooldown || (gate.heavy_threat && d.angle_error_rad >= radians(50)));
+    if (!d.should_rotate || gate.backoff) return false;
+    if (gate.cooldown && (gate.seconds_since_issue < 2.f || !gate.heavy_threat || d.angle_error_rad < radians(50)))
+        return false;
+    return !gate.owns_order || std::fabs(wrap_angle(d.desired_yaw_rad - gate.active_target_yaw)) >= radians(28);
 }
 
 } // namespace goh::tank_facing::policy

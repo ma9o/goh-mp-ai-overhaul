@@ -512,7 +512,8 @@ inline Job* reserve() {
 inline void tick(Address actor) {
     using namespace detail;
     World w{};
-    if (ticking || !s::callback(actor, w) || !runtime::is_host_main_thread(w.base) || !(read<s::Byte>(actor, 0x30) & 4))
+    if (ticking || !s::callback(actor, w) || !runtime::actor_ai_allowed(actor) ||
+        !runtime::is_host_main_thread(w.base) || !(read<s::Byte>(actor, 0x30) & 4))
         return;
     struct Frame {
         Frame() {

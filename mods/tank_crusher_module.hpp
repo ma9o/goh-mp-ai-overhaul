@@ -216,7 +216,7 @@ inline Address vehicle_brain(Address actor, Address chassis) noexcept {
     const unsigned modes = read<unsigned>(brain, 0x398), flags = read<unsigned>(brain, 0x39C);
     // Path cost & gear scoring never creates or hijacks orders: allow active user moves (bit 28)
     // and Hold Position (move_mode == 1) while always bailing on Direct Control / inhibition.
-    if ((flags & 0x3Fu) || (modes & 3) > 1) return 0;
+    if ((flags & 0x3Fu) || (modes & 3) > 1 || !runtime::actor_ai_allowed(actor)) return 0;
     return brain;
 }
 
@@ -280,7 +280,8 @@ inline float Hook_ObjectPolicy(Address ctx, Address dir, Address area) noexcept 
         !tank_worker_profile(read<Address>(ctx, 0xD0)))
         return native;
     const auto key = actor_key(read<unsigned>(ctx, 0x7C), read<unsigned>(ctx, 0x78));
-    if (!actor_admitted(key)) return native;
+    // 0x8DF200 copies the actor's owner into the worker context alongside both admission IDs.
+    if (!actor_admitted(key) || !config::player_ai_enabled(read<Byte>(ctx, 0x68))) return native;
     const auto type = (*obs_table)[read<Byte>(area, 0x3F)].load(std::memory_order_relaxed);
     const float adjusted = obstacle_cost(native, type, (read<Byte>(ctx, 0xE8) & 0x10) != 0);
     if (adjusted < native) discounted_obstacles.fetch_add(1, std::memory_order_relaxed);

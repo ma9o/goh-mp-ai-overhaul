@@ -578,7 +578,7 @@ inline bool permit(const World& w, Address actor, Address order) {
 inline void tick(Address actor) {
     World w{};
     if (!config::active().modules.auto_resupply || busy || !accepting.load(std::memory_order_acquire) ||
-        !callback(actor, w))
+        !callback(actor, w) || !runtime::actor_ai_allowed(actor))
         return;
     struct Scope {
         Scope() {

@@ -240,8 +240,8 @@ inline bool observe_epoch(Context& c) {
 inline bool context(Context& c, Address b) {
     if (!accepting.load() || !b || !s::serial_thread()) return false;
     c.actor = s::current_actor();
-    if (!s::callback(c.actor, c.w) || pr::scope.actor != c.actor || pr::depth != 1 ||
-        read<Address>(c.actor, 0xdc8) != b || !available(c.w, c.actor, b))
+    if (!s::callback(c.actor, c.w) || !runtime::actor_ai_allowed(c.actor) || pr::scope.actor != c.actor ||
+        pr::depth != 1 || read<Address>(c.actor, 0xdc8) != b || !available(c.w, c.actor, b))
         return false;
     c.squad = read<Address>(b, 0x100);
     if (!roster_permits(c.squad, c.actor)) return false;
@@ -649,14 +649,31 @@ inline bool issue(Context& c, Address state, const Descriptor* spot, const XY* p
         s::log_sink("Tactical infantry order #%u actor=%u action=%d", count, c.soldier->id, action);
     return true;
 }
+inline bool armored_class(Address actor) {
+    return classify::is_armored_vehicle_class(s::native_string(actor + 0xde8 + 0x40));
+}
 inline bool held_effective_vs_target(Address actor, Address sub) {
     const Address enemy = sub ? read<Address>(sub, 0x18) : 0;
-    if (!enemy || !pr::armoured_class(enemy)) return true;
+    if (!sim::has_actor(enemy) || !armored_class(enemy)) return true;
     const Address hand = pr::hand_item(actor);
     if (!hand) return false;
     const Address def = read<Address>(hand, 0x40);
     return def &&
            (close_grenade::holds_ranged_at(actor) || close_grenade::payload(def) != close_grenade::Payload::none);
+}
+inline bool visible_soft_target(const Context& c) {
+    const auto list = s::span(read<Address>(c.actor, 0xdd0), 0x280);
+    if (!list.valid(sizeof(Address), 4096)) return false;
+    const float radius = 45.f * c.w.length;
+    for (auto it = list.first; it != list.end; it += sizeof(Address)) {
+        const auto sub = read<Address>(it);
+        if (sub == c.sub || !pr::hostile_observation(sub) || read<Byte>(sub, 0x6c) ||
+            !(p::squared(read<XY>(sub, 0x28) - c.self) <= radius * radius))
+            continue;
+        const auto enemy = read<Address>(sub, 0x18);
+        if (sim::has_actor(enemy) && !armored_class(enemy)) return true;
+    }
+    return false;
 }
 inline bool within_closest_rushers(const Context& c, Address target_ent, XY target_xy) {
     if (!c.squad || close_grenade::is_rushing(c.w, c.actor)) return true;
@@ -832,7 +849,7 @@ inline bool movement(Context& c, Address state) {
     }
     const bool keep_shot = !rejoin && !retreat && hold_shot(c);
     const int point_action = p::point_move_action(rejoin, retreat, !rejoin && retreat && screened(c), keep_shot);
-    if (!squad_bound && !point_action) return false;
+    if (!point_action && (!squad_bound || c.soldier->covered)) return false;
     XY direction = rejoin ? p::unit(c.center - c.self) : retreat ? away(c) : forward(c);
     if (p::squared(direction) < .9f) return false;
     XY goal = c.self + direction * ((retreat ? 14.f : 12.f) * c.w.length);
@@ -993,8 +1010,10 @@ inline void dispatch(Address b) {
                     }
                 }
             } else {
-                posture = p::ineffective_posture(posture, held_effective_vs_target(c.actor, c.sub), screened(c),
-                                                 bal.no_retreat);
+                posture = p::ineffective_posture(
+                    posture, c.soldier->covered, bal.no_retreat, read<unsigned>(c.sub, 0x14),
+                    p::meters_between(c.self, read<XY>(c.sub, 0x28), c.w.length),
+                    [&] { return held_effective_vs_target(c.actor, c.sub) || visible_soft_target(c); });
             }
             put(b, 0x52c, int(posture));
             put(b, 0x530, Tick{});
@@ -1165,7 +1184,8 @@ template <class Place> bool settle_squad(Context& c, Place place) {
     const auto actor = c.actor;
     c.brain = read<Address>(actor, 0xdc8);
     c.squad = read<Address>(c.brain, 0x100);
-    if (!live_squad_human(actor, c.brain, c.squad, true) || !observe_epoch(c)) return false;
+    if (!runtime::actor_ai_allowed(actor) || !live_squad_human(actor, c.brain, c.squad, true) || !observe_epoch(c))
+        return false;
     c.self = read<XY>(actor, 0x74);
     if (!std::isfinite(c.self.x) || !std::isfinite(c.self.y)) return false;
     c.soldier = actor_record(actor, c.brain, c.now);

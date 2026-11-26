@@ -842,7 +842,7 @@ inline void update_medic(const World& w, Address actor) {
 inline void tick(Address actor) {
     World w{};
     if (!config::active().modules.auto_medic || busy || !release_installed || smoke::image_base != base ||
-        !accepting.load(std::memory_order_acquire) || !callback(actor, w))
+        !accepting.load(std::memory_order_acquire) || !callback(actor, w) || !runtime::actor_ai_allowed(actor))
         return;
     struct Scope {
         Scope() {

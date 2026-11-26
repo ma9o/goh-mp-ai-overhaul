@@ -31,41 +31,6 @@ INFO = (
     '{mod\n {name "ai_test_harness"}\n {desc "Level 1 verification - Vehicle Control bootcamp"}\n'
     ' {minGameVersion "1.069"}\n {maxGameVersion "1.069"}\n}\n'
 )
-MODULES = {
-    "grenade_dodge",
-    "soft_cover_lof",
-    "attack_detour",
-    "target_prioritization",
-    "auto_smoke",
-    "tank_crusher",
-    "tank_auto_repair",
-    "auto_medic",
-    "auto_resupply",
-    "close_grenade",
-    "tactical_infantry",
-    "penetration_at",
-    "tactical_objectives",
-    "tank_facing",
-    "engine_fixes",
-    "lull_reload",
-    "fast_weapon_swap",
-    "grenade_ff_guard",
-    "safe_disembark",
-    "transport_unload",
-    "squad_logistics",
-    "tank_crew_fill",
-    "internal_crew_swap",
-    "nontank_crew_fill",
-    "ammo_scavenge",
-    "tank_target_memory",
-    "cannon_aim_settle",
-    "allegiance_guard",
-    "overflow_cover",
-    "weapon_team_cohesion",
-    "mg_crew_small_arms",
-    "movement_recovery",
-    "convoy_spacing",
-}
 
 
 def game_dir(arg=None):
@@ -111,22 +76,22 @@ def overrides(args):
             raise ValueError(f"invalid --set {spec!r}")
         if "." in k:
             section, key = k.split(".")
+        elif k == "ai_player_mask":
+            section, key = live_launch.PLAYER_MASK
         elif k in ("enabled", "snapshot_interval_ms", "flush_ms", "filename"):
             section, key = "telemetry", k
-        elif k in MODULES:
+        elif k in live_launch.MODULE_KEYS:
             section, key = "modules", k
         elif k == "level":
             section, key = "logging", k
         else:
             section, key = "tuning", k
-        if section not in ("telemetry", "modules", "tuning", "logging", "smoke"):
+        if (section, key) == live_launch.PLAYER_MASK:
+            v = live_launch.player_mask(v)
+        elif section not in ("telemetry", "modules", "tuning", "logging", "smoke"):
             raise ValueError("unknown section " + section)
         result[section, key] = v
     return result
-
-
-def tuning_values(settings):
-    return {k: v for (section, k), v in settings.items() if section == "tuning" and k in mission.PROBES}
 
 
 def safe_child(game, rel):
@@ -189,27 +154,20 @@ def merged_ini(path, settings):
     return (newline.join(lines).lstrip("\r\n") + newline).encode("utf-8")
 
 
-def active_tuning(path, settings):
-    parser = configparser.ConfigParser(interpolation=None, strict=False, inline_comment_prefixes=(";", "#"))
-    if path.is_file():
-        parser.read(path, encoding="utf-8-sig")
-    saved = {
-        key: value
-        for name in parser.sections()
-        if name.lower() == "tuning"
-        for key, value in parser[name].items()
-        if key in mission.PROBES
-    }
-    return {**saved, **tuning_values(settings)}
+def run_settings(suite, overrides):
+    defaults = {("telemetry", "enabled"): "true"}
+    if suite == "calibration":
+        defaults[live_launch.PLAYER_MASK] = "4"
+    return {**defaults, **overrides}
 
 
 def install(game, suite, speed, settings, write_ini=False):
     verify_game(game)
     base, info, target = overlay(game)
     ini = safe_child(game, Path("binaries/x64/goh_ai.ini"))
-    text = mission.generate(suite, speed, active_tuning(ini, settings))
+    text = mission.generate(suite, speed)
     mission.check_stock(game, text)
-    patch = merged_ini(ini, {("telemetry", "enabled"): "true", **settings}) if write_ini or settings else None
+    patch = merged_ini(ini, run_settings(suite, settings)) if write_ini or settings else None
     if not base.exists():
         base.parent.mkdir(exist_ok=True)
         with tempfile.TemporaryDirectory(dir=base.parent, prefix=".level1-") as staging:
@@ -226,8 +184,9 @@ def install(game, suite, speed, settings, write_ini=False):
     return target
 
 
-def clean(game):
+def clean(game, options=None):
     base, info, target = overlay(game)
+    benchmark = options and target.is_file() and "GOH_L1_DONE_calibration" in target.read_text(encoding="utf-8")
     if base.exists():
         target.unlink(missing_ok=True)
         for folder in target.parents:
@@ -237,6 +196,8 @@ def clean(game):
                 folder.rmdir()
         info.unlink()
         base.rmdir()
+    if options:
+        live_launch.profile_mod(options, atomic_write, restore=True, heroic=bool(benchmark))
     return base
 
 
@@ -259,13 +220,13 @@ def telemetry_lines(stream):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     subs = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("generate", "install", "clean", "grade", "run"):
+    for name in ("generate", "install", "clean", "grade", "run", "sweep"):
         p = subs.add_parser(name)
         p.add_argument("--game-dir", help="Steam game root (or GOH_GAME_DIR)")
-        if name != "clean":
+        if name not in ("clean", "sweep"):
             p.add_argument("--suite", choices=mission.SUITES, default="full")
             p.add_argument("--set", action="append", default=[], metavar="[SECTION.]KEY=VALUE")
-        if name in ("install", "generate", "run"):
+        if name in ("install", "generate", "run", "sweep"):
             p.add_argument("--speed", choices=mission.SPEEDS, default="normal")
         if name == "generate":
             p.add_argument("-o", "--output", type=Path, help="write a .mi file (default stdout)")
@@ -277,23 +238,36 @@ def main(argv=None):
             )
         if name in ("clean", "run"):
             p.add_argument("--profile", help="player profile directory or options.set")
-        if name == "run":
+        if name == "sweep":
+            p.set_defaults(suite="calibration")
+            p.add_argument("--profiles", default="vanilla,default,tight,tactical,wide",
+                           help="comma-separated tuning profiles")
+            p.add_argument("--profile", dest="custom", action="append", default=[],
+                           metavar="NAME:KEY=VALUE,...", help="define and include a custom tuning profile")
+            p.add_argument("--player-profile", dest="profile", help="player profile directory or options.set")
+            p.add_argument("--runs", type=int, default=1, help="trials per profile")
+            p.add_argument(
+                "--swap-sides",
+                action="store_true",
+                help="run modded profiles on both West (P2, mask=4) and East (P3, mask=8) to cancel terrain bias",
+            )
+        if name in ("run", "sweep"):
             p.add_argument("--wine", help="Wine or CrossOver wine executable")
             p.add_argument("--bottle", default="Steam", help="CrossOver bottle (default Steam)")
-            p.add_argument("--timeout", type=int, default=720, help="overall timeout in seconds")
+            p.add_argument("--timeout", type=int, default=720, help="timeout per game launch in seconds")
             p.add_argument(
                 "--restore-options",
                 action="store_true",
-                help="restore prior mod selection on exit",
+                help="restore prior mod selection on exit (calibration always restores the player profile)",
             )
         if name == "grade":
             p.add_argument("--telemetry", type=Path, help="JSONL from the DLL")
             p.add_argument("--ai-log", "--log", type=Path, help="goh_ai.log")
-        if name in ("grade", "run"):
+        if name in ("grade", "run", "sweep"):
             p.add_argument(
                 "--game-log",
                 type=Path,
-                help="optional game.log with ordered GOH_L1 markers",
+                help="game.log with ordered GOH_L1 markers (required for standalone tactical grading)",
             )
             p.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
@@ -306,25 +280,24 @@ def main(argv=None):
                 )
             ):
                 options = live_launch.profile_options(a.profile)
-            print(clean(game_dir(a.game_dir)))
-            if options:
-                live_launch.profile_mod(options, atomic_write, restore=True)
+            print(clean(game_dir(a.game_dir), options))
             return 0
+        if a.cmd == "sweep":
+            profiles = live_launch.sweep_profiles(a.profiles, a.custom)
+            summary = live_launch.sweep(a, game_dir(a.game_dir), profiles, sys.modules[__name__])
+            print(json.dumps(summary, indent=2) if a.json else live_launch.comparison_table(summary))
+            return 0 if summary["passed"] else 1
         settings = overrides(a.set)
         if a.cmd == "run":
             report = live_launch.run(a, game_dir(a.game_dir), settings, sys.modules[__name__])
-            result_json = json.dumps(report, indent=2, allow_nan=False)
-            table = live_grade.table(report)
-            out = Path(report["evidence_dir"])
-            (out / "grade.json").write_text(result_json + "\n", encoding="utf-8")
-            (out / "grade.txt").write_text(table + "\n", encoding="utf-8")
-            print(result_json if a.json else table)
+            live_launch.archive_grade(report, live_grade)
+            print(json.dumps(report, indent=2, allow_nan=False) if a.json else live_grade.table(report))
             return 0 if report["passed"] else 1
         if a.cmd == "install":
             print(install(game_dir(a.game_dir), a.suite, a.speed, settings, a.write_ini))
             return 0
         if a.cmd == "generate":
-            text = mission.generate(a.suite, a.speed, tuning_values(settings))
+            text = mission.generate(a.suite, a.speed)
             if a.game_dir:
                 game = game_dir(a.game_dir)
                 verify_game(game)
@@ -345,7 +318,6 @@ def main(argv=None):
             None if a.telemetry and a.ai_log and not a.game_dir else game_dir(a.game_dir) / "binaries/x64"
         )
         telemetry, log = a.telemetry, a.ai_log
-        tuning = tuning_values(settings)
         if directory:
             cfg = configparser.ConfigParser(
                 strict=False, interpolation=None, inline_comment_prefixes=(";", "#")
@@ -355,14 +327,12 @@ def main(argv=None):
                 "telemetry", "filename", fallback="goh_telemetry.jsonl"
             )
             log = log or directory / cfg.get("logging", "filename", fallback="goh_ai.log")
-            tuning = active_tuning(directory / "goh_ai.ini", settings)
         with telemetry.open(encoding="utf-8") as f:
             report = live_grade.grade(
                 telemetry_lines(f),
                 log.read_text(errors="replace"),
                 a.game_log.read_text(errors="replace") if a.game_log else None,
                 a.suite,
-                tuning,
             )
         print(json.dumps(report, indent=2, allow_nan=False) if a.json else live_grade.table(report))
         return 0 if report["passed"] else 1
@@ -374,7 +344,7 @@ def main(argv=None):
         configparser.Error,
         subprocess.SubprocessError,
     ) as e:
-        if a.cmd in ("grade", "run") and a.json:
+        if a.cmd in ("grade", "run", "sweep") and a.json:
             print(json.dumps({"passed": False, "error": str(e)}))
         else:
             print(str(e), file=sys.stderr)

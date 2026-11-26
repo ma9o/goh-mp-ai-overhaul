@@ -311,8 +311,11 @@ inline float at_rush_standoff(float max_range, float blast_radius, float scale) 
         return 0.f;
     return std::clamp(max_range * .75f, safe_min, upper);
 }
-inline Posture ineffective_posture(Posture posture, bool effective_weapon, bool screened, bool no_retreat) {
-    if (!effective_weapon && !screened && !no_retreat) return (std::min)(posture, fallback);
+template <class CanEngage>
+Posture ineffective_posture(Posture posture, bool covered, bool no_retreat, unsigned enemy_flags,
+                            float enemy_distance_m, CanEngage can_engage) {
+    if (!covered && !no_retreat && ((enemy_flags & 0x180u) || enemy_distance_m <= 28.f) && !can_engage())
+        return (std::min)(posture, fallback);
     return posture;
 }
 inline std::uint32_t deadline(std::uint32_t now, std::uint32_t delta) {

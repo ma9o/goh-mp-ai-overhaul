@@ -229,8 +229,9 @@ inline bool donor_policy_allows(unsigned policy, unsigned flags) {
     return ctrl <= 1u && !(flags & 0x1010003fu);
 }
 template <class Policy> inline bool autonomous_if(Address actor, bool human_only, Policy permits) {
-    if (!live_entity(actor) || !smoke::has_actor(actor) || owner(actor) >= 18 || !read<std::uint16_t>(actor, 0xDAA) ||
-        !(read<unsigned>(actor, 0xDB4) & 0x100) || (read<unsigned>(actor, 0x1C0) & (1u << 28)))
+    if (!live_entity(actor) || !smoke::has_actor(actor) || !runtime::actor_ai_allowed(actor) || owner(actor) >= 18 ||
+        !read<std::uint16_t>(actor, 0xDAA) || !(read<unsigned>(actor, 0xDB4) & 0x100) ||
+        (read<unsigned>(actor, 0x1C0) & (1u << 28)))
         return false;
     const Address b = read<Address>(actor, 0xDC8);
     if (!b || !read<Address>(actor, 0x578) || read<Address>(b, 0x38) != actor) return false;
@@ -370,8 +371,8 @@ inline bool tank_class(Address a) {
            tag(span(read<Address>(a, 0x548), 0x330), "tank");
 }
 inline Address authorized_vehicle_brain(Address image, Address a, bool allow_linked = false) {
-    if (!smoke::has_actor(a) || !(read<Byte>(a, 0x30) & 8) || owner(a) >= 18 || !read<std::uint16_t>(a, 0xDAA) ||
-        (!allow_linked && (read<unsigned>(a, 0x1C0) & (1u << 28))))
+    if (!smoke::has_actor(a) || !(read<Byte>(a, 0x30) & 8) || !runtime::actor_ai_allowed(a) || owner(a) >= 18 ||
+        !read<std::uint16_t>(a, 0xDAA) || (!allow_linked && (read<unsigned>(a, 0x1C0) & (1u << 28))))
         return 0;
     const auto b = read<Address>(a, 0xDC8), ch = read<Address>(a, 0xDE0);
     if (!b || read<Address>(b) != image + runtime::table().vt.vehicle_brain || read<Address>(b, 0x38) != a ||
@@ -650,8 +651,8 @@ inline int guarded(Exec orig, Address order, int phase) {
     const auto ordered = read<Address>(order, 8);
     const auto actor = ordered ? ordered - 0xAF0 : 0;
     World w{};
-    if (!actor || !accepting.load(std::memory_order_acquire) || !callback(actor, w) || !watch->permit ||
-        !watch->permit(w, actor, order)) {
+    if (!actor || !accepting.load(std::memory_order_acquire) || !callback(actor, w) ||
+        !runtime::actor_ai_allowed(actor) || !watch->permit || !watch->permit(w, actor, order)) {
         if (phase == 0) watch->skipped_start = true;
         watch->permit = nullptr;
         return 2;
@@ -683,7 +684,7 @@ inline void discard(Address o) {
 }
 inline bool install(Address actor, Address fresh, Permit permit, OrderRef& owned) {
     if (!fresh) return false;
-    if (free_slot(actor)) {
+    if (runtime::actor_ai_allowed(actor) && free_slot(actor)) {
         Watched* slot = nullptr;
         for (auto& watch : watches) {
             if (!watch.order.load()) {

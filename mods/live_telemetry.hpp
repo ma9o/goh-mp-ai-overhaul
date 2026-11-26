@@ -103,6 +103,7 @@ template <class Settings> class PublishedSettings {
     Tuning tuning_{};
     decltype(Settings::log_level) level_{};
     std::uint32_t flush_{};
+    std::uint32_t ai_player_mask_{};
     std::mutex mutex_;
     std::atomic<std::uint64_t> generation_{};
 
@@ -114,6 +115,7 @@ public:
         tuning_ = next.tuning;
         level_ = next.log_level;
         flush_ = next.log_flush_ms;
+        ai_player_mask_ = next.ai_player_mask;
         generation_.fetch_add(1, std::memory_order_release);
     }
     Settings& view(Settings& startup) {
@@ -127,6 +129,7 @@ public:
             copy.tuning = tuning_;
             copy.log_level = level_;
             copy.log_flush_ms = flush_;
+            copy.ai_player_mask = ai_player_mask_;
             seen = generation_.load(std::memory_order_relaxed);
         }
         return copy;

@@ -482,6 +482,14 @@ void test_ownership_remote_retry_and_rewind() {
     assert(h.moves.empty());
     h.worker = false;
 
+    // Both sides of a cross-player seat transfer must have mod AI enabled.
+    for (unsigned player : {1u, 2u}) {
+        goh::config::active().ai_player_mask = 1u << player;
+        h.tick(t.actor.ptr());
+        assert(h.moves.empty());
+    }
+    goh::config::active().ai_player_mask = (1u << 1) | (1u << 2);
+
     // Simulate failed eBoarder::Move -> sets 1s retry cooldown!
     h.move_result = false;
     h.world.now += 50;
@@ -946,8 +954,21 @@ void test_accepted_cannon_transfer_stalls() {
     h.tick(gun.actor.ptr(), 7);
     assert(h.moves.size() == 1);
     unsigned calls = 1;
-    for (unsigned remaining : {1493u, 5000u, 10000u, 10000u}) {
-        h.tick(gun.actor.ptr(), remaining - 1);
+    gun.set_slot(1, "charger", "crew", 0x1000u, "", "", 0);
+    h.tick(gun.actor.ptr(), 1493);
+    assert(h.moves.size() == calls);
+    gun.set_slot(1, "charger", "crew", 0x1000u, "", "", charger.actor.ptr(), 304);
+    h.tick(gun.actor.ptr(), 1);
+    h.expect_move(++calls, 1, 0);
+    for (unsigned remaining : {5000u, 10000u, 10000u}) {
+        // The boarder transiently removes the charger (or blinks gunner occupied), then bounces him back.
+        gun.set_slot(1, "charger", "crew", 0x1000u, "", "", 0);
+        gun.set_slot(0, "gunner", "crew", 0x1000u, "main", "", charger.actor.ptr(), 304);
+        h.tick(gun.actor.ptr(), 1500);
+        assert(h.moves.size() == calls);
+        gun.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
+        gun.set_slot(1, "charger", "crew", 0x1000u, "", "", charger.actor.ptr(), 304);
+        h.tick(gun.actor.ptr(), remaining - 1501);
         assert(h.moves.size() == calls);
         h.tick(gun.actor.ptr(), 1);
         h.expect_move(++calls, 1, 0);
@@ -964,6 +985,18 @@ void test_accepted_cannon_transfer_stalls() {
     h.expect_move(++calls, 1, 0);
     h.tick(gun.actor.ptr(), 10000);
     assert(h.moves.size() == calls && cf::stat_transfer_failures == 0);
+
+    // A crewman who disappears on the first attempt leaves no permanent retry record.
+    h.apply_move_effect = false;
+    gun.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
+    gun.set_slot(1, "charger", "crew", 0x1000u, "", "", charger.actor.ptr(), 304);
+    h.tick(gun.actor.ptr());
+    h.expect_move(++calls, 1, 0);
+    gun.set_slot(1, "charger", "crew", 0x1000u, "", "", 0);
+    h.tick(gun.actor.ptr(), 4999);
+    assert(d::states[0].last_transfer.src == 1);
+    h.tick(gun.actor.ptr(), 1);
+    assert(d::states[0].last_transfer.src == -1 && h.moves.size() == calls);
 }
 
 } // namespace

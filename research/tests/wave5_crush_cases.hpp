@@ -22,6 +22,7 @@ struct Fixture {
     Memory<0xA0> scene{};
     Memory<0x200> grenade{};
     Memory<0x80> attack{};
+    Memory<0x80> escape_order{};
     std::array<Address, 3> entities{};
     std::array<Address, 1> stock_vehicles{};
     s::World w{};
@@ -56,6 +57,7 @@ inline void run() {
     f.grenade.put<unsigned>(0xc0, 13);
     f.grenade.put<Vec3>(0x74, {25, 25, 1});
     f.human.brain.put<Address>(0xe0, f.root.ptr());
+    f.escape_order.put<Address>(0, base + 0x110D490); // eSequence
     f.root.put<Address>(0, base + runtime::table().vt.root_soldier);
     f.root.put<Address>(0x30, f.human.brain.ptr());
     f.root.put<Address>(0x3e0, base + runtime::table().vt.crush_scanner_vehicle);
@@ -86,13 +88,13 @@ inline void run() {
             return !fixture->blocked;
         });
     };
-    m::native.sequence = []() -> Address { return 10; };
+    m::native.sequence = [] { return fixture->escape_order.ptr(); };
     m::native.point = [](const XY& xy) -> Address {
         fixture->goal = xy;
         return fixture->fail_move ? 0 : 30;
     };
     m::native.push = [](Address q, Address child, int layer) {
-        assert(q == 10 && layer == 0);
+        assert(q == fixture->escape_order.ptr() && layer == 0);
         fixture->pushed.push_back(child);
     };
     m::native.discard = [](Address child) {
@@ -133,24 +135,57 @@ inline void run() {
 
     assert(update() == 1 && f.updates == 1);
     assert(f.root.get<Address>(0x3f8) == f.root.get<Address>(0x400));
-    assert(build() == 10 && f.builds == 0 && ca::stat_crush_escapes == 1);
+    const auto escape_order = f.escape_order.ptr();
+    assert(build() == escape_order && f.builds == 0 && ca::stat_crush_escapes == 1);
     assert((f.pushed == std::vector<Address>{20, 30, 40}) && f.goal.y > 23 && f.goal.x == 25);
-    const XY first_goal = f.goal;
-    assert(build() == 10 && f.goal.x == first_goal.x && f.goal.y == first_goal.y && f.builds == 0);
+    const auto probes = f.probes, first_tick = f.w.now;
+    assert(!build() && !f.builds && f.probes == probes); // Same armed scanner called twice.
+    f.human.brain.put(0xf0, escape_order);
+    f.w.now += f.w.duration(2.5f) - 1;
+    assert(!update() && f.probes == probes && ca::stat_crush_escapes == 1); // Goal still clears the lane.
+    ++f.w.now;
+    assert(update() && build() == escape_order && ca::stat_crush_escapes == 2);
+    f.human.brain.put<Address>(0xf0, 0); // Stock or the player replaced the order.
+    f.w.now += f.w.duration(1.5f) - 1;
+    assert(!update());
+    ++f.w.now;
+    assert(update() && build() == escape_order);
+    // A turning vehicle now covers the old escape goal. Only its actual hull
+    // can shorten the normal cooldown, and even underfoot it lasts 0.5 s.
+    f.human.brain.put(0xf0, escape_order);
+    f.velocity = {0, .1f, 0};
+    f.tank.actor.put<Vec3>(0x74, {25, 20, 1}); // 3 m == 1.8 m hull + 1.2 m.
+    f.w.now += f.w.duration(.5f) - 1;
+    assert(!update());
+    ++f.w.now;
+    f.tank.actor.put<Vec3>(0x74, {25, 19.99f, 1});
+    assert(!update()); // In the projected lane but outside the hull threshold.
+    f.tank.actor.put<Vec3>(0x74, {25, 20, 1});
+    assert(update() && build() == escape_order);
+    f.human.brain.put<Address>(0xf0, 0);
+    f.tank.actor.put<Vec3>(0x74, {20, 20, 1});
+    f.velocity = {.1f, 0, 0};
+    f.w.now = first_tick; // Rewind must clear the existing cooldown.
+    assert(update());
     f.blocked = true;
     assert(!build() && f.builds == 0);
     f.blocked = false;
     f.fail_move = true;
-    assert(!build() && f.builds == 0 && (f.deleted == std::vector<Address>{20, 40, 10}));
+    assert(!build() && f.builds == 0 && (f.deleted == std::vector<Address>{20, 40, escape_order}));
     f.fail_move = false;
     // Losing authority, identity or freshness between Update and Build never enters stock's empty-vector RNG.
     f.human.chassis.put<unsigned>(0x18, 1);
     assert(!build() && !f.builds);
     f.human.chassis.put<unsigned>(0x18, 0);
+    const auto prior_mask = config::active().ai_player_mask;
+    config::active().ai_player_mask = 0;
+    assert(!build() && !f.builds); // Lost authority after our scanner was armed.
+    config::active().ai_player_mask = prior_mask;
     f.w.now++;
-    assert(build() == 10);
+    assert(build() == escape_order);
     f.w.now++;
     assert(!build() && !f.builds);
+    f.w.now += f.w.duration(1.5f);
     assert(update());
     f.tank.actor.put<unsigned>(0xc0, 14);
     assert(!build());
@@ -163,7 +198,8 @@ inline void run() {
     f.velocity = {-.1f, 0, 0};
     assert(!update());
     f.tank.actor.put<Vec3>(0x74, {29, 22, 1});
-    assert(update() && build() == 10);
+    assert(update() && build() == escape_order);
+    f.w.now += f.w.duration(1.5f);
     f.tank.actor.put<Vec3>(0x74, {40, 22, 1});
     assert(!update());
     f.tank.actor.put<Vec3>(0x74, {29, 22, 4.01f});
@@ -242,12 +278,18 @@ inline void run() {
     config::active().modules.crush_avoidance = true;
     --f.w.now; // Scene clock rollback discards the old ownership and cached vehicles.
     assert(build() == 55 && f.builds == 4);
-    assert(update() && build() == 10);
+    assert(update() && build() == escape_order);
     Memory<0xA0> replacement_scene = f.scene;
     f.w.scene = replacement_scene.ptr();
     assert(build() == 55 && f.builds == 5);
-    assert(update() && build() == 10);
+    assert(update() && build() == escape_order);
     f.w.scene = f.scene.ptr();
+    config::active().ai_player_mask = 0;
+    assert(!update() && build() == 55);
+    config::active().ai_player_mask = 1u << 1; // Soldier belongs to player 1.
+    f.tank.actor.put<Byte>(0xda8, 2);
+    assert(update() && build() == escape_order); // Player 2's vehicle is still a threat.
+    config::active().ai_player_mask = prior_mask;
 
     // An enemy breaks an exact left/right tie. Every selected escape clears every known lane.
     d::Threats lanes{};
