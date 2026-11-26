@@ -13,7 +13,7 @@ Development layout, build/lint/test commands, Ghidra/PE-scan/update-audit workfl
 
 ## Multiplayer AI goals and non-desync constraints
 
-The goal is to improve unit AI for SP and multiplayer without causing lobby **Resource desynchronization** or in-match host/client state desynchronization. Every research contract and hook in `mods/` must obey these invariants (exact per-build RVAs live in shared module headers and `research/artifacts/build-<id>/`; all contracts stay subject to runtime verification):
+The primary goal is to improve unit AI for multiplayer (as well as SP, Skirmish, and Conquest) without causing lobby **Resource desynchronization** or in-match host/client state desynchronization. Every research contract and hook in `mods/` must obey these invariants (exact per-build RVAs live in shared module headers and `research/artifacts/build-<id>/`; all contracts stay subject to runtime verification):
 
 - **Never modify `resource/` files.** Do not edit `.pak` archives, `resource/set/`, `properties/`, FSMs, `ammo.set`, `select.set`, or breed definitions. Deliver all AI behavior through native runtime hooks gated on exact `call_to_arms.exe` PE SHA-256 fingerprints so vanilla clients need no mod files.
 - **Host-only execution; passive on remote clients.** Guard every hook on `!IsRemoteClient()` and verify the live concrete brain vtable (`Actor::eHumanBrain` / `Actor::eVehicleBrain`, never `*Client` stubs).

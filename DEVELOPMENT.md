@@ -1,6 +1,6 @@
-# Development & Research Guide
+# Development Guide
 
-Workflow, build/lint/test commands, and static-analysis procedures for the **Call to Arms: Gates of Hell — Ostfront** native AI extender research repository.
+Build, lint, test, and static-analysis workflows for **Gates of Hell — MP AI Overhaul** (host-only native AI extender for **Call to Arms: Gates of Hell — Ostfront**).
 
 For player-facing gameplay impact and unit behavior rules, see [README.md](README.md). For coding-agent rules and non-desync invariants, see [AGENTS.md](AGENTS.md).
 

@@ -1,8 +1,8 @@
-# Gates of Hell AI Research
+# Gates of Hell — MP AI Overhaul
 
-Host-only native AI overhaul prototype for **Call to Arms: Gates of Hell — Ostfront** (Steam build `26734796`). All behavior runs through a native DLL with zero `resource/` or `.pak` edits, so vanilla multiplayer clients can join a modded host without installing anything.
+Host-only native multiplayer AI overhaul for **Call to Arms: Gates of Hell — Ostfront** (Steam build `26734796`). All behavior runs on the host through a native DLL with zero `resource/` or `.pak` edits—avoiding lobby resource desync so vanilla multiplayer clients can join without installing anything (also works in singleplayer, skirmish, and Conquest).
 
-> **Status:** Early prototype (not a public release yet). Static binary contracts and offline test suites pass; live single-player and private multiplayer verification is still pending.
+> **Status:** Early prototype (not a public release yet). Static binary contracts and offline test suites pass; live private-lobby multiplayer and singleplayer verification is still pending.
 
 ## Gameplay changes
 
