@@ -1,0 +1,573 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "title": "Host Auto-Resupply",
+  "runtime_allowed": false,
+  "runtime_verified": false,
+  "export_suffix": "-auto-resupply",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "image_base": "0x140000000"
+    }
+  },
+  "methods": [
+    {
+      "id": "read_supply_parameters",
+      "entry_rvas": {
+        "game": "0x48e080"
+      }
+    },
+    {
+      "id": "supply_zone_event",
+      "entry_rvas": {
+        "game": "0x48e740"
+      }
+    },
+    {
+      "id": "source_chassis_veto",
+      "entry_rvas": {
+        "game": "0x48eb90"
+      }
+    },
+    {
+      "id": "parse_supply_rows",
+      "entry_rvas": {
+        "game": "0x48da60"
+      }
+    },
+    {
+      "id": "stock_aura_quant",
+      "entry_rvas": {
+        "game": "0x490670"
+      }
+    },
+    {
+      "id": "supply_human",
+      "entry_rvas": {
+        "game": "0x48ee00"
+      }
+    },
+    {
+      "id": "supply_vehicle",
+      "entry_rvas": {
+        "game": "0x48f050"
+      }
+    },
+    {
+      "id": "refill_matching_item",
+      "entry_rvas": {
+        "game": "0x48faf0"
+      }
+    },
+    {
+      "id": "recipient_capacity",
+      "entry_rvas": {
+        "game": "0x48f820"
+      }
+    },
+    {
+      "id": "supply_box_stack",
+      "entry_rvas": {
+        "game": "0x48ff80"
+      }
+    },
+    {
+      "id": "raw_template_cache",
+      "entry_rvas": {
+        "game": "0x717680"
+      }
+    },
+    {
+      "id": "mounted_definition",
+      "entry_rvas": {
+        "game": "0x81ec20"
+      }
+    },
+    {
+      "id": "actor_team",
+      "entry_rvas": {
+        "game": "0xd28890"
+      }
+    },
+    {
+      "id": "burning_active",
+      "entry_rvas": {
+        "game": "0x7c89d0"
+      }
+    },
+    {
+      "id": "capture_point_lookup",
+      "entry_rvas": {
+        "game": "0x42cb30"
+      }
+    },
+    {
+      "id": "receive_capture_update",
+      "entry_rvas": {
+        "game": "0x15b270"
+      }
+    },
+    {
+      "id": "set_capture_progress",
+      "entry_rvas": {
+        "game": "0xd1d050"
+      }
+    },
+    {
+      "id": "read_capture_weights",
+      "entry_rvas": {
+        "game": "0xd1b720"
+      }
+    },
+    {
+      "id": "team_code",
+      "entry_rvas": {
+        "game": "0xd0dfd0"
+      }
+    },
+    {
+      "id": "structure_place_child",
+      "entry_rvas": {
+        "game": "0x7d64e0"
+      }
+    },
+    {
+      "id": "bind_structure_parent",
+      "entry_rvas": {
+        "game": "0x7d61d0"
+      }
+    },
+    {
+      "id": "ammo_selector",
+      "entry_rvas": {
+        "game": "0x54260"
+      }
+    },
+    {
+      "id": "hidden_selector",
+      "entry_rvas": {
+        "game": "0x49460"
+      }
+    },
+    {
+      "id": "crushed_property",
+      "entry_rvas": {
+        "game": "0x492e0"
+      }
+    },
+    {
+      "id": "destroyed_property",
+      "entry_rvas": {
+        "game": "0x49310"
+      }
+    },
+    {
+      "id": "point_task_factory",
+      "entry_rvas": {
+        "game": "0x90a8c0"
+      }
+    },
+    {
+      "id": "point_task_exec",
+      "entry_rvas": {
+        "game": "0x90e3f0"
+      }
+    },
+    {
+      "id": "match_zone_team",
+      "entry_rvas": {
+        "game": "0x1663c0"
+      }
+    },
+    {
+      "id": "selector_matches",
+      "entry_rvas": {
+        "game": "0x565a50"
+      }
+    },
+    {
+      "id": "scene_entity_vector",
+      "entry_rvas": {
+        "game": "0xa39c70"
+      }
+    },
+    {
+      "id": "destroy_move_task",
+      "entry_rvas": {
+        "game": "0xbb490"
+      }
+    },
+    {
+      "id": "insert_empty_queue",
+      "entry_rvas": {
+        "game": "0x919270"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "aura_config",
+      "binary": "game",
+      "function_rva": "0x48e080",
+      "instruction_rvas": [
+        "0x48e118",
+        "0x48e193",
+        "0x48e214",
+        "0x48e2e1",
+        "0x48e3a0"
+      ]
+    },
+    {
+      "id": "host_zone_tick",
+      "binary": "game",
+      "function_rva": "0x48e740",
+      "instruction_rvas": [
+        "0x48e76b",
+        "0x48e794"
+      ]
+    },
+    {
+      "id": "recipient_and_radius",
+      "binary": "game",
+      "function_rva": "0x490670",
+      "instruction_rvas": [
+        "0x4908ba",
+        "0x4908c7",
+        "0x490990",
+        "0x4909a5",
+        "0x4909b2",
+        "0x4909ba",
+        "0x4909e1",
+        "0x490b32",
+        "0x490b7b",
+        "0x490cc6",
+        "0x490ce6"
+      ]
+    },
+    {
+      "id": "budget_and_command",
+      "binary": "game",
+      "function_rva": "0x48faf0",
+      "instruction_rvas": [
+        "0x48fb18",
+        "0x48fb2b",
+        "0x48fb32",
+        "0x48fb97",
+        "0x48fcee",
+        "0x48fcf5",
+        "0x48fd9d"
+      ]
+    },
+    {
+      "id": "supply_new_stack",
+      "binary": "game",
+      "function_rva": "0x48ff80",
+      "instruction_rvas": [
+        "0x4900b7",
+        "0x490117"
+      ]
+    },
+    {
+      "id": "infantry_match",
+      "binary": "game",
+      "function_rva": "0x48ee00",
+      "instruction_rvas": [
+        "0x48ef00",
+        "0x48ef33",
+        "0x48ef63"
+      ]
+    },
+    {
+      "id": "mounted_match",
+      "binary": "game",
+      "function_rva": "0x48f050",
+      "instruction_rvas": [
+        "0x48f1a2",
+        "0x48f221",
+        "0x48f233"
+      ]
+    },
+    {
+      "id": "capacity_cache",
+      "binary": "game",
+      "function_rva": "0x48f820",
+      "instruction_rvas": [
+        "0x48f863",
+        "0x48f86a",
+        "0x48f918",
+        "0x48f925"
+      ]
+    },
+    {
+      "id": "raw_cache_miss_creates",
+      "binary": "game",
+      "function_rva": "0x717680",
+      "instruction_rvas": [
+        "0x7178cf",
+        "0x717955"
+      ]
+    },
+    {
+      "id": "live_team",
+      "binary": "game",
+      "function_rva": "0xd28890",
+      "instruction_rvas": [
+        "0xd288a5",
+        "0xd288b3",
+        "0xd288c9"
+      ]
+    },
+    {
+      "id": "capture_backref",
+      "binary": "game",
+      "function_rva": "0x15b270",
+      "instruction_rvas": [
+        "0x15b2c2"
+      ]
+    },
+    {
+      "id": "capture_team",
+      "binary": "game",
+      "function_rva": "0xd1d050",
+      "instruction_rvas": [
+        "0xd1d064",
+        "0xd1d1af",
+        "0xd1d432"
+      ]
+    },
+    {
+      "id": "capture_pressure",
+      "binary": "game",
+      "function_rva": "0xd1b720",
+      "instruction_rvas": [
+        "0xd1b741",
+        "0xd1b74c",
+        "0xd1b76e",
+        "0xd1b9f7"
+      ]
+    },
+    {
+      "id": "placed_child",
+      "binary": "game",
+      "function_rva": "0x7d64e0",
+      "instruction_rvas": [
+        "0x7d65f0",
+        "0x7d6652",
+        "0x7d69e5",
+        "0x7d69f7"
+      ]
+    },
+    {
+      "id": "structure_parent",
+      "binary": "game",
+      "function_rva": "0x7d61d0",
+      "instruction_rvas": [
+        "0x7d632b",
+        "0x7d637f",
+        "0x7d63aa",
+        "0x7d63d0"
+      ]
+    },
+    {
+      "id": "burning",
+      "binary": "game",
+      "function_rva": "0x7c89d0",
+      "instruction_rvas": [
+        "0x7c8a02",
+        "0x7c8a09",
+        "0x7c8a12",
+        "0x7c8a1b"
+      ]
+    },
+    {
+      "id": "scene_members",
+      "binary": "game",
+      "function_rva": "0xa39c70",
+      "instruction_rvas": [
+        "0xa39dd7",
+        "0xa39ddb"
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "id": "zone_budget",
+      "representation": "+0x94 spent, +0x98 limit, ammo row+0x14 cost",
+      "evidence_ids": [
+        "aura_config",
+        "budget_and_command"
+      ]
+    },
+    {
+      "id": "zone_radius_period",
+      "representation": "+0x88 metres, +0x8C seconds, +0x430 enabled",
+      "evidence_ids": [
+        "aura_config",
+        "recipient_and_radius"
+      ]
+    },
+    {
+      "id": "flag_ownership",
+      "representation": "capture engine+0x98 progress, +0x9C delta, +0xA8 team and +0x108..0x12F capture weights",
+      "evidence_ids": [
+        "capture_team",
+        "capture_pressure",
+        "capture_backref"
+      ]
+    },
+    {
+      "id": "structure_supply_child",
+      "representation": "owner+0x568 places, stride 0x298, +0x280 entity, structure bone+0x88 owner",
+      "evidence_ids": [
+        "placed_child",
+        "structure_parent"
+      ]
+    }
+  ],
+  "inline_regions": [],
+  "enums": [],
+  "float_constants": [],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeMoveTask@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x1023970",
+      "methods": {
+        "0": "0xbb490",
+        "3": "0x919f60",
+        "4": "0x91a0e0",
+        "19": "0x90e3f0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeSupplyZoneExtender@Entity@@",
+      "subobject_offset": 0,
+      "rva": "0x109ba88",
+      "methods": {
+        "7": "0x48e740"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeSupplyZoneUpdateCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x1038ae0",
+      "methods": {
+        "1": "0x151340",
+        "3": "0x162ca0",
+        "4": "0x162e90"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeMapPointExtender@Entity@@",
+      "subobject_offset": 0,
+      "rva": "0x10fbff0",
+      "methods": {
+        "7": "0x7b5080"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeMapPointCaptureEngine@GamePlay@Multiplayer@@",
+      "subobject_offset": 0,
+      "rva": "0x116c550",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeStructureBone@Entity@@",
+      "subobject_offset": 0,
+      "rva": "0x10fdd88",
+      "methods": {
+        "7": "0x7d4210"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeStructureRoot@Entity@@",
+      "subobject_offset": 0,
+      "rva": "0x10fdeb8",
+      "methods": {
+        "7": "0x7d61d0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeBurning@Entity@@",
+      "subobject_offset": 0,
+      "rva": "0x10fd478",
+      "methods": {
+        "7": "0x7c89d0"
+      }
+    }
+  ],
+  "byte_sequences": [
+    {
+      "id": "wire_48fb32",
+      "binary": "game",
+      "rva": "0x48fb32",
+      "hex": "03 47 14"
+    },
+    {
+      "id": "wire_4909b2",
+      "binary": "game",
+      "rva": "0x4909b2",
+      "hex": "83 78 7c 05"
+    },
+    {
+      "id": "wire_4900b7",
+      "binary": "game",
+      "rva": "0x4900b7",
+      "hex": "c7 44 24 28 80 00 00 00"
+    }
+  ],
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/resupply.inc",
+      "size": 38349,
+      "sha256": "345abb53826ad258990b663aaa5a643af0ee455cf913732ebe2952d7908d273c"
+    },
+    {
+      "archive": "entity/construction.pak",
+      "member": "construction/_military/boxes/crates_set02_resupply/crates_set02_resupply.def",
+      "size": 1771,
+      "sha256": "2327df26a2583f1198dc9259b7531d7e087271f5db02dc6c9167dd42e9b3919f"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/car/blitz3_6_art_ammo/blitz3_6_art_ammo.def",
+      "size": 2398,
+      "sha256": "ba1c5b0374dbff05c605a11a7baf9ad71cc15ba413e6760f44e6ca67c6590c85"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/-multiplayer/flag_point/flag_point.def",
+      "size": 135,
+      "sha256": "21fd7529bc819b739fe371b20b6d1bcec032c75818617023461f289cce8391d3"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/-multiplayer/flag_point/flag_point.inc",
+      "size": 763,
+      "sha256": "126015226d2e5408f8deb56ebe6a792a7a67a0f5c92f57d8ea7bea49f9cc7cfe"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/-multiplayer/flag_point/flag_point_campaign.inc",
+      "size": 653,
+      "sha256": "d830109172164d961d4b9a63ae7f45f9157638615e70d94e15889dd40135da2b"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/-multiplayer/flag_point/flagpoint_ammo/flagpoint_ammo.def",
+      "size": 660,
+      "sha256": "2ca6159712b401880d6f9d619c42ca3cf54fb4f7a097407cfd664a8664fe8c39"
+    }
+  ]
+}

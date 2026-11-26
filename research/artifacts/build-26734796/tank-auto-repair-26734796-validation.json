@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "fine_map_sha256": "491f1e6b67c59a81708736920b7a828696572926a493adc38de011003c1e3635",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "export_report_sha256": "0b8fd998108e79682bdf56b8e66732a0f2d0e0288bd1b976e2e1858d4126a764",
+      "exact_candidates": 81,
+      "exported_functions": 81,
+      "exported_basic_blocks": 2142,
+      "checked_enums": 0,
+      "checked_constants": 1,
+      "checked_method_entries": 81,
+      "checked_instruction_locations": 268,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 16,
+      "checked_byte_sequences": 5
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/vehicle/vehicle-main.inc",
+      "size": 49004,
+      "sha256": "855f2f980870e952fecb17fd1d668385fcd3f6392cbc3fd13526350239525283"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/tank/tank-main.inc",
+      "size": 67055,
+      "sha256": "05953aa2a2c95b5d59856cc9105deaa3bc12f4f0c25d8fc78cb6ce53604ad221"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/special/repair_kit",
+      "size": 184,
+      "sha256": "77ebe3dac912eb7301e0031e23f00f01c149b75a9e677f5d697e71e3967788d0"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/tank_crew.ext",
+      "size": 15459,
+      "sha256": "8b22f36dab75976bd0653d80656f797ff3901376e1618ad49cdc0692aea1b627"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/vehicle.ext",
+      "size": 19765,
+      "sha256": "29c09d098d67e3fce02769be2935786b3eadcb55b240c90b048f56a246901b96"
+    }
+  ],
+  "status": "passed",
+  "runtime_allowed": false,
+  "offline_checks": {
+    "module": "mods/tank_auto_repair_module.hpp",
+    "module_sha256": "561a72d453a8c0aa9e568e22294baea8fd7614b29ab3d6ca8d4cc8f8125b2323",
+    "trampoline": {
+      "status": "passed",
+      "minhook_revision": "9fbd087432700d73fc571118d6a9697a36443d88",
+      "engine": "MinHook CreateTrampolineFunction with the upstream x64 trampoline and HDE64 sources, operating on the first 64 bytes read from each PE entry. No PE instructions executed.",
+      "checks": [
+        "copied whole original instructions",
+        "original prologue bytes preserved",
+        "ordinary entry patch (patchAbove false)",
+        "absolute jump returns to first undisplaced instruction",
+        "relay points to the supplied detour"
+      ],
+      "hooks": [
+        {
+          "entry": "0x9159d0",
+          "purpose": "component picker",
+          "displaced_hex": "48 89 5c 24 18",
+          "copied_bytes": 5,
+          "instructions": 1,
+          "continuation_rva": "0x9159d5",
+          "relay_and_jump_back_verified": true
+        },
+        {
+          "entry": "0x9ac1a0",
+          "purpose": "repair exit finish",
+          "displaced_hex": "4c 8b dc 49 89 5b 10",
+          "copied_bytes": 7,
+          "instructions": 2,
+          "continuation_rva": "0x9ac1a7",
+          "relay_and_jump_back_verified": true
+        },
+        {
+          "entry": "0x913a20",
+          "purpose": "SmartRepair Execute",
+          "displaced_hex": "48 89 5c 24 08",
+          "copied_bytes": 5,
+          "instructions": 1,
+          "continuation_rva": "0x913a25",
+          "relay_and_jump_back_verified": true
+        },
+        {
+          "entry": "0xb5380",
+          "purpose": "SmartRepair deleting destructor",
+          "displaced_hex": "48 89 5c 24 08",
+          "copied_bytes": 5,
+          "instructions": 1,
+          "continuation_rva": "0xb5385",
+          "relay_and_jump_back_verified": true
+        },
+        {
+          "entry": "0x9b0e80",
+          "purpose": "stock repair dispatcher",
+          "displaced_hex": "4c 8b dc 55 53",
+          "copied_bytes": 5,
+          "instructions": 3,
+          "continuation_rva": "0x9b0e85",
+          "relay_and_jump_back_verified": true
+        }
+      ]
+    },
+    "hook_collision_scan": {
+      "status": "passed",
+      "method": "Compared all five detour RVAs with hexadecimal constants in the other module sources. Reviewed the five-hook creation list separately from the native call targets.",
+      "files": [
+        "mods/ai_support_26734796.hpp",
+        "mods/auto_medic_module.hpp",
+        "mods/auto_resupply_module.hpp",
+        "mods/auto_smoke_module.hpp",
+        "mods/close_grenade_module.hpp",
+        "mods/example_mod.cpp",
+        "mods/goh_ai_mod.cpp",
+        "mods/grenade_dodge.cpp",
+        "mods/tank_crusher_module.hpp",
+        "mods/target_prioritization_module.hpp"
+      ],
+      "collisions": []
+    },
+    "mingw": {
+      "status": "passed",
+      "compiler": "x86_64-w64-mingw32-g++ (GCC) 16.2.0",
+      "flags": [
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror"
+      ],
+      "syntax_only": true,
+      "link_flags": [
+        "-shared",
+        "-static"
+      ],
+      "minhook_static_objects": [
+        "src/buffer.c",
+        "src/hook.c",
+        "src/trampoline.c",
+        "src/hde/hde64.c"
+      ],
+      "exports": [
+        "post",
+        "prepare",
+        "removed",
+        "stop"
+      ],
+      "imports": [
+        "KERNEL32.dll",
+        "api-ms-win-crt-convert-l1-1-0.dll",
+        "api-ms-win-crt-environment-l1-1-0.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-private-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll"
+      ],
+      "probe_sha256": "381e05d0d8ed260b8aaecfa326bd69e5685a382dd6dd52221d1f604a1d83df4a",
+      "probe_source": "#include \"../../mods/tank_auto_repair_module.hpp\"\n#include <MinHook.h>\nnamespace tr=goh::tank_auto_repair;\nextern \"C\" __declspec(dllexport) bool prepare(tr::Address image,const char* sha) {\n    return tr::prepare_hooks(image,sha,MH_CreateHook,MH_RemoveHook);\n}\nextern \"C\" __declspec(dllexport) void post(tr::Address actor) {tr::on_actor_post_quant(actor);}\nextern \"C\" __declspec(dllexport) int stop() {tr::deactivate();return tr::inflight_count();}\nextern \"C\" __declspec(dllexport) void removed(){tr::after_hooks_removed();}\n"
+    },
+    "simulation": {
+      "status": "passed",
+      "assertions": 45,
+      "compiler": "Apple clang version 21.0.0 (clang-2100.4.1.1)",
+      "instrumentation": [
+        "AddressSanitizer",
+        "UndefinedBehaviorSanitizer"
+      ],
+      "scope": "Fixture with simulated entity memory, clock, role tests and native order factories. Executes the module coordinator, picker, cleanup and hook preparation. Game order execution, transport, private-lobby admission and live unload are untested.",
+      "cases": [
+        "B emits two non-gunners including the driver",
+        "B reserves both exiting repairers",
+        "B damaged gun then turret beat broken track",
+        "all-claimed nonbusy fallback",
+        "busy component excluded",
+        "native rejection list honored",
+        "bit 24 allows the owned order",
+        "manual order restores stock picker",
+        "manual order releases and backs off",
+        "fresh SmartRepair after native order ends",
+        "A emits all five immediately",
+        "A assigns all five outside",
+        "A five live orders claim distinct components",
+        "A holds boarding while hull broken",
+        "A queues five native Boards after hull restoration",
+        "stock-ejected crew matched, kit cap applied",
+        "empty inventory and ground prevent exit",
+        "remote client passive",
+        "worker passive",
+        "local authority without host-emit predicate",
+        "destroyed hull rejected",
+        "casualty blocks a replacement for eight seconds",
+        "replacement eligible on casualty cooldown expiry",
+        "foreign exiting walker consumes one quota slot",
+        "foreign Repair order consumes one quota slot",
+        "reserved ground kit excluded",
+        "ground kit outside twenty spatial units excluded",
+        "one nearby free ground kit funds one exit",
+        "seated placement inhibition accepted with Hold Move and Direct Control exclusions",
+        "ground inhibition forbids installation",
+        "qualified Mechanic selected with native repair rate",
+        "B continues into damaged engine after track and weapons recover",
+        "native kit return precedes boarding for carrier",
+        "carrier boards after kit is returned",
+        "idle crew retries a failed Board",
+        "manual crew receives no order during 25 s backoff",
+        "idle former repairer may board after manual backoff expires",
+        "recycled actor identity and distant ex-crew excluded",
+        "clock rewind clears crewless tank and roster",
+        "second body break renews the delayed ejection window",
+        "foreign fingerprint rejected before hook creation",
+        "partial hook failure removes successful entries in reverse order",
+        "matching fingerprint prepares five hooks",
+        "deactivate stops new coordination",
+        "after removal releases state and trampolines"
+      ]
+    },
+    "format": {
+      "status": "passed",
+      "command": "./scripts/lint_cpp.sh --werror mods/tank_auto_repair_module.hpp"
+    }
+  }
+}

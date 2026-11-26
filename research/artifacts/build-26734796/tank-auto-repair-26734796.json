@@ -1,0 +1,1496 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "title": "Tank Auto-Repair",
+  "export_suffix": "-tank-auto-repair",
+  "runtime_allowed": false,
+  "runtime_verified": false,
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "image_base": "0x140000000"
+    }
+  },
+  "hooks": [
+    {
+      "entry": "0x9159d0",
+      "purpose": "component picker",
+      "displaced_hex": "48 89 5c 24 18",
+      "continuation_rva": "0x9159d5"
+    },
+    {
+      "entry": "0x9ac1a0",
+      "purpose": "repair exit finish",
+      "displaced_hex": "4c 8b dc 49 89 5b 10",
+      "continuation_rva": "0x9ac1a7"
+    },
+    {
+      "entry": "0x913a20",
+      "purpose": "SmartRepair Execute",
+      "displaced_hex": "48 89 5c 24 08",
+      "continuation_rva": "0x913a25"
+    },
+    {
+      "entry": "0xb5380",
+      "purpose": "SmartRepair deleting destructor",
+      "displaced_hex": "48 89 5c 24 08",
+      "continuation_rva": "0xb5385"
+    },
+    {
+      "entry": "0x9b0e80",
+      "purpose": "stock repair dispatcher",
+      "displaced_hex": "4c 8b dc 55 53",
+      "continuation_rva": "0x9b0e85"
+    }
+  ],
+  "methods": [
+    {
+      "id": "repair_exec",
+      "entry_rvas": {
+        "game": "0x910d50"
+      },
+      "baseline_25492057": "0x8f8730"
+    },
+    {
+      "id": "smart_exec",
+      "entry_rvas": {
+        "game": "0x913a20"
+      },
+      "baseline_25492057": "0x8fb210"
+    },
+    {
+      "id": "vehicle_interrupt",
+      "entry_rvas": {
+        "game": "0x9ad5d0"
+      }
+    },
+    {
+      "id": "emit_exec",
+      "entry_rvas": {
+        "game": "0x8fc860"
+      },
+      "baseline_25492057": "0x8e55a0"
+    },
+    {
+      "id": "exchange_exec",
+      "entry_rvas": {
+        "game": "0x913570"
+      },
+      "baseline_25492057": "0x8fad60"
+    },
+    {
+      "id": "board_exec",
+      "entry_rvas": {
+        "game": "0x8fb070"
+      },
+      "baseline_25492057": "0x8e3db0"
+    },
+    {
+      "id": "picker",
+      "entry_rvas": {
+        "game": "0x9159d0"
+      },
+      "baseline_25492057": "0x8fd1c0"
+    },
+    {
+      "id": "eligible_component",
+      "entry_rvas": {
+        "game": "0x915e20"
+      },
+      "baseline_25492057": "0x8fd610"
+    },
+    {
+      "id": "approach_picker",
+      "entry_rvas": {
+        "game": "0x911980"
+      },
+      "baseline_25492057": "0x8f9360"
+    },
+    {
+      "id": "smart_step",
+      "entry_rvas": {
+        "game": "0x913b40"
+      },
+      "baseline_25492057": "0x8fb330"
+    },
+    {
+      "id": "attempt",
+      "entry_rvas": {
+        "game": "0x914e90"
+      },
+      "baseline_25492057": "0x8fc690"
+    },
+    {
+      "id": "smart_factory",
+      "entry_rvas": {
+        "game": "0x915070"
+      },
+      "baseline_25492057": "0x8fc870"
+    },
+    {
+      "id": "on_exit",
+      "entry_rvas": {
+        "game": "0x9ac1a0"
+      },
+      "baseline_25492057": "0x98dc50"
+    },
+    {
+      "id": "native_dispatch",
+      "entry_rvas": {
+        "game": "0x9b0e80"
+      },
+      "baseline_25492057": "0x992950"
+    },
+    {
+      "id": "board_factory",
+      "entry_rvas": {
+        "game": "0x8fadc0"
+      },
+      "baseline_25492057": "0x8e3b00"
+    },
+    {
+      "id": "providers",
+      "entry_rvas": {
+        "game": "0x914440"
+      },
+      "baseline_25492057": "0x8fbc30"
+    },
+    {
+      "id": "has_kit",
+      "entry_rvas": {
+        "game": "0x914a60"
+      }
+    },
+    {
+      "id": "acquire",
+      "entry_rvas": {
+        "game": "0x914070"
+      },
+      "baseline_25492057": "0x8fb860"
+    },
+    {
+      "id": "install_order",
+      "entry_rvas": {
+        "game": "0x8047c0"
+      }
+    },
+    {
+      "id": "repair_receive",
+      "entry_rvas": {
+        "game": "0xaf540"
+      },
+      "baseline_25492057": "0xaef40"
+    },
+    {
+      "id": "duration",
+      "entry_rvas": {
+        "game": "0x8aacf0"
+      },
+      "baseline_25492057": "0x8953b0"
+    },
+    {
+      "id": "exchange_factory",
+      "entry_rvas": {
+        "game": "0x915280"
+      },
+      "baseline_25492057": "0x8fca70"
+    },
+    {
+      "id": "queue_insert",
+      "entry_rvas": {
+        "game": "0x919270"
+      }
+    },
+    {
+      "id": "emit_place",
+      "entry_rvas": {
+        "game": "0x796980"
+      },
+      "baseline_25492057": "0x7837f0"
+    },
+    {
+      "id": "and_repair_factory",
+      "entry_rvas": {
+        "game": "0x9ac630"
+      }
+    },
+    {
+      "id": "emit_selection",
+      "entry_rvas": {
+        "game": "0x8fccd0"
+      },
+      "baseline_25492057": "0x8e5a10"
+    },
+    {
+      "id": "emit_factory",
+      "entry_rvas": {
+        "game": "0x8fc550"
+      },
+      "baseline_25492057": "0x8e5290"
+    },
+    {
+      "id": "ability_container",
+      "entry_rvas": {
+        "game": "0x94f2b0"
+      }
+    },
+    {
+      "id": "ability_query",
+      "entry_rvas": {
+        "game": "0x9927d0"
+      }
+    },
+    {
+      "id": "ability_level",
+      "entry_rvas": {
+        "game": "0x94f3d0"
+      }
+    },
+    {
+      "id": "restore_component",
+      "entry_rvas": {
+        "game": "0x8aadc0"
+      }
+    },
+    {
+      "id": "encode",
+      "entry_rvas": {
+        "game": "0xaf280"
+      },
+      "baseline_25492057": "0xaec80"
+    },
+    {
+      "id": "decode",
+      "entry_rvas": {
+        "game": "0xaf3e0"
+      },
+      "baseline_25492057": "0xaede0"
+    },
+    {
+      "id": "repair_dtor",
+      "entry_rvas": {
+        "game": "0x915cd0"
+      },
+      "baseline_25492057": "0x8fd4c0"
+    },
+    {
+      "id": "emit_dtor",
+      "entry_rvas": {
+        "game": "0x8fd4b0"
+      }
+    },
+    {
+      "id": "order_ctor",
+      "entry_rvas": {
+        "game": "0x919e10"
+      }
+    },
+    {
+      "id": "queue_default",
+      "entry_rvas": {
+        "game": "0x91dc20"
+      }
+    },
+    {
+      "id": "order_tick",
+      "entry_rvas": {
+        "game": "0x919f60"
+      }
+    },
+    {
+      "id": "order_end",
+      "entry_rvas": {
+        "game": "0x91a0e0"
+      }
+    },
+    {
+      "id": "install_root",
+      "entry_rvas": {
+        "game": "0x91db30"
+      }
+    },
+    {
+      "id": "start_out",
+      "entry_rvas": {
+        "game": "0x79fdf0"
+      },
+      "baseline_25492057": "0x78cc60"
+    },
+    {
+      "id": "emit_instant",
+      "entry_rvas": {
+        "game": "0x797b60"
+      },
+      "baseline_25492057": "0x7849d0"
+    },
+    {
+      "id": "crew_role",
+      "entry_rvas": {
+        "game": "0x7943c0"
+      },
+      "baseline_25492057": "0x781230"
+    },
+    {
+      "id": "mechanic_params",
+      "entry_rvas": {
+        "game": "0x367b00"
+      }
+    },
+    {
+      "id": "mechanic_available",
+      "entry_rvas": {
+        "game": "0x1b51c0"
+      }
+    },
+    {
+      "id": "mechanic_type",
+      "entry_rvas": {
+        "game": "0x367a40"
+      }
+    },
+    {
+      "id": "repair_exit_position",
+      "entry_rvas": {
+        "game": "0x9ac140"
+      }
+    },
+    {
+      "id": "callback_base",
+      "entry_rvas": {
+        "game": "0x8fc130"
+      }
+    },
+    {
+      "id": "actor_inventory",
+      "entry_rvas": {
+        "game": "0x7e0420"
+      }
+    },
+    {
+      "id": "resolve_actor",
+      "entry_rvas": {
+        "game": "0xa7c990"
+      }
+    },
+    {
+      "id": "bind_order",
+      "entry_rvas": {
+        "game": "0x917d70"
+      }
+    },
+    {
+      "id": "out_walker",
+      "entry_rvas": {
+        "game": "0x7a1740"
+      }
+    },
+    {
+      "id": "publish_order",
+      "entry_rvas": {
+        "game": "0x91e4c0"
+      }
+    },
+    {
+      "id": "smart_dtor",
+      "entry_rvas": {
+        "game": "0xb5380"
+      }
+    },
+    {
+      "id": "boarder_root",
+      "entry_rvas": {
+        "game": "0x79d790"
+      }
+    },
+    {
+      "id": "has_tag",
+      "entry_rvas": {
+        "game": "0x1663c0"
+      }
+    },
+    {
+      "id": "veterancy_source",
+      "entry_rvas": {
+        "game": "0x94f340"
+      }
+    },
+    {
+      "id": "veterancy_gate",
+      "entry_rvas": {
+        "game": "0x368ac0"
+      }
+    },
+    {
+      "id": "emit_bind",
+      "entry_rvas": {
+        "game": "0x8fd990"
+      }
+    },
+    {
+      "id": "equipment_claim",
+      "entry_rvas": {
+        "game": "0x912070"
+      }
+    },
+    {
+      "id": "peer_component",
+      "entry_rvas": {
+        "game": "0x912640"
+      },
+      "baseline_25492057": "0x8fa020"
+    },
+    {
+      "id": "walker_progress",
+      "entry_rvas": {
+        "game": "0x7a1fa0"
+      }
+    },
+    {
+      "id": "empty_name",
+      "entry_rvas": {
+        "game": "0x564d50"
+      }
+    },
+    {
+      "id": "drop_name",
+      "entry_rvas": {
+        "game": "0x565010"
+      }
+    },
+    {
+      "id": "worker",
+      "entry_rvas": {
+        "game": "0xa7a80"
+      },
+      "baseline_25492057": "0xa6740"
+    },
+    {
+      "id": "remote",
+      "entry_rvas": {
+        "game": "0xc2b7a0"
+      },
+      "baseline_25492057": "0xc0b630"
+    },
+    {
+      "id": "wire",
+      "entry_rvas": {
+        "game": "0xc2b740"
+      },
+      "baseline_25492057": "0xc0b5d0"
+    },
+    {
+      "id": "register_repaired",
+      "entry_rvas": {
+        "game": "0x588a0"
+      }
+    },
+    {
+      "id": "register_burning",
+      "entry_rvas": {
+        "game": "0x71a00"
+      }
+    },
+    {
+      "id": "register_sinking",
+      "entry_rvas": {
+        "game": "0x71ba0"
+      }
+    },
+    {
+      "id": "ability_index",
+      "entry_rvas": {
+        "game": "0x80fa30"
+      }
+    },
+    {
+      "id": "experience_data",
+      "entry_rvas": {
+        "game": "0x806500"
+      }
+    },
+    {
+      "id": "walker_finish",
+      "entry_rvas": {
+        "game": "0x7a4da0"
+      }
+    },
+    {
+      "id": "component_by_name",
+      "entry_rvas": {
+        "game": "0x8ab780"
+      },
+      "baseline_25492057": "0x895e40"
+    },
+    {
+      "id": "post_quant_witness",
+      "entry_rvas": {
+        "game": "0x804ac0"
+      },
+      "baseline_25492057": "0x7efd10"
+    },
+    {
+      "id": "scene_members",
+      "entry_rvas": {
+        "game": "0xa39c70"
+      }
+    },
+    {
+      "id": "human_placement_events",
+      "entry_rvas": {
+        "game": "0x94f990"
+      }
+    },
+    {
+      "id": "placement_inhibition",
+      "entry_rvas": {
+        "game": "0x91ab90"
+      }
+    },
+    {
+      "id": "referenced_allocator",
+      "entry_rvas": {
+        "game": "0x662d40"
+      }
+    },
+    {
+      "id": "board_start_in",
+      "entry_rvas": {
+        "game": "0x79f8e0"
+      }
+    },
+    {
+      "id": "board_start_in_command",
+      "entry_rvas": {
+        "game": "0x161450"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "pick_context",
+      "binary": "game",
+      "function_rva": "0x911980",
+      "instruction_rvas": [
+        "0x911989",
+        "0x911990",
+        "0x9119ec",
+        "0x9119f4",
+        "0x9119f9",
+        "0x911b9a"
+      ]
+    },
+    {
+      "id": "pick_candidates",
+      "binary": "game",
+      "function_rva": "0x9159d0",
+      "instruction_rvas": [
+        "0x9159e9",
+        "0x9159f9",
+        "0x9159fd",
+        "0x915a14",
+        "0x915bd5"
+      ]
+    },
+    {
+      "id": "normal_duration",
+      "binary": "game",
+      "function_rva": "0x8aacf0",
+      "instruction_rvas": [
+        "0x8aacf0",
+        "0x8aacf4",
+        "0x8aacf6",
+        "0x8aad01",
+        "0x8aad03",
+        "0x8aad0b",
+        "0x8aad14",
+        "0x8aad20",
+        "0x8aad2f",
+        "0x8aad3c"
+      ]
+    },
+    {
+      "id": "eligible_nonbusy",
+      "binary": "game",
+      "function_rva": "0x915e20",
+      "instruction_rvas": [
+        "0x915e24",
+        "0x915e30",
+        "0x915e3b",
+        "0x915e46",
+        "0x915e4b",
+        "0x915e51"
+      ]
+    },
+    {
+      "id": "authority_and_phase3_publish",
+      "binary": "game",
+      "function_rva": "0x910d50",
+      "instruction_rvas": [
+        "0x910d6f",
+        "0x910d7a",
+        "0x910d85",
+        "0x911395",
+        "0x9113a9",
+        "0x9113fa",
+        "0x91141f",
+        "0x911432",
+        "0x911445",
+        "0x91145c",
+        "0x911460",
+        "0x91146a",
+        "0x911476",
+        "0x911483",
+        "0x9116e3"
+      ]
+    },
+    {
+      "id": "wire_component",
+      "binary": "game",
+      "function_rva": "0xaf280",
+      "instruction_rvas": [
+        "0xaf299",
+        "0xaf2ad",
+        "0xaf2ec",
+        "0xaf2ff",
+        "0xaf31f",
+        "0xaf334",
+        "0xaf393",
+        "0xaf3ab"
+      ]
+    },
+    {
+      "id": "wire_receiver",
+      "binary": "game",
+      "function_rva": "0xaf540",
+      "instruction_rvas": [
+        "0xaf556",
+        "0xaf56f",
+        "0xaf5b1",
+        "0xaf5c7",
+        "0xaf5d2",
+        "0xaf5f5"
+      ]
+    },
+    {
+      "id": "peer_component_lookup",
+      "binary": "game",
+      "function_rva": "0x912640",
+      "instruction_rvas": [
+        "0x9126af",
+        "0x9126df",
+        "0x912773",
+        "0x91278f",
+        "0x9127b4"
+      ]
+    },
+    {
+      "id": "name_in_component_vector",
+      "binary": "game",
+      "function_rva": "0x8ab780",
+      "instruction_rvas": [
+        "0x8ab7b6",
+        "0x8ab7bd",
+        "0x8ab7c6"
+      ]
+    },
+    {
+      "id": "setup_attempts",
+      "binary": "game",
+      "function_rva": "0x915070",
+      "instruction_rvas": [
+        "0x9151d5",
+        "0x9151df",
+        "0x9151ea"
+      ]
+    },
+    {
+      "id": "smart_child_result",
+      "binary": "game",
+      "function_rva": "0x913a20",
+      "instruction_rvas": [
+        "0x913adc",
+        "0x913ae8",
+        "0x913af2",
+        "0x913af7",
+        "0x913b23"
+      ]
+    },
+    {
+      "id": "attempt_limit",
+      "binary": "game",
+      "function_rva": "0x913b40",
+      "instruction_rvas": [
+        "0x913b55",
+        "0x913bdf",
+        "0x913dee",
+        "0x913dfd",
+        "0x913e0b",
+        "0x913e2f",
+        "0x913e79",
+        "0x91403a"
+      ]
+    },
+    {
+      "id": "count_and_delay",
+      "binary": "game",
+      "function_rva": "0x914e90",
+      "instruction_rvas": [
+        "0x914e96",
+        "0x914e9c",
+        "0x914ea3",
+        "0x914ea9",
+        "0x914eba"
+      ]
+    },
+    {
+      "id": "native_repair_poll",
+      "binary": "game",
+      "function_rva": "0x9ad5d0",
+      "instruction_rvas": [
+        "0x9ad885",
+        "0x9ada5e",
+        "0x9adc47",
+        "0x9adc56",
+        "0x9adc5b",
+        "0x9ae946",
+        "0x9aea67"
+      ]
+    },
+    {
+      "id": "selected_human_mechanic",
+      "binary": "game",
+      "function_rva": "0x9b0e80",
+      "instruction_rvas": [
+        "0x9b0ebf",
+        "0x9b0ec6",
+        "0x9b0efb",
+        "0x9b0f31",
+        "0x9b0f38",
+        "0x9b0f49",
+        "0x9b0f6f",
+        "0x9b0f86",
+        "0x9b0f92",
+        "0x9b0f97",
+        "0x9b0f9d",
+        "0x9b10a1",
+        "0x9b10be"
+      ]
+    },
+    {
+      "id": "role_test",
+      "binary": "game",
+      "function_rva": "0x7943c0",
+      "instruction_rvas": [
+        "0x7943fb",
+        "0x794407",
+        "0x794418"
+      ]
+    },
+    {
+      "id": "factory_and_retain",
+      "binary": "game",
+      "function_rva": "0x9ac630",
+      "instruction_rvas": [
+        "0x9ac64a",
+        "0x9ac661",
+        "0x9ac668",
+        "0x9ac671",
+        "0x9ac67e"
+      ]
+    },
+    {
+      "id": "emit_owned_inputs",
+      "binary": "game",
+      "function_rva": "0x8fc550",
+      "instruction_rvas": [
+        "0x8fc585",
+        "0x8fc59d",
+        "0x8fc5a8",
+        "0x8fc5b3",
+        "0x8fc5bb"
+      ]
+    },
+    {
+      "id": "emit_single_seat",
+      "binary": "game",
+      "function_rva": "0x8fc860",
+      "instruction_rvas": [
+        "0x8fc894",
+        "0x8fcaf6",
+        "0x8fcb00",
+        "0x8fcb09",
+        "0x8fcb0e",
+        "0x8fcb43",
+        "0x8fcb67",
+        "0x8fcbf7",
+        "0x8fcc9b"
+      ]
+    },
+    {
+      "id": "emit_starts_walker",
+      "binary": "game",
+      "function_rva": "0x796980",
+      "instruction_rvas": [
+        "0x7969ae",
+        "0x7969fd",
+        "0x796a0b",
+        "0x796a28"
+      ]
+    },
+    {
+      "id": "door_node_finishes",
+      "binary": "game",
+      "function_rva": "0x7a4da0",
+      "instruction_rvas": [
+        "0x7a4dc4",
+        "0x7a5132",
+        "0x7a5144"
+      ]
+    },
+    {
+      "id": "stock_smart_before_board",
+      "binary": "game",
+      "function_rva": "0x9ac1a0",
+      "instruction_rvas": [
+        "0x9ac1ea",
+        "0x9ac1f3",
+        "0x9ac206",
+        "0x9ac245",
+        "0x9ac250",
+        "0x9ac253",
+        "0x9ac266",
+        "0x9ac270"
+      ]
+    },
+    {
+      "id": "walker_distinct_from_occupancy",
+      "binary": "game",
+      "function_rva": "0x7a1740",
+      "instruction_rvas": [
+        "0x7a1de9",
+        "0x7a1e35"
+      ]
+    },
+    {
+      "id": "boarder_root",
+      "binary": "game",
+      "function_rva": "0x79d790",
+      "instruction_rvas": [
+        "0x79d790",
+        "0x79d79d",
+        "0x79d7b0",
+        "0x79d7b7",
+        "0x79d7be",
+        "0x79d7c5",
+        "0x79d7ce",
+        "0x79d7de"
+      ]
+    },
+    {
+      "id": "actor_routing_bank",
+      "binary": "game",
+      "function_rva": "0xa7c990",
+      "instruction_rvas": [
+        "0xa7c998",
+        "0xa7c99f",
+        "0xa7c9b0",
+        "0xa7c9ce",
+        "0xa7c9d9"
+      ]
+    },
+    {
+      "id": "stock_provider",
+      "binary": "game",
+      "function_rva": "0x914440",
+      "instruction_rvas": [
+        "0x914563",
+        "0x914625",
+        "0x914632",
+        "0x914651"
+      ]
+    },
+    {
+      "id": "reserved_world_item",
+      "binary": "game",
+      "function_rva": "0x912070",
+      "instruction_rvas": [
+        "0x91207a",
+        "0x9120ac",
+        "0x9120b8",
+        "0x9120ff",
+        "0x91210b",
+        "0x912115"
+      ]
+    },
+    {
+      "id": "stock_mechanic_parameters",
+      "binary": "game",
+      "function_rva": "0x367b00",
+      "instruction_rvas": [
+        "0x367b50",
+        "0x367b56",
+        "0x367b5b"
+      ]
+    },
+    {
+      "id": "qualified_veterancy",
+      "binary": "game",
+      "function_rva": "0x368ac0",
+      "instruction_rvas": [
+        "0x368ae4",
+        "0x368ae9",
+        "0x368af1",
+        "0x368aff"
+      ]
+    },
+    {
+      "id": "actor_exp",
+      "binary": "game",
+      "function_rva": "0x806500",
+      "instruction_rvas": [
+        "0x806500",
+        "0x806507"
+      ]
+    },
+    {
+      "id": "dynamic_repaired",
+      "binary": "game",
+      "function_rva": "0x588a0",
+      "instruction_rvas": [
+        "0x588a7",
+        "0x588bd",
+        "0x588c4"
+      ]
+    },
+    {
+      "id": "dynamic_burning",
+      "binary": "game",
+      "function_rva": "0x71a00",
+      "instruction_rvas": [
+        "0x71a07",
+        "0x71a1d",
+        "0x71a24"
+      ]
+    },
+    {
+      "id": "dynamic_sinking",
+      "binary": "game",
+      "function_rva": "0x71ba0",
+      "instruction_rvas": [
+        "0x71ba7",
+        "0x71bbd",
+        "0x71bc4"
+      ]
+    },
+    {
+      "id": "registration",
+      "binary": "game",
+      "function_rva": "0x80fa30",
+      "instruction_rvas": [
+        "0x80fa30"
+      ]
+    },
+    {
+      "id": "placement_events",
+      "binary": "game",
+      "function_rva": "0x94f990",
+      "instruction_rvas": [
+        "0x95017b",
+        "0x950188",
+        "0x950267",
+        "0x950274",
+        "0x95036a",
+        "0x950377",
+        "0x9503b9",
+        "0x9503c6"
+      ]
+    },
+    {
+      "id": "placement_count",
+      "binary": "game",
+      "function_rva": "0x91ab90",
+      "instruction_rvas": [
+        "0x91ab9f",
+        "0x91abd6",
+        "0x91abdb",
+        "0x91abeb",
+        "0x91abf0"
+      ]
+    },
+    {
+      "id": "scene_entities",
+      "binary": "game",
+      "function_rva": "0xa39c70",
+      "instruction_rvas": [
+        "0xa39dd7",
+        "0xa39ddb"
+      ]
+    },
+    {
+      "id": "bind_root",
+      "binary": "game",
+      "function_rva": "0x91db30",
+      "instruction_rvas": [
+        "0x91dbab",
+        "0x91dbcd",
+        "0x91dbd7",
+        "0x91dbf1"
+      ]
+    },
+    {
+      "id": "stock_kit_exchange",
+      "binary": "game",
+      "function_rva": "0x913570",
+      "instruction_rvas": [
+        "0x9136a4",
+        "0x913710",
+        "0x91379d",
+        "0x91392c"
+      ]
+    },
+    {
+      "id": "board_state",
+      "binary": "game",
+      "function_rva": "0x8fb070",
+      "instruction_rvas": [
+        "0x8fb1cf",
+        "0x8fb1d8",
+        "0x8fb1f9",
+        "0x8fb233",
+        "0x8fb30c",
+        "0x8fb316",
+        "0x8fb336",
+        "0x8fb376",
+        "0x8fb3eb",
+        "0x8fb50a",
+        "0x8fb589",
+        "0x8fb633",
+        "0x8fb652"
+      ]
+    },
+    {
+      "id": "start_in_wire",
+      "binary": "game",
+      "function_rva": "0x79f8e0",
+      "instruction_rvas": [
+        "0x79fcaf",
+        "0x79fd01",
+        "0x79fd34",
+        "0x79fd47",
+        "0x79fd54",
+        "0x79fd99"
+      ]
+    },
+    {
+      "id": "start_in_command",
+      "binary": "game",
+      "function_rva": "0x161450",
+      "instruction_rvas": [
+        "0x16145d",
+        "0x161478",
+        "0x16147c",
+        "0x16148f"
+      ]
+    },
+    {
+      "id": "sync_emit",
+      "binary": "game",
+      "function_rva": "0x797b60",
+      "instruction_rvas": [
+        "0x7980ae",
+        "0x7980c6",
+        "0x798100"
+      ]
+    },
+    {
+      "id": "sync_start_out",
+      "binary": "game",
+      "function_rva": "0x79fdf0",
+      "instruction_rvas": [
+        "0x79fe95",
+        "0x79fe9a",
+        "0x79fec1"
+      ]
+    },
+    {
+      "id": "gate_worker",
+      "binary": "game",
+      "function_rva": "0xa7a80",
+      "instruction_rvas": [
+        "0xa7a80",
+        "0xa7a84",
+        "0xa7a89",
+        "0xa7a8d",
+        "0xa7a92",
+        "0xa7a97",
+        "0xa7a9a",
+        "0xa7a9f",
+        "0xa7aa4",
+        "0xa7aa9",
+        "0xa7aac",
+        "0xa7aae",
+        "0xa7ab1",
+        "0xa7ab4",
+        "0xa7ab8",
+        "0xa7ab9",
+        "0xa7abc",
+        "0xa7abf",
+        "0xa7ac2",
+        "0xa7ac6"
+      ]
+    },
+    {
+      "id": "gate_remote",
+      "binary": "game",
+      "function_rva": "0xc2b7a0",
+      "instruction_rvas": [
+        "0xc2b7a6",
+        "0xc2b7d1",
+        "0xc2b7e0",
+        "0xc2b7f1",
+        "0xc2b7f9"
+      ]
+    },
+    {
+      "id": "gate_wire",
+      "binary": "game",
+      "function_rva": "0xc2b740",
+      "instruction_rvas": [
+        "0xc2b746",
+        "0xc2b771",
+        "0xc2b780",
+        "0xc2b791",
+        "0xc2b799"
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "id": "crew",
+      "representation": "Occupied short indices at placer+0x10, seat stride 0x298, name +0, group +0x60, occupant +0x280.",
+      "evidence_ids": [
+        "selected_human_mechanic",
+        "role_test"
+      ]
+    },
+    {
+      "id": "walker",
+      "representation": "Live rows at root boarder+0x60 through +0x68, stride 0x90. Actor +8, destination +0x30, retained callback +0x88. Destination kind 1 is an exit door.",
+      "evidence_ids": [
+        "walker_distinct_from_occupancy",
+        "boarder_root",
+        "door_node_finishes"
+      ]
+    },
+    {
+      "id": "repair_component",
+      "representation": "Target at Repair+0x68, choice +0xD0, exclusions at +0xF0/+0xF8. Name at def->0x328, signed priority at def+0x344.",
+      "evidence_ids": [
+        "pick_context",
+        "pick_candidates",
+        "name_in_component_vector"
+      ]
+    },
+    {
+      "id": "damage",
+      "representation": "Actor+0xB90/+0xB98, stride 0x28. State +0x24, busy +0x25 bit 0, current and maximum normal HP +0x14/+0x1C.",
+      "evidence_ids": [
+        "pick_candidates",
+        "normal_duration",
+        "eligible_nonbusy"
+      ]
+    },
+    {
+      "id": "repair_wire",
+      "representation": "Mode 0 carries the tank ID and rate. Mode 1 carries phase, component name and remaining time.",
+      "evidence_ids": [
+        "authority_and_phase3_publish",
+        "wire_component",
+        "wire_receiver",
+        "peer_component_lookup"
+      ]
+    },
+    {
+      "id": "cumulative_attempts",
+      "representation": "SmartRepair+0x58 target, +0xC8 repair-attempt count, +0xC4 deadline. Factory initializes the counters.",
+      "evidence_ids": [
+        "setup_attempts",
+        "smart_child_result",
+        "attempt_limit",
+        "count_and_delay"
+      ]
+    },
+    {
+      "id": "emission",
+      "representation": "One-shot native Emit owns the callback and selection short. Walker retains a separate reference.",
+      "evidence_ids": [
+        "emit_owned_inputs",
+        "emit_single_seat",
+        "emit_starts_walker",
+        "factory_and_retain",
+        "stock_smart_before_board"
+      ]
+    },
+    {
+      "id": "boarding",
+      "representation": "An empty requested place lets Board reserve a usable seat. StartIn runs local boarding and emits native command 0x34 on the MP host.",
+      "evidence_ids": [
+        "board_state",
+        "start_in_wire",
+        "start_in_command"
+      ]
+    },
+    {
+      "id": "permissions",
+      "representation": "Dynamically registered indices into actor+0xDAD and role gates.",
+      "evidence_ids": [
+        "dynamic_repaired",
+        "dynamic_burning",
+        "dynamic_sinking",
+        "registration",
+        "gate_worker",
+        "gate_remote",
+        "gate_wire"
+      ]
+    },
+    {
+      "id": "seat_inhibition",
+      "representation": "Placement events set/clear flag 19 and balance the low-six-bit count. The vehicle owns Emit. Human ground orders require count zero.",
+      "evidence_ids": [
+        "placement_events",
+        "placement_count"
+      ]
+    },
+    {
+      "id": "kit",
+      "representation": "Stock acquisition distinguishes actor inventory from ground stuff. Stuff+0x88 is the item and +0x98 its reservation.",
+      "evidence_ids": [
+        "stock_provider",
+        "reserved_world_item",
+        "stock_kit_exchange"
+      ]
+    }
+  ],
+  "inline_regions": [],
+  "enums": [],
+  "float_constants": [
+    {
+      "binary": "game",
+      "rva": "0x1031b48",
+      "value": 20.0
+    }
+  ],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeVehicleBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x101fd68",
+      "methods": {
+        "15": "0x91ab90"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHumanBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x110ff88",
+      "methods": {
+        "15": "0x91ab90"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHuman@@",
+      "subobject_offset": 0,
+      "rva": "0x110f5c0",
+      "methods": {
+        "35": "0x94f990"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeRepair@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110d0e8",
+      "methods": {
+        "0": "0x915cd0",
+        "3": "0x919f60",
+        "4": "0x91a0e0",
+        "19": "0x910d50"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeSmartRepair@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x10225b0",
+      "methods": {
+        "0": "0xb5380",
+        "3": "0x919f60",
+        "4": "0x91a0e0",
+        "19": "0x913a20"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeKitExchange@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x10224f8",
+      "methods": {
+        "19": "0x913570"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeBoard@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110b590",
+      "methods": {
+        "19": "0x8fb070"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeEmit@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110b808",
+      "methods": {
+        "0": "0x8fd4b0",
+        "16": "0x8fd990",
+        "19": "0x8fc860"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeEmitAndRepair@@",
+      "subobject_offset": 0,
+      "rva": "0x11166e8",
+      "methods": {
+        "4": "0x9ac1a0",
+        "5": "0x9ac140"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeOrderRepairCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x10214d8",
+      "methods": {
+        "2": "0xaf280",
+        "3": "0xaf3e0",
+        "4": "0xaf540"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeInfo_Mechanic@Human@@",
+      "subobject_offset": 0,
+      "rva": "0x107f0f8",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAbility_Mechanic@Human@@",
+      "subobject_offset": 0,
+      "rva": "0x107f148",
+      "methods": {
+        "4": "0x367b00",
+        "5": "0x1b51c0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeStuffExtender@Entity@@",
+      "subobject_offset": 0,
+      "rva": "0x10fd200",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAvoidGrenade@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110d278",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeComplexOrder@@",
+      "subobject_offset": 0,
+      "rva": "0x110d490",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHolderHandRight@Inventory@@",
+      "subobject_offset": 0,
+      "rva": "0x10ff210",
+      "methods": {}
+    }
+  ],
+  "byte_sequences": [
+    {
+      "binary": "game",
+      "id": "prologue_0x9159d0",
+      "rva": "0x9159d0",
+      "hex": "48 89 5c 24 18"
+    },
+    {
+      "binary": "game",
+      "id": "prologue_0x9ac1a0",
+      "rva": "0x9ac1a0",
+      "hex": "4c 8b dc 49 89 5b 10"
+    },
+    {
+      "binary": "game",
+      "id": "prologue_0x913a20",
+      "rva": "0x913a20",
+      "hex": "48 89 5c 24 08"
+    },
+    {
+      "binary": "game",
+      "id": "prologue_0xb5380",
+      "rva": "0xb5380",
+      "hex": "48 89 5c 24 08"
+    },
+    {
+      "binary": "game",
+      "id": "prologue_0x9b0e80",
+      "rva": "0x9b0e80",
+      "hex": "4c 8b dc 55 53"
+    }
+  ],
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/vehicle/vehicle-main.inc",
+      "size": 49004,
+      "sha256": "855f2f980870e952fecb17fd1d668385fcd3f6392cbc3fd13526350239525283"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/tank/tank-main.inc",
+      "size": 67055,
+      "sha256": "05953aa2a2c95b5d59856cc9105deaa3bc12f4f0c25d8fc78cb6ce53604ad221"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/special/repair_kit",
+      "size": 184,
+      "sha256": "77ebe3dac912eb7301e0031e23f00f01c149b75a9e677f5d697e71e3967788d0"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/tank_crew.ext",
+      "size": 15459,
+      "sha256": "8b22f36dab75976bd0653d80656f797ff3901376e1618ad49cdc0692aea1b627"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/vehicle.ext",
+      "size": 19765,
+      "sha256": "29c09d098d67e3fce02769be2935786b3eadcb55b240c90b048f56a246901b96"
+    }
+  ]
+}

@@ -1,0 +1,643 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "title": "Host Auto-Medic",
+  "runtime_allowed": false,
+  "runtime_verified": false,
+  "export_suffix": "-auto-medic",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "image_base": "0x140000000"
+    }
+  },
+  "methods": [
+    {
+      "id": "medic_ability",
+      "entry_rvas": {
+        "game": "0x96aaf0"
+      }
+    },
+    {
+      "id": "revivable_patient",
+      "entry_rvas": {
+        "game": "0x379260"
+      }
+    },
+    {
+      "id": "construct_medic_order",
+      "entry_rvas": {
+        "game": "0x378670"
+      }
+    },
+    {
+      "id": "medic_exec",
+      "entry_rvas": {
+        "game": "0x378710"
+      }
+    },
+    {
+      "id": "receive_medic_command",
+      "entry_rvas": {
+        "game": "0xaf1d0"
+      }
+    },
+    {
+      "id": "complete_healing",
+      "entry_rvas": {
+        "game": "0x379910"
+      }
+    },
+    {
+      "id": "xchange_snapshot",
+      "entry_rvas": {
+        "game": "0x7dfee0"
+      }
+    },
+    {
+      "id": "submit_transfer",
+      "entry_rvas": {
+        "game": "0x7dfbf0"
+      }
+    },
+    {
+      "id": "receive_transfer",
+      "entry_rvas": {
+        "game": "0x3e1e20"
+      }
+    },
+    {
+      "id": "construct_operation",
+      "entry_rvas": {
+        "game": "0x7e6ca0"
+      }
+    },
+    {
+      "id": "enqueue_operation",
+      "entry_rvas": {
+        "game": "0x7ddcc0"
+      }
+    },
+    {
+      "id": "cancel_by_id",
+      "entry_rvas": {
+        "game": "0x7dddc0"
+      }
+    },
+    {
+      "id": "cancel_transfer",
+      "entry_rvas": {
+        "game": "0x7e6a40"
+      }
+    },
+    {
+      "id": "one_cell_source",
+      "entry_rvas": {
+        "game": "0x7e1d50"
+      }
+    },
+    {
+      "id": "box_destination",
+      "entry_rvas": {
+        "game": "0x7e1ce0"
+      }
+    },
+    {
+      "id": "drop_location",
+      "entry_rvas": {
+        "game": "0x7e1ec0"
+      }
+    },
+    {
+      "id": "resolve_location",
+      "entry_rvas": {
+        "game": "0x7e1f40"
+      }
+    },
+    {
+      "id": "begin_builder",
+      "entry_rvas": {
+        "game": "0x7df910"
+      }
+    },
+    {
+      "id": "destroy_builder",
+      "entry_rvas": {
+        "game": "0x7dfe00"
+      }
+    },
+    {
+      "id": "assign_location",
+      "entry_rvas": {
+        "game": "0x7e35e0"
+      }
+    },
+    {
+      "id": "stock_order_xchange_builder",
+      "entry_rvas": {
+        "game": "0x907fe0"
+      }
+    },
+    {
+      "id": "bind_brain_order",
+      "entry_rvas": {
+        "game": "0x91db30"
+      }
+    },
+    {
+      "id": "order_phase_dispatch",
+      "entry_rvas": {
+        "game": "0x919f60"
+      }
+    },
+    {
+      "id": "order_end",
+      "entry_rvas": {
+        "game": "0x91a0e0"
+      }
+    },
+    {
+      "id": "attach_listener",
+      "entry_rvas": {
+        "game": "0x91a380"
+      }
+    },
+    {
+      "id": "clear_listener",
+      "entry_rvas": {
+        "game": "0x917d40"
+      }
+    },
+    {
+      "id": "replace_listener",
+      "entry_rvas": {
+        "game": "0x918050"
+      }
+    },
+    {
+      "id": "actor_path_context",
+      "entry_rvas": {
+        "game": "0x8df010"
+      }
+    },
+    {
+      "id": "clamp_position",
+      "entry_rvas": {
+        "game": "0x8df4d0"
+      }
+    },
+    {
+      "id": "block_direct_line",
+      "entry_rvas": {
+        "game": "0x8c19e0"
+      }
+    },
+    {
+      "id": "score_clamped_segment",
+      "entry_rvas": {
+        "game": "0x8c1ff0"
+      }
+    },
+    {
+      "id": "object_cost",
+      "entry_rvas": {
+        "game": "0x8c2330"
+      }
+    },
+    {
+      "id": "terrain_cost",
+      "entry_rvas": {
+        "game": "0x8c2070"
+      }
+    },
+    {
+      "id": "drop_path_context",
+      "entry_rvas": {
+        "game": "0xbf640"
+      }
+    },
+    {
+      "id": "scene_entity_vector",
+      "entry_rvas": {
+        "game": "0xa39c70"
+      }
+    },
+    {
+      "id": "initialize_path_class",
+      "entry_rvas": {
+        "game": "0x8df130"
+      }
+    },
+    {
+      "id": "bind_actor_to_path_context",
+      "entry_rvas": {
+        "game": "0x8df200"
+      }
+    },
+    {
+      "id": "cost_at_one_point",
+      "entry_rvas": {
+        "game": "0x8c41a0"
+      }
+    },
+    {
+      "id": "point_task_factory",
+      "entry_rvas": {
+        "game": "0x90a8c0"
+      }
+    },
+    {
+      "id": "point_task_exec",
+      "entry_rvas": {
+        "game": "0x90e3f0"
+      }
+    },
+    {
+      "id": "destroy_move_task",
+      "entry_rvas": {
+        "game": "0xbb490"
+      }
+    },
+    {
+      "id": "destroy_medic",
+      "entry_rvas": {
+        "game": "0x379ca0"
+      }
+    },
+    {
+      "id": "xchange_apply",
+      "entry_rvas": {
+        "game": "0x7e8f90"
+      }
+    },
+    {
+      "id": "xchange_ready_response",
+      "entry_rvas": {
+        "game": "0x7e87f0"
+      }
+    },
+    {
+      "id": "xchange_state",
+      "entry_rvas": {
+        "game": "0x7e84a0"
+      }
+    },
+    {
+      "id": "requested_exchange_quantity",
+      "entry_rvas": {
+        "game": "0x7ede60"
+      }
+    },
+    {
+      "id": "manager_inventory_quant",
+      "entry_rvas": {
+        "game": "0x7ddf00"
+      }
+    },
+    {
+      "id": "tick_root_operation",
+      "entry_rvas": {
+        "game": "0x7e66c0"
+      }
+    },
+    {
+      "id": "destroy_xchange",
+      "entry_rvas": {
+        "game": "0x7e94f0"
+      }
+    },
+    {
+      "id": "insert_empty_queue",
+      "entry_rvas": {
+        "game": "0x919270"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "manager_schedules_root",
+      "binary": "game",
+      "function_rva": "0x7ddf00",
+      "instruction_rvas": [
+        "0x7ddfbd",
+        "0x7ddfc9",
+        "0x7ddfd9",
+        "0x7ddfe9",
+        "0x7ddfee",
+        "0x7de008"
+      ]
+    },
+    {
+      "id": "medic_ability",
+      "binary": "game",
+      "function_rva": "0x96aaf0",
+      "instruction_rvas": [
+        "0x96ab40",
+        "0x96ab4c"
+      ]
+    },
+    {
+      "id": "host_treatment",
+      "binary": "game",
+      "function_rva": "0x378710",
+      "instruction_rvas": [
+        "0x378734",
+        "0x37873c",
+        "0x378d42",
+        "0x378f23",
+        "0x378fa1",
+        "0x378fc1",
+        "0x379186",
+        "0x37922b"
+      ]
+    },
+    {
+      "id": "location_quantity",
+      "binary": "game",
+      "function_rva": "0x7e1d50",
+      "instruction_rvas": [
+        "0x7e1da2",
+        "0x7e1db1",
+        "0x7e1dc9"
+      ]
+    },
+    {
+      "id": "identity_snapshot",
+      "binary": "game",
+      "function_rva": "0x7dfee0",
+      "instruction_rvas": [
+        "0x7dff41",
+        "0x7dff71",
+        "0x7dff77"
+      ]
+    },
+    {
+      "id": "transfer_send",
+      "binary": "game",
+      "function_rva": "0x7dfbf0",
+      "instruction_rvas": [
+        "0x7dfd1f",
+        "0x7dfd2e",
+        "0x7dfd63"
+      ]
+    },
+    {
+      "id": "peer_enqueue",
+      "binary": "game",
+      "function_rva": "0x3e1e20",
+      "instruction_rvas": [
+        "0x3e1eba"
+      ]
+    },
+    {
+      "id": "owner_locations",
+      "binary": "game",
+      "function_rva": "0x7e6ca0",
+      "instruction_rvas": [
+        "0x7e6ce9",
+        "0x7e6d07",
+        "0x7e6e67"
+      ]
+    },
+    {
+      "id": "quantity_from_request",
+      "binary": "game",
+      "function_rva": "0x7ede60",
+      "instruction_rvas": [
+        "0x7edec8"
+      ]
+    },
+    {
+      "id": "action_id",
+      "binary": "game",
+      "function_rva": "0x7ddcc0",
+      "instruction_rvas": [
+        "0x7ddd4f",
+        "0x7ddd6a"
+      ]
+    },
+    {
+      "id": "cancel_wire",
+      "binary": "game",
+      "function_rva": "0x7e6a40",
+      "instruction_rvas": [
+        "0x7e6ab0",
+        "0x7e6abb",
+        "0x7e6ad7"
+      ]
+    },
+    {
+      "id": "exchange_validation_and_partial_quantity",
+      "binary": "game",
+      "function_rva": "0x7e87f0",
+      "instruction_rvas": [
+        "0x7e88df",
+        "0x7e8af0",
+        "0x7e8b91",
+        "0x7e8da1",
+        "0x7e8dd7"
+      ]
+    },
+    {
+      "id": "scene_members",
+      "binary": "game",
+      "function_rva": "0xa39c70",
+      "instruction_rvas": [
+        "0xa39dd7",
+        "0xa39ddb"
+      ]
+    },
+    {
+      "id": "clamped_segment",
+      "binary": "game",
+      "function_rva": "0x8c19e0",
+      "instruction_rvas": [
+        "0x8c1a4b",
+        "0x8c1a79",
+        "0x8c1a8a"
+      ]
+    },
+    {
+      "id": "random_draw_only_on_interior",
+      "binary": "game",
+      "function_rva": "0x8c2070",
+      "instruction_rvas": [
+        "0x8c213e",
+        "0x8c2154",
+        "0x8c21ac",
+        "0x8c21b0",
+        "0x8c21dd"
+      ]
+    },
+    {
+      "id": "bind_root",
+      "binary": "game",
+      "function_rva": "0x91db30",
+      "instruction_rvas": [
+        "0x91db53",
+        "0x91db8b",
+        "0x91dbcd"
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "id": "patient_and_treatment_lock",
+      "representation": "eMedic+0x48 receiver, stage +0x44, patient+0x12BA",
+      "evidence_ids": [
+        "host_treatment"
+      ]
+    },
+    {
+      "id": "transfer_amount",
+      "representation": "source location+0x34 signed quantity, copied to operation+0x160 and validated for a partial exchange",
+      "evidence_ids": [
+        "location_quantity",
+        "owner_locations",
+        "quantity_from_request",
+        "exchange_validation_and_partial_quantity"
+      ]
+    },
+    {
+      "id": "transfer_identity",
+      "representation": "Xchange builder+0xC8..0xF1 source handle and identity snapshot",
+      "evidence_ids": [
+        "identity_snapshot"
+      ]
+    },
+    {
+      "id": "transfer_owner",
+      "representation": "operation+0x88 owner, +0xF0 signed action ID",
+      "evidence_ids": [
+        "owner_locations",
+        "action_id",
+        "cancel_wire"
+      ]
+    }
+  ],
+  "inline_regions": [],
+  "enums": [],
+  "float_constants": [
+    {
+      "binary": "game",
+      "rva": "0x10f7100",
+      "value": 16.0
+    }
+  ],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeMoveTask@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x1023970",
+      "methods": {
+        "0": "0xbb490",
+        "3": "0x919f60",
+        "4": "0x91a0e0",
+        "19": "0x90e3f0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeMedic@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x1080638",
+      "methods": {
+        "0": "0x379ca0",
+        "3": "0x919f60",
+        "4": "0x91a0e0",
+        "19": "0x378710"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeOrderMedicCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x1021408",
+      "methods": {
+        "1": "0x151340",
+        "3": "0xaf130",
+        "4": "0xaf1d0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeInventoryTransferCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x108a810",
+      "methods": {
+        "1": "0x151340",
+        "3": "0x3e1e20"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeInventoryTransferCancelCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x108a8a8",
+      "methods": {
+        "1": "0x151340",
+        "3": "0x3e1f40"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeOperation_Xchange@Inventory@@",
+      "subobject_offset": 0,
+      "rva": "0x10ff790",
+      "methods": {
+        "0": "0x7e94f0",
+        "1": "0x7e83d0",
+        "8": "0x7e87f0",
+        "14": "0x7e8f90"
+      }
+    }
+  ],
+  "byte_sequences": [
+    {
+      "id": "wire_378f23",
+      "binary": "game",
+      "rva": "0x378f23",
+      "hex": "c7 44 24 38 58 00 00 00"
+    },
+    {
+      "id": "wire_7dfd63",
+      "binary": "game",
+      "rva": "0x7dfd63",
+      "hex": "48 c7 44 24 48 10 00 00 00"
+    },
+    {
+      "id": "wire_7e6ad7",
+      "binary": "game",
+      "rva": "0x7e6ad7",
+      "hex": "48 c7 44 24 28 11 00 00 00"
+    },
+    {
+      "id": "wire_8c21ac",
+      "binary": "game",
+      "rva": "0x8c21ac",
+      "hex": "3b df 7d 45"
+    }
+  ],
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/grenade.inc",
+      "size": 15907,
+      "sha256": "fe2fb9f281236f8ca192c3653f8828999497585c70bf85a1646bf5a434571b8d"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/smoke_volume/smoke_volume_cylinder.def",
+      "size": 176,
+      "sha256": "74d7a895cdba18409a44953788777ea4cf7011bf8401267cba304c403adc6b4c"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/smoke_volume/smoke_volume_cylinder_sm.def",
+      "size": 176,
+      "sha256": "bf0ef0f73a0ed0f22f1306f31b567e1b4d08c10d81d3c36f0f7c95fa2d0b537b"
+    }
+  ]
+}

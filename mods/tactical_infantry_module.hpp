@@ -1,0 +1,988 @@
+#pragma once
+#include "tactical_infantry_policy.hpp"
+#include "auto_medic_module.hpp"
+#include "auto_resupply_module.hpp"
+#include "close_grenade_module.hpp"
+#include "tank_auto_repair_module.hpp"
+
+namespace goh::tactical_infantry {
+namespace p = policy;
+namespace s = ai_support;
+namespace sim = auto_smoke;
+namespace pr = target_prio::detail;
+using p::XY;
+using s::Address;
+using s::Byte;
+using s::native;
+using s::read;
+using s::World;
+inline constexpr bool runtime_allowed = false;
+inline constexpr auto& executable_sha256 = s::executable_sha256;
+namespace detail {
+using Tick = std::uint32_t;
+template <class T> inline void put(Address ptr, unsigned off, const T& v) {
+    std::memcpy(reinterpret_cast<void*>(ptr + off), &v, sizeof(v));
+}
+struct ActorState : p::Soldier {
+    Address key{}, brain{};
+    unsigned id{};
+    double last{}, role_at{p::never}, sight_at{p::never}, issued_phase{p::never};
+    Address issued_squad{}, sight_target{};
+    XY goal{};
+    p::Role role{};
+    p::Sight visibility{};
+    bool smg{}, issued_cover{}, at_throwable{}, rush_active{};
+};
+struct SquadState : p::Team {
+    Address key{};
+    double last{}, issue_phase{p::never};
+    unsigned issued_bounds{};
+};
+inline std::array<ActorState, 1024> soldiers{};
+inline std::array<SquadState, 128> squads{};
+inline p::Claims claims{};
+inline Address scene{};
+inline Tick clock{};
+inline std::atomic<unsigned> issued{};
+inline std::atomic<bool> accepting{};
+inline std::atomic<unsigned> inflight{};
+inline bool installed{}, rollback_pending{};
+struct Guard {
+    Guard() {
+        ++inflight;
+    }
+    ~Guard() {
+        --inflight;
+    }
+    Guard(const Guard&) = delete;
+    Guard& operator=(const Guard&) = delete;
+};
+inline void reset() {
+    soldiers.fill({});
+    squads.fill({});
+    claims.entries.fill({});
+    scene = 0;
+    clock = 0;
+}
+template <class T, std::size_t N> T* record(std::array<T, N>& table, Address key, double now) {
+    T* available = nullptr;
+    auto first = (key >> 4) % N;
+    for (std::size_t i = 0; i < N; ++i) {
+        auto& row = table[(first + i) % N];
+        if (row.key == key) {
+            if (now - row.last > 30) row = {};
+            row.key = key;
+            row.last = now;
+            return &row;
+        }
+        if (!row.key) {
+            if (!available) available = &row;
+            break;
+        }
+        if (!available && now - row.last > 30) available = &row;
+    }
+    if (available) {
+        *available = {};
+        available->key = key;
+        available->last = now;
+    }
+    return available;
+}
+inline bool protected_order(Address brain, Address actor) {
+    Address o = read<Address>(brain, 0xF0);
+    for (unsigned i = 0; o && i < 32; ++i) {
+        auto vt = read<Address>(o);
+        if (read<Address>(o, 8) != actor + 0xAF0 || vt == s::base + 0x110C018 || vt == s::base + 0x110D278) return true;
+        o = sim::orders::active_child(s::base, o);
+    }
+    return o != 0;
+}
+inline bool selected(Address brain) {
+    return native<s::Test>(0x91B190)(brain) != 0;
+}
+inline bool available(const World& w, Address a, Address b) {
+    const auto permits = [](unsigned modes, unsigned flags) { return p::allows(modes, flags); };
+    if (!s::autonomous_if(a, true, permits) || read<Address>(a, 0xDC8) != b || !read<Address>(a, 0xDC0) ||
+        !read<Address>(a, 0xDD0))
+        return false;
+    if (selected(b) || protected_order(b, a)) return false;
+    return !auto_medic::occupied(a) && !auto_resupply::occupied(a) && !sim::is_busy(w, a) &&
+           !close_grenade::is_throwing(w, a) && !tank_auto_repair::is_busy(a);
+}
+inline Address target(Address a, Address b) {
+    Address sub = read<Address>(b, 0x3b8);
+    return sub && pr::contains(pr::subjects(a), sub) && pr::eligible_subject(b, sub) ? sub : 0;
+}
+inline ActorState* actor_record(Address actor, Address brain, double now) {
+    auto* row = record(soldiers, actor, now);
+    if (row) {
+        auto id = read<unsigned>(actor, 0xc0);
+        if (row->id != id || row->brain != brain) {
+            *row = {};
+            row->key = actor;
+            row->brain = brain;
+            row->id = id;
+            row->last = now;
+        }
+        row->observe_cover(read<int>(read<Address>(actor, 0xdc0), 0x24) != 0, now);
+    }
+    return row;
+}
+inline p::Balance balance(Address b) {
+    return {read<float>(b, 0x518), read<float>(b, 0x51c),     read<float>(b, 0x474),    read<float>(b, 0x524),
+            read<float>(b, 0x528), read<Byte>(b, 0x520) != 0, read<Byte>(b, 0x521) != 0};
+}
+inline void load_role(ActorState& row, double now) {
+    if (now - row.role_at < 1) return;
+    bool heavy = false, smg = false, charge = false, at_throw = false;
+    auto inspect = [&](Address item) {
+        if (!item || read<int>(item, 0x48) <= 0) return;
+        auto def = read<Address>(item, 0x40);
+        if (!def) return;
+        for (auto name : {"mgun", "sniper", "at_rifle", "ptr", "rocketlauncher"})
+            heavy |= pr::has_tag(def, name);
+        smg |= pr::has_tag(def, "smg");
+        auto kind = close_grenade::payload(def);
+        charge |= kind == close_grenade::Payload::at || kind == close_grenade::Payload::charge;
+        at_throw |= kind == close_grenade::Payload::at || kind == close_grenade::Payload::incendiary ||
+                    kind == close_grenade::Payload::charge;
+    };
+    auto box = s::box(row.key);
+    auto items = s::span(box, 0x10);
+    if (items.valid(8, 1024))
+        for (auto i = items.first; i != items.end; i += 8)
+            inspect(read<Address>(i));
+    inspect(pr::hand_item(row.key));
+    row.role = p::classify(heavy, auto_medic::is_medic_actor(row.key), smg, charge);
+    row.smg = smg;
+    row.at_throwable = at_throw;
+    row.role_at = now;
+}
+struct Context {
+    World w{};
+    Address actor{}, brain{}, sub{}, squad{};
+    double now{};
+    ActorState* soldier{};
+    SquadState* team{};
+    XY self{}, center{}, support{}, threat{};
+    bool moving_element{};
+    p::Roster members{};
+    std::size_t count{};
+};
+inline bool roster_permits(Address squad, Address self) {
+    if (!squad) return true;
+    if (read<Address>(squad) != s::base + 0x110F3A0 || read<Address>(squad, 0x1c8)) return false;
+    auto roster = s::span(squad, 0x80);
+    if (!roster.valid(8, 64)) return false;
+    bool found = false;
+    for (auto it = roster.first; it != roster.end; it += 8) {
+        auto a = read<Address>(it);
+        if (!s::live_entity(a)) continue;
+        auto b = read<Address>(a, 0xdc8);
+        if (!b || read<Address>(b, 0x38) != a || selected(b)) return false;
+        const auto modes = read<unsigned>(b, 0x398);
+        if (p::active_user_move(modes, read<unsigned>(b, 0x39c)) || (modes & 0x3000u) == 0x1000u) return false;
+        found |= a == self;
+    }
+    return found;
+}
+inline bool context(Context& c, Address b) {
+    if (!accepting.load() || !b || !s::serial_thread()) return false;
+    c.actor = s::current_actor();
+    if (!s::callback(c.actor, c.w) || pr::scope.actor != c.actor || pr::depth != 1 ||
+        read<Address>(c.actor, 0xdc8) != b || !available(c.w, c.actor, b))
+        return false;
+    c.squad = read<Address>(b, 0x100);
+    if (!roster_permits(c.squad, c.actor)) return false;
+    Address epoch = s::entity_scene(c.w);
+    if (!epoch) return false;
+    if (scene != epoch || c.w.now < clock) {
+        reset();
+        scene = epoch;
+    }
+    clock = c.w.now;
+    c.now = double(clock) / c.w.ticks;
+    c.brain = b;
+    c.soldier = actor_record(c.actor, b, c.now);
+    if (!c.soldier) return false;
+    c.sub = target(c.actor, b);
+    c.self = read<XY>(c.actor, 0x74);
+    return std::isfinite(c.self.x) && std::isfinite(c.self.y);
+}
+inline bool for_state(Context& c, Address state) {
+    return accepting.load() && s::serial_thread() && s::current_actor() && state &&
+           context(c, read<Address>(state, 0x30));
+}
+inline bool screened(const Context& c, Address descriptor, XY point) {
+    if (!c.sub) return false;
+    return native<Byte (*)(Address, Address, const XY*)>(0x8BB590)(descriptor, c.sub + 0x28, &point) != 0;
+}
+inline bool screened(const Context& c) {
+    return c.soldier->covered && screened(c, read<Address>(c.actor, 0xdc0) + 0x20, c.self);
+}
+inline p::Sight sight(const Context& c, XY point, float height) {
+    if (!c.sub) return p::Sight::unknown;
+    auto enemy = read<Address>(c.sub, 0x18);
+    sim::Vec3 ground{point.x, point.y, read<float>(c.actor, 0x7c)};
+    if ((point.x != c.self.x || point.y != c.self.y) && !s::ground(c.w, ground)) return p::Sight::unknown;
+    pr::Vec3 from{point.x, point.y, ground.z + height * c.w.length};
+    auto to = pr::raised_point(read<pr::Vec3>(c.sub, 0x28), enemy, pr::RayPoint::target, c.w.length);
+    if (!pr::finite(from) || !pr::finite(to) || !(pr::distance(from, to) > 0)) return p::Sight::unknown;
+    bool evaluated = false;
+    if (pr::segment({c.sub, enemy, 0, 0, from, to, false}, &evaluated)) return p::Sight::open;
+    return evaluated ? p::Sight::blocked : p::Sight::unknown;
+}
+inline float height(int stance) {
+    return (stance == 1 || stance == 3) ? .35f : stance == 2 ? .9f : 1.35f;
+}
+inline int stance(const Context& c) {
+    return read<int>(read<Address>(c.actor, 0xde0), 0x2c);
+}
+inline p::Sight current_sight(Context& c) {
+    auto& row = *c.soldier;
+    if (row.sight_target != c.sub || row.sight_at != c.now) {
+        row.visibility = sight(c, c.self, height(stance(c)));
+        row.sight_at = c.now;
+        row.sight_target = c.sub;
+    }
+    return row.visibility;
+}
+inline void coordinate(Context& c) {
+    if (!c.squad) return;
+    auto roster = s::span(c.squad, 0x80);
+    unsigned contacts = 0, front = 0, seen = 0;
+    float a = 0, b = 0, morale = 0, ta = 0, tr = 0, l = 0, r = 0;
+    std::array<ActorState*, 64> records{};
+    for (auto it = roster.first; it != roster.end; it += 8) {
+        Address actor = read<Address>(it);
+        if (!s::live_entity(actor)) continue;
+        Address brain = read<Address>(actor, 0xdc8);
+        if (!brain || !available(c.w, actor, brain)) continue;
+        auto bal = balance(brain);
+        if (!bal.valid()) continue;
+        auto* row = actor_record(actor, brain, c.now);
+        if (!row) continue;
+        load_role(*row, c.now);
+        auto pos = read<XY>(actor, 0x74);
+        c.members[c.count] = {actor, row->id, row->role, pos};
+        records[c.count++] = row;
+        c.center = c.center + pos;
+        a += bal.a;
+        b += bal.b;
+        morale += bal.morale;
+        ta += bal.a * bal.advance_ratio;
+        tr += bal.b * bal.retreat_ratio;
+        Address sub = target(actor, brain);
+        if (!sub) continue;
+        c.threat = c.threat + read<XY>(sub, 0x28);
+        ++contacts;
+        if (c.now - row->sight_at <= 2 && row->sight_target == sub && row->visibility != p::Sight::unknown) {
+            ++seen;
+            front += row->visibility == p::Sight::open;
+        }
+    }
+    if (!contacts || c.count < 2) return;
+    auto* team = record(squads, c.squad, c.now);
+    if (!team) return;
+    c.center = c.center * (1.f / c.count);
+    c.threat = c.threat * (1.f / contacts);
+    XY lateral = p::left(p::unit(c.threat - c.center));
+    for (std::size_t i = 0; i < c.count; ++i) {
+        float side = p::dot(c.members[i].position - c.center, lateral) / c.w.length;
+        float value = (records[i]->covered ? 2.f : 0.f) +
+                      (c.now - records[i]->sight_at <= 2 && records[i]->visibility == p::Sight::open ? 3.f : 0.f);
+        if (side > 0)
+            l += value;
+        else if (side < 0)
+            r += value;
+    }
+    auto desired = p::Mode::hold;
+    if (a > 1.15f * tr || morale < 48 * c.count)
+        desired = p::Mode::fallback;
+    else if (b > 1.15f * ta && morale > 68 * c.count)
+        desired = seen && front * 2 < seen ? p::Mode::left : p::Mode::bound;
+    auto active = p::bounders(c.members, c.count, team->phase, team->cycle);
+    bool arrived = true, any = false;
+    for (std::size_t i = 0; i < c.count; ++i)
+        if (active[i]) {
+            any = true;
+            auto& row = *records[i];
+            arrived &= row.issued_squad == c.squad && row.issued_phase == team->phase_at &&
+                       p::bound_arrived(c.members[i].position, row.goal, c.w.length, row.issued_cover, row.covered);
+        }
+    team->update(c.now, desired, l, r, any && arrived);
+    c.team = team;
+    active = p::bounders(c.members, c.count, team->phase, team->cycle);
+    unsigned supporting = 0;
+    for (std::size_t i = 0; i < c.count; ++i) {
+        if (!active[i]) {
+            c.support = c.support + c.members[i].position;
+            ++supporting;
+        }
+        if (c.members[i].actor == c.actor) c.moving_element = active[i] && p::advancing(team->mode);
+    }
+    c.support = supporting ? c.support * (1.f / supporting) : c.center;
+}
+inline bool remembered(Address sub) {
+    return sub && (read<unsigned>(sub, 0x10) & (1u << 28)) && (read<unsigned>(sub, 0x14) & 0x16u) == 2 &&
+           !read<Byte>(sub, 0x6c);
+}
+inline XY away(const Context& c) {
+    auto list = pr::subjects(c.actor);
+    XY sum{};
+    if (list.valid(8))
+        for (auto it = list.first; it != list.end; it += 8) {
+            auto sub = read<Address>(it);
+            if (!remembered(sub)) continue;
+            unsigned flags = read<unsigned>(sub, 0x14);
+            float age = pr::is_visible(sub) ? 0.f : (c.w.now - read<Tick>(sub, 0x64)) / c.w.ticks;
+            sum = sum + p::threat_term(c.self - read<XY>(sub, 0x28), read<float>(sub, 0x48), age, flags & 0x100,
+                                       flags & 0x80, c.w.length);
+        }
+    if (p::squared(sum) == 0 && c.sub) sum = c.self - read<XY>(c.sub, 0x28);
+    return p::withdraw(sum, c.team ? c.center - c.self : XY{});
+}
+inline float spacing(const Context& c, XY point) {
+    float d = claims.nearest(scene, c.squad, c.actor, point, c.now);
+    if (c.squad) {
+        const auto list = s::span(c.squad, 0x80);
+        for (auto it = list.first; it != list.end; it += 8) {
+            auto a = read<Address>(it);
+            if (a != c.actor && s::live_entity(a)) d = (std::min)(d, p::squared(point - read<XY>(a, 0x74)));
+        }
+    }
+    return std::sqrt(d) / c.w.length;
+}
+struct Descriptor {
+    alignas(8) std::array<std::byte, 0x88> data{};
+    Address ptr() const {
+        return reinterpret_cast<Address>(data.data());
+    }
+    XY xy() const {
+        return read<XY>(ptr(), 0x10);
+    }
+};
+static_assert(sizeof(Descriptor) == 0x88);
+struct DirectionValidator {
+    Address vtable;
+    XY origin;
+    float minimum;
+    XY direction;
+};
+static_assert(sizeof(DirectionValidator) == 0x20 && offsetof(DirectionValidator, direction) == 0x14);
+struct Search {
+    DirectionValidator validator{};
+    alignas(16) std::array<std::byte, 0x1a0> data{};
+    Address ptr() {
+        return reinterpret_cast<Address>(data.data());
+    }
+    Search(const Context& c, Address state, XY goal, float radius) {
+        native<Address (*)(Address, Address, const XY*, float)>(0x8B54A0)(ptr(), c.actor, &goal, radius * c.w.length);
+        native<Byte (*)(Address, Address)>(0x96A060)(state, ptr() + 0x150);
+    }
+    void directed(const Context& c, XY direction, float minimum, bool retreat) {
+        validator = {s::base + 0x1110AD8, c.self, minimum * c.w.length, direction};
+        put(ptr(), 0x168, reinterpret_cast<Address>(&validator));
+        put(ptr(), 0x125, Byte{1});
+        put(ptr(), 0x12a, static_cast<Byte>(stance(c) == 1));
+        native<void (*)(Address, float)>(0x8BB160)(ptr() + 0x170, 0.f);
+        for (unsigned offset : {0x170u, 0x178u, retreat ? 0x17cu : 0x180u, retreat ? 0x184u : 0x174u})
+            put(ptr(), offset, 10.f);
+    }
+    ~Search() {
+        native<void (*)(Address)>(0xBF640)(ptr() + 0x18);
+        pr::free_buffer(read<Address>(ptr()), read<Address>(ptr(), 0x10), sizeof(Descriptor));
+    }
+    Search(const Search&) = delete;
+    Search& operator=(const Search&) = delete;
+};
+enum class Purpose {
+    native,
+    bound,
+    retreat,
+    peek,
+    update
+};
+inline bool withdrawing(const Context& c) {
+    return !read<Byte>(c.brain, 0x521) && read<int>(c.brain, 0x52c) <= p::fallback;
+}
+inline XY forward(const Context& c) {
+    if (c.team) return p::axis(c.team->mode, c.threat - c.center);
+    return p::unit(read<XY>(c.sub, 0x28) - c.self);
+}
+inline bool lagging(const Context& c) {
+    return c.team && p::squared(c.self - c.center) > 28 * 28 * c.w.length * c.w.length;
+}
+inline bool within_team(const Context& c, XY point) {
+    return !c.team || p::cohesive(c.self, point, c.center, c.support, c.w.length);
+}
+inline float alignment(const Context& c, XY point) {
+    if (!c.team || (c.team->mode != p::Mode::left && c.team->mode != p::Mode::right)) return 0;
+    return p::dot(p::unit(point - c.self), forward(c));
+}
+struct Choice {
+    Descriptor spot{};
+    float score{-std::numeric_limits<float>::infinity()};
+};
+inline bool choose(Context& c, Address query, Purpose purpose, Choice& best) {
+    if (!native<s::Test>(0x8B57F0)(query)) return false;
+    auto list = s::span(query, 0);
+    if (!list.valid(sizeof(Descriptor), 65536)) return false;
+    const bool retreat = purpose == Purpose::retreat || (purpose != Purpose::peek && withdrawing(c));
+    const bool directed = purpose == Purpose::bound || purpose == Purpose::retreat;
+    p::CoverSelection selection;
+    for (unsigned i = 0; i < p::CoverSelection::limit && list.first + i * sizeof(Descriptor) < list.end; ++i) {
+        auto d = read<Descriptor>(list.first + i * sizeof(Descriptor));
+        XY point = d.xy();
+        float distance = std::hypot(point.x - c.self.x, point.y - c.self.y) / c.w.length;
+        if (!std::isfinite(distance) || !within_team(c, point)) continue;
+        if (directed && !p::bound_range(purpose == Purpose::retreat).contains(distance)) continue;
+        const float probe_height = p::cover_height(read<int>(d.ptr(), 8), read<int>(d.ptr(), 0xc), retreat);
+        auto visibility =
+            probe_height > 0 ? selection.probe([&] { return sight(c, point, probe_height); }) : p::Sight::unknown;
+        if (purpose == Purpose::peek && visibility != p::Sight::open) continue;
+        float value = p::cover_score(read<float>(d.ptr(), 0x80), visibility, retreat, alignment(c, point),
+                                     spacing(c, point), directed && screened(c, d.ptr(), point));
+        selection.consider(i, value);
+    }
+    if (selection.winner == p::CoverSelection::limit) return false;
+    best = {read<Descriptor>(list.first + selection.winner * sizeof(Descriptor)), selection.score};
+    return true;
+}
+inline void claim(const Context& c, XY goal) {
+    claims.claim({scene, c.actor, c.squad, c.soldier->id, goal, c.now + 12}, c.now);
+}
+inline void record_bound(Context& c, const Descriptor* spot, const XY* point) {
+    ++c.team->issued_bounds;
+    c.soldier->goal = spot ? spot->xy() : *point;
+    c.soldier->issued_cover = spot != nullptr;
+    c.soldier->issued_squad = c.squad;
+    c.soldier->issued_phase = c.team->phase_at;
+}
+// Build the children before the native state helper transfers the new complex to brain slot 13.
+inline bool issue(Context& c, Address state, const Descriptor* spot, const XY* point, int type, int action,
+                  bool squad_bound = false, Address* issued_order = nullptr) {
+    if (!s::free_slot(c.actor) || !available(c.w, c.actor, c.brain) || !roster_permits(c.squad, c.actor)) return false;
+    auto change = native<Address (*)(int, int, Byte)>(0x90ABF0)(type, spot ? 4 : point ? 5 : -1, 1);
+    auto move = spot    ? native<Address (*)(const Descriptor*)>(0x8E2770)(spot)
+                : point ? native<Address (*)(const XY*, int)>(0x90A8C0)(point, 0)
+                        : 0;
+    auto notice = native<Address (*)(Address, int, Byte)>(0x92AE10)(state, 0x10, 1);
+    Address seq = change && (move || (!spot && !point)) && notice ? native<s::Unary>(0x92ABB0)(state) : 0;
+    if (!seq) {
+        s::discard(notice);
+        s::discard(move);
+        s::discard(change);
+        return false;
+    }
+    native<void (*)(Address, Byte, int)>(0x96CF70)(state, spot != nullptr, action);
+    auto push = native<Address (*)(Address, Address, int, Byte)>(0x919270);
+    push(seq, change, 0, 1);
+    if (move) push(seq, move, 0, 1);
+    push(seq, notice, 0, 1);
+    if (move) {
+        if (squad_bound) record_bound(c, spot, point);
+        if (spot) claim(c, spot->xy());
+    }
+    if (issued_order) *issued_order = seq;
+    const unsigned count = issued.fetch_add(1, std::memory_order_relaxed) + 1;
+    if ((count <= 4 || count % 256 == 0) && s::log_sink)
+        s::log_sink("Tactical infantry order #%u actor=%u action=%d", count, c.soldier->id, action);
+    return true;
+}
+inline bool held_effective_vs_target(Address actor, Address sub) {
+    const Address enemy = sub ? read<Address>(sub, 0x18) : 0;
+    if (!enemy || !pr::armoured_class(enemy)) return true;
+    const Address hand = pr::hand_item(actor);
+    if (!hand) return false;
+    const Address def = read<Address>(hand, 0x40);
+    return def &&
+           (close_grenade::holds_ranged_at(actor) || close_grenade::payload(def) != close_grenade::Payload::none);
+}
+inline bool within_closest_rushers(const Context& c, Address target_ent, XY target_xy) {
+    if (!c.squad || close_grenade::is_rushing(c.w, c.actor)) return true;
+    const auto roster = s::span(c.squad, 0x80);
+    if (!roster.valid(8, 64)) return true;
+    const float own_d2 = p::squared(c.self - target_xy);
+    unsigned closer = 0;
+    for (auto it = roster.first; it != roster.end; it += 8) {
+        const Address mate = read<Address>(it);
+        if (mate == c.actor || !s::live_entity(mate)) continue;
+        const Address mb = read<Address>(mate, 0xdc8);
+        if (!mb || !available(c.w, mate, mb) || close_grenade::holds_ranged_at(mate) ||
+            close_grenade::in_backoff(c.w, mate, target_ent))
+            continue;
+        auto* row = actor_record(mate, mb, c.now);
+        if (!row) continue;
+        load_role(*row, c.now);
+        if (!row->at_throwable) continue;
+        const float d2 = p::squared(read<XY>(mate, 0x74) - target_xy);
+        if (d2 < own_d2 || (d2 == own_d2 && mate < c.actor)) {
+            if (++closer >= 2) return false;
+        }
+    }
+    return true;
+}
+inline bool at_rush(const Context& c, close_grenade::Choice& rush) {
+    const auto bal = balance(c.brain);
+    if (!bal.valid() || !p::at_rush_allowed(bal.morale, bal.no_advance)) return false;
+    if (!close_grenade::find_rush_target(c.w, c.actor, c.brain, rush) || rush.in_range) return false;
+    if (p::at_rush_standoff(rush.max_range, rush.radius, c.w.length) <= 0.f) return false;
+    return within_closest_rushers(c, rush.target, {rush.aim.point.x, rush.aim.point.y});
+}
+inline bool issue_at_rush(Context& c, Address state, const close_grenade::Choice& rush) {
+    if (!s::free_slot(c.actor) || !available(c.w, c.actor, c.brain) || !roster_permits(c.squad, c.actor)) return false;
+    const float standoff = p::at_rush_standoff(rush.max_range, rush.radius, c.w.length);
+    if (!(standoff > 0.f)) return false;
+    const XY aim_xy{rush.aim.point.x, rush.aim.point.y};
+    const XY away_dir = p::unit(c.self - aim_xy);
+    if (p::squared(away_dir) < .5f) return false;
+    c.soldier->next_search = c.now + .5;
+    s::PathContext path(c.actor);
+    const sim::Vec3 self_pos = s::pos(c.actor);
+    XY chosen{}, fallback_corridor{}, fallback_ground{};
+    bool has_chosen = false, has_corridor = false, has_ground = false;
+    for (float deg : {0.f, 25.f, -25.f, 45.f, -45.f}) {
+        const XY cand = aim_xy + p::rotate(away_dir, deg) * standoff;
+        sim::Vec3 pt{cand.x, cand.y, 0};
+        if (!s::ground(c.w, pt)) continue;
+        if (!has_ground) {
+            fallback_ground = cand;
+            has_ground = true;
+        }
+        if (s::corridor(c.w, path, self_pos, pt)) {
+            if (spacing(c, cand) >= 1.5f) {
+                chosen = cand;
+                has_chosen = true;
+                break;
+            }
+            if (!has_corridor) {
+                fallback_corridor = cand;
+                has_corridor = true;
+            }
+        }
+    }
+    if (!has_chosen && has_corridor) {
+        chosen = fallback_corridor;
+        has_chosen = true;
+    }
+    if (!has_chosen) {
+        sim::Vec3 detoured{};
+        const sim::Vec3 target_vec{rush.aim.point.x, rush.aim.point.y, rush.aim.point.z};
+        if (s::approach(c.w, c.actor, target_vec, standoff, detoured)) {
+            chosen = {detoured.x, detoured.y};
+            has_chosen = true;
+        } else if (has_ground) {
+            chosen = fallback_ground;
+            has_chosen = true;
+        }
+    }
+    if (!has_chosen) return false;
+    Address seq = 0;
+    // Standing sprint (type=0, mode=5 via point move, action=2 advance) directly into throw envelope.
+    if (!issue(c, state, nullptr, &chosen, 0, 2, false, &seq)) return false;
+    c.soldier->rush_active = true;
+    c.soldier->fire_until = p::never;
+    close_grenade::note_rush(c.w, rush.target, c.actor, seq);
+    return true;
+}
+inline bool hold_shot(Context& c) {
+    load_role(*c.soldier, c.now);
+    float range = read<float>(c.brain, 0x14c);
+    auto place = pr::selected_place(c.actor);
+    if (place) range = native<float (*)(Address)>(0x81F660)(place);
+    float distance = pr::distance(read<pr::Vec3>(c.sub, 0x28), read<pr::Vec3>(c.actor, 0x74));
+    return p::fire_first(distance, range, c.soldier->smg, current_sight(c) == p::Sight::open, c.soldier->covered,
+                         c.soldier->role == p::Role::heavy || (c.team && !c.moving_element),
+                         c.now < c.soldier->fire_until, held_effective_vs_target(c.actor, c.sub));
+}
+inline bool movement(Context& c, Address state) {
+    close_grenade::Choice rush{};
+    if (c.now >= c.soldier->next_search && at_rush(c, rush)) return issue_at_rush(c, state, rush);
+    if (!c.sub || c.now < c.soldier->fire_until || c.now < c.soldier->next_search) return false;
+    bool rejoin = lagging(c), retreat = withdrawing(c);
+    if (c.team && c.team->issue_phase != c.team->phase_at) {
+        c.team->issued_bounds = 0;
+        c.team->issue_phase = c.team->phase_at;
+    }
+    const bool squad_bound = c.moving_element && !rejoin && !retreat;
+    if (squad_bound && (c.team->issued_bounds >= 4 ||
+                        (c.soldier->issued_phase == c.team->phase_at && c.soldier->issued_squad == c.squad)))
+        return false;
+    if (!retreat && read<Byte>(c.brain, 0x520)) return false;
+    if (!rejoin) {
+        if (!retreat && c.team && !c.moving_element) return false;
+        if (!retreat && !c.team && c.soldier->posture < p::advance) return false;
+    }
+    const bool keep_shot = !rejoin && !retreat && hold_shot(c);
+    const int point_action = p::point_move_action(rejoin, retreat, !rejoin && retreat && screened(c), keep_shot);
+    if (!squad_bound && !point_action) return false;
+    XY direction = rejoin ? p::unit(c.center - c.self) : retreat ? away(c) : forward(c);
+    if (p::squared(direction) < .9f) return false;
+    XY goal = c.self + direction * ((retreat ? 14.f : 12.f) * c.w.length);
+    c.soldier->next_search = c.now + 1;
+    Search search(c, state, goal, 6);
+    search.directed(c, direction, p::bound_range(retreat).minimum, retreat);
+    Choice choice;
+    if (choose(c, search.ptr(), retreat ? Purpose::retreat : Purpose::bound, choice))
+        return issue(c, state, &choice.spot, nullptr, -1, retreat ? 8 : 7, squad_bound);
+    if (!point_action || !within_team(c, goal) || spacing(c, goal) < 2.5f) return false;
+    sim::Vec3 endpoint{goal.x, goal.y, 0};
+    s::PathContext path(c.actor);
+    if (!s::ground(c.w, endpoint) || !s::corridor(c.w, path, s::pos(c.actor), endpoint)) return false;
+    return issue(c, state, nullptr, &goal, -1, point_action, squad_bound);
+}
+inline bool update_cover(Context& c, Address state) {
+    close_grenade::Choice rush{};
+    if (c.now >= c.soldier->next_search && at_rush(c, rush)) return issue_at_rush(c, state, rush);
+    if (!c.sub || c.now < c.soldier->fire_until || c.now < c.soldier->next_search) return false;
+    coordinate(c);
+    if (c.team && (c.moving_element || lagging(c))) {
+        // The follower branch reaches update_cover independently of native formation twitch.
+        return movement(c, state);
+    }
+    const bool screen = screened(c);
+    const auto visibility = current_sight(c);
+    if ((screen && c.team) || visibility == p::Sight::unknown ||
+        p::stable_cover(c.now, *c.soldier, screen, read<unsigned>(c.sub, 0x14) & 0x180, visibility == p::Sight::open) ||
+        (!withdrawing(c) && hold_shot(c)))
+        return false;
+    Search search(c, state, c.self, 2);
+    // Evaluate both descriptors with identical weights. Native zeroes w170 only for the incumbent.
+    auto q = search.ptr();
+    put(q, 0x124, std::uint16_t{0});
+    native<void (*)(Address, float)>(0x8BB160)(q + 0x170, 0.f);
+    put(q, 0x170, 10.f); // Positive path weight also enables the native unreachable-candidate rejection.
+    put(q, 0x174, 10.f);
+    put(q, 0x178, 10.f);
+    c.soldier->next_search = c.now + 1;
+    Choice choice;
+    if (!choose(c, q, Purpose::update, choice)) return false;
+    if (c.soldier->covered) {
+        auto current = read<Descriptor>(read<Address>(c.actor, 0xdc0), 0x20);
+        native<void (*)(Address)>(0x8BB180)(current.ptr() + 0x5c);
+        native<void (*)(Address)>(0x8BB1A0)(current.ptr() + 0x4c);
+        put(q, 0x11f, Byte{1});
+        put(current.ptr(), 0x80, std::numeric_limits<float>::quiet_NaN());
+        native<Byte (*)(Address, Address)>(0x8B6090)(q, current.ptr());
+        float incumbent =
+            p::cover_score(read<float>(current.ptr(), 0x80), visibility, withdrawing(c), 0, spacing(c, c.self));
+        if (!std::isfinite(incumbent) || choice.score < incumbent + 8) return false;
+    }
+    return issue(c, state, &choice.spot, nullptr, -1, 7);
+}
+inline bool detour(Context& c, Address state) {
+    if (!c.sub || c.now < c.soldier->detour_until || !s::free_slot(c.actor)) return false;
+    c.soldier->detour_until = c.now + 4;
+    coordinate(c);
+    int current = stance(c);
+    if (current_sight(c) != p::Sight::blocked) return false;
+    const bool crouch = current == 1 && sight(c, c.self, .9f) == p::Sight::open;
+    int up = p::rise(current, false, crouch,
+                     !crouch && (current == 1 || current == 2) && sight(c, c.self, 1.35f) == p::Sight::open);
+    if (up >= 0) return issue(c, state, nullptr, nullptr, up, 1);
+    auto aim = p::unit(read<XY>(c.sub, 0x28) - c.self);
+    auto side = p::left(aim);
+    XY winner{};
+    float best = -std::numeric_limits<float>::infinity();
+    s::PathContext path(c.actor);
+    for (float offset : {2.5f, -2.5f, 5.f, -5.f, 7.5f, -7.5f}) {
+        XY xy = c.self + side * (offset * c.w.length);
+        if (c.team && (c.team->mode == p::Mode::left || c.team->mode == p::Mode::right))
+            xy = xy + forward(c) * (.5f * c.w.length);
+        sim::Vec3 pt{xy.x, xy.y, 0};
+        if (!within_team(c, xy) || !s::ground(c.w, pt) || !s::corridor(c.w, path, s::pos(c.actor), pt)) continue;
+        float exposure = 0;
+        auto list = pr::subjects(c.actor);
+        if (list.valid(8))
+            for (auto it = list.first; it != list.end; it += 8) {
+                auto sub = read<Address>(it);
+                if (remembered(sub) && pr::is_visible(sub))
+                    exposure += 1.f / (1.f + std::sqrt(p::squared(xy - read<XY>(sub, 0x28))) / c.w.length);
+            }
+        float score = p::peek_score(true, sight(c, xy, height(current)) == p::Sight::open, exposure, spacing(c, xy),
+                                    alignment(c, xy), std::abs(offset));
+        if (score > best) {
+            best = score;
+            winner = xy;
+        }
+    }
+    if (!std::isfinite(best)) return false;
+    Search search(c, state, winner, 1.5f);
+    Choice choice;
+    if (choose(c, search.ptr(), Purpose::peek, choice)) return issue(c, state, &choice.spot, nullptr, -1, 1);
+    return issue(c, state, nullptr, &winner, -1, 1);
+}
+
+using Void = void (*)(Address);
+using Test = Byte (*)(Address);
+using SearchFn = Byte (*)(Address, Descriptor*, Address);
+using Retreat = void (*)(Address, XY*, float);
+struct Trampolines {
+    Void refresh{}, base{}, cover_execute{}, outdoor_timer{}, cover_timer{}, idle{};
+    Test follower{}, follow{}, replan{}, update{}, detour{}, injury{}, movement{};
+    SearchFn search{};
+    Retreat retreat{};
+};
+inline Trampolines original{};
+#if defined(_MSC_VER)
+#define GOH_TACTICAL_CALLER() reinterpret_cast<Address>(_ReturnAddress())
+#else
+#define GOH_TACTICAL_CALLER() reinterpret_cast<Address>(__builtin_return_address(0))
+#endif
+inline void refresh(Address b) {
+    Guard guard;
+    original.refresh(b);
+    if (GOH_TACTICAL_CALLER() != s::base + 0x95A69E) return;
+    Context c{};
+    if (context(c, b) && c.sub) {
+        const auto old = read<int>(b, 0x52c);
+        if (old != p::flee && !(old == p::advance && read<Tick>(b, 0x530))) return;
+        auto bal = balance(b);
+        if (bal.valid() && bal.a > bal.b * bal.retreat_ratio && bal.morale >= 50) {
+            // Avoid sampling the vanilla rally timer. Keep the previous policy for hysteresis at dispatch.
+            if (!c.soldier->initialized) c.soldier->posture = p::flee;
+            put(b, 0x52c, int(p::fallback));
+            put(b, 0x530, Tick{});
+        }
+    }
+}
+inline void dispatch(Address b) {
+    Guard guard;
+    Context c{};
+    if (GOH_TACTICAL_CALLER() == s::base + 0x95ABDB && context(c, b) && c.sub) {
+        auto bal = balance(b);
+        if (bal.valid()) {
+            if (c.squad && (c.soldier->sight_target != c.sub || c.now - c.soldier->sight_at >= .35)) current_sight(c);
+            auto prior = c.soldier->posture == p::flee ? p::flee
+                                                       : static_cast<p::Posture>(std::clamp(read<int>(b, 0x52c), 0, 4));
+            auto posture = p::decide(*c.soldier, bal, prior, c.now);
+            coordinate(c);
+            if (c.team)
+                posture = p::sync_squad_posture(posture, c.team->mode, c.moving_element, lagging(c), bal.no_advance,
+                                                bal.no_retreat);
+            close_grenade::Choice rush{};
+            if (at_rush(c, rush)) {
+                posture = p::assault;
+                c.soldier->fire_until = p::never;
+                close_grenade::note_rush(c.w, rush.target, c.actor, 0);
+                // Clear both OutdoorsBattle (0x1110738) and CoverBattle (0x1110538)
+                // tactical timers at state+0x3EC so 0x96C220 is not stalled for 4-5.5 s.
+                const Address leaf = read<Address>(b, 0xe8);
+                if (leaf && read<Address>(leaf, 0x30) == b) {
+                    const Address vt = read<Address>(leaf);
+                    if (vt == s::base + 0x1110738 || vt == s::base + 0x1110538) {
+                        const Tick due = read<Tick>(leaf, 0x3ec);
+                        if (!due || due > c.w.now) put(leaf, 0x3ec, c.w.now ? c.w.now : Tick{1});
+                    }
+                }
+            } else {
+                posture = p::ineffective_posture(posture, held_effective_vs_target(c.actor, c.sub), screened(c),
+                                                 bal.no_retreat);
+            }
+            put(b, 0x52c, int(posture));
+            put(b, 0x530, Tick{});
+        }
+    }
+    original.base(b);
+}
+inline void cover_execute(Address state) {
+    Guard guard;
+    Context c{};
+    if (for_state(c, state) && c.sub) {
+        if (read<unsigned>(c.brain, 0x39c) & (1u << 9)) {
+            coordinate(c);
+            if (c.team) native<void (*)(Address, Byte)>(0x91B360)(c.brain, 0);
+        }
+        close_grenade::Choice rush{};
+        if (at_rush(c, rush)) {
+            const Tick due = read<Tick>(state, 0x3ec);
+            if (!due || due > c.w.now) put(state, 0x3ec, c.w.now ? c.w.now : Tick{1});
+        }
+    }
+    original.cover_execute(state);
+}
+inline Byte follower(Address b) {
+    Guard guard;
+    // This one branch chooses the commander-only movement path.
+    if (GOH_TACTICAL_CALLER() == s::base + 0x963427) {
+        Context c{};
+        if (context(c, b) && c.sub) {
+            coordinate(c);
+            if (c.team) return 0;
+        }
+    }
+    return original.follower(b);
+}
+#undef GOH_TACTICAL_CALLER
+inline Byte follow(Address state) {
+    Guard guard;
+    Context c{};
+    if (for_state(c, state) && c.sub) {
+        coordinate(c);
+        if (c.team) return 0;
+    }
+    return original.follow(state);
+}
+inline Byte replan(Address state) {
+    Guard guard;
+    Context c{};
+    if (!for_state(c, state)) return original.replan(state);
+    coordinate(c);
+    return p::replan(read<XY>(state, 0x3cc), read<XY>(c.brain, 0x138), c.self, c.w.length, c.team != nullptr);
+}
+inline Byte move(Address state) {
+    Guard guard;
+    Context c{};
+    if (!for_state(c, state) || !c.sub) return original.movement(state);
+    coordinate(c);
+    return movement(c, state);
+}
+template <bool Cover> void post_move(Address state) {
+    Guard guard;
+    Context c{};
+    if (!for_state(c, state)) {
+        (Cover ? original.cover_timer : original.outdoor_timer)(state);
+        return;
+    }
+    const bool was_rush = c.soldier->rush_active;
+    c.soldier->rush_active = false;
+    close_grenade::Choice rush{};
+    if (was_rush || at_rush(c, rush)) {
+        c.soldier->moved = c.now;
+        c.soldier->fire_until = p::never;
+        put(state, 0x3ec, p::deadline(c.w.now, c.w.duration(.25f)));
+        return;
+    }
+    auto posture = static_cast<p::Posture>(std::clamp(read<int>(c.brain, 0x52c), 0, 4));
+    float wait = p::dwell(posture, Cover, screened(c));
+    c.soldier->moved = c.now;
+    c.soldier->fire_until = c.now + wait;
+    const auto duration = c.w.duration(wait);
+    put(state, 0x3ec, p::deadline(c.w.now, duration));
+}
+inline Byte search(Address state, Descriptor* out, Address query) {
+    Guard guard;
+    Context c{};
+    if (!for_state(c, state) || !c.sub || !out || !query || read<Address>(query, 0x108) != c.actor)
+        return original.search(state, out, query);
+    coordinate(c);
+    Choice best;
+    if (!choose(c, query, Purpose::native, best)) return 0;
+    *out = best.spot;
+    claim(c, out->xy());
+    return 1;
+}
+inline Byte update(Address state) {
+    Guard guard;
+    Context c{};
+    return for_state(c, state) && c.sub ? update_cover(c, state) : original.update(state);
+}
+inline void retreat(Address sensor, XY* out, float radius) {
+    Guard guard;
+    Context c{};
+    Address actor = accepting.load() && s::serial_thread() ? s::current_actor() : 0;
+    if (!actor || !out || read<Address>(actor, 0xdd0) != sensor || !context(c, read<Address>(actor, 0xdc8)) ||
+        !std::isfinite(radius) || radius <= 0) {
+        original.retreat(sensor, out, radius);
+        return;
+    }
+    coordinate(c);
+    *out = c.self + away(c) * radius;
+}
+inline Byte blocked(Address state) {
+    Guard guard;
+    Context c{};
+    return for_state(c, state) && c.sub ? detour(c, state) : original.detour(state);
+}
+inline Byte injury(Address state) {
+    Guard guard;
+    Context c{};
+    if (for_state(c, state) && screened(c)) {
+        const auto observations = pr::subjects(c.actor);
+        const Address descriptor = read<Address>(c.actor, 0xdc0) + 0x20;
+        if (observations.valid(8)) {
+            for (auto it = observations.first; it != observations.end; it += 8) {
+                auto other = read<Address>(it);
+                if (other != c.sub && remembered(other) && pr::is_visible(other) &&
+                    (read<unsigned>(other, 0x14) & 0x180) &&
+                    !native<Byte (*)(Address, Address, const XY*)>(0x8BB590)(descriptor, other + 0x28, &c.self))
+                    return original.injury(state);
+            }
+            return 0;
+        }
+    }
+    return original.injury(state);
+}
+inline void idle(Address state) {
+    Guard guard;
+    Context c{};
+    if (for_state(c, state)) {
+        unsigned mode = read<unsigned>(c.brain, 0x398), flags = read<unsigned>(c.brain, 0x39c);
+        if (!(mode & 3) && (flags & (1u << 11))) {
+            auto list = pr::subjects(c.actor);
+            bool nearby_enemy = false;
+            if (list.valid(8))
+                for (auto it = list.first; it != list.end; it += 8) {
+                    auto sub = read<Address>(it);
+                    if (remembered(sub) && p::squared(c.self - read<XY>(sub, 0x28)) <= 3600 * c.w.length * c.w.length) {
+                        nearby_enemy = true;
+                        break;
+                    }
+                }
+            if (p::hold_anchor(mode, flags, c.soldier->covered, nearby_enemy))
+                native<void (*)(Address, Byte)>(0x91B740)(c.brain, 0);
+        }
+    }
+    original.idle(state);
+}
+} // namespace detail
+inline constexpr unsigned hook_count = 15;
+template <class Create, class Remove>
+bool prepare_hooks(Address image, const char* sha, bool enable_prototype, Create create, Remove remove) {
+    using namespace detail;
+    if (!image || !sha || std::strcmp(sha, executable_sha256) != 0 || installed || rollback_pending) return false;
+    std::array<void*, hook_count> staged{};
+    unsigned count = 0;
+    auto add = [&](Address rva, auto hook, auto& original) {
+        auto target = reinterpret_cast<void*>(image + rva);
+        void* trampoline = nullptr;
+        if (create(target, reinterpret_cast<void*>(hook), &trampoline) != 0) return false;
+        staged[count++] = target;
+        original = reinterpret_cast<decltype(hook)>(trampoline);
+        return true;
+    };
+    if (!add(0x95BEE0, refresh, original.refresh) || !add(0x91C350, dispatch, original.base) ||
+        !add(0x960120, cover_execute, original.cover_execute) || !add(0x91B310, follower, original.follower) ||
+        !add(0x963C30, follow, original.follow) || !add(0x969EB0, replan, original.replan) ||
+        !add(0x96C220, move, original.movement) || !add(0x963E60, post_move<false>, original.outdoor_timer) ||
+        !add(0x961360, post_move<true>, original.cover_timer) || !add(0x969B90, search, original.search) ||
+        !add(0x96D4C0, update, original.update) || !add(0x88CBC0, retreat, original.retreat) ||
+        !add(0x964160, blocked, original.detour) || !add(0x96BF00, injury, original.injury) ||
+        !add(0x968F20, idle, original.idle)) {
+        while (count)
+            if (remove(staged[--count]) != 0) rollback_pending = true;
+        if (!rollback_pending) original = {};
+        return false;
+    }
+    installed = true;
+    accepting.store(enable_prototype);
+    return true;
+}
+inline void deactivate() {
+    detail::accepting.store(false);
+}
+inline unsigned inflight_count() {
+    return detail::inflight.load();
+}
+inline unsigned stat_issued() {
+    return detail::issued.load(std::memory_order_relaxed);
+}
+inline void after_hooks_removed() {
+    deactivate();
+    detail::original = {};
+    detail::installed = detail::rollback_pending = false;
+    detail::reset();
+    detail::issued = 0;
+}
+} // namespace goh::tactical_infantry

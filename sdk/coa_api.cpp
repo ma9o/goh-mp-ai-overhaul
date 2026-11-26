@@ -11,6 +11,7 @@
 #include <map>
 #include <mutex>
 #include <string>
+#include <utility>
 
 // Use the COA namespace types
 using namespace COA;
@@ -49,7 +50,8 @@ static void InitLog() {
 
     char* lastSlash = strrchr(path, '\\');
     if (lastSlash) {
-        strcpy(lastSlash + 1, "coa_extender.log");
+        size_t remaining = sizeof(path) - static_cast<size_t>((lastSlash + 1) - path);
+        snprintf(lastSlash + 1, remaining, "coa_extender.log");
     }
 
     g_LogFile = fopen(path, "w");
@@ -356,7 +358,7 @@ static int g_NextCallbackHandle = 1;
 
 int COA_RegisterDamageCallback(DamageCallback callback) {
     std::lock_guard<std::mutex> lock(g_Mutex);
-    g_DamageCallbacks.push_back(callback);
+    g_DamageCallbacks.push_back(std::move(callback));
     return g_NextCallbackHandle++;
 }
 
@@ -391,7 +393,7 @@ void COA_SetDamageMultiplier(float multiplier) {
 
 int COA_RegisterAIUpdateCallback(AIUpdateCallback callback) {
     std::lock_guard<std::mutex> lock(g_Mutex);
-    g_AIUpdateCallbacks.push_back(callback);
+    g_AIUpdateCallbacks.push_back(std::move(callback));
     return g_NextCallbackHandle++;
 }
 
@@ -435,7 +437,7 @@ void COA_SetUnitAIEnabled(::Unit* unit, bool enabled) {
 
 int COA_RegisterSpawnCallback(UnitSpawnCallback callback) {
     std::lock_guard<std::mutex> lock(g_Mutex);
-    g_SpawnCallbacks.push_back(callback);
+    g_SpawnCallbacks.push_back(std::move(callback));
     return g_NextCallbackHandle++;
 }
 
@@ -477,7 +479,7 @@ void* COA_GetPointer(uintptr_t offset) {
 
 void COA_RegisterCommand(const char* command, CommandCallback callback) {
     std::lock_guard<std::mutex> lock(g_Mutex);
-    g_CommandCallbacks[command] = callback;
+    g_CommandCallbacks[command] = std::move(callback);
     COA_Log("Registered command: %s", command);
 }
 
@@ -504,7 +506,7 @@ void COA_ConsolePrint(const char* message) {
 
 int COA_RegisterEventCallback(const char* eventName, EventCallback callback) {
     std::lock_guard<std::mutex> lock(g_Mutex);
-    g_EventCallbacks[eventName].push_back(callback);
+    g_EventCallbacks[eventName].push_back(std::move(callback));
     return g_NextCallbackHandle++;
 }
 

@@ -1,0 +1,2288 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "runtime_allowed": false,
+  "export_suffix": "-tactical-infantry",
+  "scope": "Game-only C-BATTLE, I-BEHAVIOR, O-MOVE-TO-COVER and O-MOVE-TO-POSITION. Win64 static interfaces and structural evidence.",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "image_base": "0x140000000"
+    }
+  },
+  "enums": [],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHumanBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x110ff88",
+      "methods": {
+        "24": "0x91df50",
+        "35": "0x95a680",
+        "21": "0x95cc60"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAttack@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110c018",
+      "methods": {
+        "19": "0x905290",
+        "20": "0x905240"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeCoverBattle@Human@@",
+      "subobject_offset": 0,
+      "rva": "0x1110538",
+      "methods": {
+        "3": "0x960120",
+        "4": "0x960670",
+        "5": "0x961360"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeOutdoorsBattle@Human@@",
+      "subobject_offset": 0,
+      "rva": "0x1110738",
+      "methods": {
+        "3": "0x963110",
+        "5": "0x963e60"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeDirectionValidator@Human@@",
+      "subobject_offset": 0,
+      "rva": "0x1110ad8",
+      "methods": {
+        "0": "0x96e180"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeAvoidGrenade@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110d278",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeSquad@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x110f3a0",
+      "methods": {}
+    }
+  ],
+  "float_constants": [
+    {
+      "binary": "game",
+      "id": "two",
+      "rva": "0x10205f0",
+      "value": 2.0
+    },
+    {
+      "binary": "game",
+      "id": "half",
+      "rva": "0x1023908",
+      "value": 0.5
+    },
+    {
+      "binary": "game",
+      "id": "cover_ratio",
+      "rva": "0x1043414",
+      "value": 1.5
+    }
+  ],
+  "hooks": [
+    {
+      "name": "refresh",
+      "rva": "0x95bee0",
+      "copied_instructions": 1,
+      "displaced_hex": "48 89 5c 24 10",
+      "continuation_rva": "0x95bee5"
+    },
+    {
+      "name": "dispatch",
+      "rva": "0x91c350",
+      "copied_instructions": 1,
+      "displaced_hex": "48 89 5c 24 18",
+      "continuation_rva": "0x91c355"
+    },
+    {
+      "name": "cover_execute",
+      "rva": "0x960120",
+      "copied_instructions": 1,
+      "displaced_hex": "48 89 7c 24 20",
+      "continuation_rva": "0x960125"
+    },
+    {
+      "name": "follower",
+      "rva": "0x91b310",
+      "copied_instructions": 1,
+      "displaced_hex": "48 8b 81 00 01 00 00",
+      "continuation_rva": "0x91b317"
+    },
+    {
+      "name": "follow",
+      "rva": "0x963c30",
+      "copied_instructions": 2,
+      "displaced_hex": "40 57 48 83 ec 50",
+      "continuation_rva": "0x963c36"
+    },
+    {
+      "name": "replan",
+      "rva": "0x969eb0",
+      "copied_instructions": 2,
+      "displaced_hex": "48 8b 51 30 f3 0f 10 a1 d0 03 00 00",
+      "continuation_rva": "0x969ebc"
+    },
+    {
+      "name": "move",
+      "rva": "0x96c220",
+      "copied_instructions": 2,
+      "displaced_hex": "48 8b c4 48 89 58 10",
+      "continuation_rva": "0x96c227"
+    },
+    {
+      "name": "post_move<false>",
+      "rva": "0x963e60",
+      "copied_instructions": 1,
+      "displaced_hex": "48 89 74 24 10",
+      "continuation_rva": "0x963e65"
+    },
+    {
+      "name": "post_move<true>",
+      "rva": "0x961360",
+      "copied_instructions": 2,
+      "displaced_hex": "40 57 48 83 ec 20",
+      "continuation_rva": "0x961366"
+    },
+    {
+      "name": "search",
+      "rva": "0x969b90",
+      "copied_instructions": 1,
+      "displaced_hex": "48 89 5c 24 08",
+      "continuation_rva": "0x969b95"
+    },
+    {
+      "name": "update",
+      "rva": "0x96d4c0",
+      "copied_instructions": 1,
+      "displaced_hex": "48 89 7c 24 18",
+      "continuation_rva": "0x96d4c5"
+    },
+    {
+      "name": "retreat",
+      "rva": "0x88cbc0",
+      "copied_instructions": 2,
+      "displaced_hex": "48 8b c4 f3 0f 11 50 18",
+      "continuation_rva": "0x88cbc8"
+    },
+    {
+      "name": "blocked",
+      "rva": "0x964160",
+      "copied_instructions": 2,
+      "displaced_hex": "48 8b c4 48 89 70 18",
+      "continuation_rva": "0x964167"
+    },
+    {
+      "name": "injury",
+      "rva": "0x96bf00",
+      "copied_instructions": 2,
+      "displaced_hex": "48 83 ec 28 48 8b 41 30",
+      "continuation_rva": "0x96bf08"
+    },
+    {
+      "name": "idle",
+      "rva": "0x968f20",
+      "copied_instructions": 1,
+      "displaced_hex": "48 89 74 24 18",
+      "continuation_rva": "0x968f25"
+    }
+  ],
+  "existing_hook_rvas": [
+    "0xb5380",
+    "0xbb490",
+    "0x151340",
+    "0x378710",
+    "0x379ca0",
+    "0x7442f0",
+    "0x7450e0",
+    "0x765690",
+    "0x7657d0",
+    "0x765fb0",
+    "0x781240",
+    "0x7e94f0",
+    "0x804ac0",
+    "0x82d4c0",
+    "0x8313b0",
+    "0x831c40",
+    "0x831fd0",
+    "0x832550",
+    "0x835790",
+    "0x836820",
+    "0x86f430",
+    "0x8c3650",
+    "0x8df010",
+    "0x8ecbf0",
+    "0x8ef8e0",
+    "0x902ed0",
+    "0x9032f0",
+    "0x903fe0",
+    "0x906480",
+    "0x90e3f0",
+    "0x913a20",
+    "0x9159d0",
+    "0x916570",
+    "0x917050",
+    "0x91be00",
+    "0x91ffa0",
+    "0x92bf20",
+    "0x95c120",
+    "0x960ae0",
+    "0x96bca0",
+    "0x9a7e20",
+    "0x9a7fa0",
+    "0x9a90c0",
+    "0x9ac1a0",
+    "0x9b0e80",
+    "0xb9a260"
+  ],
+  "byte_sequences": [
+    {
+      "id": "entry_refresh",
+      "binary": "game",
+      "rva": "0x95bee0",
+      "hex": "48 89 5c 24 10"
+    },
+    {
+      "id": "entry_dispatch",
+      "binary": "game",
+      "rva": "0x91c350",
+      "hex": "48 89 5c 24 18"
+    },
+    {
+      "id": "entry_cover_execute",
+      "binary": "game",
+      "rva": "0x960120",
+      "hex": "48 89 7c 24 20"
+    },
+    {
+      "id": "entry_follower",
+      "binary": "game",
+      "rva": "0x91b310",
+      "hex": "48 8b 81 00 01 00 00"
+    },
+    {
+      "id": "entry_follow",
+      "binary": "game",
+      "rva": "0x963c30",
+      "hex": "40 57 48 83 ec 50"
+    },
+    {
+      "id": "entry_replan",
+      "binary": "game",
+      "rva": "0x969eb0",
+      "hex": "48 8b 51 30 f3 0f 10 a1 d0 03 00 00"
+    },
+    {
+      "id": "entry_move",
+      "binary": "game",
+      "rva": "0x96c220",
+      "hex": "48 8b c4 48 89 58 10"
+    },
+    {
+      "id": "entry_post_move<false>",
+      "binary": "game",
+      "rva": "0x963e60",
+      "hex": "48 89 74 24 10"
+    },
+    {
+      "id": "entry_post_move<true>",
+      "binary": "game",
+      "rva": "0x961360",
+      "hex": "40 57 48 83 ec 20"
+    },
+    {
+      "id": "entry_search",
+      "binary": "game",
+      "rva": "0x969b90",
+      "hex": "48 89 5c 24 08"
+    },
+    {
+      "id": "entry_update",
+      "binary": "game",
+      "rva": "0x96d4c0",
+      "hex": "48 89 7c 24 18"
+    },
+    {
+      "id": "entry_retreat",
+      "binary": "game",
+      "rva": "0x88cbc0",
+      "hex": "48 8b c4 f3 0f 11 50 18"
+    },
+    {
+      "id": "entry_blocked",
+      "binary": "game",
+      "rva": "0x964160",
+      "hex": "48 8b c4 48 89 70 18"
+    },
+    {
+      "id": "entry_injury",
+      "binary": "game",
+      "rva": "0x96bf00",
+      "hex": "48 83 ec 28 48 8b 41 30"
+    },
+    {
+      "id": "entry_idle",
+      "binary": "game",
+      "rva": "0x968f20",
+      "hex": "48 89 74 24 18"
+    },
+    {
+      "id": "cover_score_descending",
+      "binary": "game",
+      "rva": "0x8b87a0",
+      "hex": "f3 0f 10 81 80 00 00 00 0f 2f 82 80 00 00 00 0f 97 c0 c3"
+    },
+    {
+      "id": "selected_range_entry",
+      "binary": "game",
+      "rva": "0x81f660",
+      "hex": "48 89 5c 24 08 57 48 83 ec 20 48 8b d9 48 8b 89 b0 00 00 00"
+    },
+    {
+      "id": "selected_range_float",
+      "binary": "game",
+      "rva": "0x81f6ab",
+      "hex": "f3 0f 10 40 10"
+    },
+    {
+      "id": "selected_range_other_return",
+      "binary": "game",
+      "rva": "0x81f6fb",
+      "hex": "f3 0f 10 40 20 48 83 c4 20 5f c3"
+    },
+    {
+      "id": "selected_range_caller",
+      "binary": "game",
+      "rva": "0x81f737",
+      "hex": "48 8b cb e8 21 ff ff ff f3 0f 58 c6"
+    },
+    {
+      "id": "heap_alloc",
+      "binary": "game",
+      "rva": "0x373650",
+      "hex": "48 8b d1 f0 48 ff 05 05 38 1f 01 48 8b 0d ee 37 1f 01 45 33 c0 48 8b 01 48 ff 60 20"
+    },
+    {
+      "id": "heap_free_thunk",
+      "binary": "game",
+      "rva": "0xda1e38",
+      "hex": "e9 43 18 5d ff"
+    },
+    {
+      "id": "heap_free",
+      "binary": "game",
+      "rva": "0x373680",
+      "hex": "48 8b d1 f0 48 ff 05 e5 37 1f 01 48 8b 0d be 37 1f 01 48 8b 01 48 ff 60 30"
+    },
+    {
+      "id": "height_class_stores",
+      "binary": "game",
+      "rva": "0x8bb27f",
+      "hex": "e8 2c 3f 00 00 8b cb 89 47 08 e8 42 3f 00 00 48 8b 5c 24 38 89 47 0c"
+    },
+    {
+      "id": "protected_height_by_kind",
+      "binary": "game",
+      "rva": "0x14a9600",
+      "hex": "00 00 00 00 03 00 00 00 03 00 00 00 03 00 00 00 02 00 00 00 01 00 00 00 03 00 00 00 02 00 00 00 01 00 00 00 03 00 00 00 02 00 00 00 01 00 00 00 01 00 00 00"
+    },
+    {
+      "id": "firing_height_by_kind",
+      "binary": "game",
+      "rva": "0x14a9638",
+      "hex": "00 00 00 00 03 00 00 00 03 00 00 00 03 00 00 00 03 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 03 00 00 00 02 00 00 00 01 00 00 00 01 00 00 00"
+    },
+    {
+      "id": "protected_height_lookup",
+      "binary": "game",
+      "rva": "0x8bf1b0",
+      "hex": "83 f9 0c 77 0e 48 63 c1 48 8d 0d 41 a4 be 00 8b 04 81 c3 33 c0 c3"
+    },
+    {
+      "id": "firing_height_lookup",
+      "binary": "game",
+      "rva": "0x8bf1d0",
+      "hex": "83 f9 0c 77 0e 48 63 c1 48 8d 0d 59 a4 be 00 8b 04 81 c3 33 c0 c3"
+    },
+    {
+      "id": "query_xy_radius",
+      "binary": "game",
+      "rva": "0x8b554d",
+      "hex": "f2 0f 11 81 10 01 00 00 0f 57 c9 f3 0f 11 99 18 01 00 00"
+    },
+    {
+      "id": "query_storage_extent",
+      "binary": "game",
+      "rva": "0x8b54dd",
+      "hex": "c7 86 90 01 00 00 ff ff ff ff"
+    }
+  ],
+  "methods": [
+    {
+      "id": "target_refresh",
+      "label": "target_refresh",
+      "entry_rvas": {
+        "game": "0x95bee0"
+      },
+      "abi": "void(brain)",
+      "source": "call_to_arms-target-prioritization"
+    },
+    {
+      "id": "human_reconsider",
+      "label": "human_reconsider",
+      "entry_rvas": {
+        "game": "0x95a680"
+      },
+      "abi": "void(brain)",
+      "source": "call_to_arms-target-prioritization"
+    },
+    {
+      "id": "base_dispatch",
+      "label": "base_dispatch",
+      "entry_rvas": {
+        "game": "0x91c350"
+      },
+      "abi": "void(brain)",
+      "source": "call_to_arms-target-prioritization"
+    },
+    {
+      "id": "cover_execute",
+      "label": "cover_execute",
+      "entry_rvas": {
+        "game": "0x960120"
+      },
+      "abi": "void(state)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "is_follower",
+      "label": "is_follower",
+      "entry_rvas": {
+        "game": "0x91b310"
+      },
+      "abi": "AL(brain)",
+      "source": "call_to_arms-move-at-will-2"
+    },
+    {
+      "id": "follow_order",
+      "label": "follow_order",
+      "entry_rvas": {
+        "game": "0x963c30"
+      },
+      "abi": "AL(state)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "follow_replan",
+      "label": "follow_replan",
+      "entry_rvas": {
+        "game": "0x969eb0"
+      },
+      "abi": "AL(state)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "movement",
+      "label": "movement",
+      "entry_rvas": {
+        "game": "0x96c220"
+      },
+      "abi": "AL(state);_caller_clears_unused_EDX",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "outdoors_dwell",
+      "label": "outdoors_dwell",
+      "entry_rvas": {
+        "game": "0x963e60"
+      },
+      "abi": "void(state)",
+      "source": "call_to_arms-move-at-will-3"
+    },
+    {
+      "id": "cover_dwell",
+      "label": "cover_dwell",
+      "entry_rvas": {
+        "game": "0x961360"
+      },
+      "abi": "void(state)",
+      "source": "call_to_arms-move-at-will-3"
+    },
+    {
+      "id": "cover_choice",
+      "label": "cover_choice",
+      "entry_rvas": {
+        "game": "0x969b90"
+      },
+      "abi": "AL(state,out_descriptor,search)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "cover_update",
+      "label": "cover_update",
+      "entry_rvas": {
+        "game": "0x96d4c0"
+      },
+      "abi": "AL(state)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "retreat_xy",
+      "label": "retreat_xy",
+      "entry_rvas": {
+        "game": "0x88cbc0"
+      },
+      "abi": "void(sensor,out_xy,XMM2_radius)",
+      "source": "call_to_arms-move-at-will-2"
+    },
+    {
+      "id": "blocked_detour",
+      "label": "blocked_detour",
+      "entry_rvas": {
+        "game": "0x964160"
+      },
+      "abi": "AL(state)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "injury",
+      "label": "injury",
+      "entry_rvas": {
+        "game": "0x96bf00"
+      },
+      "abi": "AL(state)",
+      "source": "call_to_arms-move-at-will-3"
+    },
+    {
+      "id": "idle_fallback",
+      "label": "idle_fallback",
+      "entry_rvas": {
+        "game": "0x968f20"
+      },
+      "abi": "void(state)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "selection",
+      "label": "selection",
+      "entry_rvas": {
+        "game": "0x91b190"
+      },
+      "abi": "AL(brain)",
+      "source": "call_to_arms-move-at-will-2"
+    },
+    {
+      "id": "follow_flag",
+      "label": "follow_flag",
+      "entry_rvas": {
+        "game": "0x91b360"
+      },
+      "abi": "void(brain,DL)",
+      "source": "call_to_arms-move-at-will-2"
+    },
+    {
+      "id": "anchor_flag",
+      "label": "anchor_flag",
+      "entry_rvas": {
+        "game": "0x91b740"
+      },
+      "abi": "void(brain,DL)",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "cover_screen",
+      "label": "cover_screen",
+      "entry_rvas": {
+        "game": "0x8bb590"
+      },
+      "abi": "AL(descriptor,enemy_xy,self_xy)",
+      "source": "call_to_arms-move-at-will-2"
+    },
+    {
+      "id": "segment_intersection",
+      "label": "segment_intersection",
+      "entry_rvas": {
+        "game": "0x8baee0"
+      },
+      "abi": "AL(endpoint_a,endpoint_b,threat,self)",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "search_ctor",
+      "label": "search_ctor",
+      "entry_rvas": {
+        "game": "0x8b54a0"
+      },
+      "abi": "RAX(storage,actor,center_xy,XMM3_radius)",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "cover_collect",
+      "label": "cover_collect",
+      "entry_rvas": {
+        "game": "0x8b57f0"
+      },
+      "abi": "AL(search)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "native_region",
+      "label": "native_region",
+      "entry_rvas": {
+        "game": "0x96a060"
+      },
+      "abi": "AL(state,bounding_circle)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "path_destroy",
+      "label": "path_destroy",
+      "entry_rvas": {
+        "game": "0xbf640"
+      },
+      "abi": "void(path_storage)",
+      "source": "call_to_arms-auto-medic"
+    },
+    {
+      "id": "reset_weights",
+      "label": "reset_weights",
+      "entry_rvas": {
+        "game": "0x8bb160"
+      },
+      "abi": "void(weights,XMM1_float)",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "reset_metrics",
+      "label": "reset_metrics",
+      "entry_rvas": {
+        "game": "0x8bb180"
+      },
+      "abi": "void(metrics)",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "reset_flags",
+      "label": "reset_flags",
+      "entry_rvas": {
+        "game": "0x8bb1a0"
+      },
+      "abi": "void(flags)",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "current_score",
+      "label": "current_score",
+      "entry_rvas": {
+        "game": "0x8b6090"
+      },
+      "abi": "AL(search,inout_descriptor);_use_recomputed_score",
+      "source": "call_to_arms-move-at-will-2"
+    },
+    {
+      "id": "movement_change",
+      "label": "movement_change",
+      "entry_rvas": {
+        "game": "0x90abf0"
+      },
+      "abi": "RAX(type_i32,mode_i32,wait_R8B)",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "point_task",
+      "label": "point_task",
+      "entry_rvas": {
+        "game": "0x90a8c0"
+      },
+      "abi": "RAX(xy,mode_i32)",
+      "source": "call_to_arms-auto-medic"
+    },
+    {
+      "id": "cover_order",
+      "label": "cover_order",
+      "entry_rvas": {
+        "game": "0x8e2770"
+      },
+      "abi": "RAX(descriptor)",
+      "source": "call_to_arms-lof-detour/orders"
+    },
+    {
+      "id": "notify",
+      "label": "notify",
+      "entry_rvas": {
+        "game": "0x92ae10"
+      },
+      "abi": "RAX(state,event_i32,permission_R8B)",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "state_sequence",
+      "label": "state_sequence",
+      "entry_rvas": {
+        "game": "0x92abb0"
+      },
+      "abi": "RAX(state);_installs_new_complex",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "state_move_bookkeeping",
+      "label": "state_move_bookkeeping",
+      "entry_rvas": {
+        "game": "0x96cf70"
+      },
+      "abi": "void(state,to_cover_DL,action_R8D)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "attach_order",
+      "label": "attach_order",
+      "entry_rvas": {
+        "game": "0x919270"
+      },
+      "abi": "RAX(complex,child,layer_R8D,start_R9B)",
+      "source": "call_to_arms-auto-medic"
+    },
+    {
+      "id": "scene_query_init",
+      "label": "scene_query_init",
+      "entry_rvas": {
+        "game": "0xa409c0"
+      },
+      "abi": "storage(RCX),flags(EDX),ignored_actor(R8),filter(R9D)",
+      "source": "call_to_arms-target-prioritization"
+    },
+    {
+      "id": "scene_query_segment",
+      "label": "scene_query_segment",
+      "entry_rvas": {
+        "game": "0xa40a20"
+      },
+      "abi": "void(query,from_xyz,to_xyz)",
+      "source": "call_to_arms-target-prioritization"
+    },
+    {
+      "id": "scene_query_hits",
+      "label": "scene_query_hits",
+      "entry_rvas": {
+        "game": "0xa40ac0"
+      },
+      "abi": "AL(query,hit_vector)",
+      "source": "call_to_arms-target-prioritization"
+    },
+    {
+      "id": "selected_weapon",
+      "label": "selected_weapon",
+      "entry_rvas": {
+        "game": "0x81b080"
+      },
+      "abi": "RAX(weaponry)",
+      "source": "call_to_arms-target-prioritization"
+    },
+    {
+      "id": "hand_holder",
+      "label": "hand_holder",
+      "entry_rvas": {
+        "game": "0x7e04b0"
+      },
+      "abi": "RAX(actor);_slot3_returns_borrowed_item",
+      "source": "call_to_arms-target-prioritization"
+    },
+    {
+      "id": "target_gate",
+      "label": "target_gate",
+      "entry_rvas": {
+        "game": "0x95c040"
+      },
+      "abi": "EAX(brain,subject,optional_diagnostic)",
+      "source": "call_to_arms-target-prioritization"
+    },
+    {
+      "id": "medic_predicate",
+      "label": "medic_predicate",
+      "entry_rvas": {
+        "game": "0x96aaf0"
+      },
+      "abi": "AL(root_state)",
+      "source": "call_to_arms-auto-medic"
+    },
+    {
+      "id": "path_ctor",
+      "label": "path_ctor",
+      "entry_rvas": {
+        "game": "0x8df010"
+      },
+      "abi": "RAX(path_storage,actor)",
+      "source": "call_to_arms-auto-medic"
+    },
+    {
+      "id": "clamp_path",
+      "label": "clamp_path",
+      "entry_rvas": {
+        "game": "0x8df4d0"
+      },
+      "abi": "AL(path_storage,xyz)",
+      "source": "call_to_arms-auto-medic"
+    },
+    {
+      "id": "corridor_block",
+      "label": "corridor_block",
+      "entry_rvas": {
+        "game": "0x8c19e0"
+      },
+      "abi": "AL(path_storage,from_xyz,to_xyz,zero)",
+      "source": "call_to_arms-auto-medic"
+    },
+    {
+      "id": "ground_height",
+      "label": "ground_height",
+      "entry_rvas": {
+        "game": "0xa5d440"
+      },
+      "abi": "XMM0(terrain,xy,level)",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "terrain_kind",
+      "label": "terrain_kind",
+      "entry_rvas": {
+        "game": "0xa62620"
+      },
+      "abi": "out_cell(RCX),xy(RDX)",
+      "source": "call_to_arms-tactical-infantry-extra"
+    },
+    {
+      "id": "worker_gate",
+      "label": "worker_gate",
+      "entry_rvas": {
+        "game": "0xa7a80"
+      },
+      "abi": "AL()",
+      "source": "call_to_arms-tank-auto-repair"
+    },
+    {
+      "id": "remote_client_gate",
+      "label": "remote_client_gate",
+      "entry_rvas": {
+        "game": "0xc2b7a0"
+      },
+      "abi": "AL()",
+      "source": "call_to_arms-tank-auto-repair"
+    },
+    {
+      "id": "squad_quant",
+      "label": "squad_quant",
+      "entry_rvas": {
+        "game": "0x949450"
+      },
+      "abi": "native_producer",
+      "source": "call_to_arms-move-at-will-2"
+    },
+    {
+      "id": "follower_destinations",
+      "label": "follower_destinations",
+      "entry_rvas": {
+        "game": "0x94bdb0"
+      },
+      "abi": "native_producer",
+      "source": "call_to_arms-move-at-will-2"
+    },
+    {
+      "id": "outdoors_execute",
+      "label": "outdoors_execute",
+      "entry_rvas": {
+        "game": "0x963110"
+      },
+      "abi": "native_consumer",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "cover_interrupt",
+      "label": "cover_interrupt",
+      "entry_rvas": {
+        "game": "0x960670"
+      },
+      "abi": "native_consumer",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "event_dispatch",
+      "label": "event_dispatch",
+      "entry_rvas": {
+        "game": "0x96b290"
+      },
+      "abi": "native_consumer",
+      "source": "call_to_arms-move-at-will-2"
+    },
+    {
+      "id": "cover_validate_score",
+      "label": "cover_validate_score",
+      "entry_rvas": {
+        "game": "0x8b6810"
+      },
+      "abi": "native_producer",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "direction_validator",
+      "label": "direction_validator",
+      "entry_rvas": {
+        "game": "0x96e180"
+      },
+      "abi": "AL(validator,descriptor)",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "native_path_weight",
+      "label": "native_path_weight",
+      "entry_rvas": {
+        "game": "0x8b7830"
+      },
+      "abi": "native_producer",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "vanilla_random_rank",
+      "label": "vanilla_random_rank",
+      "entry_rvas": {
+        "game": "0x8b5fa0"
+      },
+      "abi": "superseded_selector",
+      "source": "call_to_arms-move-at-will"
+    },
+    {
+      "id": "cached_weapon_range",
+      "label": "cached_weapon_range",
+      "entry_rvas": {
+        "game": "0x91c950"
+      },
+      "abi": "native_writer",
+      "source": "call_to_arms-target-prioritization"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "target_refresh",
+      "binary": "game",
+      "function_rva": "0x95bee0",
+      "instruction_rvas": [
+        "0x95bee0",
+        "0x95bee5",
+        "0x95beea",
+        "0x95bf80",
+        "0x95bf9b",
+        "0x95bfdf",
+        "0x95c02a",
+        "0x95c02c"
+      ]
+    },
+    {
+      "id": "human_reconsider",
+      "binary": "game",
+      "function_rva": "0x95a680",
+      "instruction_rvas": [
+        "0x95a680",
+        "0x95a682",
+        "0x95a684",
+        "0x95a699",
+        "0x95a69e",
+        "0x95a6a5",
+        "0x95a6ac",
+        "0x95a70a",
+        "0x95a712",
+        "0x95a71d",
+        "0x95a72f",
+        "0x95a76b",
+        "0x95a774",
+        "0x95a787",
+        "0x95a793",
+        "0x95a7bd",
+        "0x95a7cc",
+        "0x95a829",
+        "0x95a833",
+        "0x95a83e",
+        "0x95a84d",
+        "0x95a87b",
+        "0x95a88a",
+        "0x95a8b6",
+        "0x95a8c2",
+        "0x95a8d2",
+        "0x95a8fc",
+        "0x95a909",
+        "0x95a91e",
+        "0x95aa0e",
+        "0x95aa8c",
+        "0x95ab12",
+        "0x95ab2e",
+        "0x95ab35",
+        "0x95abd3",
+        "0x95abd6",
+        "0x95abdb",
+        "0x95abe2",
+        "0x95ac4b",
+        "0x95ac4c"
+      ]
+    },
+    {
+      "id": "base_dispatch",
+      "binary": "game",
+      "function_rva": "0x91c350",
+      "instruction_rvas": [
+        "0x91c350",
+        "0x91c355",
+        "0x91c356",
+        "0x91c36b",
+        "0x91c394",
+        "0x91c3cf",
+        "0x91c3df",
+        "0x91c3ec",
+        "0x91c3f3",
+        "0x91c40d",
+        "0x91c42c",
+        "0x91c44b",
+        "0x91c46a",
+        "0x91c482",
+        "0x91c496",
+        "0x91c5d4",
+        "0x91c5fd",
+        "0x91c62e",
+        "0x91c79a",
+        "0x91c7a5",
+        "0x91c7b0",
+        "0x91c7ce",
+        "0x91c7f1",
+        "0x91c7fb",
+        "0x91c801",
+        "0x91c84d",
+        "0x91c84e"
+      ]
+    },
+    {
+      "id": "cover_execute",
+      "binary": "game",
+      "function_rva": "0x960120",
+      "instruction_rvas": [
+        "0x960120",
+        "0x960125",
+        "0x960126",
+        "0x96015e",
+        "0x960180",
+        "0x96024d",
+        "0x96027a",
+        "0x9602c2",
+        "0x9602d3",
+        "0x9603d6",
+        "0x9603f8",
+        "0x960430",
+        "0x96044c",
+        "0x960633",
+        "0x960658",
+        "0x96065e"
+      ]
+    },
+    {
+      "id": "is_follower",
+      "binary": "game",
+      "function_rva": "0x91b310",
+      "instruction_rvas": [
+        "0x91b310",
+        "0x91b317",
+        "0x91b31a",
+        "0x91b331",
+        "0x91b333"
+      ]
+    },
+    {
+      "id": "follow_order",
+      "binary": "game",
+      "function_rva": "0x963c30",
+      "instruction_rvas": [
+        "0x963c30",
+        "0x963c32",
+        "0x963c36",
+        "0x963ccf",
+        "0x963ce6",
+        "0x963d24",
+        "0x963d2f",
+        "0x963d3e",
+        "0x963d50",
+        "0x963d61",
+        "0x963d74",
+        "0x963d85",
+        "0x963e39",
+        "0x963e4f",
+        "0x963e50"
+      ]
+    },
+    {
+      "id": "follow_replan",
+      "binary": "game",
+      "function_rva": "0x969eb0",
+      "instruction_rvas": [
+        "0x969eb0",
+        "0x969eb4",
+        "0x969ebc",
+        "0x969ec0",
+        "0x969ec8",
+        "0x969ed0",
+        "0x969ed4",
+        "0x969ed9",
+        "0x969ede",
+        "0x969ee2",
+        "0x969ee6",
+        "0x969eea",
+        "0x969eee",
+        "0x969ef2",
+        "0x969ef6",
+        "0x969efe",
+        "0x969f02",
+        "0x969f06",
+        "0x969f0a",
+        "0x969f12",
+        "0x969f1a",
+        "0x969f1d",
+        "0x969f1f",
+        "0x969f27",
+        "0x969f2a",
+        "0x969f2c",
+        "0x969f2e",
+        "0x969f2f",
+        "0x969f31"
+      ]
+    },
+    {
+      "id": "movement",
+      "binary": "game",
+      "function_rva": "0x96c220",
+      "instruction_rvas": [
+        "0x96c220",
+        "0x96c223",
+        "0x96c227",
+        "0x96c294",
+        "0x96c2bf",
+        "0x96c2e9",
+        "0x96c31f",
+        "0x96c3c2",
+        "0x96c529",
+        "0x96c541",
+        "0x96c578",
+        "0x96c597",
+        "0x96c59b",
+        "0x96c59f",
+        "0x96c5a4",
+        "0x96c5a7",
+        "0x96c5aa",
+        "0x96c5af",
+        "0x96c5b5",
+        "0x96c5ba",
+        "0x96c5c0",
+        "0x96c5c5",
+        "0x96c5cb",
+        "0x96c69a",
+        "0x96c6bc",
+        "0x96c6fc",
+        "0x96c823",
+        "0x96c8b4",
+        "0x96c8e8",
+        "0x96c980",
+        "0x96c985",
+        "0x96c988",
+        "0x96c990",
+        "0x96c995",
+        "0x96c99c",
+        "0x96c99f",
+        "0x96c9a4",
+        "0x96c9ab",
+        "0x96c9b0",
+        "0x96c9b5",
+        "0x96c9ba",
+        "0x96c9be",
+        "0x96c9c3",
+        "0x96c9c8",
+        "0x96c9cb",
+        "0x96c9cf",
+        "0x96c9d4",
+        "0x96c9d9",
+        "0x96c9e0",
+        "0x96c9e5",
+        "0x96c9e9",
+        "0x96c9f0",
+        "0x96c9fa",
+        "0x96ca04",
+        "0x96ca08",
+        "0x96ca0f",
+        "0x96ca12",
+        "0x96ca16",
+        "0x96ca1d",
+        "0x96ca24",
+        "0x96ca29",
+        "0x96ca2d",
+        "0x96ca33",
+        "0x96ca35",
+        "0x96ca37",
+        "0x96ca3a",
+        "0x96ca3c",
+        "0x96ca3f",
+        "0x96ca41",
+        "0x96ca44",
+        "0x96ca46",
+        "0x96ca7e",
+        "0x96ca86",
+        "0x96ca9b",
+        "0x96cb15",
+        "0x96cb2f",
+        "0x96cb3a",
+        "0x96cb4b",
+        "0x96cb57",
+        "0x96cb68",
+        "0x96cb7b",
+        "0x96cb8c",
+        "0x96cc2a",
+        "0x96ccf0",
+        "0x96cdc3",
+        "0x96cddd",
+        "0x96cde8",
+        "0x96cdf9",
+        "0x96ce1b",
+        "0x96ce2e",
+        "0x96ce3f",
+        "0x96ce4f",
+        "0x96ce6f",
+        "0x96ce9e",
+        "0x96cf5e",
+        "0x96cf64"
+      ]
+    },
+    {
+      "id": "outdoors_dwell",
+      "binary": "game",
+      "function_rva": "0x963e60",
+      "instruction_rvas": [
+        "0x963e60",
+        "0x963e65",
+        "0x963e66",
+        "0x963e71",
+        "0x963eb2",
+        "0x963ec0",
+        "0x963eea",
+        "0x963f07",
+        "0x963f08"
+      ]
+    },
+    {
+      "id": "cover_dwell",
+      "binary": "game",
+      "function_rva": "0x961360",
+      "instruction_rvas": [
+        "0x961360",
+        "0x961362",
+        "0x961366",
+        "0x96136d",
+        "0x9613a6",
+        "0x96140f",
+        "0x961410"
+      ]
+    },
+    {
+      "id": "cover_choice",
+      "binary": "game",
+      "function_rva": "0x969b90",
+      "instruction_rvas": [
+        "0x969b90",
+        "0x969b95",
+        "0x969b96",
+        "0x969b9a",
+        "0x969b9d",
+        "0x969ba0",
+        "0x969ba3",
+        "0x969ba8",
+        "0x969baa",
+        "0x969bac",
+        "0x969bb4",
+        "0x969bb9",
+        "0x969bbc",
+        "0x969bc1",
+        "0x969bc6",
+        "0x969bc9",
+        "0x969bcc",
+        "0x969bd0",
+        "0x969bd4",
+        "0x969bd8",
+        "0x969bdc",
+        "0x969be0",
+        "0x969be4",
+        "0x969be8",
+        "0x969bec",
+        "0x969bf0",
+        "0x969bf4",
+        "0x969bf8",
+        "0x969bfc",
+        "0x969c00",
+        "0x969c04",
+        "0x969c0c",
+        "0x969c0e",
+        "0x969c16",
+        "0x969c1b",
+        "0x969c1f",
+        "0x969c20",
+        "0x969c21",
+        "0x969c26",
+        "0x969c28",
+        "0x969c2c",
+        "0x969c2d"
+      ]
+    },
+    {
+      "id": "cover_update",
+      "binary": "game",
+      "function_rva": "0x96d4c0",
+      "instruction_rvas": [
+        "0x96d4c0",
+        "0x96d4c5",
+        "0x96d4c6",
+        "0x96d4e0",
+        "0x96d4fa",
+        "0x96d53e",
+        "0x96d556",
+        "0x96d583",
+        "0x96d58c",
+        "0x96d5ac",
+        "0x96d6f9",
+        "0x96d702",
+        "0x96d721",
+        "0x96d7e0",
+        "0x96d7f2",
+        "0x96d7fd",
+        "0x96d80e",
+        "0x96d81a",
+        "0x96d82b",
+        "0x96d83e",
+        "0x96d84f",
+        "0x96d86c",
+        "0x96d8e8",
+        "0x96d8ee"
+      ]
+    },
+    {
+      "id": "retreat_xy",
+      "binary": "game",
+      "function_rva": "0x88cbc0",
+      "instruction_rvas": [
+        "0x88cbc0",
+        "0x88cbc3",
+        "0x88cbc8",
+        "0x88cd91",
+        "0x88cd98",
+        "0x88d1dc",
+        "0x88d25e",
+        "0x88d25f"
+      ]
+    },
+    {
+      "id": "blocked_detour",
+      "binary": "game",
+      "function_rva": "0x964160",
+      "instruction_rvas": [
+        "0x964160",
+        "0x964163",
+        "0x964167",
+        "0x964259",
+        "0x9642e1",
+        "0x9642f3",
+        "0x9642fe",
+        "0x96430f",
+        "0x96431c",
+        "0x964333",
+        "0x964344",
+        "0x96434f",
+        "0x964360",
+        "0x96436f",
+        "0x964386",
+        "0x964397",
+        "0x96447b",
+        "0x964486",
+        "0x96449a",
+        "0x964511",
+        "0x964512"
+      ]
+    },
+    {
+      "id": "injury",
+      "binary": "game",
+      "function_rva": "0x96bf00",
+      "instruction_rvas": [
+        "0x96bf00",
+        "0x96bf04",
+        "0x96bf08",
+        "0x96bf6d",
+        "0x96bf71"
+      ]
+    },
+    {
+      "id": "idle_fallback",
+      "binary": "game",
+      "function_rva": "0x968f20",
+      "instruction_rvas": [
+        "0x968f20",
+        "0x968f25",
+        "0x968f26",
+        "0x968fb5",
+        "0x968fc5",
+        "0x968fdb",
+        "0x968fec",
+        "0x969002",
+        "0x969064",
+        "0x969075",
+        "0x969088",
+        "0x969092",
+        "0x9690ca",
+        "0x969161",
+        "0x96917e",
+        "0x969189",
+        "0x96919a",
+        "0x9691bf",
+        "0x9691c8",
+        "0x9691db",
+        "0x9691e4",
+        "0x96927c",
+        "0x9692b7",
+        "0x9692c8",
+        "0x9692e4",
+        "0x9692f7",
+        "0x969317",
+        "0x969355",
+        "0x96935b"
+      ]
+    },
+    {
+      "id": "selection",
+      "binary": "game",
+      "function_rva": "0x91b190",
+      "instruction_rvas": [
+        "0x91b190",
+        "0x91b196",
+        "0x91b198",
+        "0x91b1b1",
+        "0x91b1b3"
+      ]
+    },
+    {
+      "id": "follow_flag",
+      "binary": "game",
+      "function_rva": "0x91b360",
+      "instruction_rvas": [
+        "0x91b360",
+        "0x91b363",
+        "0x91b365",
+        "0x91b367",
+        "0x91b374",
+        "0x91b38f",
+        "0x91b397",
+        "0x91b3a7",
+        "0x91b3ad"
+      ]
+    },
+    {
+      "id": "anchor_flag",
+      "binary": "game",
+      "function_rva": "0x91b740",
+      "instruction_rvas": [
+        "0x91b740",
+        "0x91b747",
+        "0x91b74a",
+        "0x91b75d",
+        "0x91b775",
+        "0x91b77c"
+      ]
+    },
+    {
+      "id": "cover_screen",
+      "binary": "game",
+      "function_rva": "0x8bb590",
+      "instruction_rvas": [
+        "0x8bb590",
+        "0x8bb594",
+        "0x8bb597",
+        "0x8bb5a7",
+        "0x8bb5ac",
+        "0x8bb5ae"
+      ]
+    },
+    {
+      "id": "segment_intersection",
+      "binary": "game",
+      "function_rva": "0x8baee0",
+      "instruction_rvas": [
+        "0x8baee0",
+        "0x8baee3",
+        "0x8baeea",
+        "0x8bb07d",
+        "0x8bb080"
+      ]
+    },
+    {
+      "id": "search_ctor",
+      "binary": "game",
+      "function_rva": "0x8b54a0",
+      "instruction_rvas": [
+        "0x8b54a0",
+        "0x8b54a5",
+        "0x8b54aa",
+        "0x8b5515",
+        "0x8b5516"
+      ]
+    },
+    {
+      "id": "cover_collect",
+      "binary": "game",
+      "function_rva": "0x8b57f0",
+      "instruction_rvas": [
+        "0x8b57f0",
+        "0x8b57f2",
+        "0x8b57f3",
+        "0x8b582f",
+        "0x8b595a",
+        "0x8b5ba0",
+        "0x8b5cff",
+        "0x8b5e58",
+        "0x8b5ef7",
+        "0x8b5efc"
+      ]
+    },
+    {
+      "id": "native_region",
+      "binary": "game",
+      "function_rva": "0x96a060",
+      "instruction_rvas": [
+        "0x96a060",
+        "0x96a065",
+        "0x96a066",
+        "0x96a074",
+        "0x96a09a",
+        "0x96a0bc",
+        "0x96a118",
+        "0x96a119"
+      ]
+    },
+    {
+      "id": "path_destroy",
+      "binary": "game",
+      "function_rva": "0xbf640",
+      "instruction_rvas": [
+        "0xbf640",
+        "0xbf645",
+        "0xbf646",
+        "0xbf69b",
+        "0xbf69c"
+      ]
+    },
+    {
+      "id": "reset_weights",
+      "binary": "game",
+      "function_rva": "0x8bb160",
+      "instruction_rvas": [
+        "0x8bb160",
+        "0x8bb164",
+        "0x8bb168",
+        "0x8bb16b"
+      ]
+    },
+    {
+      "id": "reset_metrics",
+      "binary": "game",
+      "function_rva": "0x8bb180",
+      "instruction_rvas": [
+        "0x8bb180",
+        "0x8bb182",
+        "0x8bb186",
+        "0x8bb191",
+        "0x8bb195"
+      ]
+    },
+    {
+      "id": "reset_flags",
+      "binary": "game",
+      "function_rva": "0x8bb1a0",
+      "instruction_rvas": [
+        "0x8bb1a0",
+        "0x8bb1a4",
+        "0x8bb1a6",
+        "0x8bb1a8",
+        "0x8bb1ac"
+      ]
+    },
+    {
+      "id": "current_score",
+      "binary": "game",
+      "function_rva": "0x8b6090",
+      "instruction_rvas": [
+        "0x8b6090",
+        "0x8b6093",
+        "0x8b6097",
+        "0x8b6199",
+        "0x8b619e",
+        "0x8b627c",
+        "0x8b630e",
+        "0x8b6316",
+        "0x8b644c",
+        "0x8b644d"
+      ]
+    },
+    {
+      "id": "movement_change",
+      "binary": "game",
+      "function_rva": "0x90abf0",
+      "instruction_rvas": [
+        "0x90abf0",
+        "0x90abf5",
+        "0x90abfa",
+        "0x90ac54",
+        "0x90ac55"
+      ]
+    },
+    {
+      "id": "point_task",
+      "binary": "game",
+      "function_rva": "0x90a8c0",
+      "instruction_rvas": [
+        "0x90a8c0",
+        "0x90a8c5",
+        "0x90a8ca",
+        "0x90aa06",
+        "0x90aa07"
+      ]
+    },
+    {
+      "id": "cover_order",
+      "binary": "game",
+      "function_rva": "0x8e2770",
+      "instruction_rvas": [
+        "0x8e2770",
+        "0x8e2775",
+        "0x8e2776",
+        "0x8e281a",
+        "0x8e285c",
+        "0x8e285d"
+      ]
+    },
+    {
+      "id": "notify",
+      "binary": "game",
+      "function_rva": "0x92ae10",
+      "instruction_rvas": [
+        "0x92ae10",
+        "0x92ae15",
+        "0x92ae1a",
+        "0x92ae7a",
+        "0x92ae7b"
+      ]
+    },
+    {
+      "id": "state_sequence",
+      "binary": "game",
+      "function_rva": "0x92abb0",
+      "instruction_rvas": [
+        "0x92abb0",
+        "0x92abb5",
+        "0x92abb6",
+        "0x92abfd",
+        "0x92abfe"
+      ]
+    },
+    {
+      "id": "state_move_bookkeeping",
+      "binary": "game",
+      "function_rva": "0x96cf70",
+      "instruction_rvas": [
+        "0x96cf70",
+        "0x96cf73",
+        "0x96cf77",
+        "0x96d119",
+        "0x96d11a"
+      ]
+    },
+    {
+      "id": "attach_order",
+      "binary": "game",
+      "function_rva": "0x919270",
+      "instruction_rvas": [
+        "0x919270",
+        "0x919275",
+        "0x91927a",
+        "0x91939d",
+        "0x9193cf",
+        "0x9193de",
+        "0x9193df"
+      ]
+    },
+    {
+      "id": "scene_query_init",
+      "binary": "game",
+      "function_rva": "0xa409c0",
+      "instruction_rvas": [
+        "0xa409c0",
+        "0xa409c2",
+        "0xa409c6",
+        "0xa40a11",
+        "0xa40a12"
+      ]
+    },
+    {
+      "id": "scene_query_segment",
+      "binary": "game",
+      "function_rva": "0xa40a20",
+      "instruction_rvas": [
+        "0xa40a20",
+        "0xa40a22",
+        "0xa40a26",
+        "0xa40aab",
+        "0xa40aac"
+      ]
+    },
+    {
+      "id": "scene_query_hits",
+      "binary": "game",
+      "function_rva": "0xa40ac0",
+      "instruction_rvas": [
+        "0xa40ac0",
+        "0xa40ac2",
+        "0xa40ac3",
+        "0xa40d76",
+        "0xa40f61",
+        "0xa40f62"
+      ]
+    },
+    {
+      "id": "selected_weapon",
+      "binary": "game",
+      "function_rva": "0x81b080",
+      "instruction_rvas": [
+        "0x81b080",
+        "0x81b084",
+        "0x81b086",
+        "0x81b0b1",
+        "0x81b0b4"
+      ]
+    },
+    {
+      "id": "hand_holder",
+      "binary": "game",
+      "function_rva": "0x7e04b0",
+      "instruction_rvas": [
+        "0x7e04b0",
+        "0x7e04b3",
+        "0x7e04b5",
+        "0x7e04cc",
+        "0x7e04d3"
+      ]
+    },
+    {
+      "id": "target_gate",
+      "binary": "game",
+      "function_rva": "0x95c040",
+      "instruction_rvas": [
+        "0x95c040",
+        "0x95c045",
+        "0x95c04a",
+        "0x95c0e7",
+        "0x95c115",
+        "0x95c116"
+      ]
+    },
+    {
+      "id": "medic_predicate",
+      "binary": "game",
+      "function_rva": "0x96aaf0",
+      "instruction_rvas": [
+        "0x96aaf0",
+        "0x96aaf2",
+        "0x96aaf6",
+        "0x96ab89",
+        "0x96ab8a"
+      ]
+    },
+    {
+      "id": "path_ctor",
+      "binary": "game",
+      "function_rva": "0x8df010",
+      "instruction_rvas": [
+        "0x8df010",
+        "0x8df015",
+        "0x8df01a",
+        "0x8df045",
+        "0x8df0f1",
+        "0x8df120",
+        "0x8df121"
+      ]
+    },
+    {
+      "id": "clamp_path",
+      "binary": "game",
+      "function_rva": "0x8df4d0",
+      "instruction_rvas": [
+        "0x8df4d0",
+        "0x8df4d5",
+        "0x8df4d6",
+        "0x8df581",
+        "0x8df582"
+      ]
+    },
+    {
+      "id": "corridor_block",
+      "binary": "game",
+      "function_rva": "0x8c19e0",
+      "instruction_rvas": [
+        "0x8c19e0",
+        "0x8c19e5",
+        "0x8c19ea",
+        "0x8c1a4b",
+        "0x8c1a79",
+        "0x8c1a9e",
+        "0x8c1ab9",
+        "0x8c1aba"
+      ]
+    },
+    {
+      "id": "ground_height",
+      "binary": "game",
+      "function_rva": "0xa5d440",
+      "instruction_rvas": [
+        "0xa5d440",
+        "0xa5d445",
+        "0xa5d44a",
+        "0xa5d5df",
+        "0xa5d5e0"
+      ]
+    },
+    {
+      "id": "terrain_kind",
+      "binary": "game",
+      "function_rva": "0xa62620",
+      "instruction_rvas": [
+        "0xa62620",
+        "0xa62625",
+        "0xa6262a",
+        "0xa6270c",
+        "0xa62710"
+      ]
+    },
+    {
+      "id": "worker_gate",
+      "binary": "game",
+      "function_rva": "0xa7a80",
+      "instruction_rvas": [
+        "0xa7a80",
+        "0xa7a84",
+        "0xa7a89",
+        "0xa7ac2",
+        "0xa7ac6"
+      ]
+    },
+    {
+      "id": "remote_client_gate",
+      "binary": "game",
+      "function_rva": "0xc2b7a0",
+      "instruction_rvas": [
+        "0xc2b7a0",
+        "0xc2b7a2",
+        "0xc2b7a6",
+        "0xc2b7f8",
+        "0xc2b7f9"
+      ]
+    },
+    {
+      "id": "squad_quant",
+      "binary": "game",
+      "function_rva": "0x949450",
+      "instruction_rvas": [
+        "0x949450",
+        "0x949452",
+        "0x949453",
+        "0x9494eb",
+        "0x9496ee",
+        "0x949919",
+        "0x949b5d",
+        "0x949b70",
+        "0x949bb5",
+        "0x949bc3",
+        "0x949c63",
+        "0x949cd9",
+        "0x949ceb",
+        "0x949cf7",
+        "0x949d18",
+        "0x949d26",
+        "0x949d67",
+        "0x949dc9",
+        "0x949e5a",
+        "0x949e85",
+        "0x949edd",
+        "0x949f35",
+        "0x949f59",
+        "0x949f6a",
+        "0x94a0e8",
+        "0x94a0ed"
+      ]
+    },
+    {
+      "id": "follower_destinations",
+      "binary": "game",
+      "function_rva": "0x94bdb0",
+      "instruction_rvas": [
+        "0x94bdb0",
+        "0x94bdb2",
+        "0x94bdb3",
+        "0x94bdc3",
+        "0x94be14",
+        "0x94be2e",
+        "0x94be57",
+        "0x94bea3",
+        "0x94bf46",
+        "0x94bf7f",
+        "0x94bfb0",
+        "0x94c0c1",
+        "0x94c12f",
+        "0x94c1f0",
+        "0x94c4b6",
+        "0x94c4d0",
+        "0x94c4ef",
+        "0x94c579",
+        "0x94c57e",
+        "0x94c5df",
+        "0x94c5f6",
+        "0x94c608",
+        "0x94c640",
+        "0x94c689",
+        "0x94c6e4",
+        "0x94c6e9"
+      ]
+    },
+    {
+      "id": "outdoors_execute",
+      "binary": "game",
+      "function_rva": "0x963110",
+      "instruction_rvas": [
+        "0x963110",
+        "0x963112",
+        "0x963113",
+        "0x96314e",
+        "0x9631d6",
+        "0x9631e6",
+        "0x963256",
+        "0x9632ab",
+        "0x9632b4",
+        "0x9632bd",
+        "0x9632d0",
+        "0x9632f5",
+        "0x963350",
+        "0x963392",
+        "0x9633a4",
+        "0x9633e7",
+        "0x96341e",
+        "0x963422",
+        "0x963427",
+        "0x963429",
+        "0x96342f",
+        "0x963433",
+        "0x963444",
+        "0x963455",
+        "0x9634da",
+        "0x9635b4",
+        "0x9635bb",
+        "0x9635c4",
+        "0x9635d7",
+        "0x963608",
+        "0x963651",
+        "0x9636ac",
+        "0x9636be",
+        "0x9636d3",
+        "0x963876",
+        "0x963897",
+        "0x9638a8",
+        "0x9638b9",
+        "0x9638d7",
+        "0x963a55",
+        "0x963a77",
+        "0x963a7d"
+      ]
+    },
+    {
+      "id": "cover_interrupt",
+      "binary": "game",
+      "function_rva": "0x960670",
+      "instruction_rvas": [
+        "0x960670",
+        "0x960675",
+        "0x960676",
+        "0x960685",
+        "0x96076b",
+        "0x960791",
+        "0x9607ad",
+        "0x9607b6",
+        "0x9607dd",
+        "0x9608d0",
+        "0x9608e1",
+        "0x9608f4",
+        "0x960905",
+        "0x96091b",
+        "0x960920"
+      ]
+    },
+    {
+      "id": "event_dispatch",
+      "binary": "game",
+      "function_rva": "0x96b290",
+      "instruction_rvas": [
+        "0x96b290",
+        "0x96b295",
+        "0x96b296",
+        "0x96b2a0",
+        "0x96b2a5",
+        "0x96b2a7",
+        "0x96b2aa",
+        "0x96b2b0",
+        "0x96b2b3",
+        "0x96b2b9",
+        "0x96b2bc",
+        "0x96b32e",
+        "0x96b331",
+        "0x96b334",
+        "0x96b337",
+        "0x96b35d",
+        "0x96b3b1",
+        "0x96b41b",
+        "0x96b41c"
+      ]
+    },
+    {
+      "id": "cover_validate_score",
+      "binary": "game",
+      "function_rva": "0x8b6810",
+      "instruction_rvas": [
+        "0x8b6810",
+        "0x8b6815",
+        "0x8b6816",
+        "0x8b685f",
+        "0x8b68c5",
+        "0x8b6a3d",
+        "0x8b6a57",
+        "0x8b6a7f",
+        "0x8b6a8f",
+        "0x8b6c1e",
+        "0x8b6e38",
+        "0x8b6f06",
+        "0x8b6f0e",
+        "0x8b6f28",
+        "0x8b70c6",
+        "0x8b71fd",
+        "0x8b7300",
+        "0x8b749d",
+        "0x8b7653",
+        "0x8b767b",
+        "0x8b77f2",
+        "0x8b77f7"
+      ]
+    },
+    {
+      "id": "direction_validator",
+      "binary": "game",
+      "function_rva": "0x96e180",
+      "instruction_rvas": [
+        "0x96e180",
+        "0x96e185",
+        "0x96e186",
+        "0x96e18a",
+        "0x96e18f",
+        "0x96e192",
+        "0x96e197",
+        "0x96e19a",
+        "0x96e19f",
+        "0x96e1a4",
+        "0x96e1a7",
+        "0x96e1ad",
+        "0x96e1b3",
+        "0x96e1b9",
+        "0x96e1bc",
+        "0x96e1c0",
+        "0x96e1c4",
+        "0x96e1c9",
+        "0x96e1cd",
+        "0x96e1d4",
+        "0x96e1d6",
+        "0x96e1db",
+        "0x96e1e3",
+        "0x96e1e7",
+        "0x96e1eb",
+        "0x96e1f0",
+        "0x96e1f2",
+        "0x96e1fa",
+        "0x96e1fd",
+        "0x96e205",
+        "0x96e20a",
+        "0x96e20d",
+        "0x96e20f",
+        "0x96e214",
+        "0x96e219",
+        "0x96e221",
+        "0x96e225",
+        "0x96e228",
+        "0x96e22a",
+        "0x96e22d",
+        "0x96e22f",
+        "0x96e233",
+        "0x96e235",
+        "0x96e239",
+        "0x96e23b",
+        "0x96e23d",
+        "0x96e23f",
+        "0x96e244",
+        "0x96e249",
+        "0x96e24e",
+        "0x96e258",
+        "0x96e259"
+      ]
+    },
+    {
+      "id": "native_path_weight",
+      "binary": "game",
+      "function_rva": "0x8b7830",
+      "instruction_rvas": [
+        "0x8b7830",
+        "0x8b7833",
+        "0x8b7834",
+        "0x8b7843",
+        "0x8b784a",
+        "0x8b7884",
+        "0x8b78be",
+        "0x8b78dc",
+        "0x8b78fc",
+        "0x8b795e",
+        "0x8b797b",
+        "0x8b798d",
+        "0x8b79b0",
+        "0x8b7a0e",
+        "0x8b7a52",
+        "0x8b7a65",
+        "0x8b7ac8",
+        "0x8b7ae1",
+        "0x8b7ae9",
+        "0x8b7bb7",
+        "0x8b7bb8"
+      ]
+    },
+    {
+      "id": "vanilla_random_rank",
+      "binary": "game",
+      "function_rva": "0x8b5fa0",
+      "instruction_rvas": [
+        "0x8b5fa0",
+        "0x8b5fa5",
+        "0x8b5faa",
+        "0x8b607a",
+        "0x8b607b"
+      ]
+    },
+    {
+      "id": "cached_weapon_range",
+      "binary": "game",
+      "function_rva": "0x91c950",
+      "instruction_rvas": [
+        "0x91c950",
+        "0x91c952",
+        "0x91c956",
+        "0x91c976",
+        "0x91c977"
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "id": "posture",
+      "representation": "brain+518/51c A/B, +520/521 restrictions, +524/528 ratios, +474 morale, +52c state and +530 native tick deadline",
+      "evidence_ids": [
+        "human_reconsider",
+        "base_dispatch"
+      ]
+    },
+    {
+      "id": "squad",
+      "representation": "brain+100, squad member pointer vector +80/+88, commander +a8, waypoint +1c8, formation goal brain+138/+13c",
+      "evidence_ids": [
+        "is_follower",
+        "squad_quant",
+        "follower_destinations",
+        "follow_replan"
+      ]
+    },
+    {
+      "id": "observation",
+      "representation": "human selected +3b8, category 1 at sensor+280/+288, subject observed xyz +28, human AttackRate +48",
+      "evidence_ids": [
+        "human_reconsider",
+        "movement",
+        "retreat_xy",
+        "target_gate"
+      ]
+    },
+    {
+      "id": "cover",
+      "representation": "actor+dc0, descriptor at +20, group +24; descriptor +10 XY, +8 protected / +0c firing height classes, +80 score, stride 88",
+      "evidence_ids": [
+        "cover_collect",
+        "cover_validate_score",
+        "cover_screen",
+        "cover_choice",
+        "current_score"
+      ]
+    },
+    {
+      "id": "notify",
+      "representation": "state+30 brain, state+3dc action, state+3ec tick deadline; event 10 dispatches vslot 5",
+      "evidence_ids": [
+        "event_dispatch",
+        "cover_dwell",
+        "outdoors_dwell",
+        "state_move_bookkeeping"
+      ]
+    },
+    {
+      "id": "policy",
+      "representation": "brain+398 modes, +39c flags incl bit 6 and 28, user selection actor+db4 bit 17",
+      "evidence_ids": [
+        "base_dispatch",
+        "selection",
+        "cover_execute",
+        "follow_flag",
+        "idle_fallback"
+      ]
+    }
+  ],
+  "inline_regions": [],
+  "source_reports": {
+    "call_to_arms-target-prioritization/export.json": "31cd92fad323adb011490156e264b82d705946ccb8d48c581c94043d62a355ad",
+    "call_to_arms-move-at-will/export.json": "e8a62fb37fba91a554876309632f77ef68e11fc6c85f6e14128e22344ecdaaf7",
+    "call_to_arms-move-at-will-2/export.json": "ec278587d7a1cd135e783f9279db3d7acf177815431b3fbdc94e5c2c6a32a8c5",
+    "call_to_arms-move-at-will-3/export.json": "884ef1182f7c78d8b522bd81cb51b96dcbca1348dd10dca86f6fc542b4496bc2",
+    "call_to_arms-tactical-infantry-extra/export.json": "bb261feff91a382e378cf204740208dfa36e24bd85e2e6f636ea46c8ed6b6669",
+    "call_to_arms-auto-medic/export.json": "ec384dd46a4343e09e4163a4634ed4768d7d3e416c0c1f973927bac1cdb6a247",
+    "call_to_arms-lof-detour/orders/export.json": "2fc6d744f442f2074ec80441dd891610aa2fd021262924f6639140b4ea005fbc",
+    "call_to_arms-tank-auto-repair/export.json": "0b8fd998108e79682bdf56b8e66732a0f2d0e0288bd1b976e2e1858d4126a764"
+  }
+}

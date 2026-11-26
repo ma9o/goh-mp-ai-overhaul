@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "fine_map_sha256": "6ef111c5e44503e9ca86b6b829e6413d1d51df491879a0e040c241a03d1a1167",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "export_report_sha256": "ec384dd46a4343e09e4163a4634ed4768d7d3e416c0c1f973927bac1cdb6a247",
+      "exact_candidates": 50,
+      "exported_functions": 50,
+      "exported_basic_blocks": 1156,
+      "checked_enums": 0,
+      "checked_constants": 1,
+      "checked_method_entries": 50,
+      "checked_instruction_locations": 53,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 6,
+      "checked_byte_sequences": 4
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/grenade.inc",
+      "size": 15907,
+      "sha256": "fe2fb9f281236f8ca192c3653f8828999497585c70bf85a1646bf5a434571b8d"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/smoke_volume/smoke_volume_cylinder.def",
+      "size": 176,
+      "sha256": "74d7a895cdba18409a44953788777ea4cf7011bf8401267cba304c403adc6b4c"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/smoke_volume/smoke_volume_cylinder_sm.def",
+      "size": 176,
+      "sha256": "bf0ef0f73a0ed0f22f1306f31b567e1b4d08c10d81d3c36f0f7c95fa2d0b537b"
+    }
+  ],
+  "status": "passed"
+}

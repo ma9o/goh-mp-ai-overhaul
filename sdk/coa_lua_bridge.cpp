@@ -274,7 +274,7 @@ static int L_Print(lua_State* L) {
     for (int i = 1; i <= nargs; i++) {
         const char* s = lua_tostring(L, i);
         if (s) {
-            if (i > 1) output += "\t";
+            if (i > 1) output += '\t';
             output += s;
         }
     }
@@ -548,6 +548,7 @@ static int L_DumpStack(lua_State* L) {
             case 6: typeName = "function"; break;
             case 7: typeName = "userdata"; break;
             case 8: typeName = "thread"; break;
+            default: break;
         }
 
         if (t == 4) { // string
@@ -1250,7 +1251,7 @@ static const luaL_Reg COA_Extender_funcs[] = {
     {"GetRegisteredCallbacks", L_GetRegisteredCallbacks},
     {"ExecuteHook", L_ExecuteHook},
 
-    {NULL, NULL} // Sentinel
+    {nullptr, nullptr} // Sentinel
 };
 
 void RegisterFunctions(lua_State* L) {

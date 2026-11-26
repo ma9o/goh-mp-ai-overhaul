@@ -354,9 +354,10 @@ void LoadAllPlugins() {
     GetModuleFileNameA(nullptr, modsPath, MAX_PATH);
     char* slash = strrchr(modsPath, '\\');
     if (slash) {
-        strcpy(slash + 1, "mods\\*.dll");
+        size_t remaining = sizeof(modsPath) - static_cast<size_t>((slash + 1) - modsPath);
+        snprintf(slash + 1, remaining, "mods\\*.dll");
     } else {
-        strcpy(modsPath, "mods\\*.dll");
+        snprintf(modsPath, sizeof(modsPath), "mods\\*.dll");
     }
 
     PluginLog("Searching for plugins: %s", modsPath);
@@ -374,9 +375,10 @@ void LoadAllPlugins() {
     GetModuleFileNameA(nullptr, basePath, MAX_PATH);
     slash = strrchr(basePath, '\\');
     if (slash) {
-        strcpy(slash + 1, "mods\\");
+        size_t remaining = sizeof(basePath) - static_cast<size_t>((slash + 1) - basePath);
+        snprintf(slash + 1, remaining, "mods\\");
     } else {
-        strcpy(basePath, "mods\\");
+        snprintf(basePath, sizeof(basePath), "mods\\");
     }
 
     do {
@@ -518,7 +520,10 @@ bool Initialize(uintptr_t gameBase) {
     char logPath[MAX_PATH];
     GetModuleFileNameA(nullptr, logPath, MAX_PATH);
     char* slash = strrchr(logPath, '\\');
-    if (slash) strcpy(slash + 1, "coa_plugin_api.log");
+    if (slash) {
+        size_t remaining = sizeof(logPath) - static_cast<size_t>((slash + 1) - logPath);
+        snprintf(slash + 1, remaining, "coa_plugin_api.log");
+    }
 
     g_PluginLog = fopen(logPath, "w");
     if (g_PluginLog) {

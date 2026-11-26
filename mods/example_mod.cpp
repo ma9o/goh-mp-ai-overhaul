@@ -272,7 +272,10 @@ __declspec(dllexport) bool ModInit(const COA_PluginAPI* api) {
     char logPath[MAX_PATH];
     GetModuleFileNameA(nullptr, logPath, MAX_PATH);
     char* slash = strrchr(logPath, '\\');
-    if (slash) strcpy(slash + 1, "mods\\example_mod.log");
+    if (slash) {
+        size_t remaining = sizeof(logPath) - static_cast<size_t>((slash + 1) - logPath);
+        snprintf(slash + 1, remaining, "mods\\example_mod.log");
+    }
 
     g_ModLog = fopen(logPath, "w");
     if (g_ModLog) {

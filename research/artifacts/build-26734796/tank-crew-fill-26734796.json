@@ -1,0 +1,751 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "title": "Tank Exterior-Passenger Crew Refill",
+  "export_suffix": "-tank-crew-fill",
+  "runtime_allowed": false,
+  "runtime_verified": false,
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "image_base": "0x140000000"
+    }
+  },
+  "hooks": [],
+  "methods": [
+    {
+      "id": "ePlacer_Exclude",
+      "entry_rvas": {
+        "game": "0x78eae0"
+      },
+      "baseline_25492057": "0x77b950"
+    },
+    {
+      "id": "ePlacer_Include",
+      "entry_rvas": {
+        "game": "0x78f2d0"
+      },
+      "baseline_25492057": "0x77c140"
+    },
+    {
+      "id": "ePlacer_Swap",
+      "entry_rvas": {
+        "game": "0x790070"
+      },
+      "baseline_25492057": "0x77cee0"
+    },
+    {
+      "id": "ePlacer_MoveSlot",
+      "entry_rvas": {
+        "game": "0x790160"
+      }
+    },
+    {
+      "id": "ePlacer_Emit",
+      "entry_rvas": {
+        "game": "0x7905b0"
+      },
+      "baseline_25492057": "0x77d420"
+    },
+    {
+      "id": "ePlacer_ApplyPlan",
+      "entry_rvas": {
+        "game": "0x795290"
+      },
+      "baseline_25492057": "0x782100"
+    },
+    {
+      "id": "ePlacer_Plan",
+      "entry_rvas": {
+        "game": "0x7954a0"
+      },
+      "baseline_25492057": "0x782310"
+    },
+    {
+      "id": "eBoarder_ReservePlace",
+      "entry_rvas": {
+        "game": "0x7987f0"
+      },
+      "baseline_25492057": "0x785660"
+    },
+    {
+      "id": "eBoarder_Collect",
+      "entry_rvas": {
+        "game": "0x7988b0"
+      },
+      "baseline_25492057": "0x785720"
+    },
+    {
+      "id": "ePlacer_IsPlaceAvailable",
+      "entry_rvas": {
+        "game": "0x79c2f0"
+      },
+      "baseline_25492057": "0x789160"
+    },
+    {
+      "id": "eBoarder_FindNode",
+      "entry_rvas": {
+        "game": "0x79e930"
+      },
+      "baseline_25492057": "0x78b7a0"
+    },
+    {
+      "id": "eBoarder_FindNextHop",
+      "entry_rvas": {
+        "game": "0x79e970"
+      },
+      "baseline_25492057": "0x78b7e0"
+    },
+    {
+      "id": "eBoarder_FindNextHopVehicle",
+      "entry_rvas": {
+        "game": "0x79ede0"
+      },
+      "baseline_25492057": "0x78bc50"
+    },
+    {
+      "id": "eBoarder_Move",
+      "entry_rvas": {
+        "game": "0x7a0240"
+      },
+      "baseline_25492057": "0x78d0b0"
+    },
+    {
+      "id": "eBoarder_StartWalker",
+      "entry_rvas": {
+        "game": "0x7a1740"
+      },
+      "baseline_25492057": "0x78e5b0"
+    },
+    {
+      "id": "eBoarder_AdvanceWalker",
+      "entry_rvas": {
+        "game": "0x7a1fa0"
+      },
+      "baseline_25492057": "0x78ee10"
+    },
+    {
+      "id": "eBoarder_Finish",
+      "entry_rvas": {
+        "game": "0x7a4da0"
+      },
+      "baseline_25492057": "0x791c10"
+    },
+    {
+      "id": "eBoarderMoveCommand_ctor",
+      "entry_rvas": {
+        "game": "0x161c10"
+      }
+    },
+    {
+      "id": "eBoarderMoveCommand_encode",
+      "entry_rvas": {
+        "game": "0x161c50"
+      }
+    },
+    {
+      "id": "eBoarderMoveCommand_decode",
+      "entry_rvas": {
+        "game": "0x161cc0"
+      }
+    },
+    {
+      "id": "ePlacerMoveCommand_encode",
+      "entry_rvas": {
+        "game": "0x1620e0"
+      }
+    },
+    {
+      "id": "ePlacerMoveCommand_decode",
+      "entry_rvas": {
+        "game": "0x162130"
+      }
+    },
+    {
+      "id": "ePlacerMoveCommand_apply",
+      "entry_rvas": {
+        "game": "0x162190"
+      }
+    },
+    {
+      "id": "ePlacerSwapCommand_ctor",
+      "entry_rvas": {
+        "game": "0x161db0"
+      }
+    },
+    {
+      "id": "ePlacerSwapCommand_decode",
+      "entry_rvas": {
+        "game": "0x161e30"
+      }
+    },
+    {
+      "id": "eActor_IsOperatable",
+      "entry_rvas": {
+        "game": "0x8067e0"
+      },
+      "baseline_25492057": "0x7f1a30"
+    },
+    {
+      "id": "eActor_CanAccessWrapper",
+      "entry_rvas": {
+        "game": "0x80f520"
+      }
+    },
+    {
+      "id": "eActor_CanAccess",
+      "entry_rvas": {
+        "game": "0x80f710"
+      },
+      "baseline_25492057": "0x7fa9d0"
+    },
+    {
+      "id": "Human_eBreed_Parse",
+      "entry_rvas": {
+        "game": "0x971b40"
+      }
+    },
+    {
+      "id": "eHuman_ApplyBreed",
+      "entry_rvas": {
+        "game": "0x951bc0"
+      }
+    },
+    {
+      "id": "Order_eBoard_Execute",
+      "entry_rvas": {
+        "game": "0x8fb070"
+      },
+      "baseline_25492057": "0x8e3db0"
+    },
+    {
+      "id": "eBoarder_Root",
+      "entry_rvas": {
+        "game": "0x79d790"
+      },
+      "baseline_25492057": "0x78a600"
+    },
+    {
+      "id": "Order_eEmit_ctor",
+      "entry_rvas": {
+        "game": "0x8fc550"
+      },
+      "baseline_25492057": "0x8e5290"
+    },
+    {
+      "id": "eTagSet_Parse",
+      "entry_rvas": {
+        "game": "0x1ba490"
+      }
+    },
+    {
+      "id": "eHuman_ApplyBreedTags",
+      "entry_rvas": {
+        "game": "0x977ac0"
+      }
+    },
+    {
+      "id": "Core_IsQuantWorkerThread",
+      "entry_rvas": {
+        "game": "0xa7a80"
+      },
+      "baseline_25492057": "0xa6740"
+    },
+    {
+      "id": "IsRemoteClient",
+      "entry_rvas": {
+        "game": "0xc2b7a0"
+      },
+      "baseline_25492057": "0xc0b630"
+    },
+    {
+      "id": "IsHostEmit",
+      "entry_rvas": {
+        "game": "0xc2b740"
+      },
+      "baseline_25492057": "0xc0b5d0"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "boarder_move_body",
+      "binary": "game",
+      "function_rva": "0x7a0240",
+      "instruction_rvas": [
+        "0x7a04c5",
+        "0x7a04d5",
+        "0x7a04ec",
+        "0x7a04ff",
+        "0x7a0514",
+        "0x7a0526",
+        "0x7a0535",
+        "0x7a0547",
+        "0x7a0564",
+        "0x7a058c",
+        "0x7a0592",
+        "0x7a05c9"
+      ]
+    },
+    {
+      "id": "boarder_move_cmd_ctor",
+      "binary": "game",
+      "function_rva": "0x161c10",
+      "instruction_rvas": [
+        "0x161c17",
+        "0x161c2b",
+        "0x161c2e",
+        "0x161c36",
+        "0x161c3e"
+      ]
+    },
+    {
+      "id": "boarder_move_cmd_encode",
+      "binary": "game",
+      "function_rva": "0x161c50",
+      "instruction_rvas": [
+        "0x161c69",
+        "0x161c6e",
+        "0x161c7e",
+        "0x161c87",
+        "0x161c8c",
+        "0x161c9c",
+        "0x161cb4"
+      ]
+    },
+    {
+      "id": "boarder_move_cmd_decode",
+      "binary": "game",
+      "function_rva": "0x161cc0",
+      "instruction_rvas": [
+        "0x161cdb",
+        "0x161d1f",
+        "0x161d40",
+        "0x161d49",
+        "0x161d55",
+        "0x161d7c",
+        "0x161d83"
+      ]
+    },
+    {
+      "id": "boarder_root",
+      "binary": "game",
+      "function_rva": "0x79d790",
+      "instruction_rvas": [
+        "0x79d790",
+        "0x79d79d",
+        "0x79d7b0",
+        "0x79d7b7",
+        "0x79d7be",
+        "0x79d7c5",
+        "0x79d7ce",
+        "0x79d7de"
+      ]
+    },
+    {
+      "id": "boarder_find_node",
+      "binary": "game",
+      "function_rva": "0x79e930",
+      "instruction_rvas": [
+        "0x79e930",
+        "0x79e937",
+        "0x79e943",
+        "0x79e953"
+      ]
+    },
+    {
+      "id": "walker_state0_finish",
+      "binary": "game",
+      "function_rva": "0x7a1fa0",
+      "instruction_rvas": [
+        "0x7a2030",
+        "0x7a341b"
+      ]
+    },
+    {
+      "id": "walker_finish_collect",
+      "binary": "game",
+      "function_rva": "0x7a4da0",
+      "instruction_rvas": [
+        "0x7a5377",
+        "0x7a5399",
+        "0x7a53a0",
+        "0x7a53bc",
+        "0x7a53c9",
+        "0x7a53e7",
+        "0x7a53f1",
+        "0x7a53f9",
+        "0x7a5428",
+        "0x7a566d",
+        "0x7a5692",
+        "0x7a56d6"
+      ]
+    },
+    {
+      "id": "placer_is_place_available",
+      "binary": "game",
+      "function_rva": "0x79c2f0",
+      "instruction_rvas": [
+        "0x79c2f0",
+        "0x79c2f6",
+        "0x79c2f8",
+        "0x79c2fa",
+        "0x79c302",
+        "0x79c304",
+        "0x79c30c",
+        "0x79c30e",
+        "0x79c316",
+        "0x79c318",
+        "0x79c320",
+        "0x79c322",
+        "0x79c326"
+      ]
+    },
+    {
+      "id": "placer_emit",
+      "binary": "game",
+      "function_rva": "0x7905b0",
+      "instruction_rvas": [
+        "0x790612",
+        "0x790624",
+        "0x79062e",
+        "0x79063a",
+        "0x79065f"
+      ]
+    },
+    {
+      "id": "actor_is_operatable",
+      "binary": "game",
+      "function_rva": "0x8067e0",
+      "instruction_rvas": [
+        "0x8067e0",
+        "0x8067ea",
+        "0x8067f1",
+        "0x8067f8",
+        "0x806806",
+        "0x80680c",
+        "0x806817",
+        "0x80681e",
+        "0x806827"
+      ]
+    },
+    {
+      "id": "actor_can_access",
+      "binary": "game",
+      "function_rva": "0x80f710",
+      "instruction_rvas": [
+        "0x80f72c",
+        "0x80f733",
+        "0x80f760",
+        "0x80f772",
+        "0x80f783",
+        "0x80f7b3",
+        "0x80f7df",
+        "0x80f805"
+      ]
+    },
+    {
+      "id": "breed_parse_tags",
+      "binary": "game",
+      "function_rva": "0x971b40",
+      "instruction_rvas": [
+        "0x972048",
+        "0x97205e"
+      ]
+    },
+    {
+      "id": "tagset_parse_vec",
+      "binary": "game",
+      "function_rva": "0x1ba490",
+      "instruction_rvas": [
+        "0x1ba4a4",
+        "0x1ba4ae"
+      ]
+    },
+    {
+      "id": "human_breed_tags_read",
+      "binary": "game",
+      "function_rva": "0x977ac0",
+      "instruction_rvas": [
+        "0x977af4",
+        "0x977bf7",
+        "0x977cf7",
+        "0x977d37",
+        "0x977d46",
+        "0x977d9f",
+        "0x977f12",
+        "0x978013",
+        "0x97801a",
+        "0x978021",
+        "0x97803a"
+      ]
+    },
+    {
+      "id": "order_emit_ctor",
+      "binary": "game",
+      "function_rva": "0x8fc550",
+      "instruction_rvas": [
+        "0x8fc569",
+        "0x8fc59d",
+        "0x8fc5a8",
+        "0x8fc5b3"
+      ]
+    },
+    {
+      "id": "gate_worker",
+      "binary": "game",
+      "function_rva": "0xa7a80",
+      "instruction_rvas": [
+        "0xa7a80",
+        "0xa7a84",
+        "0xa7a89",
+        "0xa7a8d",
+        "0xa7a92",
+        "0xa7a97",
+        "0xa7a9a",
+        "0xa7a9f",
+        "0xa7aa4",
+        "0xa7aa9",
+        "0xa7aac",
+        "0xa7aae",
+        "0xa7ab1",
+        "0xa7ab4",
+        "0xa7ab8",
+        "0xa7ab9",
+        "0xa7abc",
+        "0xa7abf",
+        "0xa7ac2",
+        "0xa7ac6"
+      ]
+    },
+    {
+      "id": "gate_remote",
+      "binary": "game",
+      "function_rva": "0xc2b7a0",
+      "instruction_rvas": [
+        "0xc2b7a6",
+        "0xc2b7d1",
+        "0xc2b7e0",
+        "0xc2b7f1",
+        "0xc2b7f9"
+      ]
+    },
+    {
+      "id": "gate_wire",
+      "binary": "game",
+      "function_rva": "0xc2b740",
+      "instruction_rvas": [
+        "0xc2b746",
+        "0xc2b771",
+        "0xc2b780",
+        "0xc2b791",
+        "0xc2b799"
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "id": "placer_slots",
+      "representation": "Placer+0x28..+0x30 slot vector stride 0x298: name +0x00, group +0x60, visor len +0x110, linkBone len +0x170, resolved bone +0x240, flags +0x248, occupant +0x280, reserved +0x290; blocking byte +0x48, crew bool +0x49.",
+      "evidence_ids": [
+        "placer_is_place_available",
+        "placer_emit"
+      ]
+    },
+    {
+      "id": "boarder_move_wire",
+      "representation": "eBoarder::Move (0x7A0240) emits source slot via 0x7905B0, reserves destination via 0x7987F0, resolves Place nodes via 0x79E930, runs StartWalker/AdvanceWalker/Finish, emits event 0x19, and publishes wire command 0x35 (eBoarderMoveCommand 0x161C10/0x161C50/0x161CC0) under 0xC2B740.",
+      "evidence_ids": [
+        "boarder_move_body",
+        "boarder_move_cmd_ctor",
+        "boarder_move_cmd_encode",
+        "boarder_move_cmd_decode",
+        "boarder_find_node",
+        "walker_state0_finish",
+        "walker_finish_collect"
+      ]
+    },
+    {
+      "id": "breed_tags_and_abilities",
+      "representation": "Human+0x1390 -> Human::eBreed: tag vector (stride 0x60) at +0x440..+0x448 (parsed into +0x128 eTagSet); ability info vector at +0x528+0x20 containing Human::eInfo_Mechanic (0x107F0F8) and Human::eInfo_Medic (0x107EEA8).",
+      "evidence_ids": [
+        "breed_parse_tags",
+        "tagset_parse_vec",
+        "human_breed_tags_read"
+      ]
+    },
+    {
+      "id": "access_and_operatable",
+      "representation": "eActor::IsOperatable (0x8067E0) tests non-empty placer human slots (+0x10 != +0x18). eActor::CanAccess (0x80F710) checks abandoned tag, operatable bit 8, player ownership +0xDA8, any_crew/ally_crew dynamic indices, and ally relation 0xA65410.",
+      "evidence_ids": [
+        "actor_is_operatable",
+        "actor_can_access"
+      ]
+    },
+    {
+      "id": "emit_and_authority",
+      "representation": "Order::eEmit (vtable 0x110B808) mode int32 at +0x5C (1=passengers, 2=crew, 3=all, <0=explicit IDs). Authority gates: IsQuantWorkerThread 0xA7A80, IsRemoteClient 0xC2B7A0, IsHostEmit 0xC2B740.",
+      "evidence_ids": [
+        "order_emit_ctor",
+        "gate_worker",
+        "gate_remote",
+        "gate_wire"
+      ]
+    }
+  ],
+  "inline_regions": [],
+  "enums": [],
+  "float_constants": [],
+  "rtti_vtables": [
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeVehicleBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x101fd68",
+      "methods": {
+        "15": "0x91ab90"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeHumanBrain@Actor@@",
+      "subobject_offset": 0,
+      "rva": "0x110ff88",
+      "methods": {
+        "15": "0x91ab90"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeEmit@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110b808",
+      "methods": {
+        "0": "0x8fd4b0",
+        "19": "0x8fc860"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeSmartRepair@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x10225b0",
+      "methods": {
+        "0": "0xb5380",
+        "19": "0x913a20"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeRepair@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110d0e8",
+      "methods": {
+        "0": "0x915cd0",
+        "19": "0x910d50"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeKitExchange@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x10224f8",
+      "methods": {
+        "19": "0x913570"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeBoard@Order@@",
+      "subobject_offset": 0,
+      "rva": "0x110b590",
+      "methods": {
+        "19": "0x8fb070"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AVeBreed@Human@@",
+      "subobject_offset": 0,
+      "rva": "0x1110f38",
+      "methods": {
+        "0": "0x975ed0",
+        "2": "0x971b40"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeInfo_Mechanic@Human@@",
+      "subobject_offset": 0,
+      "rva": "0x107f0f8",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeInfo_Medic@Human@@",
+      "subobject_offset": 0,
+      "rva": "0x107eea8",
+      "methods": {}
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUeBoarderMoveCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x10386f0",
+      "methods": {
+        "2": "0x161c50",
+        "3": "0x161cc0"
+      }
+    },
+    {
+      "binary": "game",
+      "mangled_name": ".?AUePlacerMoveCommand@@",
+      "subobject_offset": 0,
+      "rva": "0x1038878",
+      "methods": {
+        "2": "0x1620e0",
+        "3": "0x162130",
+        "4": "0x162190"
+      }
+    }
+  ],
+  "byte_sequences": [],
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/tank_crew.ext",
+      "size": 15459,
+      "sha256": "8b22f36dab75976bd0653d80656f797ff3901376e1618ad49cdc0692aea1b627"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/tank_unarmed.ext",
+      "size": 1293,
+      "sha256": "ae578a86a8f205e55b4ae014bf62109aba641c61cb8bbe9e25d60fa893e1976b"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/vehicle.ext",
+      "size": 19765,
+      "sha256": "29c09d098d67e3fce02769be2935786b3eadcb55b240c90b048f56a246901b96"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/tank/tank-main.inc",
+      "size": 67055,
+      "sha256": "05953aa2a2c95b5d59856cc9105deaa3bc12f4f0c25d8fc78cb6ce53604ad221"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/vehicle/vehicle-main.inc",
+      "size": 49004,
+      "sha256": "855f2f980870e952fecb17fd1d668385fcd3f6392cbc3fd13526350239525283"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/breed/presets/perks/skills.inc",
+      "size": 8651,
+      "sha256": "d382477307d7d9956b007d7f6fad46b9ee14b1c02e903d0ffe3aa42c58b905ee"
+    }
+  ]
+}

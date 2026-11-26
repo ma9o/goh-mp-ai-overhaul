@@ -1,0 +1,447 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "fine_map_sha256": "299ba97777f7e5004e2a63bd3a4cd0ec30951bf1135aa5dd45e05cdaaa298119",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "export_report_sha256": "62731c5629aad982844aae76ed2e1e6f86180543c5770f7309abbf0555382d7e",
+      "exact_candidates": 25,
+      "exported_functions": 25,
+      "exported_basic_blocks": 468,
+      "checked_enums": 0,
+      "checked_constants": 4,
+      "checked_method_entries": 25,
+      "checked_instruction_locations": 81,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 6,
+      "checked_byte_sequences": 51
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz250a_1/sdkfz250a_1.def",
+      "size": 3935,
+      "sha256": "8c313cc64f33737d8597c1c26afb5e0274449da9f9e8323f15a92a36ffc4ff00"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz250a_3/sdkfz250a_3.def",
+      "size": 3779,
+      "sha256": "69cf34c8a551f9b092981edaf26020c3d7aeb6fee6cb2d5621ec7d537bafad66"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz250a_11/sdkfz250a_11.def",
+      "size": 3940,
+      "sha256": "3208306be34d45d7cd594db76e4aec9f95dd26d62f81623618f8719a3bb48430"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz251b/sdkfz251b.def",
+      "size": 5579,
+      "sha256": "508789f3d2289688e3b7642d0f199f8808babaa673085a5ec7e1517948daa806"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz251c_2/sdkfz251c_2.def",
+      "size": 4523,
+      "sha256": "910fdcac356a8cd9920ae581393b894198f3bc5a08aad356e5183702de54bedc"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz251d_1/sdkfz251d_1.def",
+      "size": 5586,
+      "sha256": "6231f0cb8a15d6d62d2ab340e2c0760f6875e60cf527407ba9d4a04efd72b565"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz251d_1_stuka/sdkfz251d_1_stuka.def",
+      "size": 6459,
+      "sha256": "f35d4f47bf4f45037ec141a42852b938209d414a232c97cbeb6f507e5561e1ce"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz251d_16/sdkfz251d_16.def",
+      "size": 4003,
+      "sha256": "2246250b2f0383dbba0038a4b05315caee8520bbb1dcc03f39137c734f366284"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz251d_17/sdkfz251d_17.def",
+      "size": 4671,
+      "sha256": "848dafee433cbf1dbc55d4d8952b22172b4ccdaa3983d4b7e7ece1a9ee2696c1"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz251d_21/sdkfz251d_21.def",
+      "size": 3332,
+      "sha256": "d59f41b44421bac7aad76da3d7e3da66b21626ab0f2e510deee9991c91ac7e56"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz251d_22/sdkfz251d_22.def",
+      "size": 4054,
+      "sha256": "f967df4afd6be9dcb329cbf2a5ded20d30b14a4e0ef54a1016f496fbff1224f1"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/unic304f/unic304f.def",
+      "size": 4191,
+      "sha256": "3f35d1bb85f325611382a52396f5cee41a61d125786914898b455a1464bb3211"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/tank_light/lvt4_eng/lvt4_eng.def",
+      "size": 6025,
+      "sha256": "8b6598492f08ae888249e5395a410993a16b29e3c82ed4c995e68f20b353e480"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/btr/m13_mgmc/m13_mgmc.def",
+      "size": 3147,
+      "sha256": "9f482e1bffcca54035ac9169116dc23a79c161c0e2c78084bb3441e976dd8c0d"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/btr/m16_mgmc/m16_mgmc.def",
+      "size": 3199,
+      "sha256": "32619c12a24dc8f5fd5753b3c0dffbb70e3d5cd0f34e8aaadf293c85d415ed36"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/btr/m21_mortar_carrier/m21_mortar_carrier.def",
+      "size": 4538,
+      "sha256": "210db360fe1188586573bebf2f5b90cb10a76489f0c9b0ab2ad57b365edf582b"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/btr/m4_mortar_carrier/m4_mortar_carrier.def",
+      "size": 4322,
+      "sha256": "c7ce1e474c011ec271237385a058c71391772e33ae9532be7e66b8de75598ae6"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/btr/m4a1_mortar_carrier/m4a1_mortar_carrier.def",
+      "size": 4256,
+      "sha256": "f5bd3e27eeb45d6c2f48edeb3ab292501b597478ad8a39ad575988af08e3f5f4"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/btr/t19_hmc/t19_hmc.def",
+      "size": 4532,
+      "sha256": "4b5ff955231bf4db5177e308191d2c7676ca1832d281411ea1a9b8b6a780eaf6"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/btr/t30_hmc/t30_hmc.def",
+      "size": 3952,
+      "sha256": "06634a011a2d1f4d2a986f70c6ea83eea5f61ffd7cf813516ea1a900cb40f71f"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/btr/mortar_carrier_mk1/mortar_carrier_mk1.def",
+      "size": 4962,
+      "sha256": "27160c7090ca0371a06457fab72b1765aa7e9dadab64770fd3da30a0aa945fc7"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/btr/mortar_carrier_mk1_boys/mortar_carrier_mk1_boys.def",
+      "size": 5247,
+      "sha256": "2f9a6b9e7920de6d4390568155a94e02008bb5b599d668c936b5bdb316ab3e1b"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/btr/mortar_carrier_mk2/mortar_carrier_mk2.def",
+      "size": 4403,
+      "sha256": "473a681a9bc0dff21e8f4db5df9ca418615357b208f01bd46a10fc0763fb58ea"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/tank_light/marder2/marder2.def",
+      "size": 3732,
+      "sha256": "826bfee7043775a4b49215ee251bc7b2e9ba268e4d51d523df051b65831f217c"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/tank_light/marder2/marder2.mdl",
+      "size": 21555,
+      "sha256": "a15fc7ea2f86793d9fba5433167ba74f49ae7fa1ee515be9ff60630f3e179c54"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/ussr/tank_light/su76/su76.def",
+      "size": 4293,
+      "sha256": "bf58bb9a836b8f5e462ec3197ac679745b827b805448e4de83dae90f62f6083c"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/ussr/tank_light/su76/su76.mdl",
+      "size": 20871,
+      "sha256": "4ef25de7a29382decf48c0a4513f862dfce107da863e1c389d7e027b9b700f3b"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/tank_light/wespe/wespe.def",
+      "size": 3175,
+      "sha256": "fdbcad80b6bdbdbeff5bb70545e302559333d9b009fb289f7f0bb75711e2ffa1"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/tank_light/wespe/wespe.mdl",
+      "size": 18482,
+      "sha256": "120dd4765f4a3f895bc39148e4868860d4d30ab7804a07f101d59dd1fe127bc7"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz251c/sdkfz251c.def",
+      "size": 5556,
+      "sha256": "d5265c2f2e9bc225b19c0f53b55e9405f228cee561aae5fc99cd8d45eb775f76"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz251c/sdkfz251c.mdl",
+      "size": 25320,
+      "sha256": "0508746fc8e5ffbddb0b1a74d254ac54651c9015a81d6fbd7160b45e742dc75c"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz222a/sdkfz222a.def",
+      "size": 2290,
+      "sha256": "12b21edfd00570804acd080c317f51374ff8db9982acaadd29c303ac402b6f6d"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/btr/sdkfz222a/sdkfz222a.mdl",
+      "size": 16223,
+      "sha256": "1fe8ecf23de0d1d83bb0f70e2fc0d50766ca9d2275ecc73a5d0375c7b8f38bff"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/ussr/btr/ba64/ba64.def",
+      "size": 1801,
+      "sha256": "a37de070cd43d3084e10680f89bed761a29af6db9aa913189d8b9d63744cb7e2"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/ussr/btr/ba64/ba64.mdl",
+      "size": 12125,
+      "sha256": "4eed135f34349f27642d36c3234c45da079c443cda145fe2b9832529c6b9c8f8"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/ussr/tank_medium/t3476_41/t3476_41.def",
+      "size": 3281,
+      "sha256": "fa5a5d928c18de1480e0174f19d2fe33b8cec25b61d175297146c9a8f4d16937"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/ussr/tank_medium/t3476_41/t3476_41.mdl",
+      "size": 24924,
+      "sha256": "30d37f54c26e1cff2a6cca7bb341511d8e3aa5bfa4268cf5df3825548f6b138f"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/tank_medium/panzer4h/panzer4h.def",
+      "size": 3570,
+      "sha256": "aa599e3f12520675c214fef043dc9024e439fe824f158c48a74b172dc5ceb7a1"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/tank_medium/panzer4h/panzer4h.mdl",
+      "size": 30956,
+      "sha256": "b0eaeeff42c30db050910f99c41a8704bd414ce768e8db9ffbb1c7c0f5247f04"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/tank_heavy/tiger1e/tiger1e.def",
+      "size": 3679,
+      "sha256": "c6ee5afb167c861078c96023b6b816f9bcd60e985f0878404e151c06e88b30b4"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/tank_heavy/tiger1e/tiger1e.mdl",
+      "size": 35292,
+      "sha256": "f607d1004bb8065f47f205e829daca71c72f0fb121775e9ba45029ce8ed3ae58"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/cannon/50mm_pak38/50mm_pak38.def",
+      "size": 3699,
+      "sha256": "831bc74a8df200ae34fcc27dfdd3a0aa8bd31635722c30f14a4db25ddafc02e1"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/cannon/50mm_pak38/50mm_pak38.mdl",
+      "size": 9459,
+      "sha256": "d96490d303210a19e074db56551a6493b2e546a0f72a33365840ec2371103b9f"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/car/Willys_MB/willys_mb.def",
+      "size": 2581,
+      "sha256": "c2d55ec469418b08f4673de3ff6bb8be174038c35b2fea88a4ca8ec7b2a5af4a"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/car/Willys_MB/willys_mb.mdl",
+      "size": 13336,
+      "sha256": "7485ef1ea1499676cba50a8734aa7a82207ef93957570b28d52d9d25f4ec11a7"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/tank_light/m8_hmc/m8_hmc.def",
+      "size": 4363,
+      "sha256": "5de6f52e2e982d6eeec89a21f22643ffff03d11bd3657d647097c209fb39bc5d"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/tank_light/m8_hmc/m8_hmc.mdl",
+      "size": 26500,
+      "sha256": "573d2754b9c1fd3f55d7f5c6dd91ed3eab09fad05dabf71c0a9d2ed1da474d1a"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/ussr/tank_light/su26/su26.def",
+      "size": 2808,
+      "sha256": "1286b5ce3e81700d777aa2c83861a67d690c6df661442dac79c563ae2406a4e9"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/ussr/tank_light/su26/su26.mdl",
+      "size": 25116,
+      "sha256": "49bc7efd6c32e8ae9307f6b203cfcf523e4eb59bd537ec3a10ecfd9d6668d810"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/tank_light/stuart5_recce/stuart5_recce.def",
+      "size": 3433,
+      "sha256": "1ea870df33ead511c459fab7dd75bcc4fe7cfe64dd6787734fc9d78d9408baff"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/eng/tank_light/stuart5_recce/stuart5_recce.mdl",
+      "size": 22452,
+      "sha256": "14f685d7864b5bbba55a94677fb1e858519fbf9b800b1dd321bda1052282f60e"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/tank_light/lvt4/lvt4.def",
+      "size": 5990,
+      "sha256": "13f5b0822dc64d94d39ef0bffa48c0a782e5866fdb2a1bc5e7afaf3ffafac034"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/usa/tank_light/lvt4/lvt4.mdl",
+      "size": 25874,
+      "sha256": "77c8f4848eb16163212ecd496e2e3e9a53299e4527594c0fd4595a11e73bd2aa"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/tank_crew.ext",
+      "size": 15459,
+      "sha256": "8b22f36dab75976bd0653d80656f797ff3901376e1618ad49cdc0692aea1b627"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/car_crew.ext",
+      "size": 11776,
+      "sha256": "d1d05911a800db2faf6af1c9b2d710af19db75b54ae34cfda52805a14a4d9bc5"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/cannon_crew.ext",
+      "size": 12997,
+      "sha256": "582d3596274dce0f45762408267eb45e8eafc8aa737804febfeed5d76f79c056"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/vehicle.ext",
+      "size": 19765,
+      "sha256": "29c09d098d67e3fce02769be2935786b3eadcb55b240c90b048f56a246901b96"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/armor.ext",
+      "size": 14201,
+      "sha256": "ab3673edbb724441c794c7c4e4f450583398585633cd14840f8eec72b35a709a"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/car.ext",
+      "size": 3703,
+      "sha256": "89248f14241e67a1da87cc892d091563b5ae8817924c83146792256820202366"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/armoredcar.ext",
+      "size": 1325,
+      "sha256": "c461945755cc26ab988312d684f7df94841ad043392872ab569e84aedc10ebe8"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/tank.ext",
+      "size": 298,
+      "sha256": "a727a8d0c489123c1680daaa8418f65be02dd820ebf796f7dfcc2e28356d28bb"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/target/ammo.set",
+      "size": 33555,
+      "sha256": "56d6b3196980145a49ba1d3d5affc4e30abba95b54a120a1a50fe4edd67e281b"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/throwable.pattern",
+      "size": 145,
+      "sha256": "a8c815a1835f5a91b5be118466aff9c31d071a314752832fe2d34e3c49698226"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/explosive/explosive.pattern",
+      "size": 548,
+      "sha256": "c8ab842d0fd9773f29baaff81b6fe540a38a09564c7f1376a901353c948ff8fd"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-tank.pattern",
+      "size": 170,
+      "sha256": "b175fd43f73f04877e4af18207caacce421af2af932e365fde2925e1785c5537"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-tank grenade/m32_satchel.grenade",
+      "size": 569,
+      "sha256": "73b0ee805ad9ecaca93d8a408e4a27c13c2753cfa2ec2bdd9e784a6c413bcc98"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-personnel.pattern",
+      "size": 458,
+      "sha256": "e1ab881dbb642f3144d1e8d689100b5de2185cb304d3e39bd90699ed013b5835"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-personnel grenade/m24.grenade",
+      "size": 347,
+      "sha256": "c5c647a2a019d39d79fce8c58bc8090cf5443922efedbd68c7cd8a589d3ca6a8"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/grenade/anti-tank grenade/molotov_cocktail.grenade",
+      "size": 514,
+      "sha256": "ae37291b9ff682ff21e6c4a0f0a705cdd6246d1b1ee121e602f1bae47fa2118d"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/grenade.inc",
+      "size": 15907,
+      "sha256": "fe2fb9f281236f8ca192c3653f8828999497585c70bf85a1646bf5a434571b8d"
+    }
+  ],
+  "status": "passed"
+}

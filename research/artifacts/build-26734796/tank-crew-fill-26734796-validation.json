@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "fine_map_sha256": "3a3069e6a14a1897ccc9a01f81ef39efc2bd06cf8a23c1aaffd8932e9fc4981b",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "export_report_sha256": "6de8c892cbef1602796e43bee0f8a45a0df3e4165eaaa51f189b341965d27b6a",
+      "exact_candidates": 38,
+      "exported_functions": 38,
+      "exported_basic_blocks": 1386,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 38,
+      "checked_instruction_locations": 141,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 12,
+      "checked_byte_sequences": 0
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/tank_crew.ext",
+      "size": 15459,
+      "sha256": "8b22f36dab75976bd0653d80656f797ff3901376e1618ad49cdc0692aea1b627"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/tank_unarmed.ext",
+      "size": 1293,
+      "sha256": "ae578a86a8f205e55b4ae014bf62109aba641c61cb8bbe9e25d60fa893e1976b"
+    },
+    {
+      "archive": "properties.pak",
+      "member": "properties/vehicle.ext",
+      "size": 19765,
+      "sha256": "29c09d098d67e3fce02769be2935786b3eadcb55b240c90b048f56a246901b96"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/tank/tank-main.inc",
+      "size": 67055,
+      "sha256": "05953aa2a2c95b5d59856cc9105deaa3bc12f4f0c25d8fc78cb6ce53604ad221"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/interaction_entity/vehicle/vehicle-main.inc",
+      "size": 49004,
+      "sha256": "855f2f980870e952fecb17fd1d668385fcd3f6392cbc3fd13526350239525283"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/breed/presets/perks/skills.inc",
+      "size": 8651,
+      "sha256": "d382477307d7d9956b007d7f6fad46b9ee14b1c02e903d0ffe3aa42c58b905ee"
+    }
+  ],
+  "status": "passed"
+}

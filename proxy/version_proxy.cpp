@@ -60,7 +60,10 @@ static void ProxyLog(const char* format, ...) {
         char path[MAX_PATH];
         GetModuleFileNameA(nullptr, path, MAX_PATH);
         char* slash = strrchr(path, '\\');
-        if (slash) strcpy(slash + 1, "version_proxy.log");
+        if (slash) {
+            size_t remaining = sizeof(path) - static_cast<size_t>((slash + 1) - path);
+            snprintf(slash + 1, remaining, "version_proxy.log");
+        }
         g_ProxyLog = fopen(path, "w");
     }
     if (!g_ProxyLog) return;
@@ -75,8 +78,11 @@ static void ProxyLog(const char* format, ...) {
 
 static bool LoadRealVersionDll() {
     char systemPath[MAX_PATH];
-    GetSystemDirectoryA(systemPath, MAX_PATH);
-    strcat(systemPath, "\\version.dll");
+    UINT len = GetSystemDirectoryA(systemPath, MAX_PATH);
+    if (len == 0 || len >= MAX_PATH) {
+        return false;
+    }
+    snprintf(systemPath + len, sizeof(systemPath) - len, "\\version.dll");
 
     g_RealVersionDll = LoadLibraryA(systemPath);
     if (!g_RealVersionDll) {
@@ -112,7 +118,10 @@ static void LoadExtender() {
     char path[MAX_PATH];
     GetModuleFileNameA(nullptr, path, MAX_PATH);
     char* slash = strrchr(path, '\\');
-    if (slash) strcpy(slash + 1, "coa_extender.dll");
+    if (slash) {
+        size_t remaining = sizeof(path) - static_cast<size_t>((slash + 1) - path);
+        snprintf(slash + 1, remaining, "coa_extender.dll");
+    }
 
     ProxyLog("Loading extender from %s", path);
 
@@ -173,6 +182,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID /*lpvReserved*/)
                 fclose(g_ProxyLog);
             }
             break;
+
+        default: break;
     }
     return TRUE;
 }

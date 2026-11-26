@@ -12,24 +12,26 @@ constexpr float nan = std::numeric_limits<float>::quiet_NaN();
 constexpr float inf = std::numeric_limits<float>::infinity();
 
 void cost_policy() {
-    struct Case { const char* name; Obstacle type; float march, battle; };
-    for (const auto& c : {
-        Case{"stuff", Obstacle::stuff, 2, .5f},
-        Case{"construction", Obstacle::construction, 4, 1},
-        Case{"construction_vaultable", Obstacle::construction, 4, 1},
-        Case{"small_building", Obstacle::small_building, 8, 2},
-        Case{"small_building_vaultable", Obstacle::small_building, 8, 2},
-        Case{"tree", Obstacle::tree_post, 12, 3},
-        Case{"post", Obstacle::tree_post, 12, 3},
-        Case{"building", Obstacle::building, 250, 25},
-        Case{"building_vaultable", Obstacle::building, 250, 25}
-    }) {
+    struct Case {
+        const char* name;
+        Obstacle type;
+        float march, battle;
+    };
+    for (const auto& c :
+         {Case{"stuff", Obstacle::stuff, 2, .5f}, Case{"construction", Obstacle::construction, 4, 1},
+          Case{"construction_vaultable", Obstacle::construction, 4, 1},
+          Case{"small_building", Obstacle::small_building, 8, 2},
+          Case{"small_building_vaultable", Obstacle::small_building, 8, 2}, Case{"tree", Obstacle::tree_post, 12, 3},
+          Case{"post", Obstacle::tree_post, 12, 3}, Case{"building", Obstacle::building, 250, 25},
+          Case{"building_vaultable", Obstacle::building, 250, 25}}) {
         assert(classify(c.name, 0) == c.type);
         assert(obstacle_cost(250, c.type, false) == c.march);
         assert(obstacle_cost(250, c.type, true) == c.battle);
-        for (auto flags : {1u, 2u, 3u, 0x11u}) assert(classify(c.name, flags) == Obstacle::other);
+        for (auto flags : {1u, 2u, 3u, 0x11u})
+            assert(classify(c.name, flags) == Obstacle::other);
         for (auto original : {-1.f, 0.f, .25f, 100000.f, 100001.f, inf})
-            for (bool battle : {true, false}) assert(obstacle_cost(original, c.type, battle) == original);
+            for (bool battle : {true, false})
+                assert(obstacle_cost(original, c.type, battle) == original);
         assert(std::isnan(obstacle_cost(nan, c.type, true)));
     }
     for (auto name : {"fire", "marine", "human", "human_impassable", "car", "tank", "cliff", "unbreakable",
@@ -59,29 +61,31 @@ void reverse_policy() {
     assert(native_pivot < native_back && reverse_estimate(native_back, back, scale) < native_pivot);
     assert(std::abs(reverse_estimate(native_back, back, scale) - 3.3f) < 1e-5f);
     PathStats mixed{0, 200, 700, 1, 1};
-    const float native_mixed = 10*.15f + 35*.19f + 2 + 2.7f/6.2831853f;
-    assert(std::abs(reverse_estimate(native_mixed, mixed, scale) - (native_mixed - 35*.08f)) < 1e-5f);
+    const float native_mixed = 10 * .15f + 35 * .19f + 2 + 2.7f / 6.2831853f;
+    assert(std::abs(reverse_estimate(native_mixed, mixed, scale) - (native_mixed - 35 * .08f)) < 1e-5f);
     mixed.forward += 1;
     assert(reverse_estimate(native_mixed, mixed, scale) == native_mixed);
     // Backing around a 90-degree cover corner (~115 deg total turn) still gets reverse bias.
     PathStats corner{0, 0, 400, 0, 2.0f};
     assert(reverse_estimate(4.5f, corner, scale) < 4.5f);
-    for (auto path : {PathStats{0, 600, 0, 0, 3.14f}, PathStats{0, 40, 20, 0, 0},
-                      PathStats{0, 0, 600, 0, 3.14f}, PathStats{0, -1, 600, 0, 0},
-                      PathStats{0, 0, 600, -1, 0}, PathStats{0, 0, nan, 0, 0}})
+    for (auto path : {PathStats{0, 600, 0, 0, 3.14f}, PathStats{0, 40, 20, 0, 0}, PathStats{0, 0, 600, 0, 3.14f},
+                      PathStats{0, -1, 600, 0, 0}, PathStats{0, 0, 600, -1, 0}, PathStats{0, 0, nan, 0, 0}})
         assert(reverse_estimate(8, path, scale) == 8);
     assert(reverse_estimate(8, back, 0) == 8);
     assert(std::isnan(reverse_estimate(nan, back, scale)));
 }
 
 // Exercise the actual worker detour with only a copied context, an area and a stock result.
-template<class Buffer, class T> void put(Buffer& b, std::size_t off, T value) {
+template <class Buffer, class T> void put(Buffer& b, std::size_t off, T value) {
     assert(off + sizeof value <= b.size());
     std::memcpy(b.data() + off, &value, sizeof value);
 }
 float native_cost;
 unsigned calls;
-float stock(tc::Address, tc::Address, tc::Address) { ++calls; return native_cost; }
+float stock(tc::Address, tc::Address, tc::Address) {
+    ++calls;
+    return native_cost;
+}
 
 void worker_policy() {
     std::array<tc::Byte, 0xF0> ctx{};
@@ -217,8 +221,7 @@ void vehicle_and_observation_guards() {
     put(subject, 0x28, XY{20, 10});
     put(subject, 0x64, std::uint32_t{1000});
     auto ahead = [&](std::uint32_t now = 1050) {
-        return known_enemy(address(actor), now, 10.f,
-                           [](XY seen) { return frontal({1, 0}, {0, 0}, seen, .05f); });
+        return known_enemy(address(actor), now, 10.f, [](XY seen) { return frontal({1, 0}, {0, 0}, seen, .05f); });
     };
     assert(ahead());
     // Unrecognized enemy (bit 0 clear, bit 1 enemy set) also counts immediately.
@@ -244,7 +247,7 @@ void vehicle_and_observation_guards() {
     assert(!ahead());
     base = 0;
 }
-}
+} // namespace
 
 int main() {
     cost_policy();

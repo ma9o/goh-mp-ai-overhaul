@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "fine_map_sha256": "bbb8400914405602ce724d8e5a953f1a00c26176a89b4adb7387d4dfe956af43",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "export_report_sha256": "737afb4110b5ec105373ed2f39fdff7aa4e3e6144fff82e6faa6df0f5621d7a3",
+      "exact_candidates": 32,
+      "exported_functions": 32,
+      "exported_basic_blocks": 1119,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 32,
+      "checked_instruction_locations": 64,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 8,
+      "checked_byte_sequences": 3
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "properties.pak",
+      "member": "properties/resupply.inc",
+      "size": 38349,
+      "sha256": "345abb53826ad258990b663aaa5a643af0ee455cf913732ebe2952d7908d273c"
+    },
+    {
+      "archive": "entity/construction.pak",
+      "member": "construction/_military/boxes/crates_set02_resupply/crates_set02_resupply.def",
+      "size": 1771,
+      "sha256": "2327df26a2583f1198dc9259b7531d7e087271f5db02dc6c9167dd42e9b3919f"
+    },
+    {
+      "archive": "entity/-vehicle.pak",
+      "member": "-vehicle/germany/car/blitz3_6_art_ammo/blitz3_6_art_ammo.def",
+      "size": 2398,
+      "sha256": "ba1c5b0374dbff05c605a11a7baf9ad71cc15ba413e6760f44e6ca67c6590c85"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/-multiplayer/flag_point/flag_point.def",
+      "size": 135,
+      "sha256": "21fd7529bc819b739fe371b20b6d1bcec032c75818617023461f289cce8391d3"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/-multiplayer/flag_point/flag_point.inc",
+      "size": 763,
+      "sha256": "126015226d2e5408f8deb56ebe6a792a7a67a0f5c92f57d8ea7bea49f9cc7cfe"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/-multiplayer/flag_point/flag_point_campaign.inc",
+      "size": 653,
+      "sha256": "d830109172164d961d4b9a63ae7f45f9157638615e70d94e15889dd40135da2b"
+    },
+    {
+      "archive": "entity/entity.pak",
+      "member": "service/-multiplayer/flag_point/flagpoint_ammo/flagpoint_ammo.def",
+      "size": 660,
+      "sha256": "2ca6159712b401880d6f9d619c42ca3cf54fb4f7a097407cfd664a8664fe8c39"
+    }
+  ],
+  "status": "passed"
+}

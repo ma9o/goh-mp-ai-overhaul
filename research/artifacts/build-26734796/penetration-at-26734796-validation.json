@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "steam_build_id": "26734796",
+  "fine_map_sha256": "cd74d95b5f4e940d78d6d82d8d6ef2d3bba6ff67bae527c627eb5356e53ba027",
+  "runtime_verified": false,
+  "scope": "Structural/data checks only; does not validate semantic interpretations, ABI, or completeness",
+  "binaries": {
+    "game": {
+      "filename": "call_to_arms.exe",
+      "sha256": "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a",
+      "export_report_sha256": "f0c357d61b88996c2e1c04c469dd0ab679bc3ea820b20318b068778868e2e653",
+      "exact_candidates": 60,
+      "exported_functions": 60,
+      "exported_basic_blocks": 1392,
+      "checked_enums": 0,
+      "checked_constants": 0,
+      "checked_method_entries": 60,
+      "checked_instruction_locations": 1290,
+      "checked_pointer_tables": 0,
+      "checked_rtti_tables": 4,
+      "checked_byte_sequences": 8
+    }
+  },
+  "resource_members": [
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/bazooka/rpg_heat_ammo.pattern",
+      "size": 481,
+      "sha256": "f3a4f15367237b6fda48ce6ae5dd850c4d4d270fada6e658e7843f1969911658"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/bazooka/panzerfaust_60.weapon",
+      "size": 493,
+      "sha256": "c6d831f05ec6b578d5fcd7a3f585f630e9a5e458f340cf9d1109dad544f68d1f"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/shell/apcr.pattern",
+      "size": 70,
+      "sha256": "f10949b9b691aef95ab20bddc9c53b4e78594e16e8b749bccc80d5cfed8d6b38"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/shell/aphe.pattern",
+      "size": 81,
+      "sha256": "264efdd8fc900c06e918575157006b13045410ea10254663529ce09b1278644f"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/shell/heat.pattern",
+      "size": 90,
+      "sha256": "cd22139be507e0de72eff099ca2d3d6b11bde124c9b03ccb90b0fc7a4f43411f"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/shell/sm.pattern",
+      "size": 87,
+      "sha256": "c3aa368a3183d99f1758880d706bcb681c4e8fcec64e54e462aa615673df9469"
+    },
+    {
+      "archive": "gamelogic.pak",
+      "member": "set/stuff/shell/wp.pattern",
+      "size": 81,
+      "sha256": "263032aaa6579f589012e6bd37ba100db0ff08209f1b87379e58b3ab99254d2c"
+    }
+  ],
+  "status": "passed"
+}

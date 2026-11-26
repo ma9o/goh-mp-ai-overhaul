@@ -30,7 +30,10 @@ namespace Overlay {
 
 static bool g_Initialized = false;
 static bool g_Enabled = true;
-static std::string g_Text = "COA Script Extender v" COA_VERSION;
+static std::string& OverlayText() {
+    static std::string text = "COA Script Extender v" COA_VERSION;
+    return text;
+}
 static float g_PosX = 0.01f; // Top-left corner
 static float g_PosY = 0.01f;
 static int g_ColorR = 0;
@@ -111,7 +114,8 @@ static LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 
                 // Draw text
                 std::lock_guard<std::mutex> lock(g_Mutex);
-                TextOutA(hdc, 10, 10, g_Text.c_str(), (int)g_Text.length());
+                const std::string& text = OverlayText();
+                TextOutA(hdc, 10, 10, text.c_str(), (int)text.length());
 
                 SelectObject(hdc, oldFont);
                 DeleteObject(hFont);
@@ -122,6 +126,8 @@ static LRESULT CALLBACK OverlayWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
         }
 
         case WM_DESTROY: g_OverlayWnd = nullptr; return 0;
+
+        default: break;
     }
 
     return DefWindowProcA(hwnd, msg, wParam, lParam);
@@ -286,7 +292,7 @@ bool IsEnabled() {
 
 void SetText(const char* text) {
     std::lock_guard<std::mutex> lock(g_Mutex);
-    g_Text = text ? text : "";
+    OverlayText() = text ? text : "";
 
     if (g_OverlayWnd) {
         InvalidateRect(g_OverlayWnd, nullptr, TRUE);

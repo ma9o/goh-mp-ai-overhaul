@@ -284,9 +284,14 @@ if [[ "$RUN_TIDY" == true ]] && [[ ${#CPP_SOURCES[@]} -gt 0 ]]; then
             fi
             while IFS= read -r inc; do
                 inc="$(echo "$inc" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
-                if [[ -n "$inc" ]] && [[ -d "$inc" ]]; then
-                    EXTRA_ARGS+=(-isystem "$inc")
+                if [[ -z "$inc" ]] || [[ ! -d "$inc" ]]; then
+                    continue
                 fi
+                inc="$(cd "$inc" && pwd -P)"
+                case "$inc" in
+                    */lib/gcc/*/*/include|*/lib/gcc/*/*/include-fixed) continue ;;
+                esac
+                EXTRA_ARGS+=(-isystem "$inc")
             done < <("$MINGW_BIN" -v -x c++ /dev/null -fsyntax-only 2>&1 | sed -n '/#include <...> search starts here:/,/End of search list\./p' | sed '1d;$d')
 
             for src in "${CPP_SOURCES[@]}"; do
