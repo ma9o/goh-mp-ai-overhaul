@@ -164,9 +164,84 @@ struct Member {
     unsigned id{};
     Role role{};
     XY position{};
+    Id gun_def{}, paired_gunner{};
 };
 using Roster = std::array<Member, 64>;
 using Elements = std::array<bool, 64>;
+inline float meters_between(XY a, XY b, float length) {
+    return std::hypot(a.x - b.x, a.y - b.y) / length;
+}
+inline float assistant_anchor_bonus(XY candidate, XY gunner_pos, float length) {
+    const float d = meters_between(candidate, gunner_pos, length);
+    return d >= 2.5f && d <= 8.f ? 12.f : 0.f;
+}
+inline bool assistant_cohesive(XY from, XY to, XY gunner_pos, float length) {
+    const float after = meters_between(to, gunner_pos, length);
+    return after >= 1.5f && (after <= 10.f || after < meters_between(from, gunner_pos, length));
+}
+// Match only the gunner's carried definition. Roster order breaks equal-distance ties.
+template <class Compatible>
+const Member* match_gunner(const Member& mate, const Roster& gunners, std::size_t count, Compatible compatible) {
+    if (mate.role == Role::heavy) return nullptr;
+    const Member* best = nullptr;
+    float distance = std::numeric_limits<float>::infinity();
+    for (std::size_t i = 0; i < count; ++i) {
+        const auto& g = gunners[i];
+        const float d = squared(mate.position - g.position);
+        if (g.actor != mate.actor && g.gun_def && d < distance && compatible(mate.actor, g.gun_def)) {
+            distance = d;
+            best = &g;
+        }
+    }
+    return best;
+}
+
+struct Placement {
+    bool was_mounted{}, prev_user_move{}, overflow_done{true};
+    double dismounted_at{never}, spread_attempt{never}, overflow_until{never};
+    XY overflow_anchor{};
+    void observe(bool mounted, bool user_move, XY self, double now) {
+        if (mounted || user_move) {
+            overflow_done = true;
+            dismounted_at = never;
+            spread_attempt = now;
+        } else {
+            if (was_mounted) {
+                dismounted_at = now;
+                spread_attempt = never;
+            }
+            if (prev_user_move) {
+                overflow_until = now + 3.;
+                overflow_anchor = self;
+                overflow_done = false;
+            }
+        }
+        was_mounted = mounted;
+        prev_user_move = user_move && !mounted;
+    }
+    bool recent_dismount(double now, double nearby_dismount) const {
+        return (dismounted_at > spread_attempt && now - dismounted_at <= 3.) ||
+               (nearby_dismount > spread_attempt + 3. && now - nearby_dismount <= 3.);
+    }
+};
+inline bool overflow_cover_eligible(unsigned modes, unsigned flags, unsigned covered_mates, bool enemy) {
+    const auto movement = modes & 0x3000u;
+    return allows(modes & ~0x3000u, flags) &&
+           ((movement == 0 && (covered_mates || enemy)) || (movement == 0x1000u && covered_mates >= 2));
+}
+inline float score_overflow_spot(float native_score, XY point, XY anchor, float length, float radius_m,
+                                 bool hold_position, float spacing_m) {
+    const float d = meters_between(point, anchor, length);
+    if (!(spacing_m >= 1.5f && d <= radius_m) || (hold_position && !(d < (std::min)(radius_m, 7.f))))
+        return -std::numeric_limits<float>::infinity();
+    return native_score - d;
+}
+// Eight deterministic directions also separate passengers with identical exit positions.
+inline XY pick_dismount_spread_offset(XY self, XY centroid, XY away, unsigned id, unsigned attempt, float length) {
+    XY outward = unit(self - centroid);
+    if (!squared(outward)) outward = squared(away) > 0 ? unit(away) : XY{1, 0};
+    return rotate(outward, 45.f * ((id + attempt) % 8)) * (5.f * length);
+}
 inline Elements bounders(const Roster& roster, std::size_t count, unsigned phase, unsigned cycle = 0) {
     Elements selected{};
     count = (std::min)(count, roster.size());
@@ -267,18 +342,22 @@ struct CoverClaim {
 };
 struct Claims {
     store::GrowableTable<CoverClaim, 64, 4096> entries{};
-    void claim(CoverClaim c, double now) {
-        if (!c.squad) return;
+    bool try_claim(CoverClaim c, double now) {
+        if (!c.squad) return false;
         CoverClaim* free = nullptr;
         for (auto& e : entries) {
             if (e.actor == c.actor && e.scene == c.scene) {
                 e = c;
-                return;
+                return true;
             }
             if (!free && (!e.actor || e.until <= now || e.scene != c.scene)) free = &e;
         }
         if (!free) free = entries.append_slot();
         if (free) *free = c;
+        return free != nullptr;
+    }
+    void claim(CoverClaim c, double now) {
+        try_claim(c, now);
     }
     float nearest(Id scene, Id squad, Id actor, XY point, double now) const {
         float d = std::numeric_limits<float>::infinity();

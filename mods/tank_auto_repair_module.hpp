@@ -318,16 +318,56 @@ inline Finish original_finish{};
 inline Exec original_exec{};
 inline Destroy original_destroy{};
 inline Dispatch original_dispatch{};
+template <class Damaged>
+inline Address unclaimed_component(Address stock, Span rows, Span rejected, const Claims& claimed, Damaged damaged) {
+    if (!rows.valid(0x28, claimed.used.size()) || !rejected.valid(8, 4096) || stock < rows.first || stock >= rows.end ||
+        (stock - rows.first) % 0x28 || !claimed.used[(stock - rows.first) / 0x28])
+        return stock;
+    Address best{};
+    int best_tier{}, best_priority{};
+    for (auto row = rows.first; row != rows.end; row += 0x28) {
+        const auto def = read<Address>(row);
+        if (!def || claimed.used[(row - rows.first) / 0x28] || (read<Byte>(row, 0x25) & 1) || !damaged(row)) continue;
+        bool tried = false;
+        for (auto it = rejected.first; it != rejected.end; it += 8)
+            if (read<Address>(it) == row) {
+                tried = true;
+                break;
+            }
+        if (tried) continue;
+        const int rank = read<Byte>(row, 0x24) == 1 ? 0 : 1, priority = read<int>(def, 0x344);
+        if (!best || rank < best_tier || (rank == best_tier && priority < best_priority)) {
+            best = row;
+            best_tier = rank;
+            best_priority = priority;
+        }
+    }
+    return best ? best : stock;
+}
+inline Address global_pick(const Address* arg, bool (*damaged)(Address) = damage) {
+    const auto stock = original_picker(arg);
+    const auto human = engine_fixes::current();
+    if (!stock || !arg || !human || !engine_fixes::authorized(human, read<Address>(human, 0xdc8))) return stock;
+    const auto order = *arg, target = read<Address>(order, 0x68);
+    if (read<Address>(order, 8) != human + 0xaf0 || read<Byte>(order, 0x131) || !support::live_entity(target))
+        return stock;
+    const auto rows = span(target, 0xb90), rejected = span(order, 0xf0);
+    World w{};
+    if (!rows.valid(0x28, 1024) || !rejected.valid(8, 4096) || !sim::world(base, w)) return stock;
+    const auto picked = unclaimed_component(stock, rows, rejected, claims(w, target, rows, order), damaged);
+    if (picked != stock) ++stat_picker_overrides;
+    return picked;
+}
 inline Address pick(const Address* arg) {
     Guard guard;
     World w{};
-    if (!serial_world(w)) return original_picker(arg);
+    if (!serial_world(w) || !config::active().modules.tank_auto_repair) return global_pick(arg);
     const auto o = *arg, a = read<Address>(o, 0x68), owner = read<Address>(o, 8);
     Tank* t = nullptr;
     auto human = owner ? owner - 0xAF0 : 0;
     auto* c = member(human, t);
-    if (!c || !c->assigned || !c->smart || !t->key.matches(a) || !human_policy(human) || !safety(a))
-        return original_picker(arg);
+    if (!c || !c->assigned || !c->smart || !t->key.matches(a)) return global_pick(arg);
+    if (!human_policy(human) || !safety(a)) return original_picker(arg);
     const auto path = orders(human, a);
     if (path.smart != c->smart || path.repair != o) return original_picker(arg);
     Damage d{};
@@ -984,6 +1024,10 @@ inline bool is_busy(Address actor) {
     const auto* c = detail::member(actor, tank);
     return c && (c->assigned || c->needs_board || c->started || c->boarding || c->dispatched || c->smart ||
                  c->exit_callback);
+}
+inline bool has_active_episode(Address actor) {
+    const auto* t = detail::active.load() ? detail::find(actor) : nullptr;
+    return t && t->scenario != detail::Scenario::none;
 }
 inline std::size_t collect_returning_crew(Address tank, Address* out, std::size_t cap) {
     if (!detail::active.load() || !tank || !out || !cap) return 0;

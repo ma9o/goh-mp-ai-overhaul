@@ -11,6 +11,7 @@ inline std::uint32_t stat_fetches = 0;
 inline std::uint32_t stat_smokes = 0;
 inline std::uint32_t stat_revives = 0;
 inline std::uint32_t stat_returns = 0;
+inline std::uint32_t stat_patient_backoffs = 0;
 enum class Phase {
     scan,
     fetch,
@@ -44,15 +45,18 @@ inline Address transfer_destroy(Address operation, unsigned flags) {
     }
     return original_transfer_destroy(operation, flags);
 }
-struct Job {
+struct ExchangeRef {
+    Address operation{};
+    int action{-1};
+    Transfer* transfer{};
+    std::uint64_t transfer_serial{};
+};
+struct Job : ExchangeRef {
     Identity medic{}, patient{}, donor{};
     OrderRef order{};
     Phase phase{Phase::scan};
     unsigned start{}, since{}, wait{}, player{}, donor_player{};
-    Address scene{}, brain{}, smoke_def{}, operation{};
-    int action{-1};
-    Transfer* transfer{};
-    std::uint64_t transfer_serial{};
+    Address scene{}, brain{}, smoke_def{};
     std::uint64_t ticket{};
     Vec3 endpoint{}, screened_at{}, home{}, previous{};
     float remaining{}, travelled{};
@@ -78,7 +82,7 @@ inline void revoke(Job& j) {
     for (auto& r : smoke::reservations)
         if (j.ticket && r.ticket == j.ticket && !r.released) r = {};
 }
-inline Address queued(const Job& j, Address donor) {
+inline Address queued(const ExchangeRef& j, Address donor) {
     if (!donor || !j.transfer || j.transfer->generation != j.transfer_serial ||
         j.transfer->operation.load() != j.operation || !j.operation)
         return 0;
@@ -92,21 +96,109 @@ inline Address queued(const Job& j, Address donor) {
         }
     return 0;
 }
+inline void cancel(ExchangeRef& j, Address donor) {
+    if (j.action >= 0 && queued(j, donor)) native<void (*)(Address, const int*)>(0x7DDDC0)(manager(donor), &j.action);
+    j = {};
+}
 inline void cancel_exchange(const World& w, Job& j) {
-    if (j.action < 0) return;
-    const auto donor = resolve(w, j.donor);
-    if (queued(j, donor)) native<void (*)(Address, const int*)>(0x7DDDC0)(manager(donor), &j.action);
-    j.operation = 0;
-    j.action = -1;
-    j.transfer = nullptr;
+    if (j.action >= 0) cancel(j, resolve(w, j.donor));
+}
+// Reserve a destructor watch before stock submission. A reused operation address
+// or action ID alone cannot identify a transfer after this call returns.
+template <class Submit> inline bool begin_owned_exchange(ExchangeRef& j, Address owner_entity, Submit submit) {
+    if (!release_installed || !original_transfer_destroy || j.action >= 0) return false;
+    Transfer* mark = nullptr;
+    for (auto& t : transfers)
+        if (!t.operation.load()) {
+            mark = &t;
+            break;
+        }
+    if (!mark) mark = transfers.append_slot();
+    if (!mark) return false;
+    mark->operation.store(1); // Reserved across synchronous native callbacks.
+    const int action = submit();
+    if (action >= 0) {
+        const auto ops = span(manager(owner_entity), 0xA8);
+        if (ops.valid(8, 512))
+            for (auto p = ops.first; p != ops.end; p += 8) {
+                const auto op = read<Address>(p);
+                if (!op || read<Address>(op) != base + 0x10FF790 || read<int>(op, 0xF0) != action ||
+                    read<Address>(op, 0x88) != owner_entity)
+                    continue;
+                if (!++transfer_generation) ++transfer_generation;
+                j = {op, action, mark, transfer_generation};
+                mark->generation = transfer_generation;
+                ++transfer_count;
+                mark->operation.store(op);
+                return true;
+            }
+        // This ID came directly from the submitter during this serial call.
+        native<void (*)(Address, const int*)>(0x7DDDC0)(manager(owner_entity), &action);
+    }
+    mark->operation.store(0);
+    return false;
+}
+inline bool begin_exchange(ExchangeRef& j, Address donor, Address receiver, Address item, int amount) {
+    return begin_owned_exchange(j, donor, [&] { return exchange_amount(donor, receiver, item, amount); });
+}
+inline bool exclusive_exchange(Address op, Address donor, Address receiver) {
+    const auto src = manager(donor), dst = manager(receiver);
+    const auto queue = span(src, 0xA8), dest = span(dst, 0xA8);
+    return src && dst && queue.valid(8, 1) && queue.end - queue.first == 8 && dest.first == dest.end &&
+           (!read<Address>(src, 0xC8) || read<Address>(src, 0xC8) == op) &&
+           (!read<Address>(dst, 0xC8) || read<Address>(dst, 0xC8) == op);
 }
 inline void finish(const World& w, Job& j, float seconds = 12) {
     revoke(j);
     phase(j, w, Phase::cooldown, seconds);
     cancel_exchange(w, j);
 }
+struct PatientBackoff {
+    Identity medic{}, patient{};
+    runtime::Tick until{};
+    unsigned attempts{};
+};
+inline store::GrowableTable<PatientBackoff, 32, 2048> patient_backoffs{};
+inline Address patient_scene{};
+
+inline bool patient_in_backoff(const World& w, Address medic, Address patient) {
+    for (const auto& row : patient_backoffs)
+        if (row.medic.matches(medic) && row.patient.matches(patient))
+            return static_cast<std::int32_t>(row.until - w.now) > 0;
+    return false;
+}
+
+inline bool valid_patient(const World& w, Address actor, Address p);
+inline bool record_patient_failure(const World& w, Address medic, Identity patient_id, float seconds) {
+    const auto patient = resolve(w, patient_id);
+    if (!medic || !valid_patient(w, medic, patient)) return false;
+    PatientBackoff *slot = nullptr, *expired_slot = nullptr;
+    for (auto& row : patient_backoffs) {
+        if (row.medic.matches(medic) && row.patient.matches(patient)) {
+            slot = &row;
+            break;
+        }
+        if (!row.medic.ptr)
+            slot = &row;
+        else if (!expired_slot && static_cast<std::int32_t>(row.until - w.now) <= 0)
+            expired_slot = &row;
+    }
+    if (!slot) slot = patient_backoffs.append_slot();
+    if (!slot) slot = expired_slot;
+    if (!slot) return false;
+    if (!slot->medic.matches(medic) || !slot->patient.matches(patient)) *slot = {identity(medic), patient_id};
+    slot->attempts = (std::min)(3u, slot->attempts + 1);
+    const float delay = slot->attempts == 1 ? seconds : (slot->attempts == 2 ? 25.f : 45.f);
+    slot->until = w.now + w.duration(delay);
+    ++stat_patient_backoffs;
+    return true;
+}
+
 inline void refresh(const World& w) {
-    bool reset = scene != w.scene || w.now - last_tick > 0x7fffffffu;
+    const auto current_scene = entity_scene(w);
+    const bool reset = scene != w.scene || patient_scene != current_scene || w.now - last_tick > 0x7fffffffu;
+    if (reset || w.now < last_tick) patient_backoffs.clear();
+    patient_scene = current_scene;
     for (auto& j : jobs) {
         if (!j.medic.ptr) continue;
         if (reset) {
@@ -117,8 +209,14 @@ inline void refresh(const World& w) {
         }
         if (j.phase == Phase::cooldown) {
             if (w.now - j.since >= j.wait) j = {};
-        } else if (expired(w, j))
-            finish(w, j);
+        } else if (expired(w, j)) {
+            bool failed = false;
+            if (j.scene == w.scene && j.patient.ptr) {
+                failed = record_patient_failure(w, resolve(w, j.medic), j.patient, 12);
+                j.patient = {};
+            }
+            finish(w, j, failed ? 4.f : 12.f);
+        }
     }
     scene = w.scene;
     last_tick = w.now;
@@ -245,26 +343,6 @@ inline bool permit(const World& w, Address actor, Address order) {
     return j->phase == Phase::approach;
 }
 
-// Two stock locations and a private operation builder. The source cell
-// constructor takes an explicit amount. The destination leaves cell allocation
-// to Xchange. Destruction unlinks both borrowed entity receivers.
-inline int exchange(Address donor, Address medic, Address item) {
-    alignas(16) std::byte source[0x40]{}, dest[0x40]{}, builder[0x100]{};
-    const auto cell = read<std::uint16_t>(item, 0x29);
-    native<void* (*)(void*, Address, const std::uint16_t*, int)>(0x7E1D50)(source, box(donor), &cell, 1);
-    native<void* (*)(void*, Address)>(0x7E1CE0)(dest, box(medic));
-    int action = -1;
-    if (native<Address (*)(void*)>(0x7E1F40)(source) == item) {
-        native<void* (*)(void*, const char*)>(0x7DF910)(builder, "Xchange");
-        native<void* (*)(void*, void*)>(0x7DFEE0)(builder, source);
-        native<void* (*)(void*, void*)>(0x7E35E0)(builder + 0x40, dest);
-        native<int* (*)(void*, int*)>(0x7DFBF0)(builder, &action);
-        native<void (*)(void*)>(0x7DFE00)(builder);
-    }
-    native<void (*)(void*)>(0x7E1EC0)(dest);
-    native<void (*)(void*)>(0x7E1EC0)(source);
-    return action;
-}
 inline Address nearest(const World& w, Job& j, Address medic, bool donor, const Vec3* home_anchor = nullptr) {
     Address best = 0;
     const float search_m = config::active().tuning.medic_search_radius_m;
@@ -277,7 +355,8 @@ inline Address nearest(const World& w, Job& j, Address medic, bool donor, const 
             if (!donor_ok(w, medic, a) || occupied(a) || !spare(a, is_medic_actor(a))) return;
             if (within(pos(medic), pos(a), 2 * w.length) && !can_handoff(w, medic, a)) return;
         } else {
-            if (!valid_patient(w, medic, a) || read<Byte>(a, 0x12BA) || patient_claimed(a) || native_claim(w, a, medic))
+            if (!valid_patient(w, medic, a) || read<Byte>(a, 0x12BA) || patient_in_backoff(w, medic, a) ||
+                patient_claimed(a) || native_claim(w, a, medic))
                 return;
             if (home_anchor && !within(*home_anchor, pos(a), search_m * w.length)) return;
         }
@@ -290,6 +369,8 @@ inline Address nearest(const World& w, Job& j, Address medic, bool donor, const 
     return best;
 }
 inline void complete_or_return(const World& w, Job& j, Address actor, bool can_chain, float cooldown_sec = 12) {
+    // Re-resolve before releasing or chaining. A completed revive, death or removed entity incurs no penalty.
+    if (j.patient.ptr && record_patient_failure(w, actor, j.patient, 12)) cooldown_sec = (std::min)(4.f, cooldown_sec);
     revoke(j);
     cancel_exchange(w, j);
     j.patient = {};
@@ -362,6 +443,8 @@ inline void screen(const World& w, Job& j, Address actor, Address patient, Addre
             return;
         }
         phase(j, w, Phase::approach, 16);
+        j.progress_at = w.now;
+        j.remaining = std::sqrt(smoke::distance2(pos(actor), j.endpoint));
         if (!move(actor, j.endpoint, permit, j.order)) complete_or_return(w, j, actor, false);
         return;
     }
@@ -526,27 +609,19 @@ inline bool prepare_smoke_hooks(Address image, const char* digest, bool stock, C
     coord::instance().register_provider(coord::Module::auto_medic, coord::Priority::auto_medic, &occupied);
     return true;
 }
-inline void tick(Address actor) {
-    World w{};
-    if (!config::active().modules.auto_medic || busy || !release_installed || smoke::image_base != base ||
-        !accepting.load(std::memory_order_acquire) || !callback(actor, w))
-        return;
-    struct Scope {
-        Scope() {
-            busy = true;
-        }
-        ~Scope() {
-            busy = false;
-        }
-    } scope;
+inline void update_medic(const World& w, Address actor) {
     medical_assignment = &occupied;
     refresh(w);
     // A donor can receive a player command between the medic's actor updates.
     // Cancel only our still-queued transfer by its replicated action ID.
-    for (auto& borrowed : jobs)
-        if (borrowed.phase == Phase::exchange && borrowed.donor.matches(actor) &&
-            (!donor_available(actor) || borrowed.donor_player != owner(actor)))
-            finish(w, borrowed);
+    for (auto& borrowed : jobs) {
+        if (borrowed.phase != Phase::exchange || !borrowed.donor.matches(actor)) continue;
+        if (!resolve(w, borrowed.patient) || !donor_available(actor) || borrowed.donor_player != owner(actor)) {
+            const bool failed = record_patient_failure(w, resolve(w, borrowed.medic), borrowed.patient, 12);
+            borrowed.patient = {};
+            finish(w, borrowed, failed ? 4.f : 12.f);
+        }
+    }
     auto* j = find(actor);
     if (j && j->phase == Phase::cooldown) return;
     if (!autonomous(actor, true)) {
@@ -658,11 +733,21 @@ inline void tick(Address actor) {
         return;
     }
     if (j->order.get()) {
+        if (j->phase == Phase::approach) {
+            const float remaining = std::sqrt(smoke::distance2(pos(actor), j->endpoint));
+            if (j->remaining - remaining >= .5f * w.length) {
+                j->remaining = remaining;
+                j->progress_at = w.now;
+            } else if (w.now - j->progress_at >= w.duration(9)) {
+                complete_or_return(w, *j, actor, false);
+                return;
+            }
+        }
         if (!permit(w, actor, j->order.get())) complete_or_return(w, *j, actor, false);
         return;
     }
     if (!free_slot(actor)) {
-        finish(w, *j);
+        complete_or_return(w, *j, actor, false);
         return;
     }
     auto item = smoke::FindCarriedPureSmokeItem(base, actor);
@@ -674,12 +759,7 @@ inline void tick(Address actor) {
             return;
         }
         if (auto op = queued(*j, d)) {
-            auto target_manager = manager(actor), source_manager = manager(d);
-            const auto queue = span(source_manager, 0xA8);
-            const auto dest_queue = span(target_manager, 0xA8);
-            if (queue.end - queue.first != 8 || dest_queue.first != dest_queue.end ||
-                (read<Address>(source_manager, 0xC8) && read<Address>(source_manager, 0xC8) != op) ||
-                (read<Address>(target_manager, 0xC8) && read<Address>(target_manager, 0xC8) != op)) {
+            if (!exclusive_exchange(op, d, actor)) {
                 complete_or_return(w, *j, actor, false);
                 return;
             }
@@ -736,56 +816,36 @@ inline void tick(Address actor) {
         complete_or_return(w, *j, actor, false);
         return;
     }
-    if (!release_installed || !original_transfer_destroy) {
-        complete_or_return(w, *j, actor, false);
-        return;
-    }
-    Transfer* mark = nullptr;
-    for (auto& t : transfers)
-        if (!t.operation.load()) {
-            mark = &t;
-            break;
-        }
-    if (!mark) mark = transfers.append_slot();
-    if (!mark) {
-        complete_or_return(w, *j, actor, false);
-        return;
-    }
     j->smoke_def = read<Address>(offered, 0x40);
     phase(*j, w, Phase::exchange, 8);
-    j->action = exchange(d, actor, offered);
-    if (j->action < 0) {
+    if (!begin_exchange(*j, d, actor, offered, 1)) {
         complete_or_return(w, *j, actor, false);
         return;
     }
-    const Span ops = span(manager(d), 0xA8);
-    if (ops.valid(8, 512))
-        for (auto s = ops.first; s != ops.end; s += 8) {
-            const auto op = read<Address>(s);
-            if (op && read<Address>(op) == base + 0x10FF790 && read<int>(op, 0xF0) == j->action &&
-                read<Address>(op, 0x88) == d) {
-                if (!++transfer_generation) ++transfer_generation;
-                mark->generation = transfer_generation;
-                j->transfer_serial = transfer_generation;
-                j->transfer = mark;
-                j->operation = op;
-                mark->operation.store(op);
-                ++transfer_count;
-                ++stat_fetches;
-                if (log_sink) {
-                    log_sink("AUTO-MEDIC FETCH #%u: medic=0x%llx donor=0x%llx action=%d", stat_fetches,
-                             (unsigned long long)actor, (unsigned long long)d, j->action);
-                }
-                return;
-            }
+    ++stat_fetches;
+    if (log_sink) {
+        log_sink("AUTO-MEDIC FETCH #%u: medic=0x%llx donor=0x%llx action=%d", stat_fetches, (unsigned long long)actor,
+                 (unsigned long long)d, j->action);
+    }
+}
+inline void tick(Address actor) {
+    World w{};
+    if (!config::active().modules.auto_medic || busy || !release_installed || smoke::image_base != base ||
+        !accepting.load(std::memory_order_acquire) || !callback(actor, w))
+        return;
+    struct Scope {
+        Scope() {
+            busy = true;
         }
-    // We just received this ID synchronously from the stock submission. Never
-    // advance on an untracked transfer or infer success from a later box item.
-    native<void (*)(Address, const int*)>(0x7DDDC0)(manager(d), &j->action);
-    j->action = -1;
-    complete_or_return(w, *j, actor, false);
+        ~Scope() {
+            busy = false;
+        }
+    } scope;
+    update_medic(w, actor);
 }
 inline void reset() {
+    patient_backoffs.clear();
+    patient_scene = 0;
     for (auto& j : jobs) {
         revoke(j);
         j = {};
@@ -799,6 +859,8 @@ inline bool quiescent() {
 inline void after_hooks_removed() {
     reset();
     jobs.release();
+    patient_backoffs.release();
+    stat_patient_backoffs = 0;
     transfers.release();
     transfer_count.store(0, std::memory_order_relaxed);
     release_installed = false;

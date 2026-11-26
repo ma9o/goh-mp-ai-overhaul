@@ -19,7 +19,7 @@ struct SlotFacts {
     std::int16_t slot_index{-1};
 };
 
-// Native ePlacer::IsPlaceAvailable (0x79C2F0) plus tank crew-group and
+// Native ePlacer::IsPlaceAvailable (0x79C2F0) plus crew-group and
 // non-Attach/non-NoCollect filters for freed interior crew slots.
 inline bool is_crew_destination(const SlotFacts& s) {
     if (s.slot_index < 0 || s.group != "crew") return false;
@@ -30,18 +30,18 @@ inline bool is_crew_destination(const SlotFacts& s) {
     return true;
 }
 
-// Hull-top exterior passenger seats (properties/tank_crew.ext "seat_human":
-// group "passenger", LinkBone present, no registered weapon/chassis request
-// bit 12, no visor, not Attach/NoCollect). Excludes gunner_open roof MGs
-// (gunner2) and passenger-group APC drivers/commanders.
+inline bool is_passenger_source(const SlotFacts& s, bool is_tank) {
+    if (s.slot_index < 0 || s.group != "passenger" || !s.occupied || s.has_visor) return false;
+    if (s.flags & 0x9200u) return false; // Attach, registered weapon/chassis request, NoCollect.
+    return s.has_link_bone_name ? s.has_resolved_bone : !is_tank;
+}
+
 inline bool is_hull_passenger_source(const SlotFacts& s) {
-    if (s.slot_index < 0 || s.group != "passenger") return false;
-    if (!s.occupied) return false;
-    // Reject Attach (bit 9), registered crew request (bit 12), NoCollect (bit 15).
-    if (s.flags & 0x00009200u) return false;
-    if (s.has_visor) return false;
-    if (!s.has_link_bone_name || !s.has_resolved_bone) return false;
-    return true;
+    return is_passenger_source(s, true);
+}
+
+inline bool is_internal_crew_source(const SlotFacts& s) {
+    return s.slot_index >= 0 && s.group == "crew" && s.occupied && !(s.flags & 0x8200u);
 }
 
 // Lower number = higher priority when filling freed crew slots.
@@ -63,6 +63,27 @@ inline bool better_crew_slot(const SlotFacts& a, const SlotFacts& b) {
     return a.slot_index < b.slot_index;
 }
 
+struct VehicleTacticalContext {
+    bool is_tank{};
+    bool immobilized{};
+    bool has_move_order{};
+    bool has_visible_enemy{};
+    bool swap_cooldown_active{};
+    unsigned occupied_crew_count{};
+    bool has_eligible_passenger{};
+};
+
+inline bool can_promote_internal(const SlotFacts& src, const SlotFacts& dst, const VehicleTacticalContext& ctx) {
+    if (!is_internal_crew_source(src) || !is_crew_destination(dst) || src.slot_index == dst.slot_index) return false;
+    const int from = crew_slot_priority(src);
+    const int to = crew_slot_priority(dst);
+    if (to > 5) return false;
+    if (from >= 2) return to < from;
+    if (ctx.has_eligible_passenger || ctx.swap_cooldown_active) return false;
+    if (from == 1 && to == 0) return !ctx.has_move_order && (ctx.immobilized || ctx.has_visible_enemy);
+    return from == 0 && to == 1 && ctx.occupied_crew_count == 1 && ctx.has_move_order && !ctx.immobilized;
+}
+
 struct PassengerFacts {
     bool has_crew_tag{};
     bool is_mechanic{};
@@ -74,7 +95,7 @@ struct PassengerFacts {
     std::uint32_t entity_id{};
 };
 
-// Lower number = higher priority to move from hull passenger seat into tank crew:
+// Lower numbers identify preferred donors within a seat role:
 //   0: Dedicated tank crewmen ("crew" tag + Mechanic ability: tankman / tank_commander)
 //   1: Skilled tank/vehicle mechanics without "crew" tag (tankman_ace, SP tankman)
 //   2: Other "crew"-tagged personnel (AT-gun / artillery / MG crew)
@@ -101,6 +122,22 @@ inline bool better_passenger(const PassengerFacts& a, const PassengerFacts& b) {
     if (ra != rb) return ra > rb;
     if (a.slot_index != b.slot_index) return a.slot_index < b.slot_index;
     return a.entity_id < b.entity_id;
+}
+
+struct SeatOccupant {
+    SlotFacts slot{};
+    PassengerFacts passenger{};
+
+    SeatOccupant() = default;
+    SeatOccupant(const SlotFacts& seat, const PassengerFacts& traits = {}) : slot(seat), passenger(traits) {
+        passenger.slot_index = seat.slot_index;
+    }
+};
+
+inline bool better_internal_source(const SeatOccupant& a, const SeatOccupant& b) {
+    const int pa = crew_slot_priority(a.slot);
+    const int pb = crew_slot_priority(b.slot);
+    return pa != pb ? pa > pb : better_passenger(a.passenger, b.passenger);
 }
 
 struct TransferGate {

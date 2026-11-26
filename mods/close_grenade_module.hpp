@@ -62,7 +62,7 @@ inline bool has(Span tags, const char* value) {
 struct Aim {
     Address entity{}, volume{};
     Vec3 point{};
-    bool station_point{}, open_deck{};
+    bool station_point{}, open_deck{}, gunner{};
 };
 // An unmarked vehicle must expose the occupied weapon station to a descending
 // segment. A roof, hatch cover or other earlier contact disqualifies it.
@@ -116,7 +116,7 @@ inline constexpr std::string_view unmarked_open[] = {"sdkfz250a_1",
 inline bool supported_armour(bool marked, std::string_view key) {
     return marked || std::find(std::begin(unmarked_open), std::end(unmarked_open), key) != std::end(unmarked_open);
 }
-inline Aim fighting_station(Address target, Vehicle type) {
+inline Aim inspect_station(Address target, Vehicle type, bool gunner_only) {
     const auto props = span(read<Address>(target, 0x548), 0x330);
     const bool open = has(props, "open_top") || has(props, "ammo_open_top_turret");
     const bool open_crew = has(props, "explosion_throw_crew");
@@ -136,6 +136,7 @@ inline Aim fighting_station(Address target, Vehicle type) {
         const bool car_driver = type == Vehicle::car && tag_equals(p, "driver");
         const bool gunner = tag_equals(p, "gunner");
         const bool auxiliary = tag_equals(p, "gunner2") || tag_equals(p, "gunner4");
+        if (gunner_only && !gunner && !auxiliary) continue;
         if (!gunner && !auxiliary && !car_driver && !tag_equals(p, "charger")) continue;
         // An exterior AA gun, passenger or commander on a closed tank is not
         // its fighting compartment. Unmarked armour needs a permanent primary
@@ -147,7 +148,7 @@ inline Aim fighting_station(Address target, Vehicle type) {
         unsigned flags = read<unsigned>(p, 0x248);
         if ((flags & 0x34) || ((flags & 8) && !car_driver)) continue;
         Address crew = read<Address>(p, 0x280);
-        if (!crew && open && gunner && !vacant.entity && !(read<Byte>(bone, 0x10) & 1)) {
+        if (!gunner_only && !crew && open && gunner && !vacant.entity && !(read<Byte>(bone, 0x10) & 1)) {
             Vec3 point = read<Vec3>(bone, 0xCC);
             if (pr::finite(point) && exposed_from_above(target, 0, point, true))
                 vacant = {target, 0, point, true, true};
@@ -164,10 +165,102 @@ inline Aim fighting_station(Address target, Vehicle type) {
         if (!targetable && (read<Byte>(bone, 0x10) & 1)) continue;
         Vec3 point = targetable ? read<Vec3>(crew, 0x74) : read<Vec3>(bone, 0xCC);
         if (pr::finite(point) && (!roof_check || exposed_from_above(target, crew, point, car_driver)))
-            return {crew, 0, point, !targetable, known_open || car_driver};
+            return {crew, 0, point, !targetable, known_open || car_driver, gunner || auxiliary};
     }
     return vacant;
 }
+inline Aim fighting_station(Address target, Vehicle type) {
+    return inspect_station(target, type, false);
+}
+inline bool small_arms_mount(Address target, Vehicle type) {
+    if (type == Vehicle::gun) return true;
+    if (type != Vehicle::car) return false;
+    const auto tags = span(read<Address>(target, 0x548), 0x330);
+    if (has(tags, "halftrack") || has(tags, "armoredcar") || has(tags, "tank") || has(tags, "apc") ||
+        supported_armour(false, ai_support::native_string(target + 0xF0)))
+        return false;
+    const auto places = ai_support::span(read<Address>(target, 0xdd8), 0x30);
+    if (!places.valid(8, 256)) return false;
+    for (auto it = places.first; it != places.end; it += 8) {
+        const auto place = read<Address>(it);
+        if (place && read<Address>(place, 0x90) == target && pr::has_tag(read<Address>(place, 0x98), "mgun"))
+            return true;
+    }
+    return false;
+}
+inline float chamber_range(Address def, Address ammo) {
+    const auto weapon = native<pr::Unary>(0x83F1E0)(def);
+    const auto profiles = read<Address>(weapon, 0x1600);
+    if (!profiles || !native<Address (*)(Address, Address)>(0x83DE90)(profiles, ammo + 0xEC8)) return 0;
+    return native<float (*)(Address, Address)>(0x83F210)(weapon, ammo);
+}
+template <class Range> bool loaded_small_arm_reaches(Address actor, Address item, float distance, Range range) {
+    const auto def = read<Address>(item, 0x40), ammo = read<Address>(item, 0x50);
+    if (!def || !ammo || read<int>(item, 0x48) <= 0 || !pr::has_tag(def, "weapon") ||
+        !(pr::has_tag(def, "rifle") || pr::has_tag(def, "smg") || pr::has_tag(def, "mgun")) ||
+        classify::def_is_ranged_at_weapon(def) || pr::has_tag(def, "pistol") || read<int>(item, 0xdc) <= 0 ||
+        !read<Address>(actor, 0x1390) || !pr::usable_item(actor, def))
+        return false;
+    const float reach = range(def, ammo);
+    return std::isfinite(reach) && distance > 0 && distance <= reach;
+}
+inline bool has_small_arm_shot(Address actor, float distance) {
+    const auto hand = pr::hand_item(actor);
+    if (loaded_small_arm_reaches(actor, hand, distance, chamber_range)) return true;
+    const auto box = ai_support::box(actor);
+    const auto items = ai_support::span(box, 0x10);
+    if (!box || !items.valid(8, 1024)) return false;
+    for (auto it = items.first; it != items.end; it += 8) {
+        const auto item = read<Address>(it);
+        if (item && item != hand && read<Address>(item, 0x30) == box && !read<Address>(item, 0x38) &&
+            read<Address>(item, 0x10) == read<Address>(item, 0x18) &&
+            loaded_small_arm_reaches(actor, item, distance, chamber_range))
+            return true;
+    }
+    return false;
+}
+inline bool clear_gunner_ray(const pr::HitVec& hits, Address gun, Address crew, float distance) {
+    for (auto h = hits.begin; h != hits.end; ++h) {
+        if (!std::isfinite(h->distance)) return false;
+        if (h->distance > distance) break;
+        if (h->kind == 1 || h->kind == 2) return false;
+        if (!h->volume || (read<Byte>(h->volume, 0x28) & 0x20)) continue;
+        if (read<unsigned>(h->volume, 0x0c) & 2) return h->entity == crew;
+        if (h->entity == gun) {
+            const auto tags = span(read<Address>(h->volume, 0x30), 0x398);
+            if (has(tags, "shield") || has(tags, "gun_shield") || has(tags, "armor")) return false;
+        }
+    }
+    return true;
+}
+template <class Armed, class Clear>
+bool gunner_shot(const sim::World& w, Address actor, Address target_gun, Vehicle type, const Aim& aim, Armed armed,
+                 Clear clear) {
+    const auto crew = aim.entity;
+    if (!config::active().modules.close_grenade || !config::active().modules.mg_crew_small_arms ||
+        !small_arms_mount(target_gun, type) || !aim.gunner || aim.station_point || crew == target_gun ||
+        !sim::has_actor(crew) || !(read<Byte>(crew, 0x30) & 4) || !(read<unsigned>(crew, 0xdb4) & 0x100))
+        return false;
+    const auto brain = read<Address>(crew, 0xdc8), vit = read<Address>(read<Address>(crew, 0x578), 0x18);
+    if (!brain || read<Address>(brain, 0x38) != crew || !(read<unsigned>(brain, 0x398) & (1u << 15)) || !vit ||
+        (read<unsigned>(vit, 0x174) & 3))
+        return false;
+    const auto from = pr::raised_point(read<Vec3>(actor, 0x74), actor, pr::RayPoint::muzzle, w.length);
+    const auto to = pr::raised_point(aim.point, crew, pr::RayPoint::target, w.length);
+    const auto d = pr::distance(from, to);
+    return pr::finite(from) && pr::finite(to) && armed(actor, d) && clear(pr::Ray{0, crew, 0, 0, from, to, false}, d);
+}
+inline bool exposed_mg_crew_shootable(const sim::World& w, Address actor, Address target_gun, Vehicle type,
+                                      const Aim& aim) {
+    return gunner_shot(w, actor, target_gun, type, aim, has_small_arm_shot, [&](const pr::Ray& ray, float d) {
+        return pr::visit_segment(
+            ray, [&](const pr::HitVec& hits) { return clear_gunner_ray(hits, target_gun, ray.target, d); });
+    });
+}
+inline bool defer_for_gunner(Payload kind, bool held, bool inside, float meters) {
+    return !(kind == Payload::frag && held && inside && meters < 10.f);
+}
+inline std::atomic<unsigned> stat_mg_small_arms_defer{};
 template <class Locate> inline Aim damage_volume(Address target, Payload kind, Locate locate) {
     Aim body{};
     bool intact_engine = false;
@@ -565,6 +658,15 @@ inline bool choice(const sim::World& w, Address s, const pr::Pair& p, Payload ki
     if (!aim.entity) return false;
     float d = pr::distance(self, aim.point);
     bool inside = d < p.max_range;
+    if (config::active().modules.close_grenade && config::active().modules.mg_crew_small_arms &&
+        small_arms_mount(target, type)) {
+        const Aim crew = aim.gunner ? aim : inspect_station(target, type, true);
+        if (crew.entity && defer_for_gunner(kind, p.held, inside, pr::distance(self, crew.point) / w.length) &&
+            exposed_mg_crew_shootable(w, a, target, type, crew)) {
+            stat_mg_small_arms_defer.fetch_add(1, std::memory_order_relaxed);
+            return false;
+        }
+    }
     if (!inside) {
         if (allow_rush_range) {
             if (!(d < p.max_range + 15.f * w.length)) return false;
@@ -743,6 +845,24 @@ inline unsigned poll_identity(Address actor) {
                    (read<Byte>(actor, 0x30) & 4)
                ? read<unsigned>(actor, 0xC0)
                : UINT32_MAX;
+}
+// Includes interior-seated humans (bit 0x200 set while aboard vehicles) so squad_after_quant
+// can observe mount -> dismount transitions without preempting higher-priority close_grenade.
+inline unsigned poll_squad_identity(Address actor) {
+    return accepting && base && sim::emitting_host(base) && actor && (read<Byte>(actor, 0x30) & 4) &&
+                   (read<Byte>(actor, 0x30) & 2) && !(read<unsigned>(actor, 0x38) & 0x820u)
+               ? read<unsigned>(actor, 0xC0)
+               : UINT32_MAX;
+}
+// The verified slot-23 caller brackets even seated humans and actors under player orders.
+inline bool (*squad_after_quant)(Address){};
+inline void poll_squad_settle(Address a, unsigned id) {
+    Admission admission;
+    if (!accepting || !squad_after_quant || id == UINT32_MAX || !base || pr::depth != 1 || a != pr::scope.actor ||
+        !sim::serial_actor(a) || !sim::emitting_host(base) || !read<Address>(base + 0x15CA080) ||
+        native<Address (*)(const unsigned*)>(0xA7E740)(&id) != a)
+        return;
+    squad_after_quant(a);
 }
 inline void poll(Address a, unsigned id) {
     Admission admission;
@@ -1160,6 +1280,53 @@ inline bool spawn_allowed(Address shooter, const sim::Vec3*& origin, const sim::
     l.spawned = true;
     return true;
 }
+// Native 0x8313B0 resolves type-1 eTarget through its entity, and throws
+// the right-hand item; the weapon place's definition may describe the thrower.
+inline std::atomic<unsigned> stat_ff_vetoes{};
+inline Payload vanilla_payload(Address def) {
+    if (!def || sim::IsPureSmokeDefinition(def)) return Payload::none;
+    const auto regular = payload(def);
+    if (regular != Payload::none) return regular;
+    const auto props = read<Address>(def, 0x7d0);
+    if (!props || read<Address>(props) != base + 0x1100908 || !pr::has_tag(def, "missile") ||
+        !pr::has_tag(def, "grenade"))
+        return Payload::none;
+    for (const auto* key : {"m15_wp", "m42_wp", "no77_wp"})
+        if (sim::IsGrenadeDefinition(def, key)) return Payload::incendiary;
+    return Payload::none;
+}
+inline bool veto_vanilla_release(Address shooter) {
+    if (!hook_gate.active() || !accepting || !config::active().modules.grenade_ff_guard || !sim::serial_thread() ||
+        !sim::emitting_host(base) || read<Address>(shooter) != base + runtime::table().vt.throwing_shooter)
+        return false;
+    const auto weapon = read<Address>(shooter, 8);
+    const auto actor = read<Address>(weapon, 0x90);
+    if (!sim::has_actor(actor) || !(read<Byte>(actor, 0x30) & 4) || !(read<unsigned>(actor, 0xdb4) & 0x100) ||
+        read<Address>(weapon, 0xb8) != shooter)
+        return false;
+    // A delayed animation marker has no slot-23 frame. If a frame is still
+    // active, another actor's nested release cannot borrow its authority.
+    const auto* frame = sim::quant_frame();
+    const auto scoped = ai_support::current_actor();
+    if ((frame && frame->actor != actor) || (scoped && scoped != actor)) return false;
+    const auto brain = read<Address>(actor, 0xdc8), vit = read<Address>(read<Address>(actor, 0x578), 0x18);
+    if (!vit || (read<unsigned>(vit, 0x174) & 3) || !brain ||
+        read<Address>(brain) != base + runtime::table().vt.human_brain || (read<unsigned>(brain, 0x398) & 3u) > 1 ||
+        ((read<unsigned>(brain, 0x398) >> 10) & 3u) == 3 || !pr::authorized_actor(actor, brain))
+        return false;
+    if (has_explicit_attack(brain) || read<int>(weapon, 0x208) == 1) return false;
+    sim::World w{};
+    if (!sim::world(base, w)) return false;
+    const auto def = native<pr::Unary>(runtime::table().fn.right_hand_definition)(actor);
+    const auto kind = vanilla_payload(def);
+    const auto type = read<unsigned>(weapon, 0xd0);
+    const auto target = read<Address>(weapon, 0xe0);
+    if (kind == Payload::none || (type != 2 && !(type == 1 && target))) return false;
+    const auto point = type == 2 ? read<Vec3>(weapon, 0xd4) : read<Vec3>(target, 0x74);
+    if (!pr::finite(point) || !(pr::distance(read<Vec3>(actor, 0x74), point) <= 50.f * w.length)) return false;
+    const auto radius = effect_radius(w, def, kind);
+    return radius > .5f * w.length && !clear_area(w, actor, point, radius + .5f * w.length, kind);
+}
 inline void release(sim::SmokeRelease original, Address shooter) {
     struct Frame {
         Launch* prev{launch};
@@ -1177,6 +1344,10 @@ inline void release(sim::SmokeRelease original, Address shooter) {
             if (s.order) break;
         }
     if (!slot) {
+        if (veto_vanilla_release(shooter)) {
+            ++stat_ff_vetoes;
+            return;
+        }
         original(shooter);
         return;
     }
@@ -1248,5 +1419,7 @@ inline void disconnect() {
     scene = 0;
     last_tick = 0;
     mounts = fires = releases = vetoes = aborts = 0;
+    stat_ff_vetoes = 0;
+    stat_mg_small_arms_defer = 0;
 }
 } // namespace goh::close_grenade

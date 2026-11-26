@@ -3,6 +3,8 @@
 //   - Auto-Smoke + Auto-Medic (15 hooks)
 //   - Auto-Resupply (0 extra hooks)
 //   - Tactical Infantry Movement & Cover (15 hooks)
+//   - Weapon swap (1 hook) and squad logistics (post-quant)
+//   - Engine fixes (8 hooks) and lull reloading
 //   - Tactical Objectives: Pursue & Cap (0 extra hooks)
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -12,7 +14,10 @@
 
 #include "ai_modules.hpp"
 #include "config_and_log.hpp"
-#include "tactical_infantry_module.hpp"
+#include "combat_logistics_module.hpp"
+#include "squad_logistics_module.hpp"
+#include "engine_fixes_module.hpp"
+#include "movement_recovery_module.hpp"
 #include "tactical_objectives_module.hpp"
 
 namespace goh::tu_infantry {
@@ -49,7 +54,13 @@ bool stage_hooks(runtime::Address base, const char* sha, HookCreateFn create, Ho
         log::write(log::Level::summary, "Tactical Infantry 15 hooks staged cleanly");
     }
 
-    return g_SupportOk && g_SmokeOk && g_TacticalOk;
+    const bool fixes_ok = engine_fixes::prepare_hooks(base, sha, create, remove);
+    if (!fixes_ok) log::write(log::Level::error, "Engine fixes hook staging failed");
+    const bool swap_ok = combat_logistics::prepare_hooks(base, sha, create, remove);
+    if (!swap_ok) log::write(log::Level::error, "Weapon swap hook staging failed");
+    const bool move_rec_ok = movement_recovery::init(base, sha);
+    if (!move_rec_ok) log::write(log::Level::error, "Movement recovery initialization failed");
+    return g_SupportOk && g_SmokeOk && g_TacticalOk && fixes_ok && swap_ok && move_rec_ok;
 }
 
 void on_hooks_enabled(runtime::Address base) {
@@ -63,26 +74,36 @@ void on_hooks_enabled(runtime::Address base) {
 }
 
 void begin_shutdown() noexcept {
+    movement_recovery::begin_shutdown();
+    squad_logistics::begin_shutdown();
     tactical_objectives::shutdown();
 }
 
 bool drain_quiescence() {
     ai_support::accepting.store(false, std::memory_order_release);
-    for (int wait = 0; wait < 20 && (!ai_support::quiescent() || !auto_medic::quiescent()); ++wait) {
+    const auto drained = [] {
+        return ai_support::quiescent() && auto_medic::quiescent() && squad_logistics::quiescent() &&
+               movement_recovery::quiescent();
+    };
+    for (int wait = 0; wait < 20 && !drained(); ++wait) {
         Sleep(10);
     }
-    return ai_support::quiescent() && auto_medic::quiescent();
+    return drained();
 }
 
 void deactivate() noexcept {
     tactical_objectives::shutdown();
+    movement_recovery::deactivate();
+    combat_logistics::deactivate();
+    engine_fixes::deactivate();
     ai_support::deactivate();
     auto_smoke::deactivate();
     tactical_infantry::deactivate();
 }
 
 std::uint32_t inflight_count() noexcept {
-    return ai_support::inflight_count() + auto_smoke::inflight_count() + tactical_infantry::inflight_count();
+    return movement_recovery::inflight_count() + combat_logistics::inflight_count() + engine_fixes::inflight_count() +
+           ai_support::inflight_count() + auto_smoke::inflight_count() + tactical_infantry::inflight_count();
 }
 
 void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) {
@@ -95,16 +116,23 @@ void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) 
 
     next(actor, ctx);
 
-    if (runtime::global_accepting.load(std::memory_order_acquire) && support_actor_id.ptr && ai_support::host()) {
-        ai_support::World support_world{};
-        if (auto_smoke::world(ai_support::base, support_world)) {
-            if (const auto live_actor = ai_support::resolve(support_world, support_actor_id)) {
-                auto_medic::tick(live_actor);
-                auto_resupply::tick(live_actor);
-                tactical_objectives::tick(live_actor, close_grenade::is_busy(support_world, live_actor));
-            }
-        }
-    }
+    ai_support::World world{};
+    if (!runtime::global_accepting.load(std::memory_order_acquire) || !support_actor_id.ptr ||
+        !ai_support::callback(actor, world))
+        return;
+    // These native order/inventory boundaries can synchronously remove or replace the actor.
+    const auto present = [&] { return ai_support::resolve(world, support_actor_id) != 0; };
+    if (!present()) return;
+    auto_medic::tick(actor);
+    if (!present()) return;
+    squad_logistics::tick(actor);
+    if (!present()) return;
+    auto_resupply::tick(actor);
+    if (!present()) return;
+    tactical_objectives::tick(actor, close_grenade::is_busy(world, actor));
+    const auto& modules = config::active().modules;
+    if (modules.engine_fixes && modules.lull_reload && present()) engine_fixes::on_human_post_quant(world, actor);
+    if (present()) movement_recovery::on_actor_post_quant(actor);
 }
 
 Stats snapshot_stats() noexcept {
@@ -117,15 +145,41 @@ Stats snapshot_stats() noexcept {
     s.med_fetch = auto_medic::stat_fetches;
     s.med_smoke = auto_medic::stat_smokes;
     s.med_rev = auto_medic::stat_revives;
+    s.med_backoff = auto_medic::stat_patient_backoffs;
     s.sup_trip = auto_resupply::stat_trips;
     s.sup_refill = auto_resupply::stat_refilled;
     s.tact_ord = tactical_infantry::stat_issued();
+    s.overflow_cover = tactical_infantry::stat_overflow_cover.load(std::memory_order_relaxed);
+    s.dismount_spread = tactical_infantry::stat_dismount_spread.load(std::memory_order_relaxed);
     s.obj_pursue = tactical_objectives::stat_pursues();
     s.obj_cap = tactical_objectives::stat_caps();
+    s.fast_swaps = combat_logistics::stat_fast_swaps;
+    s.missile_holds = combat_logistics::stat_missile_holds;
+    s.squad_ammo = squad_logistics::stat_ammo;
+    s.squad_bandages = squad_logistics::stat_bandages;
+    s.scavenge = squad_logistics::stat_scavenge;
+    s.heal = engine_fixes::stats.heal;
+    s.burn = engine_fixes::stats.burn;
+    s.kit = engine_fixes::stats.kit;
+    s.window = engine_fixes::stats.window;
+    s.stance = engine_fixes::stats.stance;
+    s.reload = engine_fixes::stats.reload;
+    s.board = engine_fixes::stats.board;
+    s.eligible = engine_fixes::stats.eligible;
+    s.allegiance_veto = engine_fixes::stats.allegiance_veto;
+    s.towed_gun_suppress = engine_fixes::stats.towed_gun_suppress;
+    const auto mr = movement_recovery::snapshot_stats();
+    s.move_nudge = mr.nudges;
+    s.move_resume = mr.resumed;
+    s.move_abort = mr.aborted;
     return s;
 }
 
 void after_hooks_removed() {
+    movement_recovery::after_hooks_removed();
+    squad_logistics::after_hooks_removed();
+    combat_logistics::after_hooks_removed();
+    engine_fixes::after_hooks_removed();
     tactical_objectives::after_hooks_removed();
     tactical_infantry::after_hooks_removed();
     auto_resupply::after_hooks_removed();
@@ -135,7 +189,8 @@ void after_hooks_removed() {
 }
 
 bool runtime_allowed_flag() noexcept {
-    return tactical_infantry::runtime_allowed;
+    return tactical_infantry::runtime_allowed && engine_fixes::runtime_allowed && combat_logistics::runtime_allowed &&
+           squad_logistics::runtime_allowed && movement_recovery::runtime_allowed;
 }
 
 } // namespace goh::tu_infantry

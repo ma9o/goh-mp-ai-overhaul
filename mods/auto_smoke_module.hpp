@@ -7,6 +7,7 @@
 #include "config_and_log.hpp"
 #include "dynamic_store.hpp"
 #include "game_classifiers.hpp"
+#include "engine_fixes_shared.hpp"
 #include "game_runtime.hpp"
 #include <atomic>
 #include <cmath>
@@ -1783,7 +1784,10 @@ inline std::uint32_t smoke_fire_exec(Address child, std::uint32_t phase) noexcep
         int status = grenades.fire_status(child, phase);
         if (status >= 0) return static_cast<std::uint32_t>(status);
     }
-    if (!active_intents.load(std::memory_order_acquire)) return original_smoke_fire_exec(child, phase);
+    if (!active_intents.load(std::memory_order_acquire)) {
+        engine_fixes::reset_dry_timer(child, phase);
+        return original_smoke_fire_exec(child, phase);
+    }
     if (!serial_thread()) {
         if (lookup_smoke_intent(&SmokeIntent::child, child).generation) return phase == 2 ? 0u : 2u;
         return original_smoke_fire_exec(child, phase);
@@ -1795,7 +1799,10 @@ inline std::uint32_t smoke_fire_exec(Address child, std::uint32_t phase) noexcep
         e = lookup_smoke_intent(&SmokeIntent::root, shot);
         if (e.generation && (e.actor != actor || read<Address>(shot, 0x30) != child)) e = {};
     }
-    if (!e.generation) return original_smoke_fire_exec(child, phase);
+    if (!e.generation) {
+        engine_fixes::reset_dry_timer(child, phase);
+        return original_smoke_fire_exec(child, phase);
+    }
     World w{};
     if (phase == 2) {
         // Native End is called before deleting/reusing the child. Keep it visible

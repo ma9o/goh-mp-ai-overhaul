@@ -1,6 +1,7 @@
 #pragma once
 
 #include "actor_coordinator.hpp"
+#include "auto_smoke_module.hpp"
 #include "config_and_log.hpp"
 #include "game_runtime.hpp"
 
@@ -26,6 +27,23 @@ using runtime::Tick;
 
 inline constexpr const char* executable_sha256 = runtime::kBuild26734796Sha256;
 inline constexpr unsigned hook_count = 5; // SimTick, SimDtor, ScannerUpd, AvoidInnerTick, AvoidPlanEscape
+
+// XY coordinates and radius are in metres.
+inline bool player_escape_already_safe(float sx, float sy, float dest_x, float dest_y, float gx, float gy, float land_x,
+                                       float land_y, float safe_radius) noexcept {
+    if (!runtime::finite(runtime::XY{sx, sy}) || !runtime::finite(runtime::XY{dest_x, dest_y}) ||
+        !runtime::finite(runtime::XY{gx, gy}) || !runtime::finite(runtime::XY{land_x, land_y}) ||
+        !std::isfinite(safe_radius) || safe_radius <= 0)
+        return false;
+    const double dx = double(dest_x) - sx, dy = double(dest_y) - sy;
+    const double length2 = dx * dx + dy * dy;
+    if (length2 <= .25 || std::hypot(double(dest_x) - gx, double(dest_y) - gy) < safe_radius ||
+        std::hypot(double(dest_x) - land_x, double(dest_y) - land_y) < safe_radius)
+        return false;
+    const double x = double(sx) - land_x, y = double(sy) - land_y;
+    const double t = std::clamp(-(x * dx + y * dy) / length2, 0., 1.);
+    return std::hypot(x + t * dx, y + t * dy) >= (std::min)(.92 * std::hypot(x, y), double(safe_radius));
+}
 
 namespace detail {
 
@@ -101,6 +119,8 @@ struct OrderRetry {
 
 struct RuntimeState {
     std::mutex mutex;
+    Address scene{};
+    Tick last_tick{};
     std::vector<TrackedGrenade> grenades;
     std::unordered_map<Address, OrderRetry> retries;
 };
@@ -123,6 +143,8 @@ inline FnAvoidPlanEscape orig_avoid_plan_escape{};
 
 inline std::atomic<std::uint32_t> stat_dodges{0};
 inline std::atomic<std::uint32_t> stat_wakeups{0};
+
+inline std::atomic<std::uint32_t> stat_player_escapes_preserved{0};
 
 inline float spatial_scale() noexcept {
     const float L = read<float>(base + runtime::table().glob.spatial_scale_l);
@@ -156,6 +178,23 @@ inline bool is_passable_dry_terrain(float x, float y, bool is_human = true) noex
     return true;
 }
 
+inline Address active_child(Address order, Address table) noexcept {
+    if (table == base + runtime::table().vt.move_task_order || table == base + runtime::table().vt.move_to_cover)
+        return read<Address>(order, 0x30);
+    return auto_smoke::orders::active_child(base, order);
+}
+
+inline bool active_order_type(Address actor, Address brain, Address type) noexcept {
+    auto order = read<Address>(brain, Off::kBrainCurrentOrder);
+    for (unsigned depth = 0; is_plausible_ptr(order) && depth < 16; ++depth) {
+        const auto vt = read<Address>(order);
+        if (!is_plausible_ptr(vt) || read<Address>(order, 8) != actor + Off::kActorOrderedSub) return false;
+        if (vt == base + type) return true;
+        order = active_child(order, vt);
+    }
+    return false;
+}
+
 inline bool is_eligible_human(Address actor, Address& out_brain, Address& out_chassis) noexcept {
     out_brain = 0;
     out_chassis = 0;
@@ -175,9 +214,48 @@ inline bool is_eligible_human(Address actor, Address& out_brain, Address& out_ch
     const Address weaponry = read<Address>(actor, Off::kActorWeaponry);
     if (is_plausible_ptr(weaponry) && (read<std::uint32_t>(weaponry, 0x70) & 2u) != 0) return false;
 
+    if (read<Address>(brain, Off::kBrainOwner) != actor) return false;
     out_brain = brain;
     out_chassis = chassis;
     return true;
+}
+
+// Stop at AvoidGrenade: its own movement child is never a player click.
+inline bool player_destination(Address brain, runtime::XY& goal) noexcept {
+    const auto flags = read<std::uint32_t>(brain, Off::kBrainFlags39C);
+    if (!(flags & (1u << 28)) || (read<std::uint32_t>(brain, 0x398) & 3) != 1) return false;
+    const auto owner = read<Address>(brain, Off::kBrainOwner) + Off::kActorOrderedSub;
+    auto order = read<Address>(brain, Off::kBrainCurrentOrder);
+    for (unsigned depth = 0; order && depth < 16; ++depth) {
+        if (!is_plausible_ptr(order) || read<Address>(order, 8) != owner) return false;
+        const auto vt = read<Address>(order);
+        if (!is_plausible_ptr(vt) || vt == base + runtime::table().vt.attack_order) return false;
+        if (vt == base + runtime::table().vt.avoid_grenade) break;
+        if (vt == base + runtime::table().vt.move_order) {
+            const auto path = read<runtime::Span>(order, 0x40);
+            if (is_plausible_ptr(path.first) && is_plausible_ptr(path.end) && path.valid(12, 4096) &&
+                path.end > path.first) {
+                goal = read<runtime::XY>(path.end - 12);
+                if (runtime::finite(goal)) return true;
+            }
+        } else if (vt == base + runtime::table().vt.move_task_order) {
+            const auto task = read<Address>(order, 0x40);
+            if (is_plausible_ptr(task)) {
+                goal = read<runtime::XY>(task, 0x10);
+                if (runtime::finite(goal) && (goal.x || goal.y)) return true;
+            }
+        }
+        order = active_child(order, vt);
+    }
+    if (!(flags & (1u << 6))) return false;
+    goal = read<runtime::XY>(brain, 0x130);
+    return runtime::finite(goal);
+}
+
+inline bool safe_goal(runtime::XY goal, float sx, float sy, float scale, float radius_m,
+                      const TrackedGrenade& g) noexcept {
+    return player_escape_already_safe(sx / scale, sy / scale, goal.x / scale, goal.y / scale, g.x / scale, g.y / scale,
+                                      g.land_x / scale, g.land_y / scale, radius_m + 2.f);
 }
 
 inline void predict_landing(float x0, float y0, float z0, float vx, float vy, float vz, float& out_x, float& out_y,
@@ -220,6 +298,16 @@ inline void predict_landing(float x0, float y0, float z0, float vx, float vy, fl
     out_t = t;
 }
 
+inline void refresh_scene_locked(RuntimeState& st, Tick now) {
+    const auto scene = read<Address>(base, runtime::table().glob.scene_ptr);
+    if (scene != st.scene || now < st.last_tick) {
+        st.grenades.clear();
+        st.retries.clear();
+    }
+    st.scene = scene;
+    st.last_tick = now;
+}
+
 inline void prune_stale_locked(std::vector<TrackedGrenade>& list, Tick now) {
     std::size_t dst = 0;
     for (std::size_t i = 0; i < list.size(); ++i) {
@@ -238,6 +326,24 @@ inline const TrackedGrenade* find_tracked_locked(const std::vector<TrackedGrenad
         if (g.entity == entity && (now - g.last_tick) <= 300) return &g;
     }
     return nullptr;
+}
+
+inline bool grenade_position(Address entity, Tick now, TrackedGrenade& result) {
+    auto& st = state();
+    std::lock_guard<std::mutex> lock(st.mutex);
+    refresh_scene_locked(st, now);
+    if (const auto* tracked = find_tracked_locked(st.grenades, entity, now)) {
+        result = *tracked;
+        return true;
+    }
+    result.x = result.land_x = read<float>(entity, Off::kEntityPos);
+    result.y = result.land_y = read<float>(entity, Off::kEntityPos + 4);
+    return false;
+}
+
+inline float danger_radius_m(Address object, Address offset) {
+    const auto radius = read<float>(object, offset);
+    return std::isfinite(radius) && radius >= 1.f && radius <= 20.f ? radius : 4.f;
 }
 
 inline bool is_threatened_by(const TrackedGrenade& g, float sx, float sy, float danger_radius, float max_detect_dist,
@@ -327,6 +433,7 @@ inline bool compute_away_from_enemies(Address actor, float sx, float sy, Tick no
 inline int get_and_increment_retry(Address order, Tick now) {
     auto& st = state();
     std::lock_guard<std::mutex> lock(st.mutex);
+    refresh_scene_locked(st, now);
     if (st.retries.size() > 512) {
         for (auto it = st.retries.begin(); it != st.retries.end();) {
             if ((now - it->second.last_tick) >= 10000)
@@ -348,8 +455,7 @@ inline bool is_actor_avoiding_live(Address actor) noexcept {
     if (!base || !is_plausible_ptr(actor)) return false;
     const Address brain = read<Address>(actor, Off::kActorBrain);
     if (!is_plausible_ptr(brain)) return false;
-    const Address cur_order = read<Address>(brain, Off::kBrainCurrentOrder);
-    return is_plausible_ptr(cur_order) && read<Address>(cur_order) == base + runtime::table().vt.avoid_grenade;
+    return active_order_type(actor, brain, runtime::table().vt.avoid_grenade);
 }
 
 inline Byte __fastcall hook_avoid_plan_escape(Address order);
@@ -387,6 +493,7 @@ inline void __fastcall hook_sim_tick(Address sim) {
     {
         auto& st = state();
         std::lock_guard<std::mutex> lock(st.mutex);
+        refresh_scene_locked(st, now);
         prune_stale_locked(st.grenades, now);
 
         TrackedGrenade* slot = nullptr;
@@ -461,28 +568,38 @@ inline void __fastcall hook_scanner_upd(Address scanner) {
 
     Address chk_brain = 0;
     Address chk_chassis = 0;
-    if (!is_eligible_human(actor, chk_brain, chk_chassis)) return;
+    if (!is_eligible_human(actor, chk_brain, chk_chassis) || chk_brain != brain) return;
 
     const Tick now = runtime::read_clock(base);
     const float sx = read<float>(actor, Off::kEntityPos);
     const float sy = read<float>(actor, Off::kEntityPos + 4);
     const float L = spatial_scale();
 
-    float cfg_danger = read<float>(scanner, Off::kScannerDangerZone);
-    if (!std::isfinite(cfg_danger) || cfg_danger < 1.0f || cfg_danger > 20.0f) cfg_danger = 4.0f;
+    const float cfg_danger = danger_radius_m(scanner, Off::kScannerDangerZone);
     const float danger_rad = (cfg_danger + 1.0f) * L;
     const float detect_rad = config::active().tuning.grenade_detect_radius_m * L;
 
+    runtime::XY goal{};
+    const bool user_move = !is_actor_avoiding_live(actor) && player_destination(brain, goal);
+    const Address stock = read<Byte>(scanner, Off::kScannerActive) ? read<Address>(scanner, Off::kScannerEntity) : 0;
+    bool stock_safe = false, preserved = false;
     Address best_ent = 0;
     float best_urg_sq = 1e30f;
     {
         auto& st = state();
         std::lock_guard<std::mutex> lock(st.mutex);
+        refresh_scene_locked(st, now);
         if (st.grenades.empty()) return;
         prune_stale_locked(st.grenades, now);
         for (const auto& g : st.grenades) {
             float urg_sq = 0.0f;
-            if (is_threatened_by(g, sx, sy, danger_rad, detect_rad, urg_sq) && urg_sq < best_urg_sq) {
+            const bool threatened = is_threatened_by(g, sx, sy, danger_rad, detect_rad, urg_sq);
+            if (user_move && (threatened || g.entity == stock) && safe_goal(goal, sx, sy, L, cfg_danger, g)) {
+                stock_safe |= g.entity == stock;
+                preserved = true;
+                continue;
+            }
+            if (threatened && urg_sq < best_urg_sq) {
                 best_urg_sq = urg_sq;
                 best_ent = g.entity;
             }
@@ -492,6 +609,9 @@ inline void __fastcall hook_scanner_upd(Address scanner) {
     if (best_ent != 0 && native<FnArmedGrenade>(base, runtime::table().fn.armed_grenade_query)(best_ent) != 0) {
         runtime::write<Byte>(scanner, Off::kScannerActive, 1);
         runtime::write<Address>(scanner, Off::kScannerEntity, best_ent);
+    } else if (preserved && (!stock || stock_safe)) {
+        if (stock_safe) runtime::write<Byte>(scanner, Off::kScannerActive, 0);
+        ++stat_player_escapes_preserved;
     }
 }
 
@@ -512,34 +632,24 @@ inline std::uint64_t __fastcall hook_avoid_inner_tick(Address order) {
                 native<FnArmedGrenade>(base, runtime::table().fn.armed_grenade_query)(g_ent) != 0) {
                 const Tick now = runtime::read_clock(base);
                 TrackedGrenade tg_copy{};
-                bool has_tg = false;
-                {
-                    auto& st = state();
-                    std::lock_guard<std::mutex> lock(st.mutex);
-                    if (const auto* tg = find_tracked_locked(st.grenades, g_ent, now)) {
-                        tg_copy = *tg;
-                        has_tg = true;
-                    }
-                }
+                if (!grenade_position(g_ent, now, tg_copy)) return orig_avoid_inner_tick(order);
+                const float sx = read<float>(actor, Off::kEntityPos);
+                const float sy = read<float>(actor, Off::kEntityPos + 4);
+                const float L = spatial_scale();
+                const float ord_rad = danger_radius_m(order, Off::kAvoidRadius);
+                runtime::XY goal{};
+                if (player_destination(brain, goal) && safe_goal(goal, sx, sy, L, ord_rad, tg_copy)) return 1;
+                const float danger_rad = (ord_rad + 1.0f) * L;
+                float urg_sq = 0.0f;
+                const bool in_danger = is_threatened_by(tg_copy, sx, sy, danger_rad, 25.0f * L, urg_sq);
 
-                if (has_tg) {
-                    const float sx = read<float>(actor, Off::kEntityPos);
-                    const float sy = read<float>(actor, Off::kEntityPos + 4);
-                    const float L = spatial_scale();
-                    float ord_rad = read<float>(order, Off::kAvoidRadius);
-                    if (!std::isfinite(ord_rad) || ord_rad < 1.0f) ord_rad = 4.0f;
-                    const float danger_rad = (ord_rad + 1.0f) * L;
-                    float urg_sq = 0.0f;
-                    const bool in_danger = is_threatened_by(tg_copy, sx, sy, danger_rad, 25.0f * L, urg_sq);
-
-                    if (in_danger) {
-                        if (st_val == 1) runtime::write<std::int32_t>(order, Off::kAvoidState, 0);
-                        const Address cover = read<Address>(actor, Off::kActorCover);
-                        if (is_plausible_ptr(cover) && read<std::int32_t>(cover, 0x24) != 0) {
-                            runtime::write<std::int32_t>(order, Off::kAvoidState, 0);
-                            const Byte ok = hook_avoid_plan_escape(order);
-                            return ok ? 0ULL : 2ULL;
-                        }
+                if (in_danger) {
+                    if (st_val == 1) runtime::write<std::int32_t>(order, Off::kAvoidState, 0);
+                    const Address cover = read<Address>(actor, Off::kActorCover);
+                    if (is_plausible_ptr(cover) && read<std::int32_t>(cover, 0x24) != 0) {
+                        runtime::write<std::int32_t>(order, Off::kAvoidState, 0);
+                        const Byte ok = hook_avoid_plan_escape(order);
+                        return ok ? 0ULL : 2ULL;
                     }
                 }
             }
@@ -569,42 +679,21 @@ inline Byte __fastcall hook_avoid_plan_escape(Address order) {
     }
 
     const Tick now = runtime::read_clock(base);
-    const int attempt = get_and_increment_retry(order, now);
-    if (attempt >= 5) return orig_avoid_plan_escape(order);
 
     const float sx = read<float>(actor, Off::kEntityPos);
     const float sy = read<float>(actor, Off::kEntityPos + 4);
     const float L = spatial_scale();
 
-    float ord_rad = read<float>(order, Off::kAvoidRadius);
-    if (!std::isfinite(ord_rad) || ord_rad < 1.0f || ord_rad > 20.0f) ord_rad = 4.0f;
-
-    float hx = read<float>(g_ent, Off::kEntityPos);
-    float hy = read<float>(g_ent, Off::kEntityPos + 4);
-    float g_cur_x = hx;
-    float g_cur_y = hy;
-    float gvx = 0.0f;
-    float gvy = 0.0f;
-
+    const float ord_rad = danger_radius_m(order, Off::kAvoidRadius);
     TrackedGrenade tg_copy{};
-    bool has_tg = false;
-    {
-        auto& st = state();
-        std::lock_guard<std::mutex> lock(st.mutex);
-        if (const auto* tg = find_tracked_locked(st.grenades, g_ent, now)) {
-            tg_copy = *tg;
-            has_tg = true;
-        }
-    }
-    if (has_tg) {
-        hx = tg_copy.land_x;
-        hy = tg_copy.land_y;
-        g_cur_x = tg_copy.x;
-        g_cur_y = tg_copy.y;
-        gvx = tg_copy.vx;
-        gvy = tg_copy.vy;
-    }
-
+    const bool has_tg = grenade_position(g_ent, now, tg_copy);
+    const float hx = tg_copy.land_x, hy = tg_copy.land_y;
+    const float g_cur_x = tg_copy.x, g_cur_y = tg_copy.y;
+    const float gvx = tg_copy.vx, gvy = tg_copy.vy;
+    runtime::XY goal{};
+    if (has_tg && player_destination(brain, goal) && safe_goal(goal, sx, sy, L, ord_rad, tg_copy)) return 0;
+    const int attempt = get_and_increment_retry(order, now);
+    if (attempt >= 5) return orig_avoid_plan_escape(order);
     const float safe_rad = (ord_rad + 2.5f) * L;
     const float qx = sx - hx;
     const float qy = sy - hy;
@@ -738,15 +827,20 @@ inline void on_actor_pre_quant(Address actor) {
     const float danger_rad = config::active().tuning.grenade_danger_radius_m * L;
     const float detect_rad = config::active().tuning.grenade_detect_radius_m * L;
 
+    runtime::XY goal{};
+    const bool user_move = player_destination(brain, goal);
     bool wake = false;
     {
         auto& st = state();
         std::lock_guard<std::mutex> lock(st.mutex);
+        refresh_scene_locked(st, now);
         if (st.grenades.empty()) return;
         prune_stale_locked(st.grenades, now);
         for (const auto& g : st.grenades) {
             float urg_sq = 0.0f;
             if (is_threatened_by(g, sx, sy, danger_rad, detect_rad, urg_sq)) {
+                if (user_move && safe_goal(goal, sx, sy, L, config::active().tuning.grenade_danger_radius_m, g))
+                    continue;
                 wake = true;
                 break;
             }
@@ -829,12 +923,17 @@ inline std::uint32_t total_wakeups() noexcept {
     return detail::stat_wakeups.load(std::memory_order_relaxed);
 }
 
+inline std::uint32_t total_player_escapes_preserved() noexcept {
+    return detail::stat_player_escapes_preserved.load(std::memory_order_relaxed);
+}
+
 inline void after_hooks_removed() {
     using namespace detail;
     gate.deactivate();
     {
         auto& st = state();
         std::lock_guard<std::mutex> lock(st.mutex);
+        st.scene = st.last_tick = 0;
         std::vector<TrackedGrenade>{}.swap(st.grenades);
         std::unordered_map<Address, OrderRetry>{}.swap(st.retries);
     }
@@ -846,6 +945,7 @@ inline void after_hooks_removed() {
     base = 0;
     staged = false;
     rollback_pending = false;
+    stat_player_escapes_preserved.store(0);
 }
 
 } // namespace goh::grenade_dodge

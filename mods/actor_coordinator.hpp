@@ -21,14 +21,22 @@ enum class Module : std::uint8_t {
     auto_smoke = 6,
     close_grenade = 7,
     grenade_dodge = 8,
-    count = 9
+    tank_facing = 9,
+    squad_logistics = 10,
+    movement_recovery = 11,
+    convoy_spacing = 12,
+    count = 13
 };
 
 enum class Priority : std::uint8_t {
     none = 0,
+    tank_facing = 5,
     tactical_objectives = 10,
+    convoy_spacing = 15,
+    movement_recovery = 18,
     tactical_infantry = 20,
     auto_resupply = 30,
+    squad_logistics = 35,
     tank_auto_repair = 40,
     auto_medic = 50,
     auto_smoke = 60,

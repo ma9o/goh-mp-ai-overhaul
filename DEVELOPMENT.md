@@ -29,7 +29,7 @@ Every module in `mods/` must keep host and vanilla clients in sync:
 - **Host-only, serial main thread:** Check `!IsRemoteClient()`, `!Core::IsQuantWorkerThread()`, and live `Actor::eHumanBrain` / `Actor::eVehicleBrain` vtables (never `*Client` stubs or worker/render threads).
 - **Replicating outputs only:** Act through host brain policy fields, direct goals, or native orders/setters that emit wire commands under `IsHostEmit()`. Never write raw chassis, cover, position, bone, health, or ammo fields.
 - **Respect authority & RNG:** Bail on Direct Control, brain inhibition (`(brain+0x39C & 0x3F) != 0`), and manual chassis/weaponry flags. Never draw from engine RNG (`synced_global` or default thread RNG) or poll RNG-drawing helpers.
-- **Clean lifecycle:** Roll back partial hook staging in reverse order, drain all 63/63 active hooks cleanly via `runtime::global_inflight` in `ShutdownAndUnload`, release heap-backed state tables after unhook, and read/write optional `goh_ai.ini` and logs beside the loaded DLL (never hardcoded local paths).
+- **Clean lifecycle:** Roll back partial hook staging in reverse order, drain all 73 active hooks (one coordinator, 20 combat, 43 infantry and nine tank hooks) cleanly via `runtime::global_inflight` in `ShutdownAndUnload`, release heap-backed state tables after unhook, and read/write optional `goh_ai.ini` and logs beside the loaded DLL (never hardcoded local paths).
 
 ## Building, linting, and testing
 
@@ -74,7 +74,12 @@ for src in research/tests/test_*.cpp; do
 done
 ```
 
+`test_engine_fixes_26734796.cpp` exercises all eight new hooks, the shared hook extensions and the post-quant reload through synthetic actors and native-call substitutes. Use the sanitizer flags above. [Build contract](research/notes/engine-fixes-26734796.md)
+
+`test_wave4_combat_logistics_26734796.cpp` covers weapon changes, safe exit selection, passenger unloads and squad transfers. The grenade-release cases run in `test_close_grenade_26734796.cpp`. To check both Wave 4 entries with MinHook's instruction copier, build the Wave 4 fixture with `-DGOH_WAVE4_TRAMPOLINES` and the same MinHook objects and platform definitions used by the penetration fixture. [Build contract](research/notes/combat-logistics-26734796.md)
+
 Extra fixture flags on non-Windows hosts:
+
 - `test_tactical_infantry_26734796.cpp`: `-DGOH_TACTICAL_ADAPTER_FIXTURES`
 - `test_tactical_objectives_26734796.cpp`: `-DGOH_TACTICAL_OBJECTIVES_ADAPTER_TEST`
 - `test_penetration_at_26734796.cpp`: `-DGOH_AT_TRAMPOLINES` plus MinHook's `trampoline.c` / `hde64.c`

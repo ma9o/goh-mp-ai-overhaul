@@ -46,7 +46,27 @@ struct ModuleToggles {
     bool tactical_infantry{true};
     bool penetration_at{true};
     bool tactical_objectives{true};
+    bool tank_facing{true};
+    bool engine_fixes{true};
+    bool lull_reload{true};
+    bool fast_weapon_swap{true};
+    bool grenade_ff_guard{true};
+    bool safe_disembark{true};
+    bool transport_unload{true};
+    bool squad_logistics{true};
     bool tank_crew_fill{true};
+    // Both extensions require the tank_crew_fill master switch.
+    bool internal_crew_swap{true};
+    bool nontank_crew_fill{true};
+    bool ammo_scavenge{true};
+    bool tank_target_memory{true};
+    bool cannon_aim_settle{true};
+    bool allegiance_guard{true};
+    bool overflow_cover{true};
+    bool weapon_team_cohesion{true};
+    bool mg_crew_small_arms{true};
+    bool movement_recovery{true};
+    bool convoy_spacing{true};
 };
 
 struct Tuning {
@@ -55,9 +75,18 @@ struct Tuning {
     float smoke_vehicle_cooldown_s{25.0f};
     float smoke_infantry_cooldown_s{25.0f};
     float medic_search_radius_m{36.0f};
+    float squad_share_radius_m{18.0f};
+    float scavenge_radius_m{20.0f};
     float resupply_search_radius_m{60.0f};
     float objectives_pursue_radius_m{50.0f};
     float objectives_cap_radius_m{35.0f};
+    float lull_reload_ratio{0.35f};
+    float tank_facing_min_angle_deg{24.f};
+    float tank_memory_hold_s{5.0f};
+    float cannon_settle_max_s{1.8f};
+    float overflow_cover_radius_m{8.0f};
+    float movement_stall_s{2.5f};
+    float convoy_gap_m{8.0f};
     float crew_fill_emit_backoff_s{10.0f};
     std::uint32_t soft_cover_log_interval_ms{1000};
 };
@@ -208,8 +237,46 @@ inline Settings parse_ini(std::string_view text) {
                             m.penetration_at = detail::parse_bool(val, m.penetration_at);
                         else if (key == "tactical_objectives")
                             m.tactical_objectives = detail::parse_bool(val, m.tactical_objectives);
+                        else if (key == "engine_fixes")
+                            m.engine_fixes = detail::parse_bool(val, m.engine_fixes);
+                        else if (key == "lull_reload")
+                            m.lull_reload = detail::parse_bool(val, m.lull_reload);
+                        else if (key == "tank_facing")
+                            m.tank_facing = detail::parse_bool(val, m.tank_facing);
+                        else if (key == "fast_weapon_swap")
+                            m.fast_weapon_swap = detail::parse_bool(val, m.fast_weapon_swap);
+                        else if (key == "grenade_ff_guard")
+                            m.grenade_ff_guard = detail::parse_bool(val, m.grenade_ff_guard);
+                        else if (key == "safe_disembark")
+                            m.safe_disembark = detail::parse_bool(val, m.safe_disembark);
+                        else if (key == "transport_unload")
+                            m.transport_unload = detail::parse_bool(val, m.transport_unload);
+                        else if (key == "squad_logistics")
+                            m.squad_logistics = detail::parse_bool(val, m.squad_logistics);
                         else if (key == "tank_crew_fill")
                             m.tank_crew_fill = detail::parse_bool(val, m.tank_crew_fill);
+                        else if (key == "internal_crew_swap")
+                            m.internal_crew_swap = detail::parse_bool(val, m.internal_crew_swap);
+                        else if (key == "nontank_crew_fill")
+                            m.nontank_crew_fill = detail::parse_bool(val, m.nontank_crew_fill);
+                        else if (key == "ammo_scavenge")
+                            m.ammo_scavenge = detail::parse_bool(val, m.ammo_scavenge);
+                        else if (key == "tank_target_memory")
+                            m.tank_target_memory = detail::parse_bool(val, m.tank_target_memory);
+                        else if (key == "cannon_aim_settle")
+                            m.cannon_aim_settle = detail::parse_bool(val, m.cannon_aim_settle);
+                        else if (key == "allegiance_guard")
+                            m.allegiance_guard = detail::parse_bool(val, m.allegiance_guard);
+                        else if (key == "overflow_cover")
+                            m.overflow_cover = detail::parse_bool(val, m.overflow_cover);
+                        else if (key == "weapon_team_cohesion")
+                            m.weapon_team_cohesion = detail::parse_bool(val, m.weapon_team_cohesion);
+                        else if (key == "mg_crew_small_arms")
+                            m.mg_crew_small_arms = detail::parse_bool(val, m.mg_crew_small_arms);
+                        else if (key == "movement_recovery")
+                            m.movement_recovery = detail::parse_bool(val, m.movement_recovery);
+                        else if (key == "convoy_spacing")
+                            m.convoy_spacing = detail::parse_bool(val, m.convoy_spacing);
                     } else if (section == "tuning") {
                         auto& t = s.tuning;
                         if (key == "grenade_detect_radius_m")
@@ -226,6 +293,10 @@ inline Settings parse_ini(std::string_view text) {
                                 detail::parse_float(val, t.smoke_infantry_cooldown_s, 5.0f, 120.0f);
                         else if (key == "medic_search_radius_m")
                             t.medic_search_radius_m = detail::parse_float(val, t.medic_search_radius_m, 10.0f, 100.0f);
+                        else if (key == "squad_share_radius_m")
+                            t.squad_share_radius_m = detail::parse_float(val, t.squad_share_radius_m, 6.0f, 40.0f);
+                        else if (key == "scavenge_radius_m")
+                            t.scavenge_radius_m = detail::parse_float(val, t.scavenge_radius_m, 6.0f, 40.0f);
                         else if (key == "resupply_search_radius_m")
                             t.resupply_search_radius_m =
                                 detail::parse_float(val, t.resupply_search_radius_m, 15.0f, 150.0f);
@@ -235,6 +306,22 @@ inline Settings parse_ini(std::string_view text) {
                         else if (key == "objectives_cap_radius_m")
                             t.objectives_cap_radius_m =
                                 detail::parse_float(val, t.objectives_cap_radius_m, 10.0f, 80.0f);
+                        else if (key == "lull_reload_ratio")
+                            t.lull_reload_ratio = detail::parse_float(val, t.lull_reload_ratio, .10f, .75f);
+                        else if (key == "tank_facing_min_angle_deg")
+                            t.tank_facing_min_angle_deg =
+                                detail::parse_float(val, t.tank_facing_min_angle_deg, 15.f, 60.f);
+                        else if (key == "tank_memory_hold_s")
+                            t.tank_memory_hold_s = detail::parse_float(val, t.tank_memory_hold_s, 1.0f, 15.0f);
+                        else if (key == "cannon_settle_max_s")
+                            t.cannon_settle_max_s = detail::parse_float(val, t.cannon_settle_max_s, 0.3f, 5.0f);
+                        else if (key == "overflow_cover_radius_m")
+                            t.overflow_cover_radius_m =
+                                detail::parse_float(val, t.overflow_cover_radius_m, 3.0f, 20.0f);
+                        else if (key == "movement_stall_s")
+                            t.movement_stall_s = detail::parse_float(val, t.movement_stall_s, 1.0f, 8.0f);
+                        else if (key == "convoy_gap_m")
+                            t.convoy_gap_m = detail::parse_float(val, t.convoy_gap_m, 4.0f, 20.0f);
                         else if (key == "crew_fill_emit_backoff_s")
                             t.crew_fill_emit_backoff_s =
                                 detail::parse_float(val, t.crew_fill_emit_backoff_s, 1.0f, 60.0f);

@@ -1,0 +1,18 @@
+# Stream C squad tactics · build 26734796
+
+`runtime_allowed: false`
+
+Stock `call_to_arms.exe` SHA-256 is `81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a`. The policies reuse existing hooks. After stock actor slot 23, the host rechecks the actor ID, serial scope and concrete human brain, then observes seat and player-move transitions before applying movement admission. Scene changes, clock rewinds and identity changes invalidate private actor history. [Tactical adapter](../../mods/tactical_infantry_module.hpp)
+
+| Item | Admission and action |
+| --- | --- |
+| **#2 · Weapon teams** | Under `weapon_team_cohesion`, match the assistant's unreserved loose stacks to the nearest living squad gunner's carried support weapon through `0x565A50`. Keep the assistant on overwatch. Favor cover 2.5–8 m from the gunner and rejoin beyond 10 m. Equipment refreshes once per second. Cached pairs must still match a live gunner, entity ID and definition. |
+| **#2 · Dismount** | A seat-bit or vehicle-parent transition opens a three-second window. A nearby witnessed squad exit can also admit a clumped member first seen on foot. An uncovered Move-at-Will soldier with two idle eligible allies within 2.5 m tries free cover 3.5–7 m from the centroid, then passable 5 m fan-out points. Reject movement toward the nearest known hostile. Consume one attempt even on failure. |
+| **#1 · Overflow** | Under `overflow_cover`, clearing an observed player move opens a three-second window anchored at the soldier's position. Move at Will requires one nearby covered squadmate or a known enemy. Hold Position requires two covered squadmates and a slot strictly inside both 7 m and `overflow_cover_radius_m` (default 8 m). Consume one cover search per completed move. |
+| **#11 · Exposed gunner** | Under `close_grenade` and `mg_crew_small_arms`, grenade priority, polling, rush and throw revalidation share one decision. Require a live targetable gunner, a usable loaded rifle, SMG or MG in range and a clear eye-to-chest segment. Terrain, hard cover or a shield hit before the gunner preserves the grenade option. An already-held frag inside throw range and strictly under 10 m remains eligible. Cars require an exposed gunner station and a mounted MG. Tanks, armored cars and identified armored carriers retain their existing policy. [Grenade adapter](../../mods/close_grenade_module.hpp) |
+
+Both movement features require `tactical_infantry`. They recheck the free order slot, squad selection and waypoint, Direct Control, inhibition, player orders and higher-priority work. Native cover search supplies descriptors. A successful request reserves its destination for 12 seconds with 1.5 m spacing from squad feet, occupied descriptors and claims. The free queue or brain setter receives MoveToCover (`0x8E2770`) or MoveTask (`0x90A8C0`). Point fallback uses deterministic bearings and the existing dry-ground corridor check. [Movement contract](tactical-infantry-26734796.md) · [Target and range contract](target-prioritization-26734796.md)
+
+`stat_overflow_cover` and `stat_dismount_spread` count submitted orders. `stat_mg_small_arms_defer` counts grenade candidate deferrals, potentially several per encounter. Hook teardown resets all three.
+
+All three requested Clang ASan+UBSan fixtures and the four-file lint gate passed. A move-bit clear can also mean cancellation. Actual arrival, crew exposure, subsequent rifle selection, frame cost and host/client command and checksum parity remain live smoke checks on this fingerprint. [Stream C fixture](../tests/test_tier12_squad_tactics_26734796.cpp) · [Runtime smoke scenarios](../compatibility/runtime-smoke.md)

@@ -20,6 +20,7 @@
 #include <cstring>
 #include <string>
 #include <thread>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -129,6 +130,8 @@ void test_config_and_log() {
                             "tank_crusher = false\r\n"
                             "tank_auto_repair = false\r\n"
                             "tank_crew_fill = false\r\n"
+                            "internal_crew_swap = false\r\n"
+                            "nontank_crew_fill = false\r\n"
                             "\r\n"
                             "[tuning]\r\n"
                             "grenade_detect_radius_m = 30.0\r\n"
@@ -151,6 +154,30 @@ void test_config_and_log() {
     assert(s.log_flush_ms == 250u);
     assert(s.log_filename == "goh_ai.log"); // Rejected "../escape.log"!
 
+    const auto fixes_default = parse_ini("");
+    assert(fixes_default.modules.engine_fixes && fixes_default.modules.lull_reload);
+    assert(fixes_default.tuning.lull_reload_ratio == .35f);
+    const auto fixes_off = parse_ini("[modules]\nengine_fixes=off\nlull_reload=false\n[tuning]\nlull_reload_ratio=-1");
+    assert(!fixes_off.modules.engine_fixes && !fixes_off.modules.lull_reload &&
+           fixes_off.tuning.lull_reload_ratio == .1f);
+    assert(parse_ini("[tuning]\nlull_reload_ratio=8").tuning.lull_reload_ratio == .75f);
+    assert(parse_ini("[tuning]\nlull_reload_ratio=nan").tuning.lull_reload_ratio == .35f);
+    for (const auto& [name, toggle] : std::array<std::pair<const char*, bool ModuleToggles::*>, 5>{{
+             {"fast_weapon_swap", &ModuleToggles::fast_weapon_swap},
+             {"grenade_ff_guard", &ModuleToggles::grenade_ff_guard},
+             {"safe_disembark", &ModuleToggles::safe_disembark},
+             {"transport_unload", &ModuleToggles::transport_unload},
+             {"squad_logistics", &ModuleToggles::squad_logistics},
+         }}) {
+        assert(Settings{}.modules.*toggle);
+        const auto settings = parse_ini(std::string("[modules]\n") + name + "=off");
+        assert(!(settings.modules.*toggle));
+    }
+    assert(parse_ini("").tuning.squad_share_radius_m == 18.f);
+    assert(parse_ini("[tuning]\nsquad_share_radius_m=4").tuning.squad_share_radius_m == 6.f);
+    assert(parse_ini("[tuning]\nsquad_share_radius_m=25").tuning.squad_share_radius_m == 25.f);
+    assert(parse_ini("[tuning]\nsquad_share_radius_m=42").tuning.squad_share_radius_m == 40.f);
+    assert(parse_ini("[tuning]\nsquad_share_radius_m=nan").tuning.squad_share_radius_m == 18.f);
     // Valid safe filename is accepted.
     Settings s_name = parse_ini("[logging]\nfile = custom_ai_26734796.log\nlevel = error\n");
     assert(s_name.log_filename == "custom_ai_26734796.log");
@@ -170,6 +197,32 @@ void test_config_and_log() {
     assert(!s.modules.tank_crusher);
     assert(!s.modules.tank_auto_repair);
     assert(!s.modules.tank_crew_fill);
+    assert(!s.modules.internal_crew_swap);
+    assert(!s.modules.nontank_crew_fill);
+    const auto defaults = parse_ini("").modules;
+    assert(defaults.tank_facing && Settings{}.tuning.tank_facing_min_angle_deg == 24.f);
+    const auto facing = parse_ini("[modules]\ntank_facing=false\n[tuning]\ntank_facing_min_angle_deg=29\n");
+    assert(!facing.modules.tank_facing && facing.tuning.tank_facing_min_angle_deg == 29.f);
+    assert(parse_ini("[tuning]\ntank_facing_min_angle_deg=1").tuning.tank_facing_min_angle_deg == 15.f);
+    assert(parse_ini("[tuning]\ntank_facing_min_angle_deg=95").tuning.tank_facing_min_angle_deg == 60.f);
+    assert(defaults.tank_crew_fill && defaults.internal_crew_swap && defaults.nontank_crew_fill);
+    assert(defaults.ammo_scavenge && defaults.tank_target_memory && defaults.cannon_aim_settle &&
+           defaults.allegiance_guard && defaults.overflow_cover && defaults.weapon_team_cohesion &&
+           defaults.mg_crew_small_arms && defaults.movement_recovery && defaults.convoy_spacing);
+    const auto tier12 = parse_ini(
+        "[modules]\n"
+        "ammo_scavenge=false\ntank_target_memory=0\ncannon_aim_settle=off\nallegiance_guard=no\n"
+        "overflow_cover=false\nweapon_team_cohesion=false\nmg_crew_small_arms=false\n"
+        "movement_recovery=false\nconvoy_spacing=false\n"
+        "[tuning]\n"
+        "scavenge_radius_m=99\ntank_memory_hold_s=0.1\ncannon_settle_max_s=99\n"
+        "overflow_cover_radius_m=1\nmovement_stall_s=99\nconvoy_gap_m=1\n");
+    assert(!tier12.modules.ammo_scavenge && !tier12.modules.tank_target_memory && !tier12.modules.cannon_aim_settle &&
+           !tier12.modules.allegiance_guard && !tier12.modules.overflow_cover && !tier12.modules.weapon_team_cohesion &&
+           !tier12.modules.mg_crew_small_arms && !tier12.modules.movement_recovery && !tier12.modules.convoy_spacing);
+    assert(tier12.tuning.scavenge_radius_m == 40.0f && tier12.tuning.tank_memory_hold_s == 1.0f &&
+           tier12.tuning.cannon_settle_max_s == 5.0f && tier12.tuning.overflow_cover_radius_m == 3.0f &&
+           tier12.tuning.movement_stall_s == 8.0f && tier12.tuning.convoy_gap_m == 4.0f);
 
     assert(std::fabs(s.tuning.grenade_detect_radius_m - 30.0f) < 1e-4f);
     assert(s.tuning.medic_search_radius_m <= 100.0f && s.tuning.medic_search_radius_m >= 5.0f);
@@ -306,6 +359,21 @@ void test_pe_pattern_and_rtti_resolver() {
     write_u64(img, 0x2500u, 0u);
     assert(resolve_rtti_vtable(pe, mangled, 0) == 0x2408u);
 
+    // Reuse the synthetic primary vtable to exercise the entries used by the vehicle adapters.
+    auto check_entry = [&](const char* name, Address& entry, Address expected) {
+        std::memcpy(img.data() + td_rva + 0x10, name, std::strlen(name) + 1);
+        assert(entry == expected);
+        const auto audit = resolve_and_verify_vtables(base, true, img.size());
+        assert(audit.mismatched == 1 && audit.missing + 1 == audit.checked);
+        assert(entry == 0x2408u);
+        reset_table();
+    };
+    check_entry(".?AVeCannonExtender@Entity@@", table().vt.cannon_ext, 0x0110F040);
+    check_entry(".?AVeChassisTrack@Actor@@", table().vt.chassis_track, 0x01105E80);
+    check_entry(".?AUeRotate@Order@@", table().vt.rotate_order, 0x0110C760);
+    check_entry(".?AUeMove@Order@@", table().vt.move_order, 0x0110C810);
+    check_entry(".?AUeMoveToCover@Order@@", table().vt.move_to_cover, 0x01109C60);
+
     // Corrupt MZ header fails cleanly.
     write_u16(img, 0x00, 0x1234u);
     PeView bad{};
@@ -336,6 +404,7 @@ void test_hook_gate_multithreaded() {
     assert(gate.count() == 0 && global_inflight.load() == 0);
 
     std::vector<std::thread> workers;
+    workers.reserve(4);
     for (int t = 0; t < 4; ++t) {
         workers.emplace_back([&gate]() {
             for (int i = 0; i < 4000; ++i) {
@@ -400,6 +469,22 @@ void test_actor_coordinator() {
     c.sync_world(0xBBBB, 210);
     assert(c.lease_count() == 0);
     assert(c.can_act(s_obj_actor, Module::auto_medic, Priority::auto_medic, 1, 210));
+
+    // A delivery reserves both participants ahead of a flag resupply. A medic can still preempt either.
+    for (const Address participant : {s_obj_actor, s_obj_actor + 8}) {
+        assert(c.claim(participant, 1, Module::squad_logistics, Priority::squad_logistics, 212, 5));
+        assert(!c.can_act(participant, Module::auto_resupply, Priority::auto_resupply, 1, 215));
+        assert(c.can_act(participant, Module::auto_medic, Priority::auto_medic, 1, 215));
+        c.release(participant, Module::squad_logistics);
+    }
+
+    // Movement recovery (18) and convoy spacing (15) stay below tactical infantry (20) and support modules.
+    assert(c.claim(s_obj_actor, 1, Module::convoy_spacing, Priority::convoy_spacing, 220, 5));
+    assert(c.can_act(s_obj_actor, Module::movement_recovery, Priority::movement_recovery, 1, 221));
+    assert(c.claim(s_obj_actor, 1, Module::movement_recovery, Priority::movement_recovery, 221, 5));
+    assert(!c.can_act(s_obj_actor, Module::tactical_objectives, Priority::tactical_objectives, 1, 222));
+    assert(c.can_act(s_obj_actor, Module::tactical_infantry, Priority::tactical_infantry, 1, 222));
+    c.release(s_obj_actor, Module::movement_recovery);
 
     // Backwards clock jump also invalidates leases.
     assert(c.claim(s_obj_actor, 1, Module::auto_smoke, Priority::auto_smoke, 210, 1000));

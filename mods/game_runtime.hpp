@@ -95,9 +95,11 @@ struct BuildTable {
         Address armed_grenade_query = 0x009207E0;
         Address terrain_height = 0x00A5D440;
         Address terrain_env = 0x00A62620;
+        Address rotate_factory = 0x0090AB40;
         Address move_task_point = 0x0090A8C0;
         Address order_attach_child = 0x0091A180;
         Address weapon_select = 0x0081B080;
+        Address right_hand_definition = 0x007E04E0;
         Address weapon_profile = 0x0081EC40;
         Address weapon_is_direct = 0x0081EC90;
         Address weapon_max_range = 0x0081F710;
@@ -130,6 +132,8 @@ struct BuildTable {
         Address target_accessor_try = 0x00835790;
         Address bullet_shooter_preview = 0x0082D4C0;
         Address collision_eval = 0x00836820;
+        Address human_weapon_swap = 0x0095CEA0;
+        Address select_exit_door = 0x0079D3C0;
         Address weapon_fire_dtor = 0x008EF8E0;
     } hook;
 
@@ -148,6 +152,10 @@ struct BuildTable {
         Address vehicle_brain = 0x0101FD68;
         Address avoid_grenade = 0x0110D278;
         Address attack_order = 0x0110C018;
+        Address rotate_order = 0x0110C760;
+        Address chassis_track = 0x01105E80;
+        Address move_order = 0x0110C810;
+        Address move_to_cover = 0x01109C60;
         Address move_task_order = 0x01023970;
         Address repair_order = 0x0110D0E8;
         Address smart_repair_order = 0x010225B0;
@@ -162,6 +170,7 @@ struct BuildTable {
         Address throwing_shooter = 0x01102F20;
         Address effect_blastwave = 0x01038380;
         Address smoke_screen_ext = 0x01031C48;
+        Address cannon_ext = 0x0110F040;
         Address map_point_ext = 0x010FBFF0;
         Address map_point_capture = 0x0116C550;
         Address supply_zone_ext = 0x0109BA88;
@@ -180,6 +189,30 @@ inline BuildTable& table() noexcept {
 inline void reset_table() noexcept {
     table() = BuildTable{};
 }
+
+// Stack eTarget for a world-space point. The native order factory copies it.
+class PointTarget {
+public:
+    PointTarget(Address image, Address xyz) : base_(image) {
+        const Address vt = image + 0x101FD18;
+        std::memcpy(storage_, &vt, sizeof(vt));
+        native<Address (*)(Address)>(image, 0x564D50)(ptr() + 0x20);
+        native<void (*)(Address, Address)>(image, 0x853180)(ptr(), xyz);
+    }
+    ~PointTarget() {
+        native<void (*)(Address)>(base_, 0x853240)(ptr());
+        native<void (*)(Address)>(base_, 0x565010)(ptr() + 0x20);
+    }
+    Address ptr() const noexcept {
+        return reinterpret_cast<Address>(storage_);
+    }
+    PointTarget(const PointTarget&) = delete;
+    PointTarget& operator=(const PointTarget&) = delete;
+
+private:
+    alignas(16) std::byte storage_[0x80]{};
+    Address base_;
+};
 
 // ============================================================================
 // Dynamic PE32+ section parsing, MSVC x64 RTTI vtable resolver, and pattern
@@ -378,6 +411,10 @@ inline RttiVerifyResult resolve_and_verify_vtables(Address base, bool apply_reso
         {".?AVeVehicleBrain@Actor@@", 0, &vt.vehicle_brain},
         {".?AUeAvoidGrenade@Order@@", 0, &vt.avoid_grenade},
         {".?AUeAttack@Order@@", 0, &vt.attack_order},
+        {".?AUeRotate@Order@@", 0, &vt.rotate_order},
+        {".?AVeChassisTrack@Actor@@", 0, &vt.chassis_track},
+        {".?AUeMove@Order@@", 0, &vt.move_order},
+        {".?AUeMoveToCover@Order@@", 0, &vt.move_to_cover},
         {".?AUeMoveTask@Order@@", 0, &vt.move_task_order},
         {".?AUeRepair@Order@@", 0, &vt.repair_order},
         {".?AUeSmartRepair@Order@@", 0, &vt.smart_repair_order},
@@ -392,6 +429,7 @@ inline RttiVerifyResult resolve_and_verify_vtables(Address base, bool apply_reso
         {".?AUeThrowingShooter@Weapon@Actor@@", 0, &vt.throwing_shooter},
         {".?AVeEffectDescBlastwave@Damage@@", 0, &vt.effect_blastwave},
         {".?AVeSmokeScreenExtender@Entity@@", 0, &vt.smoke_screen_ext},
+        {".?AVeCannonExtender@Entity@@", 0, &vt.cannon_ext},
         {".?AVeMapPointExtender@Entity@@", 0, &vt.map_point_ext},
         {".?AVeMapPointCaptureEngine@GamePlay@Multiplayer@@", 0, &vt.map_point_capture},
         {".?AVeSupplyZoneExtender@Entity@@", 0, &vt.supply_zone_ext},
@@ -459,7 +497,7 @@ inline bool is_inhibited_or_direct_control(Address actor, Address brain) noexcep
 }
 
 // ============================================================================
-// Universal hook lifecycle gate & RAII inflight counter (covers ALL 63 hooks).
+// Universal hook lifecycle gate & RAII inflight counter (covers all unified hooks).
 // ============================================================================
 
 inline std::atomic<std::uint32_t> global_inflight{0};

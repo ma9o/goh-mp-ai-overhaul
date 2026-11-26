@@ -1,5 +1,7 @@
 // Offline fixtures for build 26734796. No game image is loaded.
 #include "../../mods/close_grenade_module.hpp"
+#include "../../mods/auto_medic_module.hpp"
+#include "vehicle_fixture_26734796.hpp"
 #include <cassert>
 
 namespace cg = goh::close_grenade;
@@ -328,7 +330,183 @@ void wire_pair() {
     assert(cg::spawn_allowed(20, o, v, spin));
 }
 
+namespace {
+struct Marker {
+    inline static unsigned original_calls{}, hand_reads{};
+    inline static bool remote{}, worker{};
+    inline static cg::Address definition{};
+    static cg::Address hand(cg::Address) {
+        ++hand_reads;
+        return definition;
+    }
+    static void stock(cg::Address) {
+        ++original_calls;
+    }
+};
+void vanilla_throw_marker() {
+    namespace rt = goh::runtime;
+    using cg::Address;
+    using goh::test::vehicle::Memory;
+    goh::test::vehicle::FakeImage image;
+    goh::test::vehicle::FakeHuman human, ally;
+    Memory<0x100> scene, shooter, ally_vt, props;
+    Memory<0x300> weapon;
+    Memory<0x1200> def, thrower;
+    Memory<0x120> tags, keys;
+    const auto base = image.base();
+    pr::base = base;
+    sim::image_base = base;
+    human.setup(base, 11, 11, 0, 0);
+    ally.setup(base, 22, 22, 1, 0);
+    ally.actor.put(0, ally_vt.ptr());
+    ally.actor.put(0x74, pr::Vec3{14, 0, 0});
+    ally_vt.put(0x80, +[](Address) { return .5f; });
+    std::array<Address, 2> members{human.actor.ptr(), ally.actor.ptr()};
+    const auto list = reinterpret_cast<Address>(members.data());
+    scene.put(0x48, pr::Span{list, list + sizeof members});
+    image.put(0x15c9668, scene.ptr());
+    image.put(0x15c7d58, scene.ptr());
+    image.put(0x149e750, 1.f);
+    image.put(0x149e758, 100.f);
+    int sides[]{0, 2, 2, 0};
+    image.put(0x15c9700, reinterpret_cast<Address>(sides));
+    image.put(0x15c9710, 2);
+    weapon.put(0x90, human.actor.ptr());
+    weapon.put(0xb8, shooter.ptr());
+    weapon.put(0x98, thrower.ptr()); // launcher rig has a different definition
+    weapon.put(0xd0, 2u);
+    weapon.put(0xd4, pr::Vec3{10, 0, 0});
+    shooter.put(0, base + rt::table().vt.throwing_shooter);
+    shooter.put(8, weapon.ptr());
+    props.put(0, base + 0x1100908);
+    def.put(0x7d0, props.ptr());
+    def.put(0x498, 3.f);
+    tags.ename(0, "grenade");
+    tags.ename(0x60, "missile");
+    tags.ename(0xc0, "fg");
+    def.put(0x11e0, pr::Span{tags.ptr(), tags.ptr() + 0x120});
+    Marker::definition = def.ptr();
+    const auto saved = rt::table();
+    rt::table().fn.right_hand_definition = reinterpret_cast<Address>(Marker::hand) - base;
+    rt::table().auth.is_remote_client = reinterpret_cast<Address>(+[]() -> rt::Byte { return Marker::remote; }) - base;
+    rt::table().auth.is_quant_worker = reinterpret_cast<Address>(+[]() -> rt::Byte { return Marker::worker; }) - base;
+    rt::global_accepting = true;
+    cg::connect();
+    sim::original_smoke_release = Marker::stock;
+    sim::simulation_tid = GetCurrentThreadId();
+    // Drive the installed outer medic detour through the smoke router. There
+    // is no medic job, smoke intent, AT shot, or actor frame at this late marker.
+    auto veto = [&] {
+        const auto calls = Marker::original_calls;
+        const auto count = cg::stat_ff_vetoes.load();
+        goh::auto_medic::release(shooter.ptr());
+        assert(Marker::original_calls == calls || Marker::original_calls == calls + 1);
+        assert(cg::stat_ff_vetoes == count + (calls == Marker::original_calls ? 1u : 0u));
+        return calls == Marker::original_calls;
+    };
+    assert(veto()); // ally touches radius + 0.5 m + hull
+    const auto reads_before_player_throws = Marker::hand_reads;
+    Memory<0x100> attack, target;
+    target.put(0x74, weapon.get<pr::Vec3>(0xd4));
+    attack.put(0, base + rt::table().vt.attack_order);
+    human.brain.put(0xf0, attack.ptr());
+    assert(!veto()); // Explicit Attack Ground at the unsafe point.
+    weapon.put(0xd0, 1u);
+    weapon.put(0xe0, target.ptr());
+    assert(!veto()); // Explicit Attack with an entity aim in the same danger area.
+    human.brain.put(0xf0, Address(0));
+    weapon.put(0xd0, 2u);
+    weapon.put(0xe0, Address(0));
+    weapon.put(0x208, 1);
+    assert(!veto()); // Manual weapon mode alone preserves the throw.
+    assert(Marker::hand_reads == reads_before_player_throws);
+    weapon.put(0x208, 0);
+    assert(veto()); // The same point is unsafe for an autonomous throw.
+    ally.actor.put(0x74, pr::Vec3{14.01f, 0, 0});
+    assert(!veto());
+    ally.actor.put(0x74, pr::Vec3{14.f, 0, 0});
+    weapon.put(0xd4, pr::Vec3{70, 0, 0});
+    assert(!veto());
+    weapon.put(0xd4, pr::Vec3{std::numeric_limits<float>::quiet_NaN(), 0, 0});
+    assert(!veto());
+    weapon.put(0xd0, 1u);
+    weapon.put(0xe0, ally.actor.ptr());
+    assert(veto()); // type-1 eTarget reads entity+0x74 instead of the point union
+    weapon.put(0xe0, Address(0));
+    assert(!veto());
+    weapon.put(0xd0, 0u);
+    assert(!veto());
+    weapon.put(0xd0, 2u);
+    weapon.put(0xd4, pr::Vec3{10, 0, 0});
+    goh::config::active().modules.close_grenade = false;
+    assert(veto()); // independent of anti-vehicle grenade decisions
+    goh::config::active().modules.close_grenade = true;
+    goh::config::active().modules.grenade_ff_guard = false;
+    assert(!veto());
+    goh::config::active().modules.grenade_ff_guard = true;
+    def.put(0x498, .5f);
+    assert(!veto());
+    def.put(0x498, 3.f);
+    shooter.put(0, base + 0x100);
+    assert(!veto());
+    shooter.put(0, base + rt::table().vt.throwing_shooter);
+    for (auto* blocked : {&Marker::remote, &Marker::worker}) {
+        *blocked = true;
+        const auto reads = Marker::hand_reads;
+        assert(!veto() && Marker::hand_reads == reads);
+        *blocked = false;
+    }
+    sim::simulation_tid = 0;
+    assert(!veto());
+    sim::simulation_tid = GetCurrentThreadId();
+    human.brain.put(0x398, 1u | (1u << 10));
+    assert(!veto());
+    human.brain.put(0x398, 1u | (2u << 10));
+    assert(!veto());
+    human.brain.put(0x39c, 1u << 18);
+    assert(veto()); // alerted Return Fire
+    human.brain.put(0x398, 1u | (1u << 12));
+    human.brain.put(0x39c, 1u);
+    assert(!veto());
+    human.brain.put(0x39c, 0u);
+    human.chassis.put(0x18, 1);
+    assert(!veto());
+    human.chassis.put(0x18, 0);
+    human.weaponry.put(0x70, rt::Byte(2));
+    assert(!veto());
+    human.weaponry.put(0x70, rt::Byte(0));
+    human.brain.put(0, base + 0x12340);
+    assert(!veto());
+    human.brain.put(0, base + rt::table().vt.human_brain);
+    human.vit.put(0x174, 1u);
+    assert(!veto());
+    human.vit.put(0x174, 0u);
+    assert(veto()); // Hold Position
+    keys.ename(0, "grenade");
+    keys.ename(0x60, "anm8_smoke");
+    def.put(0xb80, pr::Span{keys.ptr(), keys.ptr() + 0xc0});
+    assert(!veto()); // native smoke hand always passes
+    def.put(0x498, 0.f);
+    tags.ename(0xc0, "smoke");
+    ally.actor.put(0x74, pr::Vec3{12.f, 0, 0});
+    for (auto key : {"m15_wp", "m42_wp", "no77_wp"}) {
+        keys.ename(0x60, key);
+        assert(veto()); // audited WP with no item blastwave still starts a fire
+    }
+    keys.ename(0x60, "unknown");
+    assert(!veto());
+    rt::global_accepting = false;
+    assert(!veto());
+    cg::disconnect();
+    sim::simulation_tid = 0;
+    sim::original_smoke_release = nullptr;
+    sim::image_base = pr::base = 0;
+    rt::table() = saved;
+}
+} // namespace
+
 int main() {
+    vanilla_throw_marker();
     target_priority();
     engine_volume();
     friendly_radius();

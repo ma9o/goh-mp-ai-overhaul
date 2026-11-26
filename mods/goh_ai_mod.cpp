@@ -1,14 +1,14 @@
 // Call to Arms - Gates of Hell (Steam build 26734796)
-// Unified AI Enhancement DLL coordinator (63 host-only replicating hooks across 4 TUs)
+// Unified AI Enhancement DLL coordinator (73 host-only replicating hooks across 4 TUs)
 //
 // Translation unit layout:
 //   - mods/goh_ai_mod.cpp  : PE SHA-256 + live RTTI verification, goh_ai.ini config,
-//                            leveled logging, eActor::slot23 dispatch, 63/63 inflight drain.
+//                            leveled logging, eActor::slot23 dispatch, 73/73 inflight drain.
 //   - mods/tu_combat.cpp   : Grenade Dodge, Soft-Cover LOF, Attack Detour,
 //                            Target Prioritization, Close-Range Grenades, Penetration AT.
 //   - mods/tu_infantry.cpp : AI Support, Auto-Smoke, Auto-Medic, Auto-Resupply,
-//                            Tactical Infantry, Tactical Objectives.
-//   - mods/tu_tanks.cpp    : Tank Crusher, Tank Auto-Repair, Tank Crew Fill.
+//                            Tactical Infantry, Tactical Objectives, Engine Fixes, Weapon Swap, Squad Logistics.
+//   - mods/tu_tanks.cpp    : Tank Crusher, Tank Auto-Repair, Tank Crew Fill, Tank Facing, Safe Disembark.
 //
 // All modules obey the build-26734796 non-desync invariants:
 //   - Zero resource/ edits; gated on exact call_to_arms.exe PE SHA-256 + live RTTI.
@@ -97,6 +97,7 @@ void DeactivateAllHooks() noexcept {
 }
 
 void CleanupAfterHooksRemoved() {
+    goh::coord::instance().clear_providers();
     goh::tu_tanks::after_hooks_removed();
     goh::tu_combat::after_hooks_removed();
     goh::tu_infantry::after_hooks_removed();
@@ -210,16 +211,17 @@ DWORD WINAPI InitThread(LPVOID) {
 
 } // namespace
 
-// Clean hot-unload helper (unhooks and drains all 63/63 hooks outside loader lock before FreeLibraryAndExitThread).
+// Clean hot-unload helper (unhooks and drains all 73/73 hooks outside loader lock before FreeLibraryAndExitThread).
 extern "C" __declspec(dllexport) DWORD WINAPI ShutdownAndUnload(LPVOID) {
     if (g_InitThread && WaitForSingleObject(g_InitThread, INFINITE) != WAIT_OBJECT_0) return ERROR_BUSY;
 
+    goh::tu_tanks::begin_shutdown();
     goh::tu_infantry::begin_shutdown();
     if (!goh::tu_combat::drain_quiescence()) {
         goh::log::write(goh::log::Level::summary, "Unload deferred: close grenade order or release still active");
         return ERROR_BUSY;
     }
-    if (!goh::tu_infantry::drain_quiescence()) {
+    if (!goh::tu_tanks::drain_quiescence() || !goh::tu_infantry::drain_quiescence()) {
         goh::log::write(goh::log::Level::summary,
                         "Unload deferred: watched AI move, medic order or transfer still active");
         return ERROR_BUSY;
@@ -248,15 +250,23 @@ extern "C" __declspec(dllexport) DWORD WINAPI ShutdownAndUnload(LPVOID) {
 
     goh::log::write(
         goh::log::Level::summary,
-        "=== goh_ai ShutdownAndUnload complete (dodges=%u softLOF=%u softRej=%u detInf=%u detVeh=%u smokeVeh=%u "
-        "smokeInf=%u smokeMed=%u smokeRel=%u medClaim=%u medFetch=%u medSmoke=%u medRev=%u supTrip=%u supRefill=%u "
-        "tankCtx=%u tankExp=%u tankDisc=%u tankRev=%u repFull=%u repTT=%u repEmit=%u repAssign=%u repChain=%u "
-        "repBoard=%u repPick=%u crewFill=%u/%u/%u tactOrd=%u atVolumes=%u atAmmo=%u atHolds=%u objPursue=%u "
-        "objCap=%u) ===",
-        c.dodges, c.soft_lof, c.soft_rej, c.det_inf, c.det_veh, i.smoke_veh, i.smoke_inf, i.smoke_med, i.smoke_rel,
-        i.med_claim, i.med_fetch, i.med_smoke, i.med_rev, i.sup_trip, i.sup_refill, t.tank_ctx, t.tank_exp, t.tank_disc,
-        t.tank_rev, t.rep_full, t.rep_tt, t.rep_emit, t.rep_assign, t.rep_chain, t.rep_board, t.rep_pick, t.crew_total,
-        t.crew_breed, t.crew_inf, i.tact_ord, c.at_volumes, c.at_ammo, c.at_holds, i.obj_pursue, i.obj_cap);
+        "=== goh_ai ShutdownAndUnload complete (dodges=%u plEsc=%u softLOF=%u softRej=%u detInf=%u detVeh=%u "
+        "smokeVeh=%u smokeInf=%u smokeMed=%u smokeRel=%u medClaim=%u medFetch=%u medSmoke=%u medRev=%u medBack=%u "
+        "supTrip=%u supRefill=%u tankCtx=%u tankExp=%u tankDisc=%u tankRev=%u repFull=%u repTT=%u repEmit=%u "
+        "repAssign=%u repChain=%u repBoard=%u repPick=%u crewFill=%u/%u/%u crewInternal=%u crewNonTank=%u tankFace=%u "
+        "faceRetarget=%u faceTimeout=%u tactOrd=%u ovfCov=%u dismSpr=%u atVolumes=%u atAmmo=%u atHolds=%u "
+        "settleH=%u memH=%u objPursue=%u objCap=%u healRest=%u burnEsc=%u kitSave=%u winBrk=%u holdUp=%u lullRel=%u "
+        "brdFix=%u eligFix=%u allyVeto=%u towSup=%u fastSwp=%u mslHold=%u ffVeto=%u mgDefer=%u safeDr=%u trUnld=%u "
+        "sqAmmo=%u sqBand=%u scav=%u mvNudge=%u mvRes=%u mvAbt=%u cvYld=%u cvPass=%u cvRes=%u) ===",
+        c.dodges, c.player_escapes, c.soft_lof, c.soft_rej, c.det_inf, c.det_veh, i.smoke_veh, i.smoke_inf, i.smoke_med,
+        i.smoke_rel, i.med_claim, i.med_fetch, i.med_smoke, i.med_rev, i.med_backoff, i.sup_trip, i.sup_refill,
+        t.tank_ctx, t.tank_exp, t.tank_disc, t.tank_rev, t.rep_full, t.rep_tt, t.rep_emit, t.rep_assign, t.rep_chain,
+        t.rep_board, t.rep_pick, t.crew_total, t.crew_breed, t.crew_inf, t.crew_internal, t.crew_nontank, t.tank_face,
+        t.tank_face_retargets, t.tank_face_timeouts, i.tact_ord, i.overflow_cover, i.dismount_spread, c.at_volumes,
+        c.at_ammo, c.at_holds, c.settle_holds, c.memory_holds, i.obj_pursue, i.obj_cap, i.heal, i.burn, i.kit, i.window,
+        i.stance, i.reload, i.board, i.eligible, i.allegiance_veto, i.towed_gun_suppress, i.fast_swaps, i.missile_holds,
+        c.ff_vetoes, c.mg_small_arms_defer, t.safe_doors, t.transport_unloads, i.squad_ammo, i.squad_bandages,
+        i.scavenge, i.move_nudge, i.move_resume, i.move_abort, t.convoy_yield, t.convoy_pass, t.convoy_resume);
     goh::log::close();
     FreeLibraryAndExitThread(g_SelfModule, 0);
     return 0;
@@ -268,6 +278,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID reserved) {
         DisableThreadLibraryCalls(hinstDLL);
         g_InitThread = CreateThread(nullptr, 0, InitThread, nullptr, 0, nullptr);
     } else if (fdwReason == DLL_PROCESS_DETACH) {
+        goh::tu_tanks::begin_shutdown();
         goh::tu_infantry::begin_shutdown();
         if (reserved) return TRUE; // Process termination: OS reclaims threads, patches, and allocations together.
         DeactivateAllHooks();

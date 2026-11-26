@@ -13,15 +13,6 @@ inline constexpr unsigned max_inbound_per_source = 4u;
 inline std::uint32_t stat_trips = 0;
 inline std::uint32_t stat_refilled = 0;
 inline std::uint32_t stat_returns = 0;
-inline Address extender(Address entity, Address table) {
-    auto list = span(read<Address>(entity, 0x578), 0);
-    if (list.valid(8, 1024))
-        for (auto p = list.first; p != list.end; p += 8) {
-            auto e = read<Address>(p);
-            if (e && read<Address>(e) == base + table && read<Address>(e, 0x18) == entity) return e;
-        }
-    return 0;
-}
 inline Address cached_template(Address actor) {
     const auto key = native_string(actor + 0xF0);
     const auto tree = read<Address>(base, 0x159BE88);

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <string_view>
 #include <utility>
 
@@ -137,6 +138,45 @@ inline float danger(float native, bool defanged, Infantry infantry, float metres
 }
 inline bool stray(bool solitary, bool main_without_mg, Infantry infantry, float metres) {
     return main_without_mg && solitary && infantry.known && !infantry.carries_at() && metres > 40;
+}
+struct AimSettleState {
+    float last_target_yaw{};
+    std::uint32_t acquired_tick{}, aligned_since_tick{};
+    bool seen{}, large_traverse{}, aligned{};
+};
+inline bool slow_cannon(float calibre, int capacity) {
+    return std::isfinite(calibre) && calibre >= 37.f && capacity >= 0 && capacity <= 2;
+}
+inline bool should_hold_for_settle(AimSettleState& state, bool new_target, float target_yaw, float muzzle_yaw,
+                                   int aimer_state, bool quiet, float metres, float calibre, std::uint32_t now,
+                                   float ticks_per_second, float max_seconds) {
+    constexpr float degree = 0.017453292519943295f;
+    const auto delta = [](float a, float b) { return std::abs(std::remainder(a - b, 6.28318530718f)); };
+    const bool has_muzzle = std::isfinite(muzzle_yaw);
+    if (!std::isfinite(target_yaw) || !std::isfinite(metres)) {
+        state = {};
+        return false;
+    }
+    if (new_target || !state.seen) {
+        state.large_traverse = (has_muzzle && delta(target_yaw, muzzle_yaw) >= 18.f * degree) ||
+                               (state.seen && delta(target_yaw, state.last_target_yaw) >= 18.f * degree);
+        state.acquired_tick = now;
+        state.aligned = false;
+    }
+    state.seen = true;
+    state.last_target_yaw = target_yaw;
+    if (!quiet || metres <= 35.f || now - state.acquired_tick >= max_seconds * ticks_per_second)
+        state.large_traverse = false;
+    if (!state.large_traverse) return false;
+    if ((aimer_state != 3 && aimer_state != 4) || (has_muzzle && delta(target_yaw, muzzle_yaw) > 2.5f * degree)) {
+        state.aligned = false;
+        return true;
+    }
+    if (!state.aligned) state.aligned_since_tick = now;
+    state.aligned = true;
+    if (now - state.aligned_since_tick < (calibre >= 75.f ? .50f : .35f) * ticks_per_second) return true;
+    state.large_traverse = false;
+    return false;
 }
 inline int fire_option(int mode, int option, bool quiet, float metres, bool stray_infantry, bool armored,
                        const Outcome& all, bool complete) {

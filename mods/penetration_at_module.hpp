@@ -65,7 +65,7 @@ using SetTarget = void (*)(Address, Address, int, int, int);
 inline SelectVolume original_volume{};
 inline SetTarget original_target{};
 inline std::atomic<bool> accepting{};
-inline std::atomic<unsigned> inflight{}, volumes{}, shells{}, holds{};
+inline std::atomic<unsigned> inflight{}, volumes{}, shells{}, holds{}, settle_holds{};
 inline bool staged{};
 struct Guard {
     Guard() {
@@ -85,7 +85,7 @@ inline void count(std::atomic<unsigned>& counter, const char* action) {
 }
 inline bool context(Address brain, World& w, bool allow_attack = false) {
     return accepting.load() && config::active().modules.penetration_at && pr::depth == 1 &&
-           support::callback(pr::scope.actor, w) && pr::admitted(brain, allow_attack) &&
+           support::callback(pr::scope.actor, w) && pr::admitted(brain, true) &&
            (allow_attack || !close_grenade::has_explicit_attack(brain));
 }
 inline Address observer_brain() {
@@ -496,23 +496,6 @@ inline Options vehicle_options(const World& w, Address brain, Address s, std::in
     }
     return out;
 }
-struct Target {
-    alignas(16) std::byte storage[0x80]{};
-    Address ptr() {
-        return reinterpret_cast<Address>(storage);
-    }
-    Target(const Target&) = delete;
-    Target& operator=(const Target&) = delete;
-    Target() {
-        auto vt = pr::base + 0x101FD18;
-        std::memcpy(storage, &vt, sizeof vt);
-        native<pr::Unary>(0x564D50)(ptr() + 0x20);
-    }
-    ~Target() {
-        native<void (*)(Address)>(0x853240)(ptr());
-        native<void (*)(Address)>(0x565010)(ptr() + 0x20);
-    }
-};
 template <class FromStack, class Assign, class Release>
 inline void handoff(Address out, const Proposal& v, FromStack from_stack, Assign assign, Release release) {
     alignas(16) std::byte location[0x40]{};
@@ -540,8 +523,7 @@ inline bool select_ammo(const pr::Assignment& a, Address subject, std::int16_t p
     for (unsigned i = 0; i < choices.used; ++i) {
         auto& v = choices.rows[i];
         if (v.tier == p::component_he && !choices.complete) continue;
-        Target point;
-        native<void (*)(Address, Address)>(0x853180)(point.ptr(), subject + 0x28);
+        runtime::PointTarget point(pr::base, subject + 0x28);
         int time{};
         if (native<int (*)(Address, Address, int*, Byte)>(0x833D80)(read<Address>(v.weapon, 0xa8), point.ptr(), &time,
                                                                     1) == 6)
@@ -554,37 +536,10 @@ inline bool select_ammo(const pr::Assignment& a, Address subject, std::int16_t p
     return false;
 }
 inline p::Infantry infantry(Address target) {
-    p::Infantry data;
-    if (!(read<Byte>(target, 0x30) & 4) || !pr::tag_equals(target + 0xde8, "human") || !read<Address>(target, 0x578))
-        return data;
-    auto box = native<pr::Unary>(0x7E0420)(target);
-    auto items = pr::span(box, 0x10);
-    if (!box || !items.valid(8) || items.size(8) > 4096) return data;
-    auto classify = [&](Address item) {
-        if (!item || read<int>(item, 0x48) <= 0) return;
-        auto def = read<Address>(item, 0x40);
-        data.launcher |= tagged(def, {"weapon"}) && tagged(def, {"rocketlauncher"});
-        data.rifle |= tagged(def, {"weapon"}) && tagged(def, {"at_rifle", "ptr"});
-        data.grenade |= tagged(def, {"missile", "grenade"}) && tagged(def, {"at", "ic", "dynamite"});
-    };
-    classify(pr::hand_item(target));
-    for (auto i = items.first; i != items.end; i += 8)
-        classify(read<Address>(i));
-    data.known = true;
-    return data;
+    return pr::infantry_loadout(target);
 }
 inline bool defanged(Address target) {
-    auto rows = support::span(target, 0xb90);
-    if (!rows.valid(0x28, 1024)) return false;
-    bool primary = false;
-    for (auto i = rows.first; i != rows.end; i += 0x28) {
-        if (!read<Address>(i) || read<Address>(i, 8) != target) return false;
-        auto name = tank_auto_repair::detail::component_name(read<Address>(i));
-        if (!tank_auto_repair::detail::gun(name)) continue;
-        if (!read<Byte>(i, 0x24)) return false;
-        primary |= name == "gun";
-    }
-    return primary;
+    return pr::defanged_armor(target);
 }
 inline bool quiet(const World& w, Address actor) {
     auto sensor = read<Address>(actor, 0xdd0), weaponry = read<Address>(actor, 0xdd8);
@@ -748,19 +703,111 @@ inline void select_volume(Address out, Byte skip, Address weapon, Address target
     // Use the native empty-target terminal at 0x92BA09. A second full resolver could replay up to five previews.
     native<void (*)(Address)>(0x853240)(out);
 }
+struct SettleTrack {
+    support::Identity actor{}, last_target{};
+    Address weapon{}, definition{};
+    unsigned player{};
+    runtime::Tick last_use{};
+    p::AimSettleState state{};
+};
+inline store::GrowableTable<SettleTrack, 64, 4096> settle_tracks{};
+inline Address settle_scene{};
+inline runtime::Tick settle_clock{};
+inline SettleTrack* settle_track(const World& w, Address actor, Address weapon, Address def) {
+    const auto scene = support::entity_scene(w);
+    if (scene != settle_scene || w.now < settle_clock) settle_tracks.clear();
+    settle_scene = scene;
+    settle_clock = w.now;
+    if (!scene) return nullptr;
+    SettleTrack *slot = nullptr, *oldest = nullptr;
+    for (auto& t : settle_tracks) {
+        if (t.actor.ptr == actor && t.weapon == weapon) {
+            if (t.actor.matches(actor) && t.actor.mid == read<std::uint16_t>(actor, 0xdaa) && t.definition == def &&
+                t.player == support::owner(actor))
+                return &t;
+            slot = &t;
+            break;
+        }
+        if (!slot && !t.actor.ptr) slot = &t;
+        if (!oldest || t.last_use < oldest->last_use) oldest = &t;
+    }
+    if (!slot) {
+        try {
+            slot = settle_tracks.append_slot();
+        } catch (const std::bad_alloc&) {
+            return nullptr;
+        }
+    }
+    if (!slot) {
+        if (!oldest || w.now - oldest->last_use <= w.duration(config::active().tuning.cannon_settle_max_s))
+            return nullptr;
+        slot = oldest;
+    }
+    *slot = {};
+    slot->actor = support::identity(actor);
+    slot->player = support::owner(actor);
+    slot->weapon = weapon;
+    slot->definition = def;
+    return slot;
+}
+inline bool settle_cannon(const World& w, Address actor, Address weapon, Address enemy, Vec3 point, bool calm,
+                          float metres) {
+    if (!config::active().modules.cannon_aim_settle) return false;
+    const auto def = read<Address>(weapon, 0x98), aimer = read<Address>(weapon, 0xa8);
+    const float calibre = read<float>(def, 0x1628);
+    if (!aimer || !read<Address>(weapon, 0xb0) || !p::slow_cannon(calibre, read<int>(def, 0x470)) ||
+        tagged(def, {"mgun", "flame", "auto", "autocannon", "mortar", "mrl", "rocketlauncher", "weapon_throwing"}))
+        return false;
+    auto* t = settle_track(w, actor, weapon, def);
+    if (!t) return false;
+    float muzzle_yaw = std::numeric_limits<float>::quiet_NaN();
+    auto from = read<Vec3>(actor, 0x74);
+    if (const auto bone = pr::clean_bone(weapon)) {
+        const auto axis = read<runtime::XY>(bone, 0xa8);
+        if (runtime::finite(axis) && std::hypot(axis.x, axis.y) > 1e-4f) muzzle_yaw = std::atan2(axis.y, axis.x);
+        from = pr::muzzle(weapon, bone);
+    }
+    const auto delta = pr::diff(point, from);
+    const float yaw = pr::finite(delta) && (delta.x || delta.y) ? std::atan2(delta.y, delta.x)
+                                                                : std::numeric_limits<float>::quiet_NaN();
+    const bool idle = !read<int>(weapon, 0xd0) && !t->state.large_traverse &&
+                      w.now - t->last_use > w.duration(config::active().tuning.cannon_settle_max_s);
+    const bool changed =
+        idle || !t->last_target.matches(enemy) || t->last_target.mid != read<std::uint16_t>(enemy, 0xdaa);
+    t->last_target = support::identity(enemy);
+    t->last_use = w.now;
+    return p::should_hold_for_settle(t->state, changed, yaw, muzzle_yaw, read<int>(aimer, 0x18), calm, metres, calibre,
+                                     w.now, w.ticks, config::active().tuning.cannon_settle_max_s);
+}
 inline int option_for(Address weapon, Address target, int option, int mode, Address caller) {
     if (mode != 2 || option != 3 || caller != pr::base + 0x9A85D1) return option;
     const auto brain = observer_brain();
     World w{};
     if (!brain || !weapon || !target || !context(brain, w) || pr::is_human_brain(brain) ||
-        read<Address>(weapon, 0x90) != pr::scope.actor || read<int>(target, 8) != 1 || !pr::scope.assignment ||
+        read<Address>(weapon, 0x90) != pr::scope.actor || !pr::scope.assignment ||
         pr::scope.assignment->brain != brain || !pr::current_rows(brain))
         return option;
-    auto enemy = read<Address>(target, 0x18);
+    const int kind = read<int>(target, 8);
+    Address enemy = read<Address>(target, 0x18);
+    if (kind != 1) {
+        if (!config::active().modules.cannon_aim_settle) return option;
+        if (kind == 2 && pr::scope.assignment->proposed_weapon == weapon)
+            enemy = pr::scope.assignment->proposed_target;
+        else if (kind != 3)
+            return option;
+    }
+    if (!enemy) return option;
     auto s = observation(enemy);
     if (!s || !pr::eligible_subject(brain, s) || !read<Address>(enemy, 0xdc0)) return option;
     auto distance = pr::distance(read<Vec3>(pr::scope.actor, 0x74), read<Vec3>(s, 0x28)) / w.length;
-    if (!(distance > 35) || !quiet(w, pr::scope.actor)) return option;
+    const bool calm = distance > 35.f && quiet(w, pr::scope.actor);
+    const auto point = kind == 1 ? read<Vec3>(s, 0x28) : read<Vec3>(target, 0xc);
+    if ((read<unsigned>(brain, 0x398) & 3u) <= 1 && engine_fixes::firing_permitted(brain) &&
+        settle_cannon(w, pr::scope.actor, weapon, enemy, point, calm, distance)) {
+        count(settle_holds, "settle");
+        return 0;
+    }
+    if (!calm || kind != 1) return option;
     bool armored = pr::armoured_class(enemy);
     bool isolated = false;
     Options choices;
@@ -796,6 +843,9 @@ inline void after_hooks_removed() {
     detail::original_volume = nullptr;
     detail::staged = false;
     detail::cache.release();
+    detail::settle_tracks.release();
+    detail::settle_scene = detail::settle_clock = 0;
+    detail::settle_holds = 0;
     detail::volumes = 0;
     detail::holds = 0;
     detail::shells = 0;

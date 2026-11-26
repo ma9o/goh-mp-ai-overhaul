@@ -1,5 +1,6 @@
-// Offline sanitized GEM fixtures for Tank Exterior-Passenger Crew Refill (build 26734796).
+// Offline sanitized GEM fixtures for vehicle crew redistribution and refill (build 26734796).
 #include "../../mods/tank_crew_fill_module.hpp"
+#include "vehicle_fixture_26734796.hpp"
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -12,49 +13,10 @@ using cf::Address;
 
 namespace {
 
-template <std::size_t N> struct Memory {
-    alignas(16) std::array<std::byte, N> data{};
-    Address ptr() const {
-        return reinterpret_cast<Address>(data.data());
-    }
-    template <class T> void put(std::size_t off, T v) {
-        assert(off + sizeof(v) <= N);
-        std::memcpy(data.data() + off, &v, sizeof(v));
-    }
-    template <class T> T get(std::size_t off) const {
-        assert(off + sizeof(v_dummy<T>()) <= N);
-        T v{};
-        std::memcpy(&v, data.data() + off, sizeof(v));
-        return v;
-    }
-    void ename(std::size_t off, std::string_view s) {
-        assert(s.size() <= 15);
-        std::memset(data.data() + off + 0x40, 0, 0x20);
-        if (!s.empty()) std::memcpy(data.data() + off + 0x40, s.data(), s.size());
-        put(off + 0x50, s.size());
-        put(off + 0x58, std::size_t{15});
-    }
-
-private:
-    template <class T> static T v_dummy() {
-        return T{};
-    }
-};
-
-// Fake image buffer covering vtables and dynamic ability indices (burn=0x15C6A58, sink=0x15C6A5C).
-struct FakeImage {
-    std::vector<std::byte> bytes;
-    FakeImage() : bytes(0x1600000) {
-        put<unsigned>(0x15C6A58, 1u); // burning ability bit index
-        put<unsigned>(0x15C6A5C, 2u); // sinking ability bit index
-    }
-    Address base() const {
-        return reinterpret_cast<Address>(bytes.data());
-    }
-    template <class T> void put(std::size_t off, T v) {
-        std::memcpy(bytes.data() + off, &v, sizeof(v));
-    }
-};
+using goh::test::vehicle::FakeHuman;
+using goh::test::vehicle::FakeImage;
+using goh::test::vehicle::FakeTank;
+using goh::test::vehicle::Memory;
 
 struct MoveCall {
     Address boarder{}, src_ent{}, dst_ent{};
@@ -62,12 +24,12 @@ struct MoveCall {
 };
 
 struct Harness {
-    FakeImage img{};
+    FakeImage img;
     d::World world{};
     Memory<0x100> scene{};
-    std::vector<Address> scene_entities{};
-    std::vector<MoveCall> moves{};
-    std::vector<Address> returning_list{};
+    std::vector<Address> scene_entities;
+    std::vector<MoveCall> moves;
+    std::vector<Address> returning_list;
     std::array<Memory<0x40>, 16> nodes{};
     bool worker{};
     bool remote{};
@@ -109,6 +71,7 @@ struct Harness {
 
     void install() {
         cf::after_hooks_removed();
+        goh::config::reset_defaults();
         assert(cf::init(img.base(), cf::executable_sha256));
         d::ops.is_worker = []() -> d::Byte { return current->worker ? 1 : 0; };
         d::ops.is_remote_client = []() -> d::Byte { return current->remote ? 1 : 0; };
@@ -151,198 +114,16 @@ struct Harness {
             return n;
         };
     }
-};
 
-struct FakeHuman {
-    Memory<0x1400> actor{};
-    Memory<0x400> brain{};
-    Memory<0x80> chassis{};
-    Memory<0x80> weaponry{};
-    Memory<0x40> agg{};
-    Memory<0x180> vit{};
-    Memory<0x40> link{};
-    Memory<0x600> breed{};
-    Memory<0x60> breed_tag{};
-    Memory<0x30> mech_info{};
-    Memory<0x30> medic_info{};
-    std::array<Address, 2> ability_ptrs{};
-
-    void setup(Address base, std::uint32_t id, std::uint16_t route, std::uint8_t player, Address parent_tank,
-               unsigned ctrl = 1, unsigned move_mode = 1) {
-        actor.put<d::Byte>(0x30, 0x07); // entity + actor + human
-        actor.put<unsigned>(0x38, 0);
-        actor.put<Address>(0xB0, actor.ptr() + 0x10);
-        actor.put<std::uint32_t>(0xC0, id);
-        actor.put<unsigned>(0x1C0, parent_tank ? (1u << 28) : 0u);
-        actor.put<Address>(0x560, link.ptr());
-        actor.put<Address>(0x578, agg.ptr());
-        actor.put<d::Byte>(0xDA8, player);
-        actor.put<std::uint16_t>(0xDAA, route);
-        actor.put<unsigned>(0xDB4, 0x100u);
-        actor.put<Address>(0xDC8, brain.ptr());
-        actor.put<Address>(0xDD8, weaponry.ptr());
-        actor.put<Address>(0xDE0, chassis.ptr());
-        actor.put<Address>(0x1390, breed.ptr());
-
-        link.put<Address>(0x08, parent_tank);
-        agg.put<Address>(0x18, vit.ptr());
-        vit.put<d::Byte>(0x174, 0);
-
-        chassis.put<Address>(0x10, actor.ptr());
-        chassis.put<unsigned>(0x18, 0);
-        weaponry.put<d::Byte>(0x70, 0);
-
-        brain.put<Address>(0x00, base + d::human_vt);
-        brain.put<Address>(0x38, actor.ptr());
-        brain.put<unsigned>(0x398, (ctrl & 3u) | ((move_mode & 3u) << 12));
-        // Native seated inhibition: count = 1, flag 19 set!
-        brain.put<unsigned>(0x39C, parent_tank ? ((1u << 19) | 1u) : 0u);
+    void tick(Address vehicle, unsigned elapsed = 50) {
+        world.now += elapsed;
+        cf::on_actor_post_quant(vehicle);
     }
 
-    void set_breed_tag(std::string_view tag) {
-        breed_tag.ename(0, tag);
-        breed.put<Address>(0x440, breed_tag.ptr());
-        breed.put<Address>(0x448, breed_tag.ptr() + 0x60);
-    }
-
-    void set_mechanic(Address base, float rate) {
-        mech_info.put<Address>(0x00, base + d::mechanic_info_vt);
-        mech_info.put<unsigned>(0x18, 0);
-        mech_info.put<float>(0x1C, rate);
-        ability_ptrs[0] = mech_info.ptr();
-        breed.put<Address>(0x528 + 0x20, reinterpret_cast<Address>(ability_ptrs.data()));
-        breed.put<Address>(0x528 + 0x28, reinterpret_cast<Address>(ability_ptrs.data() + 1));
-    }
-
-    void set_medic(Address base) {
-        medic_info.put<Address>(0x00, base + d::medic_info_vt);
-        ability_ptrs[0] = medic_info.ptr();
-        breed.put<Address>(0x528 + 0x20, reinterpret_cast<Address>(ability_ptrs.data()));
-        breed.put<Address>(0x528 + 0x28, reinterpret_cast<Address>(ability_ptrs.data() + 1));
-    }
-};
-
-struct FakeTank {
-    Memory<0xF00> actor{};
-    Memory<0x400> brain{};
-    Memory<0x80> chassis{};
-    Memory<0x80> weaponry{};
-    Memory<0x400> def{};
-    Memory<0x60> def_tag{};
-    Memory<0x80> placer{};
-    Memory<0xD0> boarder{};
-    Memory<0x298 * 8> slots{};
-    std::array<short, 8> occ_ids{};
-    Memory<0x60> body_name{}, track_name{};
-    Memory<0x360> body_def{}, track_def{};
-    Memory<0x28 * 2> comp_rows{};
-    Memory<0x90 * 2> walkers{};
-    Memory<0x40> door_node{};
-    Address bone_stub = 0xDEADBEEF;
-
-    void setup(Address base, std::uint32_t id, std::uint16_t route, std::uint8_t player, unsigned ctrl = 1,
-               unsigned move_mode = 1) {
-        actor.put<d::Byte>(0x30, 0x0B); // entity + actor + vehicle
-        actor.put<unsigned>(0x38, 0);
-        actor.put<float>(0x70, 1.0f); // upright
-        actor.put<Address>(0xB0, actor.ptr() + 0x10);
-        actor.put<std::uint32_t>(0xC0, id);
-        actor.put<Address>(0x548, def.ptr());
-        actor.put<Address>(0x568, placer.ptr());
-        actor.put<Address>(0x570, boarder.ptr());
-        actor.put<d::Byte>(0xDA8, player);
-        actor.put<std::uint16_t>(0xDAA, route);
-        actor.put<unsigned>(0xDB4, 0x100u);
-        actor.put<Address>(0xDC8, brain.ptr());
-        actor.put<Address>(0xDD8, weaponry.ptr());
-        actor.put<Address>(0xDE0, chassis.ptr());
-        actor.ename(0xDE8, "tank_medium");
-
-        def_tag.ename(0, "tank");
-        def.put<Address>(0x330, def_tag.ptr());
-        def.put<Address>(0x338, def_tag.ptr() + 0x60);
-
-        chassis.put<Address>(0x10, actor.ptr());
-        chassis.put<unsigned>(0x18, 0);
-        weaponry.put<d::Byte>(0x70, 0);
-
-        brain.put<Address>(0x00, base + d::vehicle_vt);
-        brain.put<Address>(0x38, actor.ptr());
-        brain.put<unsigned>(0x398, (ctrl & 3u) | ((move_mode & 3u) << 12));
-        brain.put<unsigned>(0x39C, 0);
-
-        body_name.ename(0, "body");
-        body_def.put<Address>(0x328, body_name.ptr());
-        body_def.put<Address>(0x330, body_name.ptr() + 0x60);
-        comp_rows.put<Address>(0x00, body_def.ptr());
-        comp_rows.put<Address>(0x08, actor.ptr());
-        comp_rows.put<d::Byte>(0x24, 0); // working body
-
-        track_name.ename(0, "trackleft");
-        track_def.put<Address>(0x328, track_name.ptr());
-        track_def.put<Address>(0x330, track_name.ptr() + 0x60);
-        comp_rows.put<Address>(0x28 + 0x00, track_def.ptr());
-        comp_rows.put<Address>(0x28 + 0x08, actor.ptr());
-        comp_rows.put<d::Byte>(0x28 + 0x24, 0);
-
-        actor.put<Address>(0xB90, comp_rows.ptr());
-        actor.put<Address>(0xB98, comp_rows.ptr() + 2 * 0x28);
-
-        placer.put<Address>(0x28, slots.ptr());
-        placer.put<Address>(0x30, slots.ptr() + 8 * 0x298);
-        placer.put<Address>(0x40, actor.ptr());
-        placer.put<d::Byte>(0x48, 0);
-        placer.put<d::Byte>(0x49, 1);
-
-        boarder.put<Address>(0x58, actor.ptr());
-        door_node.put<short>(0x00, -1);
-        door_node.put<int>(0x04, 1); // Door node
-    }
-
-    void set_slot_count(std::size_t n) {
-        assert(n <= 8);
-        placer.put<Address>(0x28, slots.ptr());
-        placer.put<Address>(0x30, slots.ptr() + n * 0x298);
-    }
-
-    void set_slot(std::size_t idx, std::string_view name, std::string_view group, unsigned flags,
-                  std::string_view visor, std::string_view link_bone, Address occupant, std::int32_t occ_id = -1) {
-        const std::size_t off = idx * 0x298;
-        std::memset(slots.data.data() + off, 0, 0x298);
-        slots.ename(off + 0x00, name);
-        slots.ename(off + 0x60, group);
-        if (!visor.empty()) slots.ename(off + 0xC0, visor);
-        if (!link_bone.empty()) {
-            slots.ename(off + 0x120, link_bone);
-            slots.put<Address>(off + 0x240, reinterpret_cast<Address>(&bone_stub));
-        }
-        slots.put<unsigned>(off + 0x248, flags);
-        slots.put<std::int32_t>(off + 0x250, occupant ? occ_id : -1);
-        slots.put<Address>(off + 0x280, occupant);
-    }
-
-    void set_slot_flags(std::size_t idx, unsigned flags) {
-        slots.put<unsigned>(idx * 0x298 + 0x248, flags);
-    }
-
-    void set_slot_reserved(std::size_t idx, Address reserved) {
-        slots.put<Address>(idx * 0x298 + 0x290, reserved);
-    }
-
-    void set_body_state(d::Byte state) {
-        comp_rows.put<d::Byte>(0x24, state);
-    }
-
-    void set_exit_walker(Address human) {
-        std::memset(walkers.data.data(), 0, 0x90);
-        walkers.put<Address>(0x08, human);
-        walkers.put<Address>(0x30, door_node.ptr());
-        boarder.put<Address>(0x60, walkers.ptr());
-        boarder.put<Address>(0x68, walkers.ptr() + 0x90);
-    }
-    void clear_walkers() {
-        boarder.put<Address>(0x60, 0);
-        boarder.put<Address>(0x68, 0);
+    void expect_move(std::size_t count, short src, short dst) const {
+        assert(moves.size() == count);
+        assert(moves.back().src_place == src && moves.back().dst_place == dst);
+        assert(moves.back().src_ent == moves.back().dst_ent);
     }
 };
 
@@ -391,6 +172,13 @@ void test_policy_rules() {
     // Standard hull passenger seat1
     p::SlotFacts seat1{"seat1", "passenger", 0u, false, true, true, true, false, false, 6};
     assert(p::is_hull_passenger_source(seat1));
+    auto cabin = seat1;
+    cabin.has_link_bone_name = cabin.has_resolved_bone = false;
+    assert(!p::is_hull_passenger_source(cabin) && p::is_passenger_source(cabin, false));
+    for (unsigned flag : {0x200u, 0x1000u, 0x8000u}) {
+        cabin.flags = flag;
+        assert(!p::is_passenger_source(cabin, false));
+    }
     auto seat1_empty = seat1;
     seat1_empty.occupied = false;
     assert(!p::is_hull_passenger_source(seat1_empty));
@@ -444,6 +232,7 @@ void test_policy_rules() {
 void test_priority_and_stepwise_fill() {
     Harness h;
     h.install();
+    goh::config::active().modules.internal_crew_swap = false; // Original passenger-only policy.
     FakeTank t;
     t.setup(h.img.base(), 100, 10, 1, 1, 1); // Player-owned Hold Position tank
     t.set_slot_count(6);
@@ -657,6 +446,7 @@ void test_emit_backoff_and_guards() {
 void test_ownership_remote_retry_and_rewind() {
     Harness h;
     h.install();
+    goh::config::active().modules.internal_crew_swap = false; // Isolate allied passenger admission.
     FakeTank t;
     t.setup(h.img.base(), 104, 14, 1);
     t.set_slot_count(3);
@@ -804,6 +594,294 @@ void test_breed_traits_and_additional_safety() {
     assert(h.moves[3].src_place == 1 && h.moves[3].dst_place == 0);
 }
 
+void test_internal_policy() {
+    const auto seat = [](std::string_view name, short index, bool occupied) {
+        p::SlotFacts s{};
+        s.group = "crew";
+        s.name = name;
+        s.slot_index = index;
+        s.occupied = occupied;
+        return s;
+    };
+    const auto gunner = seat("gunner", 0, false), driver = seat("driver", 1, false);
+    auto commander = seat("commander", 2, true), charger = seat("charger", 3, true);
+    auto mg = seat("gunner3", 4, true);
+    mg.flags = 0x1000;
+    p::VehicleTacticalContext ctx{};
+    ctx.has_eligible_passenger = true;
+    ctx.swap_cooldown_active = true;
+    assert(p::can_promote_internal(mg, gunner, ctx));
+    assert(p::can_promote_internal(commander, gunner, ctx));
+    assert(p::can_promote_internal(charger, driver, ctx));
+    assert(!p::can_promote_internal(charger, seat("commander", 5, false), ctx));
+    assert(!p::can_promote_internal(commander, seat("commander", 5, false), ctx));
+    assert(!p::can_promote_internal(commander, seat("gunner", 2, false), ctx));
+    auto spare = seat("spare", 6, true), empty_mg = mg;
+    empty_mg.occupied = false;
+    assert(!p::can_promote_internal(spare, empty_mg, ctx));
+    assert(!p::can_promote_internal(spare, seat("bench", 7, false), ctx));
+    for (unsigned flag : {0x200u, 0x8000u}) {
+        mg.flags = 0x1000u | flag;
+        assert(!p::is_internal_crew_source(mg));
+    }
+    mg.flags = 0x1000u | (1u << 13); // The stock placer's temporary donor mark.
+    assert(p::is_internal_crew_source(mg));
+    auto secondary = mg;
+    secondary.is_cannon_gunner = true;
+    const p::PassengerFacts trained{true, true, 1.f}, infantry{};
+    assert(p::better_internal_source({spare, infantry}, {mg, trained}));
+    assert(p::better_internal_source({mg, infantry}, {secondary, trained}));
+    assert(p::better_internal_source({secondary, infantry}, {commander, trained}));
+    assert(p::better_internal_source({commander, trained}, {commander, infantry}));
+    assert(p::better_internal_source({commander, trained}, {seat("commander", 7, true), trained}));
+
+    const auto driving = seat("driver", 1, true), gunning = seat("gunner", 0, true);
+    for (unsigned flags = 0; flags < 64; ++flags) {
+        ctx.immobilized = flags & 1u;
+        ctx.has_move_order = flags & 2u;
+        ctx.has_visible_enemy = flags & 4u;
+        ctx.swap_cooldown_active = flags & 8u;
+        ctx.has_eligible_passenger = flags & 16u;
+        ctx.occupied_crew_count = (flags & 32u) ? 2u : 1u;
+        const bool driver_to_gunner = p::can_promote_internal(driving, gunner, ctx);
+        const bool gunner_to_driver = p::can_promote_internal(gunning, driver, ctx);
+        const bool last_resort = !ctx.has_eligible_passenger && !ctx.swap_cooldown_active;
+        assert(driver_to_gunner == (last_resort && !ctx.has_move_order && (ctx.has_visible_enemy || ctx.immobilized)));
+        assert(gunner_to_driver ==
+               (last_resort && ctx.occupied_crew_count == 1 && ctx.has_move_order && !ctx.immobilized));
+        assert(!(driver_to_gunner && gunner_to_driver));
+    }
+}
+
+void test_internal_then_passenger(bool returning_repairer) {
+    Harness h;
+    h.install();
+    FakeTank t;
+    t.setup(h.img.base(), 106, 16, 1);
+    FakeHuman commander, rider;
+    commander.setup(h.img.base(), 260, 80, 1, t.actor.ptr());
+    commander.set_breed_tag("crew");
+    rider.setup(h.img.base(), 261, 81, 1, t.actor.ptr());
+    t.set_slot_count(3);
+    t.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
+    t.set_slot(1, "commander", "crew", 0x3000u, "around", "", commander.actor.ptr(), 260);
+    t.set_slot(2, "seat1", "passenger", 0, "", "seat01", rider.actor.ptr(), 261);
+    FakeHuman repairer;
+    if (returning_repairer) h.returning_list = {repairer.actor.ptr()};
+
+    t.set_slot_reserved(0, repairer.actor.ptr());
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+    t.set_slot_reserved(0, 0);
+    h.tick(t.actor.ptr());
+    h.expect_move(1, 1, 0);
+    h.tick(t.actor.ptr(), 0);
+    assert(h.moves.size() == 1);
+    if (returning_repairer) {
+        h.tick(t.actor.ptr());
+        assert(h.moves.size() == 1 && cf::stat_deferred_repair == 1);
+        h.returning_list.clear();
+    }
+    h.tick(t.actor.ptr());
+    h.expect_move(2, 2, 1);
+    assert(cf::stat_transfers_internal == 1 && cf::stat_transfers_nontank == 0);
+}
+
+void test_emergency_swap_timing() {
+    Harness h;
+    h.install();
+    FakeTank t;
+    t.setup(h.img.base(), 107, 17, 1);
+    FakeHuman driver, rider;
+    driver.setup(h.img.base(), 270, 82, 1, t.actor.ptr());
+    rider.setup(h.img.base(), 271, 83, 1, t.actor.ptr());
+    t.set_slot_count(3);
+    t.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
+    t.set_slot(1, "driver", "crew", 0x1000u, "driver", "", driver.actor.ptr(), 270);
+    Memory<0x20> subject{};
+    std::array<Address, 2> subjects{0, subject.ptr()};
+    t.brain.put<Address>(0x3A0, reinterpret_cast<Address>(subjects.data()));
+    t.brain.put<Address>(0x3A8, reinterpret_cast<Address>(subjects.data() + subjects.size()));
+    subject.put<unsigned>(0x10, 1u << 28);
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+
+    subject.put<unsigned>(0x10, 1u << 29);
+    for (unsigned bit : {6u, 9u, 28u}) {
+        t.brain.put<unsigned>(0x39C, 1u << bit);
+        h.tick(t.actor.ptr());
+        assert(h.moves.empty());
+    }
+    t.brain.put<unsigned>(0x39C, 0);
+    Memory<0x68> move_task{};
+    move_task.put<Address>(0, h.img.base() + goh::runtime::table().vt.move_task_order);
+    move_task.put<Address>(8, t.actor.ptr() + 0xAF0);
+    t.brain.put<Address>(0xF0, move_task.ptr());
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+    t.brain.put<Address>(0xF0, 0);
+
+    // A passenger awaiting a repairer's return still protects the driver's role.
+    t.set_slot(2, "seat1", "passenger", 0, "", "seat01", rider.actor.ptr(), 271);
+    FakeHuman repairer;
+    h.returning_list = {repairer.actor.ptr()};
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+    t.set_slot(2, "seat1", "passenger", 0, "", "seat01", 0);
+    h.tick(t.actor.ptr());
+    h.expect_move(1, 1, 0);
+    t.brain.put<Address>(0xF0, move_task.ptr());
+    h.tick(t.actor.ptr(), 2999);
+    assert(h.moves.size() == 1);
+    h.tick(t.actor.ptr(), 1);
+    h.expect_move(2, 0, 1);
+    t.brain.put<Address>(0xF0, 0);
+    h.tick(t.actor.ptr(), 2999);
+    assert(h.moves.size() == 2);
+    subject.put<unsigned>(0x10, 0);
+    t.comp_rows.put<d::Byte>(0x28 + 0x24, 2); // Damaged track, clear field of view.
+    h.tick(t.actor.ptr(), 1);
+    h.expect_move(3, 1, 0);
+    t.brain.put<unsigned>(0x39C, 1u << 28);
+    h.tick(t.actor.ptr(), 3000);
+    assert(h.moves.size() == 3); // A move order alone cannot make this tank mobile.
+    assert(cf::stat_transfers_internal == 3);
+}
+
+void test_internal_donor_selection() {
+    Harness h;
+    h.install();
+    goh::config::active().modules.nontank_crew_fill = false;
+    FakeTank t;
+    t.setup(h.img.base(), 110, 20, 1);
+    FakeHuman commander, bow_gunner, loader;
+    commander.setup(h.img.base(), 300, 89, 1, t.actor.ptr());
+    commander.set_breed_tag("crew");
+    bow_gunner.setup(h.img.base(), 301, 90, 1, t.actor.ptr());
+    loader.setup(h.img.base(), 302, 91, 1, t.actor.ptr());
+    t.set_slot_count(5);
+    t.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
+    t.set_slot(1, "driver", "crew", 0x1000u, "driver", "", 0);
+    t.set_slot(2, "commander", "crew", 0x1000u, "around", "", commander.actor.ptr(), 300);
+    t.set_slot(3, "gunner3", "crew", 0x1000u, "bow", "", bow_gunner.actor.ptr(), 301);
+    t.set_slot(4, "charger", "crew", 0x1000u, "", "", loader.actor.ptr(), 302);
+    h.tick(t.actor.ptr());
+    h.expect_move(1, 3, 0); // Preserve the trained commander and the main loader.
+    commander.chassis.put<unsigned>(0x18, 1);
+    h.tick(t.actor.ptr());
+    h.expect_move(2, 4, 1); // Charger covers driver while commander is in Direct Control.
+    h.tick(t.actor.ptr());
+    assert(h.moves.size() == 2);
+}
+
+void test_wheeled_mobility_damage(std::size_t damaged_row) {
+    Harness h;
+    h.install();
+    FakeTank t;
+    t.setup(h.img.base(), 111, 21, 1);
+    t.set_wheeled("armoredcar");
+    FakeHuman driver;
+    driver.setup(h.img.base(), 303, 92, 1, t.actor.ptr());
+    t.set_slot_count(2);
+    t.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
+    t.set_slot(1, "driver", "crew", 0x1000u, "driver", "", driver.actor.ptr(), 303);
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+
+    t.comp_rows.put<d::Byte>(damaged_row * 0x28 + 0x24, 1);
+    h.move_result = false;
+    h.tick(t.actor.ptr());
+    h.expect_move(1, 1, 0);
+    assert(cf::stat_transfer_failures == 1 && cf::stat_transfers_internal == 0 && cf::stat_transfers_nontank == 0);
+    h.move_result = true;
+    h.tick(t.actor.ptr(), 999);
+    assert(h.moves.size() == 1);
+    h.tick(t.actor.ptr(), 1); // Failed swap armed only the retry delay.
+    h.expect_move(2, 1, 0);
+    assert(cf::stat_transfers_internal == 1 && cf::stat_transfers_nontank == 1);
+}
+
+void test_nontank_passengers(std::string_view type, std::string_view destination, std::string_view bone) {
+    Harness h;
+    h.install();
+    FakeTank t;
+    t.setup(h.img.base(), 108, 18, 1);
+    t.set_wheeled(type);
+    FakeHuman rider, roof_mg, apc_driver, apc_commander;
+    rider.setup(h.img.base(), 280, 84, 1, t.actor.ptr());
+    roof_mg.setup(h.img.base(), 281, 85, 1, t.actor.ptr());
+    apc_driver.setup(h.img.base(), 282, 86, 1, t.actor.ptr());
+    apc_commander.setup(h.img.base(), 283, 87, 1, t.actor.ptr());
+    t.set_slot_count(5);
+    t.set_slot(0, destination, "crew", 0x1000u, "front", "", 0);
+    t.set_slot(1, "gunner2", "passenger", 0x1000u, "top", "roof", roof_mg.actor.ptr(), 281);
+    t.set_slot(2, "driver", "passenger", 0x1000u, "", "", apc_driver.actor.ptr(), 282);
+    t.set_slot(3, "commander", "passenger", 0, "around", "", apc_commander.actor.ptr(), 283);
+    t.set_slot(4, "seat1", "passenger", 0, "", "unresolved", rider.actor.ptr(), 280);
+    t.slots.put<Address>(4 * 0x298 + 0x240, 0);
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+    t.set_slot(4, "seat1", "passenger", 0, "", bone, rider.actor.ptr(), 280);
+    auto& modules = goh::config::active().modules;
+    modules.nontank_crew_fill = false;
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+    modules.nontank_crew_fill = true;
+    modules.tank_crew_fill = false;
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+    modules.tank_crew_fill = true;
+    modules.internal_crew_swap = false;
+    h.tick(t.actor.ptr());
+    h.expect_move(1, 4, 0);
+    assert(cf::stat_transfers_internal == 0 && cf::stat_transfers_nontank == 1);
+}
+
+void test_cannon_guards() {
+    Harness h;
+    h.install();
+    FakeTank t;
+    t.setup(h.img.base(), 109, 19, 1);
+    t.actor.ename(0xDE8, "cannon_small");
+    t.actor.put<Address>(0xB98, t.comp_rows.ptr()); // No body or tracks.
+    FakeHuman commander;
+    commander.setup(h.img.base(), 290, 88, 1, t.actor.ptr());
+    t.set_slot_count(2);
+    t.set_slot(0, "gunner", "crew", 0x1000u, "main", "", 0);
+    t.set_slot(1, "commander", "crew", 0x1000u, "around", "", commander.actor.ptr(), 290);
+    Memory<0x40> aggregate{};
+    Memory<0xC38> cannon{};
+    const Address extender = cannon.ptr();
+    aggregate.put<Address>(0, reinterpret_cast<Address>(&extender));
+    aggregate.put<Address>(8, reinterpret_cast<Address>(&extender + 1));
+    t.actor.put<Address>(0x578, aggregate.ptr());
+    cannon.put<Address>(0, h.img.base() + goh::runtime::table().vt.cannon_ext);
+    cannon.put<Address>(0x18, commander.actor.ptr());
+    assert(!cf::support::extender(t.actor.ptr(), goh::runtime::table().vt.cannon_ext, h.img.base()));
+    cannon.put<Address>(0x18, t.actor.ptr());
+    for (int state : {1, 2, 3}) {
+        cannon.put<int>(0xC30, state);
+        h.tick(t.actor.ptr());
+        assert(h.moves.empty());
+    }
+    cannon.put<int>(0xC30, 0);
+    t.actor.put<Address>(0xB98, t.comp_rows.ptr() + 1);
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+    t.actor.put<Address>(0xB98, t.comp_rows.ptr());
+    t.actor.put<unsigned>(0x1C0, 1u << 28);
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+    t.actor.put<unsigned>(0x1C0, 0);
+    goh::config::active().modules.internal_crew_swap = false;
+    h.tick(t.actor.ptr());
+    assert(h.moves.empty());
+    goh::config::active().modules.internal_crew_swap = true;
+    h.tick(t.actor.ptr());
+    h.expect_move(1, 1, 0);
+    assert(cf::stat_transfers_internal == 1 && cf::stat_transfers_nontank == 1);
+}
+
 } // namespace
 
 int main() {
@@ -814,6 +892,17 @@ int main() {
     test_emit_backoff_and_guards();
     test_ownership_remote_retry_and_rewind();
     test_breed_traits_and_additional_safety();
+    test_internal_policy();
+    test_internal_then_passenger(false);
+    test_internal_then_passenger(true);
+    test_emergency_swap_timing();
+    test_internal_donor_selection();
+    test_wheeled_mobility_damage(0); // Engine.
+    test_wheeled_mobility_damage(1); // Wheel.
+    test_nontank_passengers("halftrack", "gunner", "seat01");
+    test_nontank_passengers("truck", "driver", "");
+    test_nontank_passengers("armoredcar", "gunner", "");
+    test_cannon_guards();
     std::printf("test_tank_crew_fill_26734796: ALL PASSED\n");
     return 0;
 }

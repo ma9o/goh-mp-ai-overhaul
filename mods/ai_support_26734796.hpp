@@ -3,6 +3,7 @@
 // Shared native boundaries for Auto-Medic and Auto-Resupply. See both build notes.
 #include "auto_smoke_module.hpp"
 #include <array>
+#include <limits>
 #include <string_view>
 
 namespace goh::ai_support {
@@ -71,6 +72,15 @@ struct Span {
 };
 inline Span span(Address object, unsigned offset) {
     return object ? read<Span>(object, offset) : Span{};
+}
+inline Address extender(Address entity, Address table, Address image = base) {
+    const auto list = span(read<Address>(entity, 0x578), 0);
+    if (list.valid(sizeof(Address), 1024))
+        for (auto p = list.first; p != list.end; p += sizeof(Address)) {
+            const auto e = read<Address>(p);
+            if (e && read<Address>(e) == image + table && read<Address>(e, 0x18) == entity) return e;
+        }
+    return 0;
 }
 inline std::string_view native_string(Address str) {
     auto len = read<std::size_t>(str, 0x10), cap = read<std::size_t>(str, 0x18);
@@ -248,11 +258,106 @@ inline bool inventory_free(Address actor) {
     auto m = manager(actor);
     return m && !read<Address>(m, 0xC8) && read<Address>(m, 0xA8) == read<Address>(m, 0xB0);
 }
+// Two stock locations and a private operation builder. The source cell
+// constructor takes an explicit amount. The destination leaves cell allocation
+// to Xchange. Destruction unlinks both borrowed entity receivers.
+struct InventoryCalls {
+    template <class Fn> static Fn get(Address rva) {
+        return native<Fn>(rva);
+    }
+};
+template <class Calls = InventoryCalls>
+inline int exchange_amount(Address donor, Address receiver, Address item, int amount) {
+    const auto from = box(donor), to = box(receiver);
+    if (!from || !to || from == to || !item || read<Address>(item, 0x30) != from || amount <= 0 ||
+        amount > read<int>(item, 0x48))
+        return -1;
+    alignas(16) std::byte source[0x40]{}, dest[0x40]{}, builder[0x100]{};
+    const auto cell = read<std::uint16_t>(item, 0x29);
+    Calls::template get<void* (*)(void*, Address, const std::uint16_t*, int)>(0x7E1D50)(source, from, &cell, amount);
+    Calls::template get<void* (*)(void*, Address)>(0x7E1CE0)(dest, to);
+    int action = -1;
+    if (Calls::template get<Address (*)(void*)>(0x7E1F40)(source) == item) {
+        Calls::template get<void* (*)(void*, const char*)>(0x7DF910)(builder, "Xchange");
+        Calls::template get<void* (*)(void*, void*)>(0x7DFEE0)(builder, source);
+        Calls::template get<void* (*)(void*, void*)>(0x7E35E0)(builder + 0x40, dest);
+        Calls::template get<int* (*)(void*, int*)>(0x7DFBF0)(builder, &action);
+        Calls::template get<void (*)(void*)>(0x7DFE00)(builder);
+    }
+    Calls::template get<void (*)(void*)>(0x7E1EC0)(dest);
+    Calls::template get<void (*)(void*)>(0x7E1EC0)(source);
+    return action;
+}
+
+struct LooseStack {
+    int total{-1};
+    Address item{};
+    int count{};
+};
+// Count unreserved, positive stacks in their owning box. Chamber contents belong to their gun.
+template <class Matches> inline LooseStack loose_stacks(Address actor, Matches matches) {
+    const auto container = box(actor);
+    const Span rows = span(container, 0x10);
+    if (!container || !rows.valid(sizeof(Address), 2048)) return {};
+    LooseStack result{0, 0, 0};
+    for (auto p = rows.first; p != rows.end; p += sizeof(Address)) {
+        const auto item = read<Address>(p);
+        if (!item || read<Address>(item, 0x30) != container || read<Address>(item, 0x38) ||
+            read<Address>(item, 0x10) != read<Address>(item, 0x18) || read<Address>(item, 0x50))
+            continue;
+        const int count = read<int>(item, 0x48);
+        const auto def = read<Address>(item, 0x40);
+        if (!def || count <= 0 || !matches(def)) continue;
+        if (count > (std::numeric_limits<int>::max)() - result.total) return {};
+        result.total += count;
+        if (count > result.count) {
+            result.item = item;
+            result.count = count;
+        }
+    }
+    return result;
+}
+inline LooseStack loose_ammo(Address actor, Address gun_def, BinaryTest matches = native<BinaryTest>(0x565A50)) {
+    if (!gun_def) return {};
+    return loose_stacks(actor, [=](Address def) { return matches(def + 0xEC8, gun_def + 0x120) != 0; });
+}
 inline bool tag(Span rows, const char* name) {
     if (rows.valid(0x60, 4096))
         for (auto p = rows.first; p != rows.end; p += 0x60)
             if (smoke::SmokeTagEquals(p, name)) return true;
     return false;
+}
+inline bool has_destruction_tag(Address a) {
+    const auto def = read<Address>(a, 0x548);
+    const auto tags = span(a, 0x4E8), def_tags = span(def, 0x330);
+    if (!tags.valid(0x60, 4096) || !def_tags.valid(0x60, 4096)) return true;
+    for (const char* name : {"destroyed", "exploded", "abandoned"})
+        if (tag(tags, name) || tag(def_tags, name)) return true;
+    return false;
+}
+inline bool tank_class(Address a) {
+    return classify::is_tank_or_bullet_class(native_string(a + 0xDE8 + 0x40)) ||
+           tag(span(read<Address>(a, 0x548), 0x330), "tank");
+}
+inline Address authorized_vehicle_brain(Address image, Address a, bool allow_linked = false) {
+    if (!smoke::has_actor(a) || !(read<Byte>(a, 0x30) & 8) || owner(a) >= 18 || !read<std::uint16_t>(a, 0xDAA) ||
+        (!allow_linked && (read<unsigned>(a, 0x1C0) & (1u << 28))))
+        return 0;
+    const auto b = read<Address>(a, 0xDC8), ch = read<Address>(a, 0xDE0);
+    if (!b || read<Address>(b) != image + runtime::table().vt.vehicle_brain || read<Address>(b, 0x38) != a ||
+        (read<unsigned>(b, 0x398) & 3u) > 1u || !ch || read<Address>(ch, 0x10) != a || !read<Address>(a, 0xDD8) ||
+        runtime::is_inhibited_or_direct_control(a, b))
+        return 0;
+    return read<Address>(a, 0x548) && !has_destruction_tag(a) ? b : 0;
+}
+inline Address autonomous_vehicle_brain(Address image, Address a) {
+    const auto b = authorized_vehicle_brain(image, a);
+    if (!b || !(read<float>(a, 0x70) >= 0.34202014f)) return 0;
+    for (const Address ability : {0x15C6A58u, 0x15C6A5Cu}) {
+        const auto bit = read<unsigned>(image, ability);
+        if (bit < 32 && (read<Byte>(a, 0xDAD + bit / 8) & (1u << (bit % 8)))) return 0;
+    }
+    return b;
 }
 inline bool working_hull(Address actor) {
     auto parts = span(actor, 0xB90);

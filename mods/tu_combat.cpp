@@ -106,15 +106,20 @@ void with_actor_quant(runtime::Address actor, ActorQuantNextFn next, void* ctx) 
     } tp_scope(actor);
 
     const unsigned grenade_actor_id = close_grenade::poll_identity(actor);
+    const unsigned squad_actor_id = close_grenade::poll_squad_identity(actor);
     next(actor, ctx);
     if (runtime::global_accepting.load(std::memory_order_acquire)) {
         close_grenade::poll(actor, grenade_actor_id);
+        close_grenade::poll_squad_settle(actor, squad_actor_id);
     }
 }
 
 Stats snapshot_stats() noexcept {
     Stats s{};
+    s.ff_vetoes = close_grenade::stat_ff_vetoes.load(std::memory_order_relaxed);
+    s.mg_small_arms_defer = close_grenade::stat_mg_small_arms_defer.load(std::memory_order_relaxed);
     s.dodges = grenade_dodge::total_dodges();
+    s.player_escapes = grenade_dodge::total_player_escapes_preserved();
     s.soft_lof = lof_detour::total_soft_overrides();
     s.soft_rej = lof_detour::total_soft_rejects();
     s.det_inf = lof_detour::total_detours_inf();
@@ -122,6 +127,8 @@ Stats snapshot_stats() noexcept {
     s.at_volumes = penetration_at::detail::volumes.load(std::memory_order_relaxed);
     s.at_ammo = penetration_at::detail::shells.load(std::memory_order_relaxed);
     s.at_holds = penetration_at::detail::holds.load(std::memory_order_relaxed);
+    s.settle_holds = penetration_at::detail::settle_holds.load(std::memory_order_relaxed);
+    s.memory_holds = target_prio::stat_memory_holds.load(std::memory_order_relaxed);
     return s;
 }
 
