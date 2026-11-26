@@ -1,5 +1,9 @@
 #pragma once
 
+#include "actor_coordinator.hpp"
+#include "config_and_log.hpp"
+#include "dynamic_store.hpp"
+#include "game_classifiers.hpp"
 #include "tactical_objectives_policy.hpp"
 #include "ai_support_26734796.hpp"
 #include "auto_medic_module.hpp"
@@ -61,12 +65,13 @@ struct Unit : Row {
     std::uint64_t revision{};
     s::Identity arrived_flag{};
 };
-inline std::array<GroupState, 128> squads{};
-inline std::array<GroupState, 512> solos{};
-inline std::array<Unit, 1024> units{};
+inline store::StableTable<GroupState, 32, 2048> squads{};
+inline store::StableTable<GroupState, 64, 4096> solos{};
+inline store::StableTable<Unit, 128, 8192> units{};
 
 // Recycle an expired identity even if its native address and ID were reused.
-template <class T, std::size_t N> T* row(std::array<T, N>& rows, Key key, double now) {
+template <class Table> auto* row(Table& rows, Key key, double now) {
+    using T = typename Table::value_type;
     T* free = nullptr;
     for (auto& r : rows) {
         if (!r.key.ptr || now - r.touched > 60) {
@@ -76,6 +81,7 @@ template <class T, std::size_t N> T* row(std::array<T, N>& rows, Key key, double
             return &r;
         }
     }
+    if (!free) free = store::try_append_slot(rows);
     if (free) {
         *free = {};
         free->key = key;
@@ -113,13 +119,13 @@ struct Trip {
     Unit* unit{};
     GroupState* state{};
 };
-inline std::array<Trip, 256> trips{};
-inline std::array<Cooldown, 256> cooldowns{};
+inline store::StableTable<Trip, 64, 2048> trips{};
+inline store::StableTable<Cooldown, 64, 4096> cooldowns{};
 struct Flag {
     s::Identity entity{};
     XY xy{};
 };
-inline std::array<Flag, 32> flags{};
+inline store::GrowableTable<Flag, 32, 256> flags{};
 inline unsigned flag_count{};
 inline double flag_sample = p::never;
 inline Trip* trip(Key actor) {
@@ -138,6 +144,7 @@ inline Cooldown* reserve(Key actor, const Target& target, double now) {
         if (c.until > now && c.same(actor, target)) return nullptr;
         if (!free && (!c.who.ptr || c.until <= now)) free = &c;
     }
+    if (!free) free = cooldowns.append_slot();
     if (free) *free = {actor, target, std::numeric_limits<double>::infinity()};
     return free;
 }
@@ -145,6 +152,14 @@ inline void stop(Trip& t, double now, p::Result result) {
     if (t.backoff) t.backoff->until = now + p::cooldown(result);
     t.order.abandon();
     t = {};
+}
+inline void preempt_actor(Address actor) {
+    for (auto& t : trips) {
+        if (t.actor.ptr == actor) {
+            t.order.abandon();
+            t = {};
+        }
+    }
 }
 inline void clear() {
     for (auto& t : trips) {
@@ -159,6 +174,15 @@ inline void clear() {
     flag_count = 0;
     flag_sample = p::never;
     epoch = {};
+}
+inline void release_tables() {
+    clear();
+    trips.release();
+    squads.release();
+    solos.release();
+    units.release();
+    cooldowns.release();
+    flags.release();
 }
 inline void advance(Address scene, const World& w) {
     if (epoch.changed(scene, w.now))
@@ -186,8 +210,10 @@ inline bool protected_order(Address a, Address b) {
     return o != 0;
 }
 inline bool busy(const World& w, Address a, bool external) {
-    return external || auto_medic::occupied(a) || auto_resupply::occupied(a) || sim::is_busy(w, a) ||
-           tank_auto_repair::is_busy(a);
+    return external ||
+           !coord::instance().can_act(a, coord::Module::tactical_objectives, coord::Priority::tactical_objectives,
+                                      read<unsigned>(a, 0xC0), w.now) ||
+           auto_medic::occupied(a) || auto_resupply::occupied(a) || sim::is_busy(w, a) || tank_auto_repair::is_busy(a);
 }
 inline bool admit(const World& w, Address a, bool external) {
     if (!s::autonomous_if(a, true, p::allows)) return false;
@@ -245,10 +271,8 @@ inline void item_role(Address item, Role& role) {
     if (!item || read<int>(item, 0x48) <= 0) return;
     Address def = read<Address>(item, 0x40);
     if (!def || !s::span(def, 0x11e0).valid(0x60, 4096)) return;
-    bool launcher = pr::has_tag(def, "rocketlauncher") || pr::has_tag(def, "ptr") || pr::has_tag(def, "at_rifle");
-    role.support |= launcher || pr::has_tag(def, "mgun") || pr::has_tag(def, "sniper");
-    role.at |= launcher || (pr::has_tag(def, "missile") && pr::has_tag(def, "grenade") &&
-                            (pr::has_tag(def, "at") || pr::has_tag(def, "dynamite") || pr::has_tag(def, "ic")));
+    role.support |= classify::def_is_heavy_support_weapon(def);
+    role.at |= classify::def_is_at_weapon(def);
 }
 inline Role role_of(Address a) {
     Role r;
@@ -343,7 +367,7 @@ inline void observe(const World& w, Address a, XY center, p::Contacts& out, bool
         bool armor = read<float>(sub, 0x58) > 0;
         if (visible && enemy && sim::has_actor(enemy)) {
             auto tag = s::native_string(enemy + 0xde8 + 0x40);
-            armor = tag.substr(0, 4) == "tank" || tag == "armoredcar" || tag == "armoredcar_l";
+            armor = tag.substr(0, 4) == "tank" || classify::is_armored_vehicle_class(tag);
         }
         out.add({enemy, xy, seen, read<float>(sub, 0x48), armor, (rel & 0x180) != 0, visible});
     }
@@ -395,7 +419,12 @@ inline void sample_flags(const World& w) {
     flag_sample = seconds(w);
     flag_count = 0;
     s::actors(w, [&](Address a) {
-        if (flag_count < flags.size() && flag_point(a)) flags[flag_count++] = {s::identity(a), position(a, w)};
+        if (!flag_point(a)) return;
+        Flag* slot = flag_count < flags.size() ? &flags[flag_count] : flags.append_slot();
+        if (slot) {
+            *slot = {s::identity(a), position(a, w)};
+            ++flag_count;
+        }
     });
 }
 
@@ -404,17 +433,18 @@ inline bool choose_flag(const World& w, Address a, const Group& g, const GroupSt
     auto self = position(a, w), anchor = state.anchor.xy;
     const auto& contacts = state.contacts;
     const Key key = actor_key(a);
+    const float cap_r = config::active().tuning.objectives_cap_radius_m;
     double now = seconds(w);
     float best = std::numeric_limits<float>::infinity();
     for (unsigned i = 0; i < flag_count; ++i) {
         const auto& flag = flags[i];
-        if (!p::in_leash(Kind::cap, flag.xy, self, g.center, anchor)) continue;
+        if (!p::in_leash(Kind::cap, flag.xy, self, g.center, anchor, 50.f, cap_r)) continue;
         Address live = s::resolve(w, flag.entity);
         if (flag_state(live, a, mine) != FlagState::unfinished) continue;
         XY point = position(live, w);
         if (p::within_radius(self, point, 6.5f)) return false;
         if (!p::cap_allowed(contacts, point, self, g.center, anchor, p::cap_strength(force.mobile, force.eligible),
-                            false, now))
+                            false, now, cap_r))
             continue;
         const Target candidate{Kind::cap, 0, flag.entity, point};
         if (cooling(key, candidate, now)) continue;
@@ -447,7 +477,8 @@ inline bool choose(const World& w, Address a, const Group& g, const GroupState& 
         viable_pursuit = true;
         return !cooling(key, {Kind::pursue, o.enemy, {}, o.xy}, now);
     };
-    if (const auto* enemy = contacts.pursue(self, g.center, anchor, force.mobile, force.at, now, available)) {
+    if (const auto* enemy = contacts.pursue(self, g.center, anchor, force.mobile, force.at, now, available,
+                                            config::active().tuning.objectives_pursue_radius_m)) {
         if (force.self.support) return false;
         out = {Kind::pursue, enemy->enemy, {}, enemy->xy};
         return true;
@@ -465,15 +496,18 @@ inline bool destination(const World& w, Address a, const Group& g, const GroupSt
     auto start = s::pos(a);
     Address place = target.kind == Kind::pursue ? pr::selected_place(a) : 0;
     float range = place ? s::native<float (*)(Address)>(0x81f660)(place) / w.length : 0;
-    return p::destination(target.kind, target.xy, g.center, state.anchor.xy, range, force.slot, [&](XY spot) {
-        if (target.kind == Kind::cap && !p::reaches_cap(position(a, w), spot, target.xy)) return false;
-        for (unsigned i = 0; i < g.count; ++i)
-            if (g.members[i] != a && p::distance(spot, position(g.members[i], w)) < 2.5f) return false;
-        for (const auto& t : trips)
-            if (t.actor.ptr && p::distance(spot, t.goal) < 2.5f) return false;
-        goal = {spot.x * w.length, spot.y * w.length, start.z};
-        return s::ground(w, goal) && s::corridor(w, path, start, goal);
-    });
+    return p::destination(
+        target.kind, target.xy, g.center, state.anchor.xy, range, force.slot,
+        [&](XY spot) {
+            if (target.kind == Kind::cap && !p::reaches_cap(position(a, w), spot, target.xy)) return false;
+            for (unsigned i = 0; i < g.count; ++i)
+                if (g.members[i] != a && p::distance(spot, position(g.members[i], w)) < 2.5f) return false;
+            for (const auto& t : trips)
+                if (t.actor.ptr && p::distance(spot, t.goal) < 2.5f) return false;
+            goal = {spot.x * w.length, spot.y * w.length, start.z};
+            return s::ground(w, goal) && s::corridor(w, path, start, goal);
+        },
+        config::active().tuning.objectives_pursue_radius_m, config::active().tuning.objectives_cap_radius_m);
 }
 inline bool scope_ok(const World& w) {
     return accepting.load() && s::accepting.load() && s::base && epoch.scene &&
@@ -507,8 +541,15 @@ inline void record_issue(Kind kind) {
 }
 inline void issue(const World& w, Address a, const Group& g, GroupState& state, Unit& u, const Force& f,
                   const Target& target) {
-    auto slot = std::find_if(trips.begin(), trips.end(), [](const Trip& t) { return !t.actor.ptr; });
-    if (slot == trips.end()) return;
+    Trip* slot = nullptr;
+    for (auto& t : trips) {
+        if (!t.actor.ptr) {
+            slot = &t;
+            break;
+        }
+    }
+    if (!slot) slot = trips.append_slot();
+    if (!slot) return;
     double now = seconds(w);
     auto* cooldown = reserve(u.key, target, now);
     if (!cooldown) return;
@@ -595,10 +636,12 @@ inline bool continue_trip(const World& w, Address a, const Group& g, GroupState&
         return !force.self.support &&
                p::manageable(Kind::pursue, contacts.danger(target, 20, now), force.mobile, force.at);
     const auto self = position(a, w);
+    const auto& tuning = config::active().tuning;
     return !(force.self.support && (force.mobile >= 2 || (!g.squad && force.self.medic))) &&
-           !contacts.pursue(self, g.center, state.anchor.xy, force.mobile, force.at, now) &&
+           !contacts.pursue(self, g.center, state.anchor.xy, force.mobile, force.at, now,
+                            tuning.objectives_pursue_radius_m) &&
            p::cap_allowed(contacts, target, self, g.center, state.anchor.xy,
-                          p::cap_strength(force.mobile, force.eligible), false, now);
+                          p::cap_strength(force.mobile, force.eligible), false, now, tuning.objectives_cap_radius_m);
 }
 // Orders often finish before ownership flips. Only the original actor still on
 // that point, under the same player intent, may complete the anchor transition.
@@ -680,7 +723,9 @@ inline void evaluate(const World& w, Address a, bool external) {
 
 inline void tick(Address actor, bool external_busy = false) {
     s::World w{};
-    if (!detail::accepting.load() || !s::accepting.load() || !s::base || !s::callback(actor, w)) return;
+    if (!detail::accepting.load() || !config::active().modules.tactical_objectives || !s::accepting.load() ||
+        !s::base || !s::callback(actor, w))
+        return;
     auto scene = s::entity_scene(w);
     if (!scene) return;
     detail::advance(scene, w);
@@ -705,9 +750,15 @@ inline void reset() {
     detail::pursues = 0;
     detail::caps = 0;
     detail::accepting.store(true);
+    coord::instance().register_provider(coord::Module::tactical_objectives, coord::Priority::tactical_objectives,
+                                        &is_busy, &detail::preempt_actor);
 }
 inline void shutdown() {
     detail::accepting.store(false);
+}
+inline void after_hooks_removed() {
+    shutdown();
+    detail::release_tables();
 }
 inline unsigned stat_pursues() {
     return detail::pursues.load();

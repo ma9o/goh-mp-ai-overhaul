@@ -1,7 +1,11 @@
 #pragma once
 #include "close_grenade_module.hpp"
+#include "config_and_log.hpp"
+#include "game_runtime.hpp"
 #include "tank_auto_repair_module.hpp"
 #include "penetration_at_policy.hpp"
+
+#include <deque>
 
 namespace goh::penetration_at {
 namespace p = policy;
@@ -66,10 +70,12 @@ inline bool staged{};
 struct Guard {
     Guard() {
         ++inflight;
+        runtime::global_inflight.fetch_add(1, std::memory_order_acq_rel);
     }
     Guard(const Guard&) = delete;
     Guard& operator=(const Guard&) = delete;
     ~Guard() {
+        runtime::global_inflight.fetch_sub(1, std::memory_order_acq_rel);
         --inflight;
     }
 };
@@ -78,8 +84,9 @@ inline void count(std::atomic<unsigned>& counter, const char* action) {
     if (pr::logger && (n <= 5 || n % 256 == 0)) pr::logger("penetration_at %s #%u", action, n);
 }
 inline bool context(Address brain, World& w, bool allow_attack = false) {
-    return accepting.load() && pr::depth == 1 && support::callback(pr::scope.actor, w) &&
-           pr::admitted(brain, allow_attack) && (allow_attack || !close_grenade::has_explicit_attack(brain));
+    return accepting.load() && config::active().modules.penetration_at && pr::depth == 1 &&
+           support::callback(pr::scope.actor, w) && pr::admitted(brain, allow_attack) &&
+           (allow_attack || !close_grenade::has_explicit_attack(brain));
 }
 inline Address observer_brain() {
     return accepting.load() && pr::depth == 1 && pr::scope.actor && support::serial_thread() && support::host()
@@ -146,9 +153,10 @@ struct Exposure {
     unsigned used{}, computed{};
 };
 struct TickCache {
+    static constexpr unsigned max_entries = 64;
     Address scene{};
     unsigned now{}, rays{};
-    std::array<Exposure, 24> entries{};
+    store::StableTable<Exposure, 8, max_entries> entries;
     unsigned used{};
     void tick(Address current_scene, unsigned current_tick) {
         if (scene != current_scene || now != current_tick) {
@@ -157,6 +165,13 @@ struct TickCache {
             used = 0;
             rays = 0;
         }
+    }
+    void release() {
+        entries.release();
+        scene = 0;
+        now = 0;
+        used = 0;
+        rays = 0;
     }
 };
 inline TickCache cache{};
@@ -168,14 +183,14 @@ inline Exposure* exposure(const World& w, Address target, Address weapon) {
     cache.tick(support::entity_scene(w), w.now);
     const auto revision = pr::weaponry_revision();
     const auto id = read<unsigned>(target, 0xc0);
-    for (unsigned i = 0; i < cache.used; ++i) {
+    for (unsigned i = 0; i < cache.used && i < cache.entries.size(); ++i) {
         auto& e = cache.entries[i];
         if (e.actor == pr::scope.actor && e.owner_id == read<unsigned>(pr::scope.actor, 0xc0) && e.target == target &&
             e.entity == id && e.weapon == weapon && e.revision == revision && e.origin.x == from.x &&
             e.origin.y == from.y && e.origin.z == from.z)
             return &e;
     }
-    if (cache.used == cache.entries.size()) return nullptr;
+    if (cache.used >= TickCache::max_entries) return nullptr;
     auto& e = cache.entries[cache.used++];
     e.actor = pr::scope.actor;
     e.owner_id = read<unsigned>(e.actor, 0xc0);
@@ -780,7 +795,7 @@ inline void after_hooks_removed() {
     detail::original_target = nullptr;
     detail::original_volume = nullptr;
     detail::staged = false;
-    detail::cache.used = detail::cache.rays = 0;
+    detail::cache.release();
     detail::volumes = 0;
     detail::holds = 0;
     detail::shells = 0;

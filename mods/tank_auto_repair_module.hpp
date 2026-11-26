@@ -7,7 +7,7 @@ namespace goh::tank_auto_repair {
 namespace sim = goh::auto_smoke;
 namespace support = goh::ai_support;
 using sim::Address;
-inline constexpr char executable_sha256[] = "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a";
+inline constexpr const char* executable_sha256 = runtime::kBuild26734796Sha256;
 static_assert(std::string_view(sim::executable_sha256) == executable_sha256);
 inline constexpr bool runtime_allowed = false;
 inline void (*log_sink)(const char* fmt, ...)
@@ -37,10 +37,12 @@ inline std::atomic<DWORD> serial{};
 inline bool rollback_pending{};
 struct Guard {
     Guard() {
+        runtime::global_inflight.fetch_add(1, std::memory_order_acq_rel);
         ++inflight;
     }
     ~Guard() {
         --inflight;
+        runtime::global_inflight.fetch_sub(1, std::memory_order_acq_rel);
     }
     Guard(const Guard&) = delete;
     Guard& operator=(const Guard&) = delete;
@@ -93,21 +95,20 @@ struct Tank {
 struct Member {
     std::uint16_t tank{}, slot{};
 };
-inline std::array<Tank, 128> tanks{};
-inline std::array<Member, 65536> members{};
+inline store::GrowableTable<Tank, 64, 4096> tanks{};
+inline store::SparseTable<Member, std::uint16_t> members{};
 struct Override {
     support::Identity actor{};
     Tick deadline{};
 };
-inline std::array<Override, 65536> overrides{};
+inline store::SparseTable<Override, std::uint16_t> overrides{};
 inline Address last_scene{};
 inline Tick last_clock{};
 inline bool coordinating{};
 inline void reset() {
-    for (auto& t : tanks)
-        t = {};
-    members.fill({});
-    overrides.fill({});
+    tanks.clear();
+    members.clear();
+    overrides.clear();
     last_scene = 0;
     last_clock = 0;
 }
@@ -122,10 +123,10 @@ inline Tank* find(Address actor) {
 }
 inline Crew* member(Address actor, Tank*& tank) {
     if (!actor) return nullptr;
-    const auto h = members[read<std::uint16_t>(actor, 0xDAA)];
-    if (!h.tank) return nullptr;
-    auto& t = tanks[h.tank - 1];
-    auto& c = t.crew[h.slot];
+    const auto* h = members.find(read<std::uint16_t>(actor, 0xDAA));
+    if (!h || !h->tank || h->tank > tanks.size()) return nullptr;
+    auto& t = tanks[h->tank - 1];
+    auto& c = t.crew[h->slot];
     if (!t.key || !c.key.matches(actor)) return nullptr;
     tank = &t;
     return &c;
@@ -191,8 +192,7 @@ inline bool safety(Address a) {
     for (const char* name : {"destroyed", "exploded", "abandoned", "no_auto_repair"})
         if (support::tag(tags, name) || support::tag(span(def, 0x330), name)) return false;
     const auto type = support::native_string(a + 0xDE8 + 0x40);
-    return type == "tank" || type == "tank_light" || type == "tank_medium" || type == "tank_heavy" ||
-           type == "tank_bullet" || support::tag(span(def, 0x330), "tank");
+    return classify::is_tank_or_bullet_class(type) || support::tag(span(def, 0x330), "tank");
 }
 inline std::string_view component_name(Address def) {
     const auto names = span(def, 0x328);
@@ -454,6 +454,12 @@ inline Tank* reserve(Address a) {
             t.player = static_cast<Byte>(support::owner(a));
             return &t;
         }
+    if (auto* t = tanks.append_slot()) {
+        *t = {};
+        t->key = key(a);
+        t->player = static_cast<Byte>(support::owner(a));
+        return t;
+    }
     return nullptr;
 }
 // Protect secondary-turret cannon gunners (e.g., gun1/gun2 AP turrets on T-35,
@@ -519,8 +525,8 @@ inline bool walking(Span walkers, Address human) {
     return false;
 }
 inline bool backed_off(const World& w, Address h) {
-    auto& b = overrides[read<std::uint16_t>(h, 0xDAA)];
-    return b.actor.matches(h) && pending(b.deadline, w.now);
+    const auto* b = overrides.find(read<std::uint16_t>(h, 0xDAA));
+    return b && b->actor.matches(h) && pending(b->deadline, w.now);
 }
 inline void release(Crew& c, const World& w, Address h) {
     overrides[c.key.route] = {support::identity(h), w.now + w.duration(25)};
@@ -892,11 +898,12 @@ inline void dispatch(Address state) {
 inline void on_actor_post_quant(Address actor) {
     using namespace detail;
     Guard guard;
-    if (!active.load() || !actor || native<sim::Role>(0xA7A80)()) return;
+    if (!active.load() || !config::active().modules.tank_auto_repair || !actor || runtime::is_quant_worker(base))
+        return;
     serial.store(GetCurrentThreadId(), std::memory_order_relaxed);
     if (coordinating) return;
     World w{};
-    if (native<sim::Role>(0xC2B7A0)() || !sim::world(base, w)) {
+    if (runtime::is_remote_client(base) || !sim::world(base, w)) {
         if (last_scene) reset();
         return;
     }
@@ -940,6 +947,8 @@ inline void on_actor_post_quant(Address actor) {
     if (t) service(*t, a, w, d);
 }
 
+inline bool is_busy(Address actor);
+
 template <class Create, class Remove>
 inline bool prepare_hooks(Address image, const char* measured_sha256, Create create, Remove remove) {
     using namespace detail;
@@ -967,6 +976,7 @@ inline bool prepare_hooks(Address image, const char* measured_sha256, Create cre
     stat_dispatch_full = stat_dispatch_turret_track = stat_crew_emitted = stat_excrew_assigned = stat_repair_chained =
         stat_reboard_queued = stat_picker_overrides = 0;
     active.store(true);
+    coord::instance().register_provider(coord::Module::tank_auto_repair, coord::Priority::tank_auto_repair, &is_busy);
     return true;
 }
 inline bool is_busy(Address actor) {
@@ -1001,6 +1011,9 @@ inline void after_hooks_removed() {
     using namespace detail;
     deactivate();
     reset();
+    tanks.release();
+    members.release();
+    overrides.release();
     base = 0;
     serial = 0;
     rollback_pending = false;

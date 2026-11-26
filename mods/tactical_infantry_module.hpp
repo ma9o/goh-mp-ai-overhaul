@@ -1,4 +1,9 @@
 #pragma once
+#include "actor_coordinator.hpp"
+#include "config_and_log.hpp"
+#include "dynamic_store.hpp"
+#include "game_classifiers.hpp"
+#include "game_runtime.hpp"
 #include "tactical_infantry_policy.hpp"
 #include "auto_medic_module.hpp"
 #include "auto_resupply_module.hpp"
@@ -38,8 +43,8 @@ struct SquadState : p::Team {
     double last{}, issue_phase{p::never};
     unsigned issued_bounds{};
 };
-inline std::array<ActorState, 1024> soldiers{};
-inline std::array<SquadState, 128> squads{};
+inline store::StableTable<ActorState, 128, 8192> soldiers{};
+inline store::StableTable<SquadState, 64, 2048> squads{};
 inline p::Claims claims{};
 inline Address scene{};
 inline Tick clock{};
@@ -50,8 +55,10 @@ inline bool installed{}, rollback_pending{};
 struct Guard {
     Guard() {
         ++inflight;
+        runtime::global_inflight.fetch_add(1, std::memory_order_acq_rel);
     }
     ~Guard() {
+        runtime::global_inflight.fetch_sub(1, std::memory_order_acq_rel);
         --inflight;
     }
     Guard(const Guard&) = delete;
@@ -64,23 +71,26 @@ inline void reset() {
     scene = 0;
     clock = 0;
 }
-template <class T, std::size_t N> T* record(std::array<T, N>& table, Address key, double now) {
+inline void release_tables() {
+    soldiers.release();
+    squads.release();
+    claims.entries.release();
+    scene = 0;
+    clock = 0;
+}
+template <class Table> auto* record(Table& table, Address key, double now) {
+    using T = typename Table::value_type;
     T* available = nullptr;
-    auto first = (key >> 4) % N;
-    for (std::size_t i = 0; i < N; ++i) {
-        auto& row = table[(first + i) % N];
+    for (auto& row : table) {
         if (row.key == key) {
             if (now - row.last > 30) row = {};
             row.key = key;
             row.last = now;
             return &row;
         }
-        if (!row.key) {
-            if (!available) available = &row;
-            break;
-        }
-        if (!available && now - row.last > 30) available = &row;
+        if (!available && (!row.key || now - row.last > 30)) available = &row;
     }
+    if (!available) available = store::try_append_slot(table);
     if (available) {
         *available = {};
         available->key = key;
@@ -101,11 +111,15 @@ inline bool selected(Address brain) {
     return native<s::Test>(0x91B190)(brain) != 0;
 }
 inline bool available(const World& w, Address a, Address b) {
+    if (!config::active().modules.tactical_infantry) return false;
     const auto permits = [](unsigned modes, unsigned flags) { return p::allows(modes, flags); };
     if (!s::autonomous_if(a, true, permits) || read<Address>(a, 0xDC8) != b || !read<Address>(a, 0xDC0) ||
         !read<Address>(a, 0xDD0))
         return false;
     if (selected(b) || protected_order(b, a)) return false;
+    if (!coord::instance().can_act(a, coord::Module::tactical_infantry, coord::Priority::tactical_infantry,
+                                   read<unsigned>(a, 0xC0), w.now))
+        return false;
     return !auto_medic::occupied(a) && !auto_resupply::occupied(a) && !sim::is_busy(w, a) &&
            !close_grenade::is_throwing(w, a) && !tank_auto_repair::is_busy(a);
 }
@@ -139,8 +153,7 @@ inline void load_role(ActorState& row, double now) {
         if (!item || read<int>(item, 0x48) <= 0) return;
         auto def = read<Address>(item, 0x40);
         if (!def) return;
-        for (auto name : {"mgun", "sniper", "at_rifle", "ptr", "rocketlauncher"})
-            heavy |= pr::has_tag(def, name);
+        heavy |= classify::def_is_heavy_support_weapon(def);
         smg |= pr::has_tag(def, "smg");
         auto kind = close_grenade::payload(def);
         charge |= kind == close_grenade::Payload::at || kind == close_grenade::Payload::charge;
@@ -982,7 +995,7 @@ inline void after_hooks_removed() {
     deactivate();
     detail::original = {};
     detail::installed = detail::rollback_pending = false;
-    detail::reset();
+    detail::release_tables();
     detail::issued = 0;
 }
 } // namespace goh::tactical_infantry

@@ -13,8 +13,9 @@ using smoke::Vec3;
 using smoke::World;
 using Byte = std::uint8_t;
 inline constexpr bool runtime_allowed = false;
-inline constexpr char executable_sha256[] = "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a";
+inline constexpr const char* executable_sha256 = runtime::kBuild26734796Sha256;
 static_assert(std::string_view(smoke::executable_sha256) == executable_sha256, "Auto-Smoke build mismatch");
+inline runtime::HookGate hook_gate{};
 inline Address base{};
 template <class Fn> inline Fn native(Address rva) {
     return reinterpret_cast<Fn>(base + rva);
@@ -493,7 +494,7 @@ struct OrderRef {
     }
 };
 inline std::uint64_t next_generation{};
-inline std::array<Watched, 512> watches{};
+inline store::StableTable<Watched, 64, 4096> watches{};
 inline std::atomic<unsigned> watched_count{};
 using Exec = int (*)(Address, int);
 using Destroy = Address (*)(Address, unsigned);
@@ -506,6 +507,7 @@ inline Watched* tracked(Address order) {
     return nullptr;
 }
 inline int guarded(Exec orig, Address order, int phase) {
+    runtime::HookGuard guard(hook_gate);
     auto* watch = tracked(order);
     if (!watch) return orig(order, phase);
     if (!serial_thread() || !host()) return phase == 2 ? 1 : 2;
@@ -529,6 +531,7 @@ inline int medic_exec(Address o, int ph) {
     return guarded(orig_medic, o, ph);
 }
 inline Address destroy(Destroy orig, Address order, unsigned flags) {
+    runtime::HookGuard guard(hook_gate);
     if (auto* watch = tracked(order)) {
         if (watch->order.exchange(0) == order) --watched_count;
     }
@@ -545,23 +548,31 @@ inline void discard(Address o) {
 }
 inline bool install(Address actor, Address fresh, Permit permit, OrderRef& owned) {
     if (!fresh) return false;
-    if (free_slot(actor))
-        for (auto& watch : watches)
+    if (free_slot(actor)) {
+        Watched* slot = nullptr;
+        for (auto& watch : watches) {
             if (!watch.order.load()) {
-                if (!++next_generation) ++next_generation;
-                watch.permit = permit;
-                watch.skipped_start = false;
-                watch.generation = next_generation;
-                watch.order.store(fresh);
-                ++watched_count;
-                owned = {&watch, next_generation};
-                const auto brain = read<Address>(actor, 0xDC8), queue = read<Address>(brain, 0xF0);
-                if (queue)
-                    native<Address (*)(Address, Address, int, Byte)>(0x919270)(queue, fresh, 0, 1);
-                else
-                    native<void (*)(Address, Address)>(0x91DB30)(brain, fresh);
-                return true;
+                slot = &watch;
+                break;
             }
+        }
+        if (!slot) slot = watches.append_slot();
+        if (slot) {
+            if (!++next_generation) ++next_generation;
+            slot->permit = permit;
+            slot->skipped_start = false;
+            slot->generation = next_generation;
+            slot->order.store(fresh);
+            ++watched_count;
+            owned = {slot, next_generation};
+            const auto brain = read<Address>(actor, 0xDC8), queue = read<Address>(brain, 0xF0);
+            if (queue)
+                native<Address (*)(Address, Address, int, Byte)>(0x919270)(queue, fresh, 0, 1);
+            else
+                native<void (*)(Address, Address)>(0x91DB30)(brain, fresh);
+            return true;
+        }
+    }
     discard(fresh);
     return false;
 }
@@ -594,13 +605,24 @@ inline bool prepare_hooks(Address image, const char* digest, bool stock, Create 
     }
     base = image;
     accepting.store(true, std::memory_order_release);
+    hook_gate.activate();
     return true;
+}
+inline void deactivate() noexcept {
+    accepting.store(false, std::memory_order_release);
+    hook_gate.deactivate();
+}
+inline std::uint32_t inflight_count() noexcept {
+    return hook_gate.count();
 }
 inline bool quiescent() {
     return watched_count.load() == 0;
 }
 inline void after_hooks_removed() {
     accepting.store(false, std::memory_order_release);
+    hook_gate.deactivate();
+    watches.release();
+    watched_count.store(0, std::memory_order_relaxed);
     if (actor_tls != TLS_OUT_OF_INDEXES) TlsFree(actor_tls);
     actor_tls = TLS_OUT_OF_INDEXES;
     main_tid = 0;

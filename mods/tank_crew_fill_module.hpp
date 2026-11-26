@@ -14,7 +14,7 @@ namespace repair = goh::tank_auto_repair;
 namespace pol = goh::tank_crew_fill::policy;
 using sim::Address;
 
-inline constexpr char executable_sha256[] = "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a";
+inline constexpr const char* executable_sha256 = runtime::kBuild26734796Sha256;
 static_assert(std::string_view(repair::executable_sha256) == executable_sha256);
 inline constexpr bool runtime_allowed = false;
 inline constexpr unsigned hook_count = 0;
@@ -89,10 +89,12 @@ inline void bind_native_ops() {
 
 struct Guard {
     Guard() {
+        runtime::global_inflight.fetch_add(1, std::memory_order_acq_rel);
         ++inflight;
     }
     ~Guard() {
         --inflight;
+        runtime::global_inflight.fetch_sub(1, std::memory_order_acq_rel);
     }
     Guard(const Guard&) = delete;
     Guard& operator=(const Guard&) = delete;
@@ -111,12 +113,10 @@ struct TankState {
     }
 };
 
-constexpr std::size_t tank_cap = 256;
-inline std::array<TankState, tank_cap> states{};
+inline store::GrowableTable<TankState, 64, 4096> states{};
 
 inline void reset() {
-    for (auto& s : states)
-        s = {};
+    states.clear();
     last_scene = 0;
     last_clock = 0;
 }
@@ -127,13 +127,14 @@ inline bool pending(Tick deadline, Tick now) {
 
 inline TankState* state_for(Address tank, Tick now) {
     TankState* empty = nullptr;
-    TankState* oldest = &states[0];
+    TankState* oldest = nullptr;
     for (auto& s : states) {
         if (s.matches(tank)) return &s;
         if (!s.entity.ptr && !empty) empty = &s;
-        if (static_cast<std::int32_t>(s.last_tick - oldest->last_tick) < 0) oldest = &s;
+        if (!oldest || static_cast<std::int32_t>(s.last_tick - oldest->last_tick) < 0) oldest = &s;
     }
-    TankState* slot = empty ? empty : oldest;
+    TankState* slot = empty ? empty : states.append_slot();
+    if (!slot) slot = oldest;
     *slot = {};
     slot->entity = support::identity(tank);
     slot->route = read<std::uint16_t>(tank, 0xDAA);
@@ -190,8 +191,7 @@ inline bool eligible_tank(Address a, Address& out_brain) {
     for (const char* name : {"destroyed", "exploded", "abandoned"})
         if (support::tag(tags, name) || support::tag(span(def, 0x330), name)) return false;
     const auto type = support::native_string(a + 0xDE8 + 0x40);
-    const bool tank_class = type == "tank" || type == "tank_light" || type == "tank_medium" || type == "tank_heavy" ||
-                            type == "tank_bullet" || support::tag(span(def, 0x330), "tank");
+    const bool tank_class = classify::is_tank_or_bullet_class(type) || support::tag(span(def, 0x330), "tank");
     if (!tank_class) return false;
     const auto rows = span(a, 0xB90);
     if (!rows.valid(0x28, 1024)) return false;
@@ -294,11 +294,18 @@ inline void inspect_breed_traits(Address human, pol::PassengerFacts& out) {
     if (!breed) return;
     const auto breed_tags = span(breed, 0x440);
     if (support::tag(breed_tags, "crew")) out.has_crew_tag = true;
-    for (const char* at_name :
-         {"soldier_bazooka", "soldier_pzscheck", "soldier_pzfaust", "soldier_atr", "soldier_atr_grenade"}) {
-        if (support::tag(breed_tags, at_name)) {
-            out.has_at_tag = true;
-            break;
+    // Prefer dynamic live inventory inspection (protects scavenged AT weapons
+    // and avoids demoting ex-AT soldiers whose launcher/rockets are spent);
+    // fall back to breed AT tags only when no inventory box is populated.
+    const auto carried = classify::inspect_carried_at_inventory(human, base);
+    if (carried.inventory_present) {
+        out.has_at_tag = carried.has_at_weapon;
+    } else if (breed_tags.valid(0x60, 4096)) {
+        for (Address row = breed_tags.first; row < breed_tags.end; row += 0x60) {
+            if (classify::is_at_breed_tag(classify::gem_string(row + 0x40, 128))) {
+                out.has_at_tag = true;
+                break;
+            }
         }
     }
     const auto abilities = span(breed + 0x528, 0x20);
@@ -365,7 +372,7 @@ inline void service_tank(Address tank, Address tank_brain, const World& w) {
     st->serviced = true;
 
     const auto emit_st = inspect_emit_order(tank, tank_brain);
-    if (emit_st.crew_or_all) st->emit_until = w.now + w.duration(10);
+    if (emit_st.crew_or_all) st->emit_until = w.now + w.duration(config::active().tuning.crew_fill_emit_backoff_s);
     if (emit_st.active) {
         if (!pending(st->defer_stat_until, w.now)) {
             ++stat_deferred_emit;
@@ -534,8 +541,8 @@ inline bool init(Address image, const char* measured_sha256) {
 inline void on_actor_post_quant(Address actor) {
     using namespace detail;
     Guard guard;
-    if (!active.load(std::memory_order_acquire) || !actor || !ops.is_worker || !ops.is_remote_client ||
-        !ops.read_world || ops.is_worker())
+    if (!active.load(std::memory_order_acquire) || !config::active().modules.tank_crew_fill || !actor ||
+        !ops.is_worker || !ops.is_remote_client || !ops.read_world || ops.is_worker())
         return;
     if (coordinating) return;
     World w{};
@@ -575,6 +582,7 @@ inline void after_hooks_removed() {
     using namespace detail;
     deactivate();
     reset();
+    states.release();
     base = 0;
     ops = {};
 }

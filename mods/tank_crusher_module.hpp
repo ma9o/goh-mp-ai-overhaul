@@ -1,6 +1,10 @@
 #pragma once
 
 // Steam 26734796 x64. See research/notes/tank-crusher-26734796.md.
+#include "config_and_log.hpp"
+#include "dynamic_store.hpp"
+#include "game_classifiers.hpp"
+#include "game_runtime.hpp"
 #include <array>
 #include <atomic>
 #include <cmath>
@@ -9,18 +13,15 @@
 #include <cstring>
 #include <string_view>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
 #ifdef _MSC_VER
 #include <intrin.h>
 #endif
 
 namespace goh::tank_crusher {
 
-using Address = std::uintptr_t;
-using Byte = std::uint8_t;
-inline constexpr char executable_sha256[] = "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a";
+using Address = runtime::Address;
+using Byte = runtime::Byte;
+inline constexpr const char* executable_sha256 = runtime::kBuild26734796Sha256;
 inline constexpr bool runtime_allowed = false; // Static qualification status.
 inline void (*log_sink)(const char*, ...) = nullptr;
 inline std::atomic<unsigned> admitted_contexts{}, expanded_contexts{}, discounted_obstacles{}, biased_estimates{};
@@ -28,11 +29,7 @@ inline std::atomic<unsigned> admitted_contexts{}, expanded_contexts{}, discounte
 namespace detail {
 
 static_assert(sizeof(Address) == 8);
-template <class T> inline T read(Address a, std::size_t offset = 0) noexcept {
-    T value;
-    std::memcpy(&value, reinterpret_cast<const void*>(a + offset), sizeof value);
-    return value;
-}
+using runtime::read;
 
 // MSVC x64 basic_string<char>, borrowed while the native owner is live.
 inline std::string_view name_at(Address s) noexcept {
@@ -123,18 +120,20 @@ inline thread_local Address updating_actor{};
 inline Address scene{}, obstacle_begin{}, obstacle_end{}; // serial writer only
 inline bool can_expand{};
 // The worker sees scalar classifications and actor/area IDs copied by the engine.
-// No actor, sensor, registry string, or module-owned dynamic storage crosses threads.
-inline std::array<std::atomic<Obstacle>, 256> obstacles{};
-inline std::array<std::atomic<std::uint64_t>, 4096> actors{};
+// Allocated once before worker hooks enable; worker lookups are strictly wait-free.
+inline store::HeapAtomicArray<Obstacle, 256> obstacles{};
+inline store::HeapAtomicArray<std::uint64_t, 4096> actors{};
 static_assert(std::atomic<Obstacle>::is_always_lock_free && std::atomic<bool>::is_always_lock_free &&
               std::atomic<int>::is_always_lock_free && std::atomic<std::uint64_t>::is_always_lock_free);
 
 struct InflightGuard {
     InflightGuard() noexcept {
+        runtime::global_inflight.fetch_add(1, std::memory_order_acq_rel);
         inflight.fetch_add(1, std::memory_order_acq_rel);
     }
     ~InflightGuard() noexcept {
         inflight.fetch_sub(1, std::memory_order_acq_rel);
+        runtime::global_inflight.fetch_sub(1, std::memory_order_acq_rel);
     }
     InflightGuard(const InflightGuard&) = delete;
     InflightGuard& operator=(const InflightGuard&) = delete;
@@ -144,24 +143,27 @@ inline std::uint64_t actor_key(unsigned actor, unsigned area) noexcept {
     // The engine reserves UINT32_MAX as the absent entity ID. Zero is our empty slot.
     return actor == UINT32_MAX ? 0 : ((std::uint64_t(actor) + 1) << 32) | area;
 }
-inline auto& actor_slot(std::uint64_t key) noexcept {
+inline auto& actor_slot(std::uint64_t key) {
     return actors[(key >> 32) % actors.size()];
 }
 inline void revoke(std::uint64_t key) noexcept {
-    if (key) actor_slot(key).compare_exchange_strong(key, 0, std::memory_order_relaxed);
+    auto* table = actors.try_get();
+    if (key && table) (*table)[(key >> 32) % table->size()].compare_exchange_strong(key, 0, std::memory_order_relaxed);
 }
 inline bool actor_admitted(std::uint64_t key) noexcept {
-    return key && actor_slot(key).load(std::memory_order_acquire) == key;
+    auto* table = actors.try_get();
+    return key && table && (*table)[(key >> 32) % table->size()].load(std::memory_order_acquire) == key;
 }
 inline std::uint64_t previous_admission(unsigned id) noexcept {
+    auto* table = actors.try_get();
+    if (!table) return 0;
     const auto key = actor_key(id, 0);
-    const auto previous = actor_slot(key).load(std::memory_order_acquire);
+    const auto previous = (*table)[(key >> 32) % table->size()].load(std::memory_order_acquire);
     return (previous >> 32) == (key >> 32) ? previous : 0;
 }
 inline void reset_admission() noexcept {
     host.store(false, std::memory_order_release);
-    for (auto& slot : actors)
-        slot.store(0, std::memory_order_relaxed);
+    actors.clear_values();
     obstacle_begin = obstacle_end = scene = 0;
     can_expand = false;
 }
@@ -182,8 +184,10 @@ inline bool refresh_obstacles() noexcept {
     reset_admission();
     scene = read<Address>(base, 0x15C9668);
     if (!scene || !first || last <= first || (last - first) % 0x40 || (last - first) / 0x40 > 255) return false;
+    auto* obs = obstacles.try_get();
+    if (!obs) return false;
     can_expand = true;
-    for (unsigned i = 0; i < obstacles.size(); ++i) {
+    for (unsigned i = 0; i < obs->size(); ++i) {
         Obstacle kind = Obstacle::other;
         if (i < (last - first) / 0x40) {
             const Address row = first + 0x40 * i;
@@ -191,7 +195,7 @@ inline bool refresh_obstacles() noexcept {
             can_expand &= !(flags & 4); // Widening bit 4 must never bypass the stock hard-cost gate.
             kind = classify(name_at(row), flags);
         }
-        obstacles[i].store(kind, std::memory_order_relaxed);
+        (*obs)[i].store(kind, std::memory_order_relaxed);
     }
     obstacle_begin = first;
     obstacle_end = last;
@@ -260,8 +264,7 @@ inline bool tank_worker_profile(Address profile) noexcept {
     return prio == 4 || prio == 3;
 }
 inline bool is_tank_class(Address actor) noexcept {
-    const auto type = name_at(actor + 0xDE8 + 0x40);
-    return type == "tank_light" || type == "tank_medium" || type == "tank_heavy" || type == "tank";
+    return classify::is_battle_tank_class(name_at(actor + 0xDE8 + 0x40));
 }
 inline bool is_tank_actor(Address actor, Address chassis, Address profile) noexcept {
     if (battle_profile(profile) || light_tank_profile(profile)) return true;
@@ -271,12 +274,14 @@ inline bool is_tank_actor(Address actor, Address chassis, Address profile) noexc
 inline float Hook_ObjectPolicy(Address ctx, Address dir, Address area) noexcept {
     InflightGuard guard;
     const float native = orig_policy(ctx, dir, area);
-    if (!active.load(std::memory_order_acquire) || !passable(native) || !host.load(std::memory_order_acquire) ||
-        !read<Byte>(ctx) || read<Byte>(area, 0x1F) || !tank_worker_profile(read<Address>(ctx, 0xD0)))
+    auto* obs_table = obstacles.try_get();
+    if (!active.load(std::memory_order_acquire) || !config::active().modules.tank_crusher || !obs_table ||
+        !passable(native) || !host.load(std::memory_order_acquire) || !read<Byte>(ctx) || read<Byte>(area, 0x1F) ||
+        !tank_worker_profile(read<Address>(ctx, 0xD0)))
         return native;
     const auto key = actor_key(read<unsigned>(ctx, 0x7C), read<unsigned>(ctx, 0x78));
     if (!actor_admitted(key)) return native;
-    const auto type = obstacles[read<Byte>(area, 0x3F)].load(std::memory_order_relaxed);
+    const auto type = (*obs_table)[read<Byte>(area, 0x3F)].load(std::memory_order_relaxed);
     const float adjusted = obstacle_cost(native, type, (read<Byte>(ctx, 0xE8) & 0x10) != 0);
     if (adjusted < native) discounted_obstacles.fetch_add(1, std::memory_order_relaxed);
     return adjusted;
@@ -296,7 +301,8 @@ inline bool serial_host() noexcept {
 inline Address Hook_ContextCtor(Address ctx, Address actor) noexcept {
     InflightGuard guard;
     const Address result = orig_context(ctx, actor);
-    if (!active.load(std::memory_order_acquire) || !result || !actor) return result;
+    if (!active.load(std::memory_order_acquire) || !config::active().modules.tank_crusher || !result || !actor)
+        return result;
     const Address caller = GOH_TANK_CALLER - base;
     const Address profile = read<Address>(result, 0xD0);
     if (!tank_worker_profile(profile)) return result;
@@ -320,7 +326,9 @@ inline Address Hook_ContextCtor(Address ctx, Address actor) noexcept {
          caller != 0x8557DF && caller != 0x90B286 && caller != 0x90BD51))
         return result;
     if (!refresh_obstacles()) return result;
-    actor_slot(key).store(key, std::memory_order_release);
+    auto* act = actors.try_get();
+    if (!act) return result;
+    (*act)[(key >> 32) % act->size()].store(key, std::memory_order_release);
     admitted_contexts.fetch_add(1, std::memory_order_relaxed);
     auto& flags = *reinterpret_cast<Byte*>(result + 0xE8);
     const auto now = read<std::uint32_t>(base, 0x1584568);
@@ -337,7 +345,8 @@ inline Address Hook_ContextCtor(Address ctx, Address actor) noexcept {
 inline float Hook_EstimatePathTime(Address chassis, const PathStats* stats) noexcept {
     InflightGuard guard;
     const float original = orig_estimate(chassis, stats);
-    if (!active.load(std::memory_order_acquire) || !chassis || !stats) return original;
+    if (!active.load(std::memory_order_acquire) || !config::active().modules.tank_crusher || !chassis || !stats)
+        return original;
     const Address caller = GOH_TANK_CALLER - base;
     if ((caller != 0x86F78B && caller != 0x86F7B9 && caller != 0x855706) || !serial_host() ||
         (read<Byte>(chassis, 0x3C0) & 0xC0))
@@ -420,6 +429,8 @@ inline bool prepare_hooks(Address image, const char* measured_sha256, Create cre
         }
         return false;
     }
+    obstacles.allocate();
+    actors.allocate();
     base = image;
     admitted_contexts = expanded_contexts = discounted_obstacles = biased_estimates = 0;
     active.store(true, std::memory_order_release);
@@ -449,6 +460,8 @@ inline void after_hooks_removed() noexcept {
     using namespace detail;
     active.store(false, std::memory_order_release);
     reset_admission();
+    obstacles.release();
+    actors.release();
     serial_tid = 0;
     base = 0;
     rollback_pending = false;

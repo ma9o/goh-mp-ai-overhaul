@@ -3,19 +3,25 @@
 // Steam 26734796, Windows x64. Install only via the verified-build integration
 // described in research/notes/auto-smoke-26734796.md.
 #include <windows.h>
+#include "actor_coordinator.hpp"
+#include "config_and_log.hpp"
+#include "dynamic_store.hpp"
+#include "game_classifiers.hpp"
+#include "game_runtime.hpp"
 #include <atomic>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <initializer_list>
+#include <vector>
 #if defined(_MSC_VER)
 #include <intrin.h>
 #endif
 
 namespace goh::auto_smoke {
 
-using Address = std::uintptr_t;
+using Address = runtime::Address;
 #if defined(_MSC_VER)
 #define GOH_AUTO_SMOKE_RETURN_ADDRESS() reinterpret_cast<Address>(_ReturnAddress())
 #else
@@ -23,13 +29,10 @@ using Address = std::uintptr_t;
 #endif
 
 static_assert(sizeof(Address) == 8, "Auto-Smoke requires a 64-bit target");
-inline constexpr char executable_sha256[] = "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a";
+inline constexpr const char* executable_sha256 = runtime::kBuild26734796Sha256;
+inline runtime::HookGate hook_gate{};
 
-template <class T> inline T read(Address address, std::size_t offset = 0) noexcept {
-    T value;
-    std::memcpy(&value, reinterpret_cast<const void*>(address + offset), sizeof(value));
-    return value;
-}
+using runtime::read;
 
 struct Vec3 {
     float x, y, z;
@@ -55,10 +58,10 @@ inline std::uint32_t stat_inf_released = 0;
 using Role = std::uint8_t(__fastcall*)();
 // Active host simulation authority: true in SP/Skirmish/Conquest AND MP host; false on MP clients & workers.
 inline bool emitting_host(Address base) noexcept {
-    return !reinterpret_cast<Role>(base + 0xA7A80)() && !reinterpret_cast<Role>(base + 0xC2B7A0)();
+    return runtime::is_host_main_thread(base);
 }
 inline bool is_mp_host_emit(Address base) noexcept {
-    return emitting_host(base) && reinterpret_cast<Role>(base + 0xC2B740)();
+    return emitting_host(base) && runtime::is_host_emit(base);
 }
 
 inline bool has_actor(Address a) noexcept {
@@ -168,12 +171,15 @@ inline bool IsGrenadeDefinition(Address def, const char* name) noexcept {
 
 inline bool IsPureSmokeDefinition(Address def) noexcept {
     // The stock WP items also have 'smoke' and have no item blastwave.
-    // The exact key binds the item to the audited world-entity interaction.
+    // The exact key binds the item to audited stock smoke or configured non-WP mod keys.
     if (!def || read<Address>(def, 0x480) != read<Address>(def, 0x488)) return false;
-    static constexpr const char* names[] = {"anm8_smoke", "m24_smoke", "m43_smoke", "rdg1_smoke",
-                                            "svkkr_pm",   "nbk39",     "nbks",      "no8_smoke"};
-    for (const char* name : names)
-        if (IsGrenadeDefinition(def, name)) return true;
+    const Address first = read<Address>(def, 0xB80);
+    const Address end = read<Address>(def, 0xB88);
+    if (!first || end < first || end - first != 2 * 0x60) return false;
+    const auto k0 = classify::gem_string(first + 0x40, 128);
+    const auto k1 = classify::gem_string(first + 0x60 + 0x40, 128);
+    if (k0 == "grenade") return classify::is_allowed_smoke_grenade_key(k1);
+    if (k1 == "grenade") return classify::is_allowed_smoke_grenade_key(k0);
     return false;
 }
 
@@ -307,7 +313,7 @@ struct Identity {
     std::uint16_t mid{};
     std::uint8_t owner{};
 };
-inline Identity submissions[256]{};
+inline store::GrowableTable<Identity, 64, 4096> submissions{};
 inline std::uint32_t next_ticket{};
 inline Address vehicle_scene{};
 inline std::uint32_t vehicle_tick{};
@@ -316,17 +322,16 @@ inline void clear_scene(Address scene) noexcept {
     clear_timer_vetoes();
     vehicle_scene = scene;
     vehicle_tick = 0;
-    for (auto& record : submissions)
-        record = {};
+    submissions.clear();
 }
-inline Identity* available_submission(const World& w) noexcept {
+inline Identity* available_submission(const World& w) {
     if (vehicle_scene != w.scene || w.now - vehicle_tick > 0x7FFFFFFFu) clear_scene(w.scene);
     vehicle_tick = w.now;
     if (next_ticket == 0x7fffff) return nullptr;
     for (auto& record : submissions) {
         if (!record.ticket || w.now - record.submitted_at >= w.duration(25)) return &record;
     }
-    return nullptr;
+    return submissions.append_slot();
 }
 inline Identity take_submission(std::uint32_t ticket) noexcept {
     for (auto& record : submissions) {
@@ -518,7 +523,7 @@ inline void deploy_direct_sp(Address base, Address actor, Address extender) noex
 // eControl's serializer copies the one borrowed actor ID before it returns.
 // No game destructor sees the borrowed vector. The ordinary input receiver
 // executes slot 10, charging inventory and setting the extender deadline.
-inline void deploy(Address base, const Observation& obs) noexcept {
+inline void deploy(Address base, const Observation& obs) {
     if (!obs.eligible()) return;
     Address actor = read<Address>(obs.extender, 0x18);
     if (!actor) return;
@@ -644,7 +649,8 @@ inline Threat primary_threat(const World& w, Address observer, bool vehicle, boo
         const auto weapon = read<Address>(sub, 0x40);
         const auto first = weapon ? read<Address>(weapon, 0x11E0) : 0;
         const auto last = weapon ? read<Address>(weapon, 0x11E8) : 0;
-        const bool antitank = has_tag(first, last, "rocketlauncher") || has_tag(first, last, "at_rifle");
+        const bool antitank =
+            has_tag(first, last, "rocketlauncher") || has_tag(first, last, "at_rifle") || has_tag(first, last, "ptr");
         const bool human_enemy = (read<std::uint8_t>(enemy, 0x30) & 4) != 0;
         // A recent attack signal itself identifies the source of fire. For a
         // merely sighted human, require an armed enemy squad or an MG.
@@ -1166,7 +1172,7 @@ struct Reservation {
     std::uint8_t player{};
     bool vehicle{}, released{}, medical{};
 };
-inline Reservation reservations[256]{};
+inline store::GrowableTable<Reservation, 64, 4096> reservations{};
 inline std::uint64_t next_reservation{};
 struct HullSample {
     Address actor{};
@@ -1174,7 +1180,7 @@ struct HullSample {
     float health{};
     bool hit{};
 };
-inline HullSample hulls[256]{};
+inline store::GrowableTable<HullSample, 64, 4096> hulls{};
 inline Address cache_scene{};
 inline std::uint32_t cache_tick{};
 inline bool have_tick{};
@@ -1183,20 +1189,18 @@ inline void reset_scene_cache(const World& w) noexcept {
     // Unsigned forward deltas include natural wraparound. A rewind during
     // save/load must clear prior mission ownership and suppress stale receipts.
     if (!have_tick || cache_scene != w.scene || w.now - cache_tick > 0x7fffffffu) {
-        for (auto& entry : reservations)
-            entry = {};
-        for (auto& entry : hulls)
-            entry = {};
+        reservations.clear();
+        hulls.clear();
         vehicle::clear_scene(w.scene);
         cache_scene = w.scene;
         have_tick = true;
     }
     cache_tick = w.now;
 }
-inline bool heavy_hit(const World& w, Address actor, float hp, bool penetrating) noexcept {
+inline bool heavy_hit(const World& w, Address actor, float hp, bool penetrating) {
     if (!(hp >= 0 && hp <= 1)) return penetrating;
     const auto id = read<std::uint32_t>(actor, 0xC0);
-    HullSample* oldest = &hulls[0];
+    HullSample* oldest = nullptr;
     for (auto& s : hulls) {
         if (s.actor == actor && s.entity == id) {
             if (penetrating || (w.now - s.time <= w.duration(3) && s.health - hp >= 0.20f)) {
@@ -1208,9 +1212,14 @@ inline bool heavy_hit(const World& w, Address actor, float hp, bool penetrating)
             if (s.hit && w.now - s.last_hit > w.duration(3)) s.hit = false;
             return s.hit;
         }
-        if (!s.actor || (oldest->actor && w.now - s.time > w.now - oldest->time)) oldest = &s;
+        if (!s.actor || !oldest || (oldest->actor && w.now - s.time > w.now - oldest->time)) {
+            oldest = &s;
+        }
     }
-    *oldest = {actor, id, w.now, w.now, hp, penetrating};
+    if (!oldest || oldest->actor) {
+        if (auto* grown = hulls.append_slot()) oldest = grown;
+    }
+    if (oldest) *oldest = {actor, id, w.now, w.now, hp, penetrating};
     return penetrating;
 }
 inline bool recently_hit(const World& w, Address actor) noexcept {
@@ -1220,12 +1229,14 @@ inline bool recently_hit(const World& w, Address actor) noexcept {
         if (sample.actor == actor && sample.entity == id) return sample.hit && w.now - sample.last_hit <= w.duration(3);
     return false;
 }
-inline Reservation* available(const World& w, Address actor, Address squad, Vec3 anchor, bool for_vehicle) noexcept {
+inline Reservation* available(const World& w, Address actor, Address squad, Vec3 anchor, bool for_vehicle) {
     Reservation* free_slot = nullptr;
     const auto owner = read<std::uint8_t>(actor, 0xDA8);
     if (owner >= 18) return nullptr;
+    const float cooldown_s = for_vehicle ? config::active().tuning.smoke_vehicle_cooldown_s
+                                         : config::active().tuning.smoke_infantry_cooldown_s;
     for (auto& r : reservations) {
-        if (!r.carrier || w.now - r.last >= w.duration(25)) {
+        if (!r.carrier || w.now - r.last >= w.duration(cooldown_s)) {
             if (!free_slot) free_slot = &r;
             continue;
         }
@@ -1237,7 +1248,7 @@ inline Reservation* available(const World& w, Address actor, Address squad, Vec3
             distance2(r.anchor, anchor) <= 400 * w.length * w.length)
             return nullptr;
     }
-    return free_slot; // A full table never evicts a live cooldown.
+    return free_slot ? free_slot : reservations.append_slot();
 }
 inline void reserve(Reservation& r, const World& w, Address actor, Address squad, Vec3 anchor,
                     bool for_vehicle) noexcept {
@@ -1381,6 +1392,7 @@ inline Address decoded_smoke(Address base, Address actor) noexcept {
 }
 
 inline void __fastcall replay_control(Address control) {
+    runtime::HookGuard guard(hook_gate);
     const auto base = image_base;
     const auto flags = read<std::uint16_t>(control, 0x18);
     const auto ticket = read<std::uint32_t>(control, 0xFC);
@@ -1445,6 +1457,7 @@ inline bool single_wp_program(Address actor) noexcept {
 }
 
 inline void __fastcall replay_event(Address context, Address eventName) {
+    runtime::HookGuard guard(hook_gate);
     if (GOH_AUTO_SMOKE_RETURN_ADDRESS() == image_base + 0x127554 && serial_thread() && marked_control.owner &&
         context && read<Address>(context) == marked_control.owner && SmokeTagEquals(eventName, "deploy_smoke")) {
         if (stockPayload(marked_control.owner) == Payload::none && !single_wp_program(marked_control.owner)) return;
@@ -1462,16 +1475,21 @@ struct PureTimerVeto {
     std::uint32_t entity{}, at{};
     std::uint16_t mid{};
 };
-inline PureTimerVeto timer_vetoes[1536]{}; // 256 marked receipts, up to six stock shots each
-inline std::size_t veto_count{};
+inline std::vector<PureTimerVeto>& timer_vetoes() noexcept {
+    static std::vector<PureTimerVeto> v;
+    return v;
+}
 inline Address due_owner{}, due_projectile{};
 inline void clear_timer_vetoes() noexcept {
-    veto_count = 0;
+    timer_vetoes().clear();
     due_owner = due_projectile = 0;
 }
 inline void remove_veto(std::size_t index) noexcept {
-    --veto_count;
-    timer_vetoes[index] = timer_vetoes[veto_count];
+    auto& tv = timer_vetoes();
+    if (index < tv.size()) {
+        tv[index] = tv.back();
+        tv.pop_back();
+    }
 }
 
 struct ShotTemplate {
@@ -1503,7 +1521,9 @@ inline ShotTemplate read_shot(Address action) noexcept {
 }
 
 inline void __fastcall replay_delay(Address action, Address context) {
-    if (!serial_thread() || (!screen_event_owner && !veto_count) || !context) {
+    runtime::HookGuard guard(hook_gate);
+    auto& tv = timer_vetoes();
+    if (!serial_thread() || (!screen_event_owner && tv.empty()) || !context) {
         original_delay(action, context);
         return;
     }
@@ -1513,8 +1533,8 @@ inline void __fastcall replay_delay(Address action, Address context) {
     const bool live = world(image_base, w);
     // Re-scheduling the same stock non-uniq template replaces its native row.
     // Manual schedules always take precedence, including after cancellation.
-    for (std::size_t i = 0; i < veto_count;) {
-        const auto& v = timer_vetoes[i];
+    for (std::size_t i = 0; i < tv.size();) {
+        const auto& v = tv[i];
         if ((v.owner == owner && v.action == action) || !live || v.scene != w.scene || w.now - v.at > w.duration(25.0f))
             remove_veto(i);
         else
@@ -1527,13 +1547,9 @@ inline void __fastcall replay_delay(Address action, Address context) {
         if (!shot.cap_only) {
             if (!shot.physical || !live) return;
             if (shot.payload != marked_control.admitted || shot.payload != stockPayload(owner)) {
-                if (veto_count == sizeof(timer_vetoes) / sizeof(timer_vetoes[0]) || read<std::uint8_t>(action, 0xA8) ||
-                    read<std::uint8_t>(action, 0xA9))
-                    return;
-                timer_vetoes[veto_count++] = {owner,         action,
-                                              shot.physical, read<Address>(owner, 0x548),
-                                              w.scene,       read<std::uint32_t>(owner, 0xC0),
-                                              w.now,         read<std::uint16_t>(owner, 0xDAA)};
+                if (tv.size() >= 8192 || read<std::uint8_t>(action, 0xA8) || read<std::uint8_t>(action, 0xA9)) return;
+                tv.push_back({owner, action, shot.physical, read<Address>(owner, 0x548), w.scene,
+                              read<std::uint32_t>(owner, 0xC0), w.now, read<std::uint16_t>(owner, 0xDAA)});
             }
         }
     }
@@ -1541,7 +1557,9 @@ inline void __fastcall replay_delay(Address action, Address context) {
 }
 
 inline void __fastcall replay_delay_due(Address action, Address context) {
-    if (!serial_thread() || !veto_count || !context) {
+    runtime::HookGuard guard(hook_gate);
+    auto& tv = timer_vetoes();
+    if (!serial_thread() || tv.empty() || !context) {
         original_delay_due(action, context);
         return;
     }
@@ -1550,8 +1568,8 @@ inline void __fastcall replay_delay_due(Address action, Address context) {
         original_delay_due(action, context);
         return;
     }
-    for (std::size_t i = 0; i < veto_count; ++i) {
-        const auto v = timer_vetoes[i];
+    for (std::size_t i = 0; i < tv.size(); ++i) {
+        const auto v = tv[i];
         if (v.owner != owner || v.action != action) continue;
         remove_veto(i);
         World w{};
@@ -1571,6 +1589,7 @@ inline void __fastcall replay_delay_due(Address action, Address context) {
 }
 
 inline void __fastcall replay_spawn(Address action, Address context) {
+    runtime::HookGuard guard(hook_gate);
     if (serial_thread() && due_projectile && action == due_projectile && context &&
         read<Address>(context) == due_owner) {
         due_projectile = 0;
@@ -1600,7 +1619,7 @@ struct SmokeIntent {
     bool started{}, spent{}, emitted{}, ending{}, owns_latch{};
     std::uint64_t lease_ticket{};
 };
-inline SmokeIntent smoke_intents[256]{};
+inline store::GrowableTable<SmokeIntent, 64, 4096> smoke_intents{};
 inline std::uint64_t next_smoke_generation{};
 inline std::atomic<unsigned> active_intents{};
 static_assert(std::atomic<unsigned>::is_always_lock_free);
@@ -1645,7 +1664,7 @@ template <class Edit> inline bool change_smoke_intent(std::uint64_t generation, 
     return false;
 }
 inline bool track_smoke_order(const World& w, Address actor, Address order, Address definition, Vec3 screen,
-                              std::uint64_t lease_ticket) noexcept {
+                              std::uint64_t lease_ticket) {
     if (!serial_thread() || !actor || !order || !definition || !finite(screen) ||
         read<Address>(order) != w.base + 0x110BF68)
         return false;
@@ -1657,6 +1676,7 @@ inline bool track_smoke_order(const World& w, Address actor, Address order, Addr
         if (entry.generation && entry.scene == w.scene && entry.actor == actor && entry.entity == id) return false;
         if (!entry.generation && !free_slot) free_slot = &entry;
     }
+    if (!free_slot) free_slot = smoke_intents.append_slot();
     if (!free_slot) return false;
     if (!++next_smoke_generation) ++next_smoke_generation;
     *free_slot = {order, 0, 0, actor, w.scene, definition, screen, id, next_smoke_generation};
@@ -1682,10 +1702,12 @@ inline void forget_smoke_order(Address order) noexcept {
     }
 }
 inline Address smoke_shot_destroy(Address order, std::uint32_t flags) noexcept {
+    runtime::HookGuard guard(hook_gate);
     forget_smoke_order(order);
     return original_smoke_shot_destroy(order, flags);
 }
 inline Address smoke_shooter_destroy(Address shooter, std::uint32_t flags) noexcept {
+    runtime::HookGuard guard(hook_gate);
     if (grenades.shooter_destroyed) grenades.shooter_destroyed(shooter);
     if (active_intents.load(std::memory_order_acquire)) {
         SmokeIntentLock lock;
@@ -1741,6 +1763,7 @@ inline bool smoke_may_continue(const SmokeIntent& e, Address actor, const World&
            eligible(w.base, read<Address>(actor, 0xDC8), actor);
 }
 inline std::uint32_t smoke_shot_exec(Address order, std::uint32_t phase) noexcept {
+    runtime::HookGuard guard(hook_gate);
     const auto e = lookup_smoke_intent(&SmokeIntent::root, order);
     if (!e.generation) return original_smoke_shot_exec(order, phase);
     if (phase == 2) {
@@ -1755,6 +1778,7 @@ inline std::uint32_t smoke_shot_exec(Address order, std::uint32_t phase) noexcep
 }
 
 inline std::uint32_t smoke_fire_exec(Address child, std::uint32_t phase) noexcept {
+    runtime::HookGuard guard(hook_gate);
     if (grenades.fire_status) {
         int status = grenades.fire_status(child, phase);
         if (status >= 0) return static_cast<std::uint32_t>(status);
@@ -1830,6 +1854,7 @@ struct SmokeFiringScope {
 };
 
 inline void smoke_firing(Address shooter, std::uint8_t active) noexcept {
+    runtime::HookGuard guard(hook_gate);
     if (grenades.new_firing) grenades.new_firing(shooter, active);
     auto e = lookup_smoke_intent(&SmokeIntent::shooter, shooter);
     if (!e.generation || !serial_thread() || !emitting_host(image_base)) {
@@ -1917,6 +1942,7 @@ inline void release_smoke_intent(const SmokeIntent& e, Address shooter) noexcept
         receipt(actor, w.now, e.lease_ticket);
 }
 inline void smoke_release(Address shooter) noexcept {
+    runtime::HookGuard guard(hook_gate);
     const auto* frame = quant_frame();
     const auto* context = frame ? frame->firing : nullptr;
     if (!context || context->shooter != shooter) {
@@ -1958,7 +1984,8 @@ inline void smoke_release(Address shooter) noexcept {
     if (context->permit && e.generation == context->generation) release_smoke_intent(e, shooter);
 }
 
-inline void decide(Address brain) noexcept {
+inline void decide(Address brain) {
+    if (!config::active().modules.auto_smoke) return;
     const Address base = image_base;
     const Address actor = read<Address>(brain, 0x38);
     if (!eligible(base, brain, actor)) return;
@@ -1989,6 +2016,9 @@ inline void decide(Address brain) noexcept {
     const Address squad = read<Address>(brain, 0x100);
     if (squad && read<Address>(squad) != base + 0x110F3A0) return;
     if (grenades.is_busy && grenades.is_busy(w, actor)) return;
+    if (!coord::instance().can_act(actor, coord::Module::auto_smoke, coord::Priority::auto_smoke,
+                                   read<std::uint32_t>(actor, 0xC0), w.now))
+        return;
     auto* slot = available(w, actor, squad, self, false);
     if (!slot) return;
     const auto path = orders::inspect(base, brain);
@@ -2041,8 +2071,9 @@ inline void decide(Address brain) noexcept {
 // The sole direct game caller of 0x91BE00 is actor slot 23 at 0x804C57.
 // Run after vanilla slot 35 so a due AvoidGrenade reaction wins this quant.
 inline void __fastcall smoke_decision(Address brain) {
+    runtime::HookGuard guard(hook_gate);
     const auto base = image_base;
-    if (!base || !brain || !emitting_host(base)) {
+    if (!base || !brain || !hook_gate.accepting.load(std::memory_order_acquire) || !emitting_host(base)) {
         original_decision(brain);
         return;
     }
@@ -2062,6 +2093,7 @@ inline void __fastcall smoke_decision(Address brain) {
 // Attribute only the verified stock slot-11 call sites. Other senders and
 // receive-side spawns may run synchronously while a module release is pending.
 inline void __fastcall smoke_send(Address command) {
+    runtime::HookGuard guard(hook_gate);
     if (GOH_AUTO_SMOKE_RETURN_ADDRESS() == image_base + 0x831A9C) {
         if (!grenades.send_allowed || grenades.send_allowed(command)) smoke_send_adapter(original_smoke_send, command);
     } else {
@@ -2069,6 +2101,7 @@ inline void __fastcall smoke_send(Address command) {
     }
 }
 inline void __fastcall smoke_spawn(Address shooter, const Vec3* origin, const Vec3* velocity, const Vec3* spin) {
+    runtime::HookGuard guard(hook_gate);
     if (GOH_AUTO_SMOKE_RETURN_ADDRESS() == image_base + 0x831AB3) {
         if (!grenades.spawn_allowed || grenades.spawn_allowed(shooter, origin, velocity, spin))
             smoke_spawn_adapter(original_smoke_spawn, shooter, origin, velocity, spin);
@@ -2077,6 +2110,20 @@ inline void __fastcall smoke_spawn(Address shooter, const Vec3* origin, const Ve
     }
 }
 #undef GOH_AUTO_SMOKE_RETURN_ADDRESS
+
+inline bool is_actor_busy_live(Address actor) noexcept {
+    if (!image_base || !actor) return false;
+    World w{};
+    return world(image_base, w) && is_busy(w, actor);
+}
+
+inline void deactivate() noexcept {
+    hook_gate.deactivate();
+}
+
+inline std::uint32_t inflight_count() noexcept {
+    return hook_gate.count();
+}
 
 // Create disabled hooks in the host's existing MinHook instance. The caller
 // supplies its independently measured on-disk hash and attestation that only
@@ -2120,22 +2167,28 @@ inline bool prepare_hooks(Address base, const char* measured_sha256, bool stock_
         return false;
     }
     image_base = base;
+    hook_gate.activate();
+    coord::instance().register_provider(coord::Module::auto_smoke, coord::Priority::auto_smoke, &is_actor_busy_live);
     return true;
 }
 
 // Call after disabling/removing the hooks and joining all callbacks at mission
 // teardown. The engine must have finished destroying the tracked orders.
 inline void after_hooks_removed() noexcept {
+    hook_gate.deactivate();
     if (frame_index != TLS_OUT_OF_INDEXES) TlsFree(frame_index);
     frame_index = TLS_OUT_OF_INDEXES;
     image_base = 0;
     simulation_tid = 0;
     vehicle::clear_scene(0);
+    vehicle::submissions.release();
+    std::vector<vehicle::PureTimerVeto>{}.swap(vehicle::timer_vetoes());
     vehicle::marked_control = {};
     vehicle::screen_event_owner = 0;
     have_tick = false;
-    for (auto& intent : smoke_intents)
-        intent = {};
+    reservations.release();
+    hulls.release();
+    smoke_intents.release();
     active_intents.store(0, std::memory_order_relaxed);
 }
 

@@ -1,6 +1,9 @@
 #pragma once
 
 // Steam 26734796, Windows x64. See research/notes/target-prioritization-26734796.md.
+#include "config_and_log.hpp"
+#include "game_classifiers.hpp"
+#include "game_runtime.hpp"
 #include "penetration_at_policy.hpp"
 #include <algorithm>
 #include <array>
@@ -15,12 +18,13 @@
 
 namespace goh::target_prio {
 
-using Address = std::uintptr_t;
+using Address = runtime::Address;
 static_assert(sizeof(Address) == 8, "Target prioritization requires Windows x64");
-inline constexpr char executable_sha256[] = "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a";
+inline constexpr const char* executable_sha256 = runtime::kBuild26734796Sha256;
 
 namespace detail {
 
+inline runtime::HookGate hook_gate{};
 inline Address base{};
 inline bool rollback_pending{};
 using LogFn = void (*)(const char*, ...);
@@ -31,11 +35,7 @@ inline bool sample_event(unsigned long long& count) {
     ++count;
     return count <= 25 || count % 100 == 0;
 }
-template <class T> inline T read(Address a, std::size_t offset = 0) noexcept {
-    T value;
-    std::memcpy(&value, reinterpret_cast<const void*>(a + offset), sizeof value);
-    return value;
-}
+using runtime::read;
 template <class T> inline T native(Address rva) noexcept {
     return reinterpret_cast<T>(base + rva);
 }
@@ -185,7 +185,7 @@ inline bool authorized_actor(Address actor, Address brain) {
 inline bool admitted(Address brain, bool allow_attack_volume = false) {
     if (!base || depth != 1 || !scope.actor || !brain) return false;
     // Active simulation authority: SP/Skirmish/Conquest AND MP host (always passive on workers & MP clients).
-    if (native<Role>(0xA7A80)() || native<Role>(0xC2B7A0)()) return false;
+    if (!runtime::is_host_main_thread(base)) return false;
     Address actor = scope.actor;
     if (!authorized_actor(actor, brain)) return false;
     auto vt = read<Address>(brain), weaponry = read<Address>(actor, 0xDD8);
@@ -693,13 +693,11 @@ struct Candidate {
     bool armor_complete{};
 };
 inline bool tank_class(Address target) {
-    Address tag = target + 0xDE8;
-    return tag_equals(tag, "tank_heavy") || tag_equals(tag, "tank_medium") || tag_equals(tag, "tank_light") ||
-           tag_equals(tag, "tank");
+    return classify::is_battle_tank_class(classify::gem_string(target + 0xDE8 + 0x40, 64));
 }
 inline bool armoured_class(Address target) {
-    Address tag = target + 0xDE8;
-    return tank_class(target) || tag_equals(tag, "armoredcar") || tag_equals(tag, "armoredcar_l");
+    const auto sv = classify::gem_string(target + 0xDE8 + 0x40, 64);
+    return classify::is_battle_tank_class(sv) || sv == "armoredcar" || sv == "armoredcar_l";
 }
 inline bool cannon_class(Address target) {
     Address tag = target + 0xDE8;
@@ -990,7 +988,9 @@ inline void deduplicate_native(SubjectPtrVec& v) {
         *reinterpret_cast<Byte*>(*p + 0x11) = static_cast<Byte>(out - p);
 }
 inline void __fastcall ranked(SubjectPtrVec* v, Address owner) {
+    runtime::HookGuard guard(hook_gate);
     orig_rank(v, owner);
+    if (!hook_gate.accepting.load(std::memory_order_acquire) || !config::active().modules.target_prioritization) return;
     if (depth != 1 || owner != scope.actor || !owner || !v) return;
     Address brain = read<Address>(owner, 0xDC8);
     if (!admitted(brain)) return;
@@ -1032,6 +1032,9 @@ inline void put_hint_first(SubjectPtrVec& v, Address hint) {
     if (p != v.end) std::iter_swap(v.begin, p);
 }
 inline Address __fastcall pick(Address brain) {
+    runtime::HookGuard guard(hook_gate);
+    if (!hook_gate.accepting.load(std::memory_order_acquire) || !config::active().modules.target_prioritization)
+        return orig_picker(brain);
     const unsigned before = scope.rank_calls;
     Address promoted{};
     auto previous = scope.picker_grenade;
@@ -1058,6 +1061,9 @@ inline Address __fastcall pick(Address brain) {
     return choose_subject(result, brain, stock, "picker");
 }
 inline int __fastcall cover_battle(Address state, Address selected, unsigned mask, int rotate) {
+    runtime::HookGuard guard(hook_gate);
+    if (!hook_gate.accepting.load(std::memory_order_acquire) || !config::active().modules.target_prioritization)
+        return orig_cover(state, selected, mask, rotate);
     Address brain = (depth == 1 && state) ? read<Address>(state, 0x30) : 0;
     if (selected && mask && admitted(brain) && is_human_brain(brain)) {
         Address cover = read<Address>(scope.actor, 0xDC0);
@@ -1070,6 +1076,9 @@ inline int __fastcall cover_battle(Address state, Address selected, unsigned mas
     return orig_cover(state, selected, mask, rotate);
 }
 inline int __fastcall cover_list(Address state, SubjectPtrVec* input, const char* reason) {
+    runtime::HookGuard guard(hook_gate);
+    if (!hook_gate.accepting.load(std::memory_order_acquire) || !config::active().modules.target_prioritization)
+        return orig_list(state, input, reason);
     Address brain = (depth == 1 && state) ? read<Address>(state, 0x30) : 0;
     if (!input || !admitted(brain) || !is_human_brain(brain) || !entries(*input).valid(8) ||
         input->begin == input->end || !read<Address>(brain, 0x3D0))
@@ -1116,7 +1125,9 @@ inline Address restore_vehicle_rank(Address brain, SubjectPtrVec& v) {
     return size > prior ? *v.begin : 0;
 }
 inline void __fastcall alternate_rebuild(Address brain) {
+    runtime::HookGuard guard(hook_gate);
     orig_rebuild(brain);
+    if (!hook_gate.accepting.load(std::memory_order_acquire) || !config::active().modules.target_prioritization) return;
     if (!admitted(brain) || is_human_brain(brain)) return;
     auto& v = vehicle_vector(brain);
     Address preferred = restore_vehicle_rank(brain, v);
@@ -1124,6 +1135,11 @@ inline void __fastcall alternate_rebuild(Address brain) {
     rewrite(v, result, brain, "rebuild");
 }
 inline void __fastcall vehicle_assign(Address brain) {
+    runtime::HookGuard guard(hook_gate);
+    if (!hook_gate.accepting.load(std::memory_order_acquire) || !config::active().modules.target_prioritization) {
+        orig_assign(brain);
+        return;
+    }
     if (!admitted(brain) || is_human_brain(brain)) {
         orig_assign(brain);
         return;
@@ -1388,7 +1404,10 @@ public:
     RowMask& operator=(const RowMask&) = delete;
 };
 inline bool __fastcall vehicle_select(Address brain, Address s, std::int16_t priority, Address out, int mode) {
+    runtime::HookGuard hook_guard(hook_gate);
     auto original = [&] { return orig_select(brain, s, priority, out, mode); };
+    if (!hook_gate.accepting.load(std::memory_order_acquire) || !config::active().modules.target_prioritization)
+        return original();
     auto* a = scope.assignment;
     if (a && !a->selecting) a->proposed_weapon = 0;
     if (mode || !out || !a || a->brain != brain || (!select_armor && !a->economy && !a->multi_cannon) || a->selecting ||
@@ -1545,11 +1564,19 @@ inline bool install(Address base, const char* sha256, Create createHookFn, Remov
     }
     logger = logFn;
     detail::base = base;
+    detail::hook_gate.activate();
     logFn("target_prio: seven entry hooks prepared for build 26734796");
     return true;
 }
+inline void deactivate() noexcept {
+    detail::hook_gate.deactivate();
+}
+inline std::uint32_t inflight_count() noexcept {
+    return detail::hook_gate.count();
+}
 inline void after_hooks_removed() noexcept {
     using namespace detail;
+    hook_gate.deactivate();
     base = 0;
     logger = nullptr;
     grenade_priority = nullptr;

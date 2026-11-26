@@ -6,6 +6,9 @@ namespace goh::auto_resupply {
 using namespace ai_support;
 inline constexpr bool runtime_allowed = false;
 constexpr float travel_metres = 60, safety_metres = 25;
+inline float max_travel_metres() noexcept {
+    return config::active().tuning.resupply_search_radius_m;
+}
 inline constexpr unsigned max_inbound_per_source = 4u;
 inline std::uint32_t stat_trips = 0;
 inline std::uint32_t stat_refilled = 0;
@@ -313,7 +316,7 @@ struct Destination {
 };
 inline bool goal_crowded(const World& w, Address actor, Vec3 point);
 inline bool check_source(const World& w, Address actor, const Gun& g, Address source, Destination& d, bool select) {
-    if (actor == source || !within(pos(actor), pos(source), travel_metres * w.length)) return false;
+    if (actor == source || !within(pos(actor), pos(source), max_travel_metres() * w.length)) return false;
     auto zone = extender(source, 0x109BA88);
     if (!zone || !read<Byte>(zone, 0x430) || !serviceable(source)) return false;
     float r = read<float>(zone, 0x88) * w.length, period = read<float>(zone, 0x8C);
@@ -362,7 +365,7 @@ struct Trip {
 inline float distance_travelled(const Trip& trip, Vec3 current) {
     return trip.travelled + std::sqrt(smoke::distance2(trip.previous, current));
 }
-inline std::array<Trip, 256> trips{};
+inline store::GrowableTable<Trip, 64, 4096> trips{};
 inline Address scene{};
 inline unsigned last_tick{};
 inline bool busy{};
@@ -370,7 +373,7 @@ struct FailedSource {
     Identity unit{}, source{};
     unsigned tick{};
 };
-inline std::array<FailedSource, 256> recent_failures{};
+inline store::GrowableTable<FailedSource, 64, 4096> recent_failures{};
 inline bool suppressed(const World& w, Address actor, Address source) {
     for (const auto& f : recent_failures)
         if (f.unit.matches(actor) && f.source.matches(source) && w.now - f.tick < w.duration(60)) return true;
@@ -378,11 +381,14 @@ inline bool suppressed(const World& w, Address actor, Address source) {
 }
 inline void stop(const World& w, Trip& t, float seconds, bool failed = true) {
     if (failed && t.dest.source.ptr && t.phase != Phase::cooldown) {
+        FailedSource* slot = nullptr;
         for (auto& f : recent_failures)
             if (!f.unit.ptr || w.now - f.tick >= w.duration(60)) {
-                f = {t.actor, t.dest.source, w.now};
+                slot = &f;
                 break;
             }
+        if (!slot) slot = recent_failures.append_slot();
+        if (slot) *slot = {t.actor, t.dest.source, w.now};
     }
     t.order.abandon();
     t.phase = Phase::cooldown;
@@ -393,8 +399,9 @@ struct Scan {
     Identity actor{};
     unsigned tick{};
 };
-inline std::array<Scan, 1024> scans{};
+inline store::GrowableTable<Scan, 1024, 1024> scans{};
 inline bool due(const World& w, Address actor) {
+    scans.ensure_min_size(1024);
     const auto id = read<unsigned>(actor, 0xC0);
     auto& entry = scans[(id ^ (id >> 10)) % scans.size()];
     if (entry.actor.matches(actor) && w.now - entry.tick < w.duration(3)) return false;
@@ -406,10 +413,16 @@ inline void reset() {
         t.order.abandon();
         t = {};
     }
-    recent_failures = {};
-    scans = {};
+    recent_failures.fill({});
+    scans.fill({});
     scene = 0;
     last_tick = 0;
+}
+inline void after_hooks_removed() {
+    reset();
+    trips.release();
+    recent_failures.release();
+    scans.release();
 }
 inline void refresh(const World& w) {
     if (w.scene != scene || w.now - last_tick > 0x7fffffffu) reset();
@@ -464,11 +477,14 @@ inline void begin_return(const World& w, Trip& t, Address actor, bool refilled, 
         }
     }
     if (source_failed && t.dest.source.ptr && t.phase != Phase::cooldown && t.phase != Phase::returning) {
+        FailedSource* slot = nullptr;
         for (auto& f : recent_failures)
             if (!f.unit.ptr || w.now - f.tick >= w.duration(60)) {
-                f = {t.actor, t.dest.source, w.now};
+                slot = &f;
                 break;
             }
+        if (!slot) slot = recent_failures.append_slot();
+        if (slot) *slot = {t.actor, t.dest.source, w.now};
     }
     if (t.return_home && hold_position(t.brain) && recipient(actor) && !within(pos(actor), t.home, 2.f * w.length) &&
         !post_overrun(w, actor, t.home, 10.f)) {
@@ -492,7 +508,7 @@ inline bool permit(const World& w, Address actor, Address order) {
         if (t.actor.matches(actor) && t.order.get() == order) {
             if (scene != w.scene || w.now - t.since >= t.timeout || w.now - t.progress_at >= w.duration(9) ||
                 !recipient(actor) || read<Address>(actor, 0xDC8) != t.brain || owner(actor) != t.owner_id ||
-                !current_order(actor, order) || !(distance_travelled(t, pos(actor)) <= travel_metres * w.length))
+                !current_order(actor, order) || !(distance_travelled(t, pos(actor)) <= max_travel_metres() * w.length))
                 return false;
             if (t.phase == Phase::returning)
                 return t.return_home && hold_position(t.brain) && !post_overrun(w, actor, t.home, 10.f);
@@ -506,7 +522,9 @@ inline bool permit(const World& w, Address actor, Address order) {
 }
 inline void tick(Address actor) {
     World w{};
-    if (busy || !accepting.load(std::memory_order_acquire) || !callback(actor, w)) return;
+    if (!config::active().modules.auto_resupply || busy || !accepting.load(std::memory_order_acquire) ||
+        !callback(actor, w))
+        return;
     struct Scope {
         Scope() {
             busy = true;
@@ -516,6 +534,7 @@ inline void tick(Address actor) {
         }
     } scope;
     supply_assignment = &occupied;
+    coord::instance().register_provider(coord::Module::auto_resupply, coord::Priority::auto_resupply, &occupied);
     refresh(w);
     Trip* job = nullptr;
     for (auto& t : trips)
@@ -572,7 +591,7 @@ inline void tick(Address actor) {
         }
         t.travelled = distance_travelled(t, pos(actor));
         t.previous = pos(actor);
-        if (!(t.travelled <= travel_metres * w.length)) {
+        if (!(t.travelled <= max_travel_metres() * w.length)) {
             stop(w, t, t.return_refilled ? 30 : 20, false);
             return;
         }
@@ -584,7 +603,10 @@ inline void tick(Address actor) {
         if (w.now - t.progress_at >= w.duration(9)) stop(w, t, t.return_refilled ? 30 : 20, false);
         return;
     }
-    if (!job && (!free_slot(actor) || (medical_assignment && medical_assignment(actor)))) return;
+    if (!job && (!free_slot(actor) || (medical_assignment && medical_assignment(actor)) ||
+                 !coord::instance().can_act(actor, coord::Module::auto_resupply, coord::Priority::auto_resupply,
+                                            read<std::uint32_t>(actor, 0xC0), w.now)))
+        return;
     if (!job && !due(w, actor)) return;
     const auto g = primary(actor, job ? job->weapon_def : 0);
     const int cur_ammo = ammo_count(actor, g);
@@ -596,6 +618,7 @@ inline void tick(Address actor) {
                 job = &t;
                 break;
             }
+        if (!job) job = trips.append_slot();
         if (!job) return;
         auto& t = *job;
         t.actor = identity(actor);
@@ -609,7 +632,7 @@ inline void tick(Address actor) {
         t.last_ammo = 0;
         t.last_fill_tick = w.now;
         t.wait_started = 0;
-        float best = travel_metres * w.length;
+        float best = max_travel_metres() * w.length;
         best *= best;
         entities(w, [&](Address s) {
             if (!extender(s, 0x109BA88)) return;

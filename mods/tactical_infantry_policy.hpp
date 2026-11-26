@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dynamic_store.hpp"
+
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -264,7 +266,7 @@ struct CoverClaim {
     double until{};
 };
 struct Claims {
-    std::array<CoverClaim, 256> entries{};
+    store::GrowableTable<CoverClaim, 64, 4096> entries{};
     void claim(CoverClaim c, double now) {
         if (!c.squad) return;
         CoverClaim* free = nullptr;
@@ -275,6 +277,7 @@ struct Claims {
             }
             if (!free && (!e.actor || e.until <= now || e.scene != c.scene)) free = &e;
         }
+        if (!free) free = entries.append_slot();
         if (free) *free = c;
     }
     float nearest(Id scene, Id squad, Id actor, XY point, double now) const {

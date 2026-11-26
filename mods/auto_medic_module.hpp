@@ -27,7 +27,7 @@ struct Transfer {
     std::atomic<Address> operation{};
     std::uint64_t generation{};
 };
-inline std::array<Transfer, 128> transfers{};
+inline store::StableTable<Transfer, 32, 4096> transfers{};
 inline std::atomic<unsigned> transfer_count{};
 inline std::uint64_t transfer_generation{};
 inline Destroy original_transfer_destroy{};
@@ -38,6 +38,7 @@ inline Transfer* tracked_transfer(Address operation) {
     return nullptr;
 }
 inline Address transfer_destroy(Address operation, unsigned flags) {
+    runtime::HookGuard guard(smoke::hook_gate);
     if (auto* t = tracked_transfer(operation)) {
         if (t->operation.exchange(0) == operation) --transfer_count;
     }
@@ -60,7 +61,7 @@ struct Job {
     std::array<Identity, 16> previous_clouds{};
     unsigned previous_count{};
 };
-inline std::array<Job, 128> jobs{};
+inline store::GrowableTable<Job, 32, 4096> jobs{};
 inline Address scene{};
 inline unsigned last_tick{};
 inline bool busy{}, release_installed{};
@@ -266,7 +267,8 @@ inline int exchange(Address donor, Address medic, Address item) {
 }
 inline Address nearest(const World& w, Job& j, Address medic, bool donor, const Vec3* home_anchor = nullptr) {
     Address best = 0;
-    float cap = (donor ? donor_metres : patient_metres) * w.length, best2 = cap * cap;
+    const float search_m = config::active().tuning.medic_search_radius_m;
+    float cap = (donor ? donor_metres : search_m) * w.length, best2 = cap * cap;
     actors(w, [&](Address a) {
         if (a == medic) return;
         float d2 = smoke::distance2(pos(medic), pos(a));
@@ -277,7 +279,7 @@ inline Address nearest(const World& w, Job& j, Address medic, bool donor, const 
         } else {
             if (!valid_patient(w, medic, a) || read<Byte>(a, 0x12BA) || patient_claimed(a) || native_claim(w, a, medic))
                 return;
-            if (home_anchor && !within(*home_anchor, pos(a), patient_metres * w.length)) return;
+            if (home_anchor && !within(*home_anchor, pos(a), search_m * w.length)) return;
         }
         Vec3 goal{};
         if (!approach(w, medic, pos(a), (donor ? 1.8f : 2.5f) * w.length, goal)) return;
@@ -434,6 +436,7 @@ inline bool screens(const World& w, Vec3 patient, Vec3 point, const Danger& d) {
 // Decorate the single existing throw detour at creation. Stock smoke retains
 // its original trampoline and handles every other firing context.
 inline void release(Address shooter) noexcept {
+    runtime::HookGuard guard(smoke::hook_gate);
     if (!smoke::serial_thread()) {
         smoke::smoke_release(shooter);
         return;
@@ -485,6 +488,7 @@ inline void release(Address shooter) noexcept {
     }
 }
 inline std::uint32_t shot_exec(Address shot, std::uint32_t phase) {
+    runtime::HookGuard guard(smoke::hook_gate);
     if (phase != 2 && smoke::serial_thread()) {
         auto intent = smoke::lookup_smoke_intent(&smoke::SmokeIntent::root, shot);
         if (intent.generation && intent.lease_ticket)
@@ -519,12 +523,13 @@ inline bool prepare_smoke_hooks(Address image, const char* digest, bool stock, C
         return false;
     }
     release_installed = true;
+    coord::instance().register_provider(coord::Module::auto_medic, coord::Priority::auto_medic, &occupied);
     return true;
 }
 inline void tick(Address actor) {
     World w{};
-    if (busy || !release_installed || smoke::image_base != base || !accepting.load(std::memory_order_acquire) ||
-        !callback(actor, w))
+    if (!config::active().modules.auto_medic || busy || !release_installed || smoke::image_base != base ||
+        !accepting.load(std::memory_order_acquire) || !callback(actor, w))
         return;
     struct Scope {
         Scope() {
@@ -550,14 +555,18 @@ inline void tick(Address actor) {
     }
     const Address b = read<Address>(actor, 0xDC8);
     if (!j) {
-        if (occupied(actor) || (supply_assignment && supply_assignment(actor)) || !free_slot(actor) ||
-            !inventory_free(actor) || !box(actor) || !native<Test>(0x96AAF0)(read<Address>(b, 0xE0)))
+        if (occupied(actor) || (supply_assignment && supply_assignment(actor)) ||
+            !coord::instance().can_act(actor, coord::Module::auto_medic, coord::Priority::auto_medic,
+                                       read<std::uint32_t>(actor, 0xC0), w.now) ||
+            !free_slot(actor) || !inventory_free(actor) || !box(actor) ||
+            !native<Test>(0x96AAF0)(read<Address>(b, 0xE0)))
             return;
         for (auto& slot : jobs)
             if (!slot.medic.ptr) {
                 j = &slot;
                 break;
             }
+        if (!j) j = jobs.append_slot();
         if (!j) return;
         j->medic = identity(actor);
         j->scene = w.scene;
@@ -737,6 +746,7 @@ inline void tick(Address actor) {
             mark = &t;
             break;
         }
+    if (!mark) mark = transfers.append_slot();
     if (!mark) {
         complete_or_return(w, *j, actor, false);
         return;
@@ -788,6 +798,9 @@ inline bool quiescent() {
 }
 inline void after_hooks_removed() {
     reset();
+    jobs.release();
+    transfers.release();
+    transfer_count.store(0, std::memory_order_relaxed);
     release_installed = false;
     original_transfer_destroy = nullptr;
     smoke::after_hooks_removed();

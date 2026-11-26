@@ -1,6 +1,10 @@
 #pragma once
 
+#include "actor_coordinator.hpp"
 #include "ai_support_26734796.hpp"
+#include "config_and_log.hpp"
+#include "dynamic_store.hpp"
+#include "game_classifiers.hpp"
 #include "target_prioritization_module.hpp"
 
 namespace goh::close_grenade {
@@ -222,17 +226,17 @@ struct Claim {
     bool released{};
     bool approaching{};
 };
-inline std::array<Claim, 128> claims{};
+inline store::GrowableTable<Claim, 64, 4096> claims{};
 struct RushClaim {
     Address target{}, actor{}, order{};
     unsigned target_id{}, actor_id{}, start{}, duration{};
 };
-inline std::array<RushClaim, 64> rushes{};
+inline store::GrowableTable<RushClaim, 64, 4096> rushes{};
 struct Failure {
     Address actor{}, target{};
     unsigned actor_id{}, target_id{}, start{}, duration{};
 };
-inline std::array<Failure, 64> failures{};
+inline store::GrowableTable<Failure, 64, 4096> failures{};
 inline unsigned failure_cursor{};
 inline Address scene{};
 inline unsigned last_tick{}, epoch{};
@@ -240,7 +244,7 @@ struct Poll {
     Address actor{};
     unsigned id{}, tick{};
 };
-inline std::array<Poll, 1024> polls{};
+inline store::GrowableTable<Poll, 1024, 1024> polls{};
 struct Shot {
     std::atomic<Address> order{}, shooter{};
     Address actor{}, target{}, definition{}, aim_entity{};
@@ -250,9 +254,17 @@ struct Shot {
     Byte abort_code{};
     bool spent{}, emitted{};
 };
-inline std::array<Shot, 128> shots{};
+inline store::StableTable<Shot, 64, 4096> shots{};
+inline runtime::HookGate hook_gate{};
 inline std::atomic<bool> accepting{};
 inline std::atomic<unsigned> admissions{};
+inline void deactivate() {
+    hook_gate.deactivate();
+    accepting = false;
+}
+inline unsigned inflight_count() {
+    return hook_gate.count();
+}
 struct Admission {
     Admission() {
         ++admissions;
@@ -339,11 +351,11 @@ inline bool drain() {
 }
 inline unsigned long long mounts{}, fires{}, releases{}, vetoes{}, aborts{};
 inline void clear_state() {
-    claims = {};
-    rushes = {};
-    failures = {};
+    claims.clear();
+    rushes.clear();
+    failures.clear();
     failure_cursor = 0;
-    polls = {};
+    polls.clear();
     for (auto& shot : shots) {
         shot.order = 0;
         shot.shooter = 0;
@@ -352,11 +364,11 @@ inline void clear_state() {
 inline bool clock(sim::World& w) {
     if (!sim::world(base, w)) return false;
     if (w.scene != scene || w.now < last_tick) {
-        claims = {};
-        rushes = {};
-        failures = {};
+        claims.clear();
+        rushes.clear();
+        failures.clear();
         failure_cursor = 0;
-        polls = {};
+        polls.clear();
         ++epoch; // old orders lose release authority until their native destructors run
         scene = w.scene;
     }
@@ -373,15 +385,18 @@ inline bool in_backoff(const sim::World& w, Address actor, Address target) {
 }
 inline void note_failure(const sim::World& w, Address actor, unsigned aid, Address target, unsigned tid,
                          float seconds = 3.f) {
+    Failure* empty = nullptr;
     for (auto& f : failures) {
         if (f.actor == actor && f.actor_id == aid && f.target == target && f.target_id == tid) {
             f.start = w.now;
             f.duration = w.duration(seconds);
             return;
         }
+        if (!empty && (!f.actor || w.now - f.start >= f.duration)) empty = &f;
     }
-    auto& slot = failures[failure_cursor++ % failures.size()];
-    slot = {actor, target, aid, tid, w.now, w.duration(seconds)};
+    if (!empty) empty = failures.append_slot();
+    if (!empty && !failures.empty()) empty = &failures[failure_cursor++ % failures.size()];
+    if (empty) *empty = {actor, target, aid, tid, w.now, w.duration(seconds)};
 }
 inline void release_claim(Address actor, unsigned aid, Address target, unsigned tid) {
     for (auto& c : claims) {
@@ -406,6 +421,7 @@ inline Claim* available(const sim::World& w, Address target, Address actor, bool
             return nullptr;
         }
     }
+    if (!empty) empty = claims.append_slot();
     return empty;
 }
 inline void reserve(Claim& c, const sim::World& w, Address target, Address a, bool released, bool approaching = false) {
@@ -442,11 +458,11 @@ inline bool rush_available(const sim::World& w, Address target, Address actor) {
 }
 inline void note_rush(const sim::World& w, Address target, Address actor, Address order) {
     if (w.scene != scene || w.now < last_tick) {
-        claims = {};
-        rushes = {};
-        failures = {};
+        claims.clear();
+        rushes.clear();
+        failures.clear();
         failure_cursor = 0;
-        polls = {};
+        polls.clear();
         ++epoch;
         scene = w.scene;
     }
@@ -460,6 +476,7 @@ inline void note_rush(const sim::World& w, Address target, Address actor, Addres
         }
         if (!slot && (!r.target || w.now - r.start >= r.duration || !holder_alive(r.actor, r.actor_id))) slot = &r;
     }
+    if (!slot) slot = rushes.append_slot();
     if (slot) {
         const Address keep = (order == 0 && slot->actor == actor && slot->actor_id == aid && slot->target == target &&
                               slot->target_id == tid)
@@ -579,8 +596,7 @@ inline bool holds_ranged_at(Address actor) {
     Address hand = pr::hand_item(actor);
     if (!hand) return false;
     Address def = read<Address>(hand, 0x40);
-    return def && (pr::has_tag(def, "rocketlauncher") || pr::has_tag(def, "ptr") || pr::has_tag(def, "at_rifle") ||
-                   pr::has_tag(def, "flame"));
+    return def && (classify::def_is_ranged_at_weapon(def) || pr::has_tag(def, "flame"));
 }
 inline int vehicle_rank(Vehicle type) {
     switch (type) {
@@ -606,8 +622,8 @@ inline bool better(const Choice& a, const Choice& b) {
     return a.distance < b.distance;
 }
 inline bool find_rush_target(const sim::World& w, Address a, Address brain, Choice& out) {
-    if (!accepting || !base || pr::depth != 1 || a != pr::scope.actor || !human_policy(brain) ||
-        !move_free_rush_eligible(brain) || holds_ranged_at(a))
+    if (!accepting || !config::active().modules.close_grenade || !base || pr::depth != 1 || a != pr::scope.actor ||
+        !human_policy(brain) || !move_free_rush_eligible(brain) || holds_ranged_at(a))
         return false;
     auto list = pr::subjects(a);
     if (!list.valid(8) || list.first == list.end) return false;
@@ -645,7 +661,9 @@ inline bool find_rush_target(const sim::World& w, Address a, Address brain, Choi
     return true;
 }
 inline bool priority(Address brain, Address s, const pr::Pair& p) {
-    if (!accepting || !sim::has_actor(read<Address>(s, 0x18)) || !human_policy(brain)) return false;
+    if (!accepting || !config::active().modules.close_grenade || !sim::has_actor(read<Address>(s, 0x18)) ||
+        !human_policy(brain))
+        return false;
     const auto type = vehicle(read<Address>(s, 0x18));
     if (type == Vehicle::none) return false;
     sim::World w{};
@@ -702,7 +720,7 @@ inline void log_event(unsigned long long& count, const char* action, Address a, 
 inline Shot* free_shot() {
     for (auto& s : shots)
         if (!s.order && !s.shooter) return &s;
-    return nullptr;
+    return shots.append_slot();
 }
 inline void remember(Shot& s, const sim::World& w, Address a, const Choice& c, Address order, Address shooter) {
     s.actor = a;
@@ -728,17 +746,19 @@ inline unsigned poll_identity(Address actor) {
 }
 inline void poll(Address a, unsigned id) {
     Admission admission;
-    if (!accepting || id == UINT32_MAX || !base || pr::depth != 1 || a != pr::scope.actor || !sim::serial_actor(a) ||
-        !sim::emitting_host(base) || !read<Address>(base + 0x15CA080) ||
-        native<Address (*)(const unsigned*)>(0xA7E740)(&id) != a)
+    if (!accepting || !config::active().modules.close_grenade || id == UINT32_MAX || !base || pr::depth != 1 ||
+        a != pr::scope.actor || !sim::serial_actor(a) || !sim::emitting_host(base) ||
+        !read<Address>(base + 0x15CA080) || native<Address (*)(const unsigned*)>(0xA7E740)(&id) != a)
         return;
     Address brain = read<Address>(a, 0xDC8);
     if (!human_policy(brain)) return;
     sim::World w{};
     if (!clock(w)) return;
+    if (!coord::instance().can_act(a, coord::Module::close_grenade, coord::Priority::close_grenade, id, w.now)) return;
     const bool plain_ok = replaceable(brain);
     const bool rush_preempt = !plain_ok && replaceable(brain, &w, true);
     if (!plain_ok && !rush_preempt) return;
+    polls.ensure_min_size(1024);
     auto& last = polls[id % polls.size()];
     if (last.actor == a && last.id == id && w.now - last.tick < w.duration(.10f)) return;
     last = {a, id, w.now};
@@ -781,9 +801,7 @@ inline void poll(Address a, unsigned id) {
     if (rush_preempt && !(best.in_range && best.distance < best.max_range - 1.5f * w.length)) return;
     if (!best.held && hand) {
         Address def = read<Address>(hand, 0x40);
-        if (pr::has_tag(def, "rocketlauncher") || pr::has_tag(def, "ptr") || pr::has_tag(def, "at_rifle") ||
-            pr::has_tag(def, "flame"))
-            return;
+        if (classify::def_is_ranged_at_weapon(def) || pr::has_tag(def, "flame")) return;
     }
     Claim* claim = available(w, best.target, a, best.in_range);
     if (!claim) return;
@@ -979,6 +997,7 @@ inline int fire_status(Address order, unsigned phase) {
 using Destroy = Address (*)(Address, unsigned);
 inline Destroy original_fire_destroy{};
 inline Address fire_destroy(Address order, unsigned flags) {
+    runtime::HookGuard guard(hook_gate);
     if (auto* s = order_record(order)) {
         // Keep a shooter with a pending release identifiable through native End.
         Address shooter = s->shooter.load();
@@ -1203,17 +1222,29 @@ inline void release(sim::SmokeRelease original, Address shooter) {
         claim->duration = w.duration(3.f);
     log_event(sample.spawned ? releases : vetoes, sample.spawned ? "release" : "contact-veto", owner, c.target, c.kind);
 }
+inline bool is_throwing_live(Address actor) {
+    sim::World w{};
+    return accepting.load() && base && sim::world(base, w) && is_throwing(w, actor);
+}
 inline void connect() {
+    hook_gate.activate();
     accepting = true;
     pr::grenade_priority = priority;
     sim::grenades = {fire_status, release, send_allowed, spawn_allowed, shooter_destroyed, new_firing, is_busy};
+    coord::instance().register_provider(coord::Module::close_grenade, coord::Priority::close_grenade,
+                                        &is_throwing_live);
 }
 inline void disconnect() {
-    accepting = false;
+    deactivate();
     sim::grenades = {};
     pr::grenade_priority = nullptr;
     original_fire_destroy = nullptr;
     clear_state();
+    claims.release();
+    rushes.release();
+    failures.release();
+    polls.release();
+    shots.release();
     scene = 0;
     last_tick = 0;
     mounts = fires = releases = vetoes = aborts = 0;
