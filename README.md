@@ -1,8 +1,8 @@
 # Gates of Hell: MP AI Overhaul
 
-Host-only native AI overhaul for **Call to Arms: Gates of Hell - Ostfront** (Steam build `26734796`). Nothing in `resource/` or `.pak` files is touched, so vanilla multiplayer clients can join a modded host without installing the mod. Also works in singleplayer, skirmish, and Conquest.
+Host-only native AI overhaul for **Call to Arms: Gates of Hell - Ostfront** (Steam build `26734796`). Nothing in `resource/` or `.pak` files is touched, so vanilla multiplayer clients can join a modded host without installing the mod. Should also work in singleplayer, skirmish, and Conquest but it's only been tested in multiplayer so far. 
 
-Work in progress: no packaged release yet, and live multiplayer testing is still ongoing.
+**Work in progress**: Still a lot of rough edges. Contributions welcome!
 
 ## Gameplay changes
 
