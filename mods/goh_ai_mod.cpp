@@ -35,12 +35,34 @@
 namespace {
 
 using FnActorSlot23 = void(__fastcall*)(std::uintptr_t actor);
+using FnOpeningMainPage = void(__fastcall*)(std::uintptr_t self);
+using FnPageLoadingEvent = void(__fastcall*)(std::uintptr_t page, std::uintptr_t event);
+using FnSetCursorPos = BOOL(WINAPI*)(int x, int y);
+using FnClipCursor = BOOL(WINAPI*)(const RECT* rect);
+using FnMouseEvent = void(WINAPI*)(DWORD flags, DWORD dx, DWORD dy, DWORD data, ULONG_PTR extra);
+using FnSetForegroundWindow = BOOL(WINAPI*)(HWND hwnd);
+using FnShowWindow = BOOL(WINAPI*)(HWND hwnd, int cmd);
+using FnSetWindowPos = BOOL(WINAPI*)(HWND hwnd, HWND after, int x, int y, int cx, int cy, UINT flags);
 
 HMODULE g_SelfModule = nullptr;
 HANDLE g_InitThread = nullptr;
 goh::runtime::Address g_Base = 0;
 FnActorSlot23 g_OrigActorSlot23 = nullptr;
+FnOpeningMainPage g_OrigOpeningMainPage = nullptr;
+FnPageLoadingEvent g_OrigPageLoadingEvent = nullptr;
+FnSetCursorPos g_OrigSetCursorPos = nullptr;
+FnClipCursor g_OrigClipCursor = nullptr;
+FnMouseEvent g_OrigMouseEvent = nullptr;
+FnSetForegroundWindow g_OrigSetForegroundWindow = nullptr;
+FnShowWindow g_OrigShowWindow = nullptr;
+FnSetWindowPos g_OrigSetWindowPos = nullptr;
 goh::runtime::HookGate g_ActorSlotGate{};
+goh::runtime::HookGate g_OpeningMainPageGate{};
+goh::runtime::HookGate g_PageLoadingGate{};
+goh::runtime::HookGate g_CursorGrabGate{};
+std::atomic<bool> g_AutoMissionLaunched{false};
+std::atomic<bool> g_SuppressCursorGrab{false};
+std::atomic<bool> g_ShutdownDone{false};
 goh::live::Observer g_Observer;
 
 int CreateHookAdapter(void* target, void* detour, void** trampoline) {
@@ -77,6 +99,7 @@ void RunOrigSlot23(goh::runtime::Address actor, void*) {
     g_Observer.observe(g_Base, actor, [](const goh::config::Settings& settings) {
         goh::config::published().publish(settings);
         goh::log::configure(settings);
+        g_SuppressCursorGrab.store(settings.suppress_cursor_grab, std::memory_order_release);
     });
     g_OrigActorSlot23(actor);
 }
@@ -94,9 +117,99 @@ void __fastcall Hook_ActorSlot23(std::uintptr_t actor) {
     goh::tu_infantry::with_actor_quant(actor, &RunTanksLayer, nullptr);
 }
 
+void __fastcall Hook_OpeningMainPage(std::uintptr_t self) {
+    goh::runtime::HookGuard guard(g_OpeningMainPageGate);
+    if (g_OrigOpeningMainPage) g_OrigOpeningMainPage(self);
+    if (!g_OpeningMainPageGate.active()) return;
+    const auto& mission_path = goh::config::startup_settings().auto_mission;
+    if (!mission_path.empty() && !g_AutoMissionLaunched.exchange(true, std::memory_order_acq_rel)) {
+        goh::live::launch_singleplayer_mission(g_Base, mission_path);
+    }
+}
+
+void __fastcall Hook_PageLoadingEvent(std::uintptr_t page, std::uintptr_t event) {
+    goh::runtime::HookGuard guard(g_PageLoadingGate);
+    const bool is_io_end =
+        g_PageLoadingGate.active() && page && event && g_Base &&
+        goh::runtime::read<std::uint32_t>(event, 8) == 0x102Au &&
+        goh::runtime::read<goh::runtime::Address>(page) == g_Base + goh::runtime::table().vt.page_loading &&
+        (goh::config::active().auto_dismiss_loading || !goh::config::startup_settings().auto_mission.empty());
+    if (g_OrigPageLoadingEvent) g_OrigPageLoadingEvent(page, event);
+    if (is_io_end && goh::runtime::read<std::uint8_t>(page, 0x1B9) != 0) {
+        struct ContinueEvent {
+            std::uint64_t pad0{};
+            std::uint32_t id{7u};
+            std::uint32_t pad1{};
+        };
+        ContinueEvent ev{};
+        using FnOnContinue = void(__fastcall*)(std::uintptr_t subobj, void* ev);
+        goh::runtime::native<FnOnContinue>(g_Base, goh::runtime::table().fn.page_loading_continue)(page + 0x28u, &ev);
+    }
+}
+
+BOOL WINAPI Hook_SetCursorPos(int x, int y) {
+    goh::runtime::HookGuard guard(g_CursorGrabGate);
+    if (g_CursorGrabGate.active() && g_SuppressCursorGrab.load(std::memory_order_acquire)) return TRUE;
+    return g_OrigSetCursorPos ? g_OrigSetCursorPos(x, y) : FALSE;
+}
+
+BOOL WINAPI Hook_ClipCursor(const RECT* rect) {
+    goh::runtime::HookGuard guard(g_CursorGrabGate);
+    if (rect != nullptr && g_CursorGrabGate.active() && g_SuppressCursorGrab.load(std::memory_order_acquire))
+        return TRUE;
+    return g_OrigClipCursor ? g_OrigClipCursor(rect) : FALSE;
+}
+
+void WINAPI Hook_MouseEvent(DWORD flags, DWORD dx, DWORD dy, DWORD data, ULONG_PTR extra) {
+    goh::runtime::HookGuard guard(g_CursorGrabGate);
+    if (g_CursorGrabGate.active() && g_SuppressCursorGrab.load(std::memory_order_acquire)) return;
+    if (g_OrigMouseEvent) g_OrigMouseEvent(flags, dx, dy, data, extra);
+}
+
+BOOL WINAPI Hook_SetForegroundWindow(HWND hwnd) {
+    goh::runtime::HookGuard guard(g_CursorGrabGate);
+    if (g_CursorGrabGate.active() && g_SuppressCursorGrab.load(std::memory_order_acquire)) return TRUE;
+    return g_OrigSetForegroundWindow ? g_OrigSetForegroundWindow(hwnd) : FALSE;
+}
+
+BOOL WINAPI Hook_ShowWindow(HWND hwnd, int cmd) {
+    goh::runtime::HookGuard guard(g_CursorGrabGate);
+    if (g_CursorGrabGate.active() && g_SuppressCursorGrab.load(std::memory_order_acquire)) {
+        if (cmd == SW_SHOWNORMAL || cmd == SW_SHOW || cmd == SW_RESTORE) cmd = SW_SHOWNOACTIVATE;
+    }
+    return g_OrigShowWindow ? g_OrigShowWindow(hwnd, cmd) : FALSE;
+}
+
+BOOL WINAPI Hook_SetWindowPos(HWND hwnd, HWND after, int x, int y, int cx, int cy, UINT flags) {
+    goh::runtime::HookGuard guard(g_CursorGrabGate);
+    if (g_CursorGrabGate.active() && g_SuppressCursorGrab.load(std::memory_order_acquire)) {
+        flags |= SWP_NOACTIVATE;
+    }
+    return g_OrigSetWindowPos ? g_OrigSetWindowPos(hwnd, after, x, y, cx, cy, flags) : FALSE;
+}
+
+template <class Fn> void StageUser32Hook(HMODULE user32, const char* name, void* detour, Fn& orig) {
+    if (!user32) return;
+    auto* target = reinterpret_cast<void*>(GetProcAddress(user32, name));
+    if (!target) {
+        goh::log::write(goh::log::Level::summary, "Testing hook skipped: user32!%s not exported", name);
+        return;
+    }
+    void* tramp = nullptr;
+    if (MH_CreateHook(target, detour, &tramp) == MH_OK) {
+        orig = reinterpret_cast<Fn>(tramp);
+        goh::log::write(goh::log::Level::summary, "Testing hook staged: user32!%s", name);
+    } else {
+        goh::log::write(goh::log::Level::summary, "Testing hook skipped: MH_CreateHook(user32!%s) failed", name);
+    }
+}
+
 void DeactivateAllHooks() noexcept {
     goh::runtime::global_accepting.store(false, std::memory_order_release);
     g_ActorSlotGate.deactivate();
+    g_OpeningMainPageGate.deactivate();
+    g_PageLoadingGate.deactivate();
+    g_CursorGrabGate.deactivate();
     goh::tu_combat::deactivate();
     goh::tu_infantry::deactivate();
     goh::tu_tanks::deactivate();
@@ -109,6 +222,16 @@ void CleanupAfterHooksRemoved() {
     goh::tu_infantry::after_hooks_removed();
     goh::coord::instance().release_all();
     g_OrigActorSlot23 = nullptr;
+    g_OrigOpeningMainPage = nullptr;
+    g_OrigPageLoadingEvent = nullptr;
+    g_OrigSetCursorPos = nullptr;
+    g_OrigClipCursor = nullptr;
+    g_OrigMouseEvent = nullptr;
+    g_OrigSetForegroundWindow = nullptr;
+    g_OrigShowWindow = nullptr;
+    g_OrigSetWindowPos = nullptr;
+    g_AutoMissionLaunched.store(false, std::memory_order_release);
+    g_SuppressCursorGrab.store(false, std::memory_order_release);
 }
 
 bool DrainAllInflightHooks() {
@@ -153,6 +276,16 @@ DWORD WINAPI InitThread(LPVOID) {
         return 1;
     }
 
+    const bool want_skip_intro = cfg.skip_intro || !cfg.auto_mission.empty();
+    const bool want_auto_dismiss = cfg.auto_dismiss_loading || !cfg.auto_mission.empty();
+    const bool want_auto_mission = !cfg.auto_mission.empty();
+    const bool want_suppress_cursor = cfg.suppress_cursor_grab;
+    g_SuppressCursorGrab.store(want_suppress_cursor, std::memory_order_release);
+    if (want_skip_intro) {
+        goh::runtime::write<std::uint8_t>(g_Base, goh::runtime::table().glob.show_start_video, 0u);
+        goh::log::write(goh::log::Level::summary, "Testing: disabled start video (s_showStartVideo=0)");
+    }
+
     if (!g_Observer.attach(g_SelfModule, actual_sha))
         goh::log::write(goh::log::Level::error, "Live observer could not attach to verified game module");
     goh::log::write(goh::log::Level::summary, "Initial state: remote=%u hostEmit=%u clock=%u L=%.1f G=%.7f",
@@ -178,6 +311,46 @@ DWORD WINAPI InitThread(LPVOID) {
                         static_cast<unsigned long long>(slot23_rva));
     }
 
+    if (ok && want_auto_mission) {
+        const goh::runtime::Address open_rva = goh::runtime::table().hook.opening_main_page;
+        void* open_tramp = nullptr;
+        if (MH_CreateHook(reinterpret_cast<void*>(g_Base + open_rva), reinterpret_cast<void*>(&Hook_OpeningMainPage),
+                          &open_tramp) == MH_OK) {
+            g_OrigOpeningMainPage = reinterpret_cast<FnOpeningMainPage>(open_tramp);
+            goh::log::write(goh::log::Level::summary, "Testing hook staged: OpeningMainPage @ 0x%llx",
+                            static_cast<unsigned long long>(open_rva));
+        } else {
+            ok = false;
+            goh::log::write(goh::log::Level::error, "ERROR: MH_CreateHook(OpeningMainPage @ 0x%llx) failed",
+                            static_cast<unsigned long long>(open_rva));
+        }
+    }
+    if (ok && want_auto_dismiss) {
+        const goh::runtime::Address load_rva = goh::runtime::table().hook.page_loading_event;
+        void* load_tramp = nullptr;
+        if (MH_CreateHook(reinterpret_cast<void*>(g_Base + load_rva), reinterpret_cast<void*>(&Hook_PageLoadingEvent),
+                          &load_tramp) == MH_OK) {
+            g_OrigPageLoadingEvent = reinterpret_cast<FnPageLoadingEvent>(load_tramp);
+            goh::log::write(goh::log::Level::summary, "Testing hook staged: eGUI_PageLoading::OnEvent @ 0x%llx",
+                            static_cast<unsigned long long>(load_rva));
+        } else {
+            ok = false;
+            goh::log::write(goh::log::Level::error, "ERROR: MH_CreateHook(eGUI_PageLoading::OnEvent @ 0x%llx) failed",
+                            static_cast<unsigned long long>(load_rva));
+        }
+    }
+    if (ok && want_suppress_cursor) {
+        HMODULE user32 = GetModuleHandleW(L"user32.dll");
+        if (!user32) user32 = LoadLibraryW(L"user32.dll");
+        StageUser32Hook(user32, "SetCursorPos", reinterpret_cast<void*>(&Hook_SetCursorPos), g_OrigSetCursorPos);
+        StageUser32Hook(user32, "ClipCursor", reinterpret_cast<void*>(&Hook_ClipCursor), g_OrigClipCursor);
+        StageUser32Hook(user32, "mouse_event", reinterpret_cast<void*>(&Hook_MouseEvent), g_OrigMouseEvent);
+        StageUser32Hook(user32, "SetForegroundWindow", reinterpret_cast<void*>(&Hook_SetForegroundWindow),
+                        g_OrigSetForegroundWindow);
+        StageUser32Hook(user32, "ShowWindow", reinterpret_cast<void*>(&Hook_ShowWindow), g_OrigShowWindow);
+        StageUser32Hook(user32, "SetWindowPos", reinterpret_cast<void*>(&Hook_SetWindowPos), g_OrigSetWindowPos);
+    }
+
     ok &= goh::tu_combat::stage_hooks(g_Base, actual_sha, &CreateHookAdapter, &RemoveHookAdapter);
     ok &= goh::tu_infantry::stage_hooks(g_Base, actual_sha, &CreateHookAdapter, &RemoveHookAdapter);
     ok &= goh::tu_tanks::stage_hooks(g_Base, actual_sha, &CreateHookAdapter, &RemoveHookAdapter);
@@ -193,6 +366,9 @@ DWORD WINAPI InitThread(LPVOID) {
 
     goh::tu_combat::connect();
     g_ActorSlotGate.activate();
+    if (want_auto_mission) g_OpeningMainPageGate.activate();
+    if (want_auto_dismiss) g_PageLoadingGate.activate();
+    if (want_suppress_cursor) g_CursorGrabGate.activate();
     goh::runtime::global_accepting.store(true, std::memory_order_release);
 
     const MH_STATUS en = MH_EnableHook(MH_ALL_HOOKS);
@@ -214,6 +390,14 @@ DWORD WINAPI InitThread(LPVOID) {
                     "=== %u hooks active (slot23=1 combat=%u infantry=%u tanks=%u runtime_allowed=%d) ===", kTotalHooks,
                     goh::tu_combat::kHookCount, goh::tu_infantry::kHookCount, goh::tu_tanks::kHookCount,
                     static_cast<int>(goh::tu_infantry::runtime_allowed_flag()));
+    if (want_skip_intro || want_auto_dismiss || want_auto_mission || want_suppress_cursor) {
+        goh::log::write(goh::log::Level::summary,
+                        "=== testing automation active (skip_intro=%u auto_dismiss_loading=%u suppress_cursor_grab=%u "
+                        "auto_mission=%s) ===",
+                        static_cast<unsigned>(want_skip_intro), static_cast<unsigned>(want_auto_dismiss),
+                        static_cast<unsigned>(want_suppress_cursor),
+                        want_auto_mission ? cfg.auto_mission.c_str() : "off");
+    }
     return 0;
 }
 
@@ -284,6 +468,11 @@ extern "C" __declspec(dllexport) DWORD WINAPI ShutdownAndUnload(LPVOID) {
         support.corpse_loot);
     g_Observer.close();
     goh::log::close();
+    if (g_InitThread) {
+        CloseHandle(g_InitThread);
+        g_InitThread = nullptr;
+    }
+    g_ShutdownDone.store(true, std::memory_order_release);
     FreeLibraryAndExitThread(g_SelfModule, 0);
     return 0;
 }
@@ -296,7 +485,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID reserved) {
     } else if (fdwReason == DLL_PROCESS_DETACH) {
         goh::tu_tanks::begin_shutdown();
         goh::tu_infantry::begin_shutdown();
-        if (reserved) return TRUE; // Process termination: OS reclaims threads, patches, and allocations together.
+        // Process termination or completed ShutdownAndUnload: never re-run unhooking/log writes under loader lock.
+        if (reserved || g_ShutdownDone.load(std::memory_order_acquire)) return TRUE;
         DeactivateAllHooks();
         MH_DisableHook(MH_ALL_HOOKS);
         MH_Uninitialize();

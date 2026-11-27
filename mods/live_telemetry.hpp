@@ -17,11 +17,13 @@
 #include <cstring>
 #include <limits>
 #include <locale>
+#include <memory>
 #include <mutex>
 #include <sstream>
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <vector>
 
 namespace goh::live {
 
@@ -94,7 +96,8 @@ inline Config parse_ini(std::string_view text) {
 }
 
 // A reader has its own settings after the first publication. Startup owns the frozen smoke lists
-// and filename. Logging accepts the freshly parsed settings separately under its existing mutex.
+// and filename. Copies are owned by PublishedSettings (never non-trivial thread_local objects) so
+// Windows/MinGW __cxa_thread_atexit never pins the DLL across hot-unloads.
 template <class Settings> class PublishedSettings {
     using Modules = decltype(Settings::modules);
     using Tuning = decltype(Settings::tuning);
@@ -104,8 +107,20 @@ template <class Settings> class PublishedSettings {
     decltype(Settings::log_level) level_{};
     std::uint32_t flush_{};
     std::uint32_t ai_player_mask_{};
+    float sim_speed_{};
+    bool auto_dismiss_loading_{};
+    bool suppress_cursor_grab_{};
+    std::uint32_t restart_seq_{};
+    std::uint32_t quit_seq_{};
     std::mutex mutex_;
+    std::vector<std::unique_ptr<Settings>> thread_copies_;
     std::atomic<std::uint64_t> generation_{};
+    std::uint64_t id_{next_id()};
+
+    static std::uint64_t next_id() noexcept {
+        static std::atomic<std::uint64_t> seq{1};
+        return seq.fetch_add(1, std::memory_order_relaxed);
+    }
 
 public:
     // One instance per process. Call publish only in the serial simulation callback.
@@ -116,23 +131,41 @@ public:
         level_ = next.log_level;
         flush_ = next.log_flush_ms;
         ai_player_mask_ = next.ai_player_mask;
+        sim_speed_ = next.sim_speed;
+        auto_dismiss_loading_ = next.auto_dismiss_loading;
+        suppress_cursor_grab_ = next.suppress_cursor_grab;
+        restart_seq_ = next.restart_seq;
+        quit_seq_ = next.quit_seq;
         generation_.fetch_add(1, std::memory_order_release);
     }
     Settings& view(Settings& startup) {
         const auto current = generation_.load(std::memory_order_acquire);
         if (!current) return startup;
-        thread_local Settings copy = startup;
+        thread_local Settings* copy = nullptr;
+        thread_local std::uint64_t owner = 0;
         thread_local std::uint64_t seen = 0;
+        if (owner != id_ || !copy) {
+            std::lock_guard<std::mutex> lock(mutex_);
+            thread_copies_.push_back(std::make_unique<Settings>(startup));
+            copy = thread_copies_.back().get();
+            owner = id_;
+            seen = 0;
+        }
         if (seen != current) {
             std::lock_guard<std::mutex> lock(mutex_);
-            copy.modules = modules_;
-            copy.tuning = tuning_;
-            copy.log_level = level_;
-            copy.log_flush_ms = flush_;
-            copy.ai_player_mask = ai_player_mask_;
+            copy->modules = modules_;
+            copy->tuning = tuning_;
+            copy->log_level = level_;
+            copy->log_flush_ms = flush_;
+            copy->ai_player_mask = ai_player_mask_;
+            copy->sim_speed = sim_speed_;
+            copy->auto_dismiss_loading = auto_dismiss_loading_;
+            copy->suppress_cursor_grab = suppress_cursor_grab_;
+            copy->restart_seq = restart_seq_;
+            copy->quit_seq = quit_seq_;
             seen = generation_.load(std::memory_order_relaxed);
         }
-        return copy;
+        return *copy;
     }
 };
 
@@ -330,15 +363,18 @@ public:
         if (file_) std::fclose(file_);
         file_ = nullptr;
     }
+    bool flush(std::uint64_t now) {
+        if (!file_) return false;
+        if (std::fflush(file_) != 0) {
+            close();
+            return false;
+        }
+        flushed_ = now;
+        return true;
+    }
     bool flush_due(std::uint64_t now) {
         if (!file_) return false;
-        if (now - flushed_ >= cfg_.flush_ms) {
-            if (std::fflush(file_) != 0) {
-                close();
-                return false;
-            }
-            flushed_ = now;
-        }
+        if (now - flushed_ >= cfg_.flush_ms) return flush(now);
         return true;
     }
     // Takes ownership of stream even when the identity check fails.
@@ -373,12 +409,18 @@ public:
         if (!cfg.enabled) close();
         return ok;
     }
+    bool reset_pending(std::uint32_t tick) const {
+        return sampled_stats_ && tick < previous_tick_ && previous_tick_ - tick > 500;
+    }
     bool stats_due(std::uint64_t now) const {
         return active() && (!sampled_stats_ || now - stats_ms_ >= cfg_.snapshot_interval_ms);
     }
+    bool stats_due(std::uint64_t now, std::uint32_t tick) const {
+        return active() && (!sampled_stats_ || reset_pending(tick) || now - stats_ms_ >= cfg_.snapshot_interval_ms);
+    }
     void stats(std::uint64_t now, std::uint32_t tick, const Counters& current) {
-        if (!stats_due(now)) return;
-        if (sampled_stats_ && tick < previous_tick_ && previous_tick_ - tick > 500) {
+        if (!stats_due(now, tick)) return;
+        if (reset_pending(tick)) {
             emit("scene_reset", now, tick, ",\"previous_tick\":" + std::to_string(previous_tick_));
             used_ = 0;
             window_ = now;

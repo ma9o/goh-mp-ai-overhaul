@@ -137,6 +137,19 @@ void test_benchmark_player_mask() {
     assert(parse_ini("[testing]\nsim_speed=99").sim_speed == 20.0f);
     assert(parse_ini("[testing]\nsim_speed=0.05").sim_speed == 0.25f);
     assert(parse_ini("[testing]\nsim_speed=10\nsim_speed=0").sim_speed == 0.0f);
+
+    const auto def_test = parse_ini("");
+    assert(!def_test.skip_intro && !def_test.auto_dismiss_loading && !def_test.hot_reload &&
+           def_test.restart_seq == 0 && def_test.auto_mission.empty());
+    const auto auto_cfg = parse_ini("[testing]\nskip_intro=true\nauto_dismiss_loading=1\nhot_reload=yes\n"
+                                    "restart_seq=42\nauto_mission=single/00-bootcamp/02_vehicle-control:0\n");
+    assert(auto_cfg.skip_intro && auto_cfg.auto_dismiss_loading && auto_cfg.hot_reload && auto_cfg.restart_seq == 42u &&
+           auto_cfg.auto_mission == "single/00-bootcamp/02_vehicle-control:0");
+    assert(parse_ini("[testing]\nauto_mission=single/00-bootcamp/02_vehicle-control:0\nauto_mission=off")
+               .auto_mission.empty());
+    for (const char* bad : {"", "noslash", "/leading/slash", "trailing/slash/", "a//b", "../escape/m", "bad path/m"}) {
+        assert(parse_ini(std::string("[testing]\nauto_mission=") + bad).auto_mission.empty());
+    }
     reset_defaults();
 }
 
@@ -306,13 +319,17 @@ void test_config_and_log() {
     active().smoke_extra_grenades = {"startup_only"};
     auto update = parse_ini("[modules]\nauto_smoke=false\n[tuning]\nmedic_search_radius_m=46\n"
                             "[logging]\nfilename=renamed.log\nlevel=error\nflush_ms=210\n"
-                            "[smoke]\nextra_grenades=hot_list\n[testing]\nai_player_mask=2");
+                            "[smoke]\nextra_grenades=hot_list\n"
+                            "[testing]\nai_player_mask=2\nsim_speed=12.5\nauto_dismiss_loading=true\n"
+                            "suppress_cursor_grab=true\nrestart_seq=7\nquit_seq=3");
     published().publish(update);
     goh::log::configure(update);
     std::thread live_reader([] {
         const auto& current = active();
         assert(!current.modules.auto_smoke && current.tuning.medic_search_radius_m == 46);
         assert(!player_ai_enabled(0) && player_ai_enabled(1));
+        assert(current.sim_speed == 12.5f && current.auto_dismiss_loading && current.suppress_cursor_grab &&
+               current.restart_seq == 7u && current.quit_seq == 3u);
         assert(current.smoke_extra_grenades == std::vector<std::string>{"startup_only"});
     });
     live_reader.join();
@@ -445,6 +462,8 @@ void test_pe_pattern_and_rtti_resolver() {
     check_entry(".?AUeRotate@Order@@", table().vt.rotate_order, 0x0110C760);
     check_entry(".?AUeMove@Order@@", table().vt.move_order, 0x0110C810);
     check_entry(".?AUeMoveToCover@Order@@", table().vt.move_to_cover, 0x01109C60);
+    check_entry(".?AVeGUI_PageLoading@GUI2@@", table().vt.page_loading, 0x01058828);
+    check_entry(".?AUcmGameRestart@Scene@Events@@", table().vt.cm_game_restart, 0x0104FEF0);
 
     // Corrupt MZ header fails cleanly.
     write_u16(img, 0x00, 0x1234u);

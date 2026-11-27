@@ -106,7 +106,7 @@ def fixture(suite):
 
 
 
-BATTLE_NAME = "e2e_combined_arms_battle"
+BATTLE_NAME = "e2e_flag_battle"
 ROSTERS = tuple(f"{team}_{group}" for team in ("friendly", "enemy") for group in ("infantry", "vehicles", "support"))
 
 
@@ -115,7 +115,7 @@ def mission_records(phase):
 
 
 def unit_records(phase):
-    return {int(n[2], 16) - 0x8000: n for n in mission_records(phase) if n[0] in ("Entity", "Human")}
+    return {int(n[2], 16) - phase.eid_base: n for n in mission_records(phase) if n[0] in ("Entity", "Human")}
 
 
 def action_timeline(phase):
@@ -132,7 +132,7 @@ def e2e_fixture():
     phase, = m.phases_for("e2e")
     t = phase.tactical
     start, tps = 100, 10
-    end = start + 300 * tps
+    end = start + t.duration_s * tps
     rows = [row("session_start", 0, exe="call_to_arms.exe", build=26734796, sha256=m.SHA, local_day_ms=0)]
     units = unit_records(phase)
     for role in t.points:
@@ -265,7 +265,7 @@ class MissionTests(unittest.TestCase):
                 positions = [
                     tuple(map(float, e[3][1:])) for e in root[1:]
                     if e[0] in ("Entity", "Human")
-                    and int(e[2], 16) - 0x8000 in phase.mids.values()
+                    and int(e[2], 16) - phase.eid_base in phase.mids.values()
                 ]
                 xs, ys = zip(*positions)
                 self.assertAlmostEqual(aim[0], (min(xs) + max(xs)) / 2, places=2)
@@ -465,10 +465,11 @@ class E2EMissionTests(unittest.TestCase):
     def test_single_mirrored_company_and_witness(self):
         self.assertEqual(m.SUITES, ("full", "infantry", "armor", "close_at", "e2e"))
         p, t = self.phase, self.roster
-        self.assertEqual((p.name, t.duration_s, t.friendly_player, t.enemy_player), (BATTLE_NAME, 300, 2, 3))
+        self.assertEqual((p.name, t.duration_s, t.infantry_checkpoint_s, t.friendly_player, t.enemy_player),
+                         (BATTLE_NAME, 240, 90, 2, 3))
         text = m.generate("e2e", "fast")
         objects = m.validate(text)
-        self.assertGreater(len(p.mids), 99)
+        self.assertEqual(p.eid_base, m.E2E_EID_BASE)
         self.assertTrue(all(4000 <= mid < 4500 for mid in p.mids.values()))
         self.assertEqual(len(set(p.mids.values())), len(p.mids))
         spectator = [r for r in objects if ["Player", "0"] in r]
@@ -480,10 +481,14 @@ class E2EMissionTests(unittest.TestCase):
         self.assertEqual({n[1]: n[2] for n in players[1:] if n[0] == "alias"},
                          {"0": "player", "1": "ai", "2": "west_ai", "3": "east_ai"})
         matrix = next(n[1:] for n in m.nodes(root) if n[0] == "diplomacy")
-        for a, b in ((2, 3), (3, 2), (0, 2), (2, 0), (0, 3), (3, 0)):
+        for a, b in ((2, 3), (3, 2), (0, 3), (3, 0)):
             self.assertEqual(matrix[a * 8 + b], "1")
+        # Spectator P0 is allied (2) with SW (P2) and hostile (1) to NE (P3) for native allied-blue vs
+        # hostile-red coloring; E2E overlays symmetric 1.0/1.0 heroic.dl HP/accuracy for both sides.
+        for a, b in ((0, 2), (2, 0)):
+            self.assertEqual(matrix[a * 8 + b], "2")
         flags = [n for n in objects if n[:2] == ["Entity", "flag_point_1"]]
-        self.assertEqual([list(map(float, f[3][1:])) for f in flags], [[0, 320]])
+        self.assertEqual([list(map(float, f[3][1:])) for f in flags], [list(m.E2E_FLAG)])
         self.assertFalse(any(n[0] == "Player" for n in flags[0][4:]))
 
         brains = {r[1]: r[2] for r in self.records if r[0] == "Brain"}
@@ -493,9 +498,6 @@ class E2EMissionTests(unittest.TestCase):
         for name in teams[0]:
             a, b = (self.objects[p.mids[side + name]] for side in ("a_", "b_"))
             self.assertEqual(a[:2], b[:2], name)
-            x, y = map(float, a[3][1:3])
-            self.assertEqual(list(map(float, b[3][1:3])), [-x, y], name)
-            self.assertTrue(-1150 <= x <= 0 and -50 <= y <= 720, name)
             self.assertEqual(kits.get(a[2]), kits.get(b[2]), name)
             if a[0] == "Human":
                 self.assertTrue(a[1].startswith(m.GER))
@@ -507,31 +509,26 @@ class E2EMissionTests(unittest.TestCase):
                 self.assertNotIn(["Impregnability", "full"], a)
                 self.assertNotIn(["Impregnability", "full"], b)
 
-    def test_deployments_and_points_by_lane_and_wave(self):
+    def test_deployments_and_points_by_stage(self):
         p, t = self.phase, self.roster
         scored = [role for g in ROSTERS for role in getattr(t, g)]
         self.assertEqual(set(scored), set(t.points))
         self.assertEqual(len(scored), len(t.points))
         self.assertEqual(set(t.waves), set(scored))
-        weights = {"panzer4d": 10, "t3476_40": 10, "sdkfz251c": 5, "45mm_m37": 5,
-                   "ba64": 3, "blitz3_6_art_ammo": 3, "medic": 2}
-        expected_counts = {(0, "south"): 7, (0, "center"): 12, (0, "north"): 7,
-                           (90, "south"): 4, (90, "center"): 6, (90, "north"): 5,
-                           (180, "north"): 5}
-        lane_bounds = {"south": (-20, 180), "center": (200, 440), "north": (460, 700)}
+        weights = {"panzer4d": 10, "t35": 12, "sdkfz222a": 4, "medic": 2}
         tags = {r[-1]: set(r[1:-1]) for r in self.records if r[0] == "Tags"}
         links = {r[1]: r[2] for r in self.records if r[0] == "Link"}
         duration, actions = action_timeline(p)
-        self.assertEqual(duration, 300)
+        self.assertEqual(duration, 240)
         reveals = {p.tag("entry"): 0}
         reveals.update({
             next(n[1] for n in r[1] if n[0] == "tag"): when
             for when, r in actions if r[0] == "entity_state" and ["inactive", "off"] in r
         })
-        self.assertEqual(set(reveals.values()), {0, 90, 180})
+        self.assertEqual(set(reveals.values()), {0, 90})
         for side in ("friendly", "enemy"):
             roles = [r for kind in ("infantry", "vehicles", "support") for r in getattr(t, side + "_" + kind)]
-            counts, wave_points = Counter(), Counter()
+            wave_points = Counter()
             for role in roles:
                 obj = self.objects[p.mids[role]]
                 model = obj[1].rsplit("/", 1)[-1]
@@ -542,30 +539,26 @@ class E2EMissionTests(unittest.TestCase):
                 self.assertEqual(len(stages), 1, role)
                 deploy = reveals[stages.pop()]
                 self.assertEqual(t.waves[role], deploy, role)
-                y = float(obj[3][2])
-                lane, = (lane for lane, (lo, hi) in lane_bounds.items() if lo <= y <= hi)
-                counts[deploy, lane] += 1
                 wave_points[deploy] += t.points[role]
-            self.assertEqual(counts, expected_counts)
-            self.assertEqual(wave_points, {0: 58, 90: 30, 180: 14})
+            self.assertEqual(wave_points, {0: 12, 90: 26})
             self.assertEqual(tuple(len(getattr(t, side + "_" + k)) for k in ("infantry", "vehicles", "support")),
-                             (34, 9, 3))
+                             (10, 3, 1))
             models = Counter(self.objects[p.mids[r]][1] for r in getattr(t, side + "_vehicles"))
-            self.assertEqual(models, {"panzer4d": 2, "t3476_40": 2, "sdkfz251c": 2, "ba64": 2, "45mm_m37": 1})
+            self.assertEqual(models, {"panzer4d": 1, "t35": 1, "sdkfz222a": 1})
 
         scored_mids = {p.mids[r] for r in scored}
-        for hull in (r for r in self.objects.values() if r[1] in ("sdkfz251c", "t3476_40")):
-            passengers = [int(eid, 16) - 0x8000 for eid, (carrier, seat) in links.items()
+        for hull in (r for r in self.objects.values() if r[1] == "t35"):
+            passengers = [int(eid, 16) - p.eid_base for eid, (carrier, seat) in links.items()
                           if carrier == hull[2] and seat.startswith("seat")]
             self.assertEqual(len(passengers), 4)
             for rider in passengers:
-                self.assertEqual(rider in scored_mids, hull[1] == "sdkfz251c")
+                self.assertNotIn(rider, scored_mids)
         for eid, (_, seat) in links.items():
             if not seat.startswith("seat"):
-                self.assertNotIn(int(eid, 16) - 0x8000, scored_mids)
+                self.assertNotIn(int(eid, 16) - p.eid_base, scored_mids)
 
-    def test_symmetric_orders_cover_and_low_ammo(self):
-        p, t = self.phase, self.roster
+    def test_staged_orders_and_squad_kits(self):
+        p = self.phase
         waypoints = {n[0]: tuple(map(float, n[1][1:3]))
                      for n in m.parse("{mission " + " ".join(p.waypoints) + "}")[1:]}
         orders = {"a": [], "b": []}
@@ -579,50 +572,23 @@ class E2EMissionTests(unittest.TestCase):
                 grants[side].append((when, role, action[2:]))
             else:
                 x, y = waypoints[next(n[1] for n in action if n[0] == "waypoint")]
-                orders[side].append((when, role, x if side == "a" else -x, y))
-        self.assertEqual(sorted(orders["a"]), sorted(orders["b"]))
+                orders[side].append((when, role, math.hypot(x - m.E2E_FLAG[0], y - m.E2E_FLAG[1]) / m.SCALE))
         self.assertEqual(sorted(grants["a"]), sorted(grants["b"]))
-        for when, model in ((0, "north_tank"), (90, "north2_tank")):
-            self.assertIn((when, model, [["action", "add"], ["item", "repair_kit"], ["amount", "4"]]), grants["a"])
-        self.assertIn((0, "south_donor", [["action", "add"], ["item", "mgun_ger", "belt", "ammo"],
-                                          ["amount", "100"]]), grants["a"])
-        final_orders = [(x, y) for when, _, x, y in orders["a"] if when >= 180]
-        self.assertGreaterEqual(len(final_orders), 2)
-        self.assertTrue(all(math.hypot(x, y - 320) < 100 for x, y in final_orders))
-        for start, stop in ((0, 90), (90, 180), (180, 300)):
-            self.assertTrue(any(start <= when < stop for when, *_ in orders["a"]))
-        south = {obj[1] for obj in self.objects.values() if -20 <= float(obj[3][2]) <= 180}
-        self.assertTrue({"sandbag_structured_straight", "dutch_brick_wall01_straight_short", "fence-wood_3"} <= south)
-        self.assertEqual(" ".join(p.objects).count('{Extender "supply_zone" {enabled}{current 0}}'), 2)
+        self.assertEqual([(w, r) for w, r, _ in orders["a"]], [(w, r) for w, r, _ in orders["b"]])
+        self.assertIn((90, "tank_pz4", [["action", "add"], ["item", "repair_kit"], ["amount", "4"]]), grants["a"])
+        self.assertIn((90, "tank_t35", [["action", "add"], ["item", "repair_kit"], ["amount", "4"]]), grants["a"])
+        self.assertIn((0, "sq_rifle1", [["action", "add"], ["item", "mgun_ger", "belt", "ammo"],
+                                        ["amount", "100"]]), grants["a"])
+        # Both squads advance onto the center flag at t=0, t=45 and t=165; car rushes at t=90, tanks at t=92/94.
+        self.assertTrue(any(w == 0 and r == "squad" and d < 1 for w, r, d in orders["a"]))
+        self.assertTrue(any(w == 90 and r == "car_222" for w, r, _ in orders["a"]))
+        self.assertTrue(any(w == 92 and r == "tank_pz4" for w, r, _ in orders["a"]))
+        self.assertTrue(any(w == 165 and r == "tank_t35" and d < 1 for w, r, d in orders["a"]))
         kits = {r[1]: r[2] for r in self.records if r[0] == "Inventory"}
-        linked = {r[1] for r in self.records if r[0] == "Link"}
         for side in ("a", "b"):
-            def unit(role):
-                return self.objects[p.mids[f"{side}_{role}"]]
-
-            # Medics hold behind rear cover within 36 m of the lane fighting line;
-            # the ammo truck sits >12 m outside its aura yet within resupply radius.
-            for rear, front, meters in (("south_medic", "south_leader", 3.5), ("center_medic", "center_smg1", 8.25),
-                                        ("center_truck", "center_smg1", 19.75)):
-                rear_x = abs(float(unit(rear)[3][1]))
-                front_x = abs(float(unit(front)[3][1]))
-                self.assertAlmostEqual((rear_x - front_x) / 20, meters, delta=1)
-            mg_box = kits[unit("south_mg")[2]]
-            self.assertIn(["clear"], mg_box)
-            spare, = (item for item in mg_box if "belt" in item)
+            mg2 = self.objects[p.mids[f"{side}_sq_mg2"]][2]
+            spare, = (item for item in kits[mg2] if "belt" in item)
             self.assertLessEqual(int(spare[4]), 5)
-        for team in ("friendly", "enemy"):
-            loads = []
-            for role in getattr(t, team + "_infantry"):
-                obj = self.objects[p.mids[role]]
-                if obj[2] in linked or t.waves[role] or not 200 <= float(obj[3][2]) <= 440:
-                    continue
-                kit = kits[obj[2]]
-                self.assertIn(["clear"], kit)
-                self.assertFalse(any("ammo" in item for item in kit))
-                weapon, = [item[1] for item in kit if "filled" in item and ["user", "hand_right"] in item]
-                loads.append(weapon)
-            self.assertEqual(Counter(loads), {"mp40_unfolded": 2, "k98": 2})
 
     def test_stock_archives_and_baked_terrain(self):
         try:
@@ -805,34 +771,45 @@ class E2EGradeTests(unittest.TestCase):
 
     def test_weighted_damage_exchange_and_class_breakdown(self):
         t = self.roster
-        tank = next(r for r in t.friendly_vehicles if t.points[r] == 10)
-        halftrack = next(r for r in t.friendly_vehicles if t.points[r] == 5)
-        for role, hp in ((tank, 0), (halftrack, .5), (t.enemy_infantry[0], 0),
-                         (next(r for r in t.enemy_support if t.points[r] == 2), 0)):
+        car, pz4, t35 = t.friendly_vehicles
+        for role, hp in ((pz4, 0), (t35, .5), (t.enemy_infantry[0], 0), (t.enemy_support[0], 0)):
             self.last(role)["hp_ratio"] = hp
+        # Place one friendly soldier on the flag at t=90s and end to verify flag_units tracking.
+        flag_mid = self.phase.mids[t.friendly_infantry[0]]
+        for r in self.rows:
+            if r.get("mid") == flag_mid:
+                r["pos_x"], r["pos_y"] = m.E2E_FLAG
         # Explicitly observe a dead interior driver and a reserve rider. Neither belongs in either force.
         scored_mids = {self.phase.mids[r] for r in t.points}
         extras = [n[1] for n in mission_records(self.phase) if n[0] == "Link"
-                  and n[2][1] in ("driver", "seat1") and int(n[1], 16) - 0x8000 not in scored_mids]
+                  and n[2][1] in ("driver", "seat1") and int(n[1], 16) - self.phase.eid_base not in scored_mids]
         for eid in extras:
-            self.rows.append(observation(int(eid, 16) - 0x8000, 3100, ms=38750, ticks_per_second=10,
+            self.rows.append(observation(int(eid, 16) - self.phase.eid_base, 2500, ms=31250, ticks_per_second=10,
                                          player=2, control=0, hp_ratio=0))
         self.assertTrue(extras)
         result = self.result()
         a, b = (result["sides"][k] for k in ("A", "B"))
         self.assertEqual((a["player"], b["player"]), (2, 3))
-        for key, expected in (("deployed_pts", 102), ("alive_pts", 92), ("hp_weighted_pts", 89.5),
-                              ("remaining_pts", 91), ("lost_pts", 11)):
+        # Deployed = 10 inf (1) + 1 medic (2) + sdkfz222a (4) + pz4 (10) + t35 (12) = 38 pts.
+        # Side A lost pz4 (10) and half HP on t35 (6 HP-pts): alive=28, hp_weighted=22, remaining=0.6*28+0.4*22=25.6, lost=12.4.
+        for key, expected in (("deployed_pts", 38), ("alive_pts", 28), ("hp_weighted_pts", 22.0),
+                              ("remaining_pts", 25.6), ("lost_pts", 12.4)):
             self.assertAlmostEqual(a["force_value"][key], expected)
-        self.assertAlmostEqual(b["force_value"]["remaining_pts"], 99)
-        self.assertAlmostEqual(result["score"], 50 + 50 * (91 - 99) / 102, delta=.01)
-        self.assertAlmostEqual(a["exchange_ratio"], 3 / 11, delta=.005)
-        self.assertAlmostEqual(b["exchange_ratio"], 11 / 3, delta=.005)
-        for side, totals in ((a, (34, 8, 3)), (b, (33, 9, 2))):
-            for kind, alive, deployed in zip(("infantry", "vehicles", "support"), totals, (34, 9, 3)):
+        self.assertAlmostEqual(b["force_value"]["remaining_pts"], 35.0)
+        self.assertAlmostEqual(result["score"], 50 + 50 * (25.6 - 35.0) / 38, delta=.01)
+        self.assertAlmostEqual(a["exchange_ratio"], 3 / 12.4, delta=.005)
+        self.assertAlmostEqual(b["exchange_ratio"], 12.4 / 3, delta=.005)
+        self.assertEqual((a["flag_units"], b["flag_units"]), (1, 0))
+        for side, totals in ((a, (10, 2, 1)), (b, (9, 3, 0))):
+            for kind, alive, deployed in zip(("infantry", "vehicles", "support"), totals, (10, 3, 1)):
                 self.assertEqual((side[kind]["alive"], side[kind]["total"]), (alive, deployed))
-        self.assertAlmostEqual(a["vehicles"]["remaining_hp_pct"], 100 * 7.5 / 9, delta=.01)
-        self.assertAlmostEqual(a["vehicles"]["mean_hp_pct"], 100 * 7.5 / 8, delta=.01)
+        self.assertAlmostEqual(a["vehicles"]["remaining_hp_pct"], 100 * 1.5 / 3, delta=.01)
+        self.assertAlmostEqual(a["vehicles"]["mean_hp_pct"], 100 * 1.5 / 2, delta=.01)
+        # Stage 1 checkpoint at t=90s (before tanks spawn): all infantry + medics intact at 90s!
+        st1 = result["infantry_stage"]
+        self.assertEqual(st1["checkpoint_s"], 90)
+        self.assertEqual(st1["score"], 50.0)
+        self.assertEqual((st1["sides"]["A"]["flag_units"], st1["sides"]["B"]["flag_units"]), (1, 0))
 
     def test_exact_parity_and_reciprocal_decisive_wins(self):
         self.assertEqual(self.result()["score"], 50.0)
@@ -846,13 +823,14 @@ class E2EGradeTests(unittest.TestCase):
     def test_final_five_sim_seconds_and_mutual_wipeout(self):
         t = self.roster
         lost, survivor = (self.phase.mids[r] for r in t.friendly_infantry[:2])
-        self.rows = [r for r in self.rows if not ((r.get("mid") == lost and r["sim_tick"] > 3040) or
-                                                  (r.get("mid") == survivor and r["sim_tick"] > 3060))]
+        end = 100 + t.duration_s * 10
+        self.rows = [r for r in self.rows if not ((r.get("mid") == lost and r["sim_tick"] > end - 60) or
+                                                  (r.get("mid") == survivor and r["sim_tick"] > end - 40))]
         self.last(t.friendly_infantry[1])["hp_ratio"] = .4
         a = self.result()["sides"]["A"]["infantry"]
-        self.assertEqual(a["alive"], 33)
-        self.assertAlmostEqual(a["remaining_hp_pct"], 100 * 32.4 / 34, delta=.01)
-        self.rows = [r for r in self.rows if r.get("player") not in (2, 3) or r["sim_tick"] < 2980]
+        self.assertEqual(a["alive"], 9)
+        self.assertAlmostEqual(a["remaining_hp_pct"], 100 * 8.4 / 10, delta=.01)
+        self.rows = [r for r in self.rows if r.get("player") not in (2, 3) or r["sim_tick"] < end - 120]
         wiped = self.result()
         self.assertEqual(wiped["score"], 50.0)
         self.assertTrue(all(s["force_value"]["alive_pts"] == 0 for s in wiped["sides"].values()))
@@ -861,9 +839,9 @@ class E2EGradeTests(unittest.TestCase):
         t = self.roster
         lost = self.phase.mids[t.friendly_infantry[0]]
         self.rows = [r for r in self.rows if r.get("mid") != lost]
-        self.assertEqual(self.result()["sides"]["A"]["infantry"]["alive"], 33)
-        final_wave = {self.phase.mids[r] for r in t.points if t.waves[r] == 180}
-        for keep in (lambda r: r.get("mid") not in final_wave, lambda r: r.get("player") != 3):
+        self.assertEqual(self.result()["sides"]["A"]["infantry"]["alive"], 9)
+        armor_wave = {self.phase.mids[r] for r in t.points if t.waves[r] == 90}
+        for keep in (lambda r: r.get("mid") not in armor_wave, lambda r: r.get("player") != 3):
             report = e2e_grade([r for r in self.rows if keep(r)], self.markers)
             self.assertFalse(report["passed"])
             self.assertIsNone(report["tactical"]["overall_score"])
@@ -872,7 +850,7 @@ class E2EGradeTests(unittest.TestCase):
         limit = grader.E2E_ACTION_LIMITS["crew_total"]
         self.assertGreater(limit, grader.ACTION_LIMITS["crew_total"])
         counters = {"crew_total": limit, "tank_face": 3, "natural_event": 4}
-        self.rows.append(row("stats_delta", 3090, ms=38625, since_tick=3080, counters=counters))
+        self.rows.append(row("stats_delta", 2490, ms=31125, since_tick=2480, counters=counters))
         self.rows.append(row("stats_delta", 101, ms=1262, since_tick=99, counters={"tank_face": 20}))
         self.assertEqual(self.result()["activity"], counters)
         shutdown = "ShutdownAndUnload complete recrew=3 rearm=2 heavyPickup=1 corpseLoot=4"
@@ -881,7 +859,7 @@ class E2EGradeTests(unittest.TestCase):
         totals = report["tactical"]["session_field_support_totals"]
         self.assertEqual(sorted(totals.values()), [1, 2, 3, 4])
         table = grader.table(report)
-        for token in ("50.0", "A (P2)", "B (P3)", "natural_event", "crew_total"):
+        for token in ("Stage 1 Infantry Flag Fight", "50.0", "A (P2)", "B (P3)", "natural_event", "crew_total"):
             self.assertIn(token, table)
         counters["crew_total"] += 1
         runaway = e2e_grade(self.rows, self.markers)
@@ -933,8 +911,9 @@ class LaunchTests(unittest.TestCase):
                    b'{window_mode borderless}{custom_video {preset ultra}{grass}}')
         heavy = (b'{vertical_sync}{antialiasing temporal}{grass}{dof}{glow}{rim_light}{filmGrain}{specular}'
                  b'{environment}{lens_refraction}{softIntersection}{fake_translucency}{alphaToCoverage}'
-                 b'{_ssao {mode high}}{lens_effects_options {glare {intensity 1}}}')
-        graphics = (b'{options {video ' + display + heavy + b'{preset ultra}{detail detail_high}'
+                 b'{_ssao {mode high}}')
+        graphics = (b'{options {video ' + display + heavy + b'{lens_effects_options {glare {intensity 1}}}'
+                    b'{preset ultra}{detail detail_high}'
                     b'{shadow high}{filtering trilinear}{model_quality high}{fx_quality high}{water_quality high}}'
                     b'{game {difficulty easy}{fog_of_war fog_on}}{audio {environment}}}')
         patched = launch.benchmark_options(graphics)
@@ -949,7 +928,7 @@ class LaunchTests(unittest.TestCase):
         self.assertTrue(set(n.decode() for n in removed).isdisjoint(names))
         for key, value in (("preset", "low"), ("detail", "detail_low"), ("shadow", "off"),
                            ("filtering", "bilinear"), ("model_quality", "low"), ("fx_quality", "low"),
-                           ("water_quality", "low")):
+                           ("water_quality", "low"), ("lens_effects_options", "low")):
             self.assertEqual([v for v in video if v[0] == key], [[key, value]])
         originals = (
             graphics,
@@ -979,7 +958,9 @@ class LaunchTests(unittest.TestCase):
             tempfile.TemporaryDirectory() as tmp,
             patch.object(cli, "verify_game"),
             patch.object(m, "check_stock"),
-            patch.object(m, "flat_arena", return_value={}),
+            patch.object(m, "e2e_map_files", return_value={}),
+            patch.object(m, "birdseye_camera_reg", return_value=b"{camera}"),
+            patch.object(m, "birdseye_lod_files", return_value={}),
             patch.object(launch, "wine_prefix", return_value=([], {})),
             patch.object(launch, "build_helper", return_value="fixture-ui"),
             patch.object(launch.subprocess, "run") as preflight,
@@ -1240,7 +1221,7 @@ class SweepTests(unittest.TestCase):
         worn = deepcopy(rows)
         phase, = m.phases_for("e2e")
         t = phase.tactical
-        tanks = [role for role in t.enemy_vehicles if t.points[role] == 10]
+        tanks = [role for role in t.enemy_vehicles if t.points[role] >= 10]
         medic = next(role for role in t.enemy_support if t.points[role] == 2)
         for role, hp in ((tanks[0], .5), (tanks[1], 0), (medic, 0)):
             mid = phase.mids[role]
@@ -1264,14 +1245,14 @@ class SweepTests(unittest.TestCase):
         better = comparison["profiles"]["custom"]
         self.assertAlmostEqual(vanilla["score"], (vscore + bscore) / 2, delta=.02)
         self.assertEqual((vanilla["runs"], vanilla["valid_runs"]), (2, 2))
-        # Nine vehicles and three support units deploy per side per trial. In
-        # trial one Side B (evaluated East P3) loses a tank and a medic, and another tank has 50% HP.
+        # Three vehicles and one medic deploy per side per trial. In trial one
+        # Side B (evaluated NE P3) loses one tank and a medic, and the second tank has 50% HP.
         self.assertEqual(vanilla["sides"]["A"]["infantry_survival_pct"], 100)
-        self.assertAlmostEqual(vanilla["sides"]["A"]["vehicle_survival_pct"], 100 * 17 / 18, delta=.01)
-        self.assertAlmostEqual(vanilla["sides"]["A"]["vehicle_hp_pct"], 100 * 16.5 / 18, delta=.01)
-        self.assertAlmostEqual(vanilla["sides"]["A"]["support_survival_pct"], 100 * 5 / 6, delta=.01)
+        self.assertAlmostEqual(vanilla["sides"]["A"]["vehicle_survival_pct"], 100 * 5 / 6, delta=.01)
+        self.assertAlmostEqual(vanilla["sides"]["A"]["vehicle_hp_pct"], 100 * 4.5 / 6, delta=.01)
+        self.assertAlmostEqual(vanilla["sides"]["A"]["support_survival_pct"], 100 * 1 / 2, delta=.01)
         self.assertEqual(vanilla["sides"]["B"]["vehicle_hp_pct"], 50)
-        self.assertAlmostEqual(vanilla["advantage_pp"]["vehicle_hp_pct"], 100 * 16.5 / 18 - 50, delta=.01)
+        self.assertAlmostEqual(vanilla["advantage_pp"]["vehicle_hp_pct"], 100 * 4.5 / 6 - 50, delta=.01)
         self.assertAlmostEqual(better["delta_vs_vanilla"], (vscore - bscore) / 2, delta=.02)
         self.assertEqual(comparison["best"]["overall"], ["custom"])
         self.assertEqual(comparison["best"]["scenarios"], {BATTLE_NAME: ["custom"]})
@@ -1310,7 +1291,9 @@ class SweepTests(unittest.TestCase):
             patch.object(launch, "_record_run", side_effect=fake_session) as session,
             patch.object(cli, "verify_game"),
             patch.object(m, "check_stock"),
-            patch.object(m, "flat_arena", return_value={}),
+            patch.object(m, "e2e_map_files", return_value={}),
+            patch.object(m, "birdseye_camera_reg", return_value=b"{camera}"),
+            patch.object(m, "birdseye_lod_files", return_value={}),
         ):
             game = Path(tmp) / "game"
             binaries = game / "binaries/x64"
@@ -1339,7 +1322,8 @@ class SweepTests(unittest.TestCase):
             self.assertEqual(saved["profiles"], comparison["profiles"])
             self.assertEqual(len(list(archive.rglob("grade.json"))), 4)
             self.assertEqual(len(list(archive.rglob("grade.txt"))), 4)
-            self.assertIn("East−West (pp)", out.getvalue())
+            self.assertIn("NE−SW (pp)", out.getvalue())
+            self.assertIn("Stage 1 Infantry score", out.getvalue())
             self.assertIn((archive / "comparison.txt").read_text().strip(), out.getvalue())
 
             def interrupted(*unused):
@@ -1400,7 +1384,9 @@ class SweepTests(unittest.TestCase):
             patch.object(launch, "_record_run", side_effect=fake_session),
             patch.object(cli, "verify_game"),
             patch.object(m, "check_stock"),
-            patch.object(m, "flat_arena", return_value={}),
+            patch.object(m, "e2e_map_files", return_value={}),
+            patch.object(m, "birdseye_camera_reg", return_value=b"{camera}"),
+            patch.object(m, "birdseye_lod_files", return_value={}),
         ):
             game = Path(tmp) / "game"
             binaries = game / "binaries/x64"
@@ -1434,6 +1420,306 @@ class SweepTests(unittest.TestCase):
             self.assertIn("Modded−Vanilla (pp)", out.getvalue())
             self.assertIn("4,8", out.getvalue())
 
+    def test_drive_auto_launch_and_restart_zero_ui_calls(self):
+        class FakeProc:
+            def poll(self):
+                return None
+
+        ui_calls = []
+
+        def ui(*args):
+            ui_calls.append(args)
+            return 0
+
+        steps = iter([
+            "Mod: activate mod ai_test_harness\nGUI: Activate page page_main\n",
+            f"Mod: activate mod ai_test_harness\nStart mission {launch.AUTO_MISSION_PATH}\n",
+            f"Mod: activate mod ai_test_harness\nStart mission {launch.AUTO_MISSION_PATH}\nGOH_L1_BEGIN_e2e_flag_battle\n",
+            (f"Mod: activate mod ai_test_harness\nStart mission {launch.AUTO_MISSION_PATH}\n"
+             "GOH_L1_BEGIN_e2e_flag_battle\nGUI: Activate page page_scene_game\nGOH_L1_DONE_e2e\n"),
+        ])
+
+        class FakeLog:
+            cur = ""
+
+            def read(self):
+                self.cur = next(steps, self.cur)
+                return self.cur
+
+        with patch.object(launch.time, "sleep"):
+            launch.drive(ui, FakeProc(), FakeLog(), "e2e", launch.time.monotonic() + 30, auto_launch=True)
+        self.assertEqual(ui_calls, [])
+
+        r_steps = iter([
+            f"Start mission {launch.AUTO_MISSION_PATH}\n",
+            f"Start mission {launch.AUTO_MISSION_PATH}\nGUI: Activate page page_scene_game\nGOH_L1_DONE_e2e\n",
+        ])
+
+        class RestartLog:
+            cur = ""
+
+            def read(self):
+                self.cur = next(r_steps, self.cur)
+                return self.cur
+
+        with patch.object(launch.time, "sleep"):
+            launch.drive_restart(ui, FakeProc(), RestartLog(), "e2e", launch.time.monotonic() + 30)
+        self.assertEqual(ui_calls, [])
+
+    def test_stop_game_native_quit_and_cursor_safe_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ini = Path(tmp) / "goh_ai.ini"
+            ini.write_text("[testing]\nsuppress_cursor_grab = true\nquit_seq = 2\n", encoding="utf-8")
+            ui_calls = []
+
+            class QuitSession:
+                exited = False
+
+                def poll(self):
+                    if not self.exited:
+                        c = configparser.ConfigParser(strict=False, interpolation=None)
+                        c.read(ini, encoding="utf-8-sig")
+                        if c.getint("testing", "quit_seq", fallback=0) == 3:
+                            self.exited = True
+                    return 0 if self.exited else None
+
+                def read(self):
+                    return ""
+
+                def ui(self, *args):
+                    ui_calls.append(args)
+                    return 3 if args == ("dismiss",) else 0
+
+            sess = QuitSession()
+            with patch.object(launch.time, "sleep"):
+                self.assertTrue(
+                    launch.stop_game(sess.ui, sess, sess, ini=ini, write=cli.atomic_write, merge_ini=cli.merged_ini)
+                )
+            # Only non-intrusive dismiss check; never clicks, closes, or sends keys.
+            self.assertEqual(ui_calls, [("dismiss",)])
+
+            # If quit_seq times out under suppress_cursor_grab, fall back to close + terminate without clicks.
+            ui_calls.clear()
+
+            class HungSession:
+                terminated = False
+
+                def poll(self):
+                    return 0 if self.terminated else None
+
+                def terminate(self):
+                    self.terminated = True
+
+                def wait(self, timeout=None):
+                    return 0
+
+                def read(self):
+                    return "GUI: Activate page genereic_status_dialog"
+
+                def ui(self, *args):
+                    ui_calls.append(args)
+                    return 3 if args == ("dismiss",) else 0
+
+            hung = HungSession()
+            with patch.object(launch.time, "sleep"):
+                self.assertTrue(
+                    launch.stop_game(hung.ui, hung, hung, ini=ini, write=cli.atomic_write, merge_ini=cli.merged_ini)
+                )
+            self.assertTrue(hung.terminated)
+            self.assertEqual(ui_calls, [("dismiss",), ("close",)])
+
+    def test_persistent_sweep_single_process_keep_open_reload_and_stop(self):
+        base_rows, markers = e2e_fixture()
+        ai_init = (
+            "=== goh_ai InitThread starting (79 hooks across 4 TUs; ini=loaded log=summary) ===\n"
+            f"PE SHA-256 verified: {m.SHA} (build 26734796)\n"
+            "PE32+ live RTTI vtable audit: checked=38 matched=38 mismatched=0 missing=0\n"
+            "Initial state: remote=0 hostEmit=0 clock=0 L=20.0 G=0.0001962\n"
+            "=== 79 hooks active (slot23=1 combat=23 infantry=46 tanks=9 runtime_allowed=1) ===\n"
+        )
+        trial_log = (
+            f"Mod: activate mod ai_test_harness\n"
+            f"Start mission {launch.AUTO_MISSION_PATH} on difficulty heroic with options []\n"
+            f"GUI: Activate page page_scene_game\n{markers}\n"
+        )
+        trial_jsonl = "".join(json.dumps(r) + "\n" for r in base_rows)
+        trial_jsonl_no_header = "".join(json.dumps(r) + "\n" for r in base_rows[1:])
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            game = root / "game"
+            binaries = game / "binaries/x64"
+            binaries.mkdir(parents=True)
+            (binaries / "version.dll").write_bytes(b"proxy")
+            (binaries / "goh_ai_mod.dll").write_bytes(b"dll-v1")
+            original_ini = b"; user ini\n[modules]\nauto_smoke = true\n"
+            ini = binaries / "goh_ai.ini"
+            ini.write_bytes(original_ini)
+
+            profile_dir = root / "Documents/My Games/gates of hell/profiles/123"
+            profile_dir.mkdir(parents=True)
+            options = profile_dir / "options.set"
+            original_options = b"{options\n\t{video {preset high}}\n}\n"
+            options.write_bytes(original_options)
+            game_log = root / "Documents/My Games/gates of hell/log/game.log"
+            game_log.parent.mkdir(parents=True)
+
+            state = {
+                "running": False,
+                "popen_cmds": [],
+                "restart_seq": 0,
+                "quit_seq": 0,
+                "gen": 1,
+                "ui_calls": [],
+            }
+
+            def append_trial(*, include_header):
+                with game_log.open("a", encoding="utf-8") as f:
+                    f.write(trial_log)
+                with (binaries / "goh_telemetry.jsonl").open("a", encoding="utf-8") as f:
+                    f.write(trial_jsonl if include_header else trial_jsonl_no_header)
+                if include_header:
+                    with (binaries / "goh_ai.log").open("a", encoding="utf-8") as f:
+                        f.write(ai_init)
+
+            class FakeProc:
+                def poll(self):
+                    return None if state["running"] else 0
+
+            def fake_popen(cmd, **kwargs):
+                state["popen_cmds"].append(cmd)
+                state["running"] = True
+                cfg = configparser.ConfigParser(strict=False, interpolation=None)
+                cfg.read(ini, encoding="utf-8-sig")
+                self.assertTrue(cfg.getboolean("testing", "suppress_cursor_grab"))
+                self.assertTrue(cfg.getboolean("testing", "hot_reload"))
+                state["restart_seq"] = cfg.getint("testing", "restart_seq", fallback=0)
+                state["quit_seq"] = cfg.getint("testing", "quit_seq", fallback=0)
+                game_log.write_text("", encoding="utf-8")
+                append_trial(include_header=True)
+                return FakeProc()
+
+            orig_atomic_write = cli.atomic_write
+
+            def watching_atomic_write(path, data):
+                orig_atomic_write(path, data)
+                if path == ini and state["running"]:
+                    cfg = configparser.ConfigParser(strict=False, interpolation=None)
+                    cfg.read_string(data.decode("utf-8-sig"))
+                    rseq = cfg.getint("testing", "restart_seq", fallback=state["restart_seq"])
+                    qseq = cfg.getint("testing", "quit_seq", fallback=state["quit_seq"])
+                    if qseq != state["quit_seq"]:
+                        state["quit_seq"] = qseq
+                        state["running"] = False
+                    elif rseq != state["restart_seq"]:
+                        state["restart_seq"] = rseq
+                        append_trial(include_header=False)
+
+            def fake_ui(*args):
+                state["ui_calls"].append(args)
+                if args == ("present",):
+                    return 0 if state["running"] else 3
+                if args == ("dismiss",):
+                    return 3
+                return 0
+
+            def fake_sleep(_):
+                trigger = binaries / "goh_ai.reload"
+                if trigger.exists():
+                    trigger.unlink()
+                    state["gen"] += 1
+                    with (binaries / "version_proxy.log").open("a", encoding="utf-8") as f:
+                        f.write(f"Hot-reload complete gen={state['gen']} (size=12345)\n")
+                    with (binaries / "goh_ai.log").open("a", encoding="utf-8") as f:
+                        f.write(ai_init)
+
+            with (
+                patch.object(launch, "ROOT", root),
+                patch.object(launch, "wine_prefix", return_value=([], {})),
+                patch.object(launch, "build_helper", return_value=root / "helper"),
+                patch.object(launch, "_make_ui_env", return_value=fake_ui),
+                patch.object(launch.subprocess, "Popen", side_effect=fake_popen),
+                patch.object(launch.time, "sleep", side_effect=fake_sleep),
+                patch.object(cli, "atomic_write", side_effect=watching_atomic_write),
+                patch.object(cli, "verify_game"),
+                patch.object(m, "check_stock"),
+                patch.object(m, "e2e_map_files", return_value={}),
+                patch.object(m, "birdseye_camera_reg", return_value=b"{camera}"),
+                patch.object(m, "birdseye_lod_files", return_value={}),
+            ):
+                # 1. Default two-trial sweep keeps the game open and uses ONE process launch + in-process cmGameRestart.
+                out = StringIO()
+                with contextlib.redirect_stdout(out):
+                    rc = cli.main([
+                        "sweep", "--game-dir", str(game), "--player-profile", str(options),
+                        "--profiles", "default", "--runs", "2",
+                        "--screenshot-interval", "0", "--timeout", "5",
+                    ])
+                self.assertEqual(rc, 0)
+                self.assertEqual(len(state["popen_cmds"]), 1)
+                self.assertIn("-no_preload", state["popen_cmds"][0])
+                self.assertNotIn("-no_reload_caching", state["popen_cmds"][0])
+                self.assertTrue(state["running"])
+                self.assertTrue(launch.session_path().is_file())
+                self.assertEqual(state["restart_seq"], 1)
+
+                # 2. Rebuild DLL, reload --force-dll, and run a second sweep with default args (auto-reuses & stays open).
+                (binaries / "goh_ai_mod.dll").write_bytes(b"dll-v2-rebuilt")
+                out2 = StringIO()
+                with contextlib.redirect_stdout(out2):
+                    self.assertEqual(cli.main(["reload", "--game-dir", str(game), "--force-dll"]), 0)
+                self.assertIn("dll_reloaded=True", out2.getvalue())
+                self.assertEqual(state["gen"], 2)
+                self.assertEqual(state["restart_seq"], 2)
+
+                out3 = StringIO()
+                with contextlib.redirect_stdout(out3):
+                    rc3 = cli.main([
+                        "sweep", "--game-dir", str(game), "--player-profile", str(options),
+                        "--profiles", "default", "--runs", "1",
+                        "--screenshot-interval", "0", "--timeout", "5",
+                    ])
+                self.assertEqual(rc3, 0)
+                self.assertEqual(len(state["popen_cmds"]), 1)
+                self.assertEqual(state["restart_seq"], 3)
+                self.assertTrue(state["running"])
+
+                # 3. Passing --close reuses the open session for one last trial, then exits via native cmQuit & restores.
+                out4 = StringIO()
+                with contextlib.redirect_stdout(out4):
+                    rc4 = cli.main([
+                        "sweep", "--game-dir", str(game), "--player-profile", str(options),
+                        "--profiles", "default", "--runs", "1", "--close",
+                        "--screenshot-interval", "0", "--timeout", "5",
+                    ])
+                self.assertEqual(rc4, 0)
+                self.assertEqual(len(state["popen_cmds"]), 1)
+                self.assertEqual(state["restart_seq"], 4)
+                self.assertFalse(state["running"])
+                self.assertFalse(launch.session_path().is_file())
+                self.assertEqual(options.read_bytes(), original_options)
+                self.assertEqual(ini.read_bytes(), original_ini)
+
+                # 4. Default sweep followed by explicit `stop` also closes cleanly via cmQuit & restores.
+                with contextlib.redirect_stdout(StringIO()):
+                    rc5 = cli.main([
+                        "sweep", "--game-dir", str(game), "--player-profile", str(options),
+                        "--profiles", "default", "--runs", "1",
+                        "--screenshot-interval", "0", "--timeout", "5",
+                    ])
+                self.assertEqual(rc5, 0)
+                self.assertTrue(state["running"])
+                self.assertEqual(len(state["popen_cmds"]), 2)
+                with contextlib.redirect_stdout(StringIO()):
+                    self.assertEqual(cli.main(["stop", "--game-dir", str(game)]), 0)
+                self.assertFalse(state["running"])
+                self.assertFalse(launch.session_path().is_file())
+                self.assertEqual(options.read_bytes(), original_options)
+                self.assertEqual(ini.read_bytes(), original_ini)
+                # Ensure zero interactive UI actions (click/esc/space/close) were ever invoked.
+                for call in state["ui_calls"]:
+                    self.assertIn(call[0], ("present", "dismiss"))
+
 
 class InstallTests(unittest.TestCase):
     def test_live_read_finishes_a_buffered_line(self):
@@ -1451,11 +1737,15 @@ class InstallTests(unittest.TestCase):
                 )
 
     def test_repeat_install_clean_and_optional_ini(self):
+        fake_oryol = {name: name.encode() for name in m.E2E_MAP_FILES}
+        fake_lod = {p: p.name.encode() for p in m.E2E_LOD_FILES}
         with (
             tempfile.TemporaryDirectory() as tmp,
             patch.object(cli, "verify_game"),
             patch.object(m, "check_stock"),
-            patch.object(m, "flat_arena", return_value={"map": b"{map\n}\n", "map.net": b"net", "map.ply": b"ply", "map.grs": b"grs"}),
+            patch.object(m, "e2e_map_files", return_value=fake_oryol),
+            patch.object(m, "birdseye_camera_reg", return_value=b"{camera_clip}"),
+            patch.object(m, "birdseye_lod_files", return_value=fake_lod),
         ):
             game = Path(tmp).resolve()
             ini = game / "binaries/x64/goh_ai.ini"
@@ -1476,7 +1766,7 @@ class InstallTests(unittest.TestCase):
             )
             self.assertEqual(
                 {p.name for p in (game / "mods").rglob("*") if p.is_file()},
-                {"0.mi", "mod.info", "map", "map.net", "map.ply", "map.grs"},
+                {"0.mi", "mod.info", "camera.reg", "heroic.dl", *(p.name for p in m.E2E_LOD_FILES), *m.E2E_MAP_FILES},
             )
             self.assertIn('{name "ai_test_harness"}', descriptor.read_text())
             self.assertIn('{minGameVersion "1.069"}', descriptor.read_text())
@@ -1488,7 +1778,7 @@ class InstallTests(unittest.TestCase):
             cfg.read(ini)
             self.assertEqual(cfg.getfloat("testing", "sim_speed"), 12)
             self.assertEqual(target.read_text(), m.generate("e2e", "fast"))
-            # Switching back to a component suite strips the flat arena files cleanly.
+            # Switching back to a component suite strips the 1v1 Oryol map overlay cleanly.
             cli.install(game, "full", "normal", {})
             self.assertEqual(
                 {p.name for p in (game / "mods").rglob("*") if p.is_file()},
@@ -1506,75 +1796,73 @@ class InstallTests(unittest.TestCase):
             self.assertFalse(target.exists())
             self.assertFalse((game / "mods" / cli.MOD).exists())
 
-    def test_flat_arena_flatteners_strip_props_and_zero_elevation(self):
-        import struct
+    def test_e2e_map_files_and_birdseye_camera_reg(self):
         import zipfile
 
-        stock_map = (
-            "{map\r\n"
-            "\t{Land {Position 0 0}}\r\n"
-            "\t{Clips {\"[auto]\"\r\n"
-            "\t\t{camera -1394.91 -5000 1401.79 5000}\r\n"
-            "\t\t{pather -1394.83 -5000 1400.56 5000}\r\n"
-            "\t}}\r\n"
-            "\t{Ocean {active 0}\r\n"
-            "\t\t{zlevel 0}\r\n"
-            "\t}\r\n"
-            "\t{Entity \"tree_1\" 0x2001\r\n"
-            "\t\t{Position 10 20 30}\r\n"
-            "\t}\r\n"
-            "\t{Inventory 0x4074 {box {clear}}}\r\n"
-            "}\r\n"
+        sample_reg = (
+            "{camera\n\t{main\n\t\t{zfar\t10000}\n\t}\n}\n"
+            "{camera_clip\n\t{max_distance\n\t\t{distance\t1800}\n\t\t{viewMin\t10}\n\t\t{viewMax\t85}\n\t}\n"
+            "\t{default\n\t\t{distance\t850}\n\t\t{viewAngle\t37.5}\n\t}\n}\n"
+            "{lens_effects {outlines {intensity_regular 3.0}{intensity_emphasized 5.0}{outline_width 1.0}"
+            "{active_outlines {friendly 1}{hostile 1}{allied 1}{neutral 0}}"
+            "{active_outlines_hc {friendly 1}{hostile 0}{allied 1}{neutral 1}}"
+            "{allied_color 0xFF89734F}{neutral_color 0xFFB8B800}{hostile_color 0xFFB80000}"
+            "{distance_fade_start 2500}{distance_fade_end 3000}{time_active 3.0}{time_active_HC 2.0}}}\n"
         ).encode("latin1")
-        stock_net = (
-            struct.pack("<BBHHff", 5, 2, 2, 3, 10.0, 15.0)
-            + b"MAP0\x01\x01\x06groundGRID"
-            + b"".join(struct.pack("<hBB", 42, 7, 20) for _ in range(6))
-        )
-        verts = b"".join(
-            struct.pack("<6fI4f", float(i * 50), float(i * -50), 33.5, 0.2, -0.3, 0.9, 0xFF112233, 1.0, 2.0, 3.0, 4.0)
-            for i in range(3)
-        )
-        stock_ply = (
-            b"BPLYBNDS" + struct.pack("<6f", -100.0, -100.0, -30.0, 100.0, 100.0, 110.0)
-            + b"VERT" + struct.pack("<II", 3, 44) + verts
-            + b"IND4" + struct.pack("<IIII", 3, 0, 1, 2)
-        )
-        stock_grs = (
-            b"GRASVER-\x02\x00\x00\x00SEED\x01\x02\x03\x04PMAP"
-            + struct.pack("<I", 1) + b"\x04tall"
-            + struct.pack("<4if", -1, -1, 1, 1, 20.0)
-            + (b"\x01\x02\x03\x04\x05" * 4)
+        sample_lod_set = b'{levelofdetail (define "scale" (* 1.00 %d)) (define "scale2" (* 1.4 %d2))}\n'
+        sample_lod_inc = (
+            b'{"human" {distance ("scale" d(400))}{distance ("scale" d(6000)) ("off")}}\n'
+            b'{"stuff_grenade" {distance ("scale" d(4000)) ("off_small")}}\n'
+            b'{"vehicle" {distance ("scale" d(9000)) ("off")}}\n'
         )
         with tempfile.TemporaryDirectory() as tmp:
             game = Path(tmp)
-            pak = game / "resource/map/single.pak"
-            pak.parent.mkdir(parents=True)
-            with zipfile.ZipFile(pak, "w") as z:
-                z.writestr(f"{m.MAP_DIR}/map", stock_map)
-                z.writestr(f"{m.MAP_DIR}/map.net", stock_net)
-                z.writestr(f"{m.MAP_DIR}/map.ply", stock_ply)
-                z.writestr(f"{m.MAP_DIR}/map.grs", stock_grs)
-            arena = m.flat_arena(game)
+            (game / "resource/map").mkdir(parents=True)
+            with zipfile.ZipFile(game / "resource/map/multi.pak", "w") as z:
+                for name in m.E2E_MAP_FILES:
+                    z.writestr(f"{m.E2E_MAP_SRC}/{name}", b"payload:" + name.encode())
+            with zipfile.ZipFile(game / "resource/gamelogic.pak", "w") as z:
+                z.writestr("set/registry/camera.reg", sample_reg)
+                z.writestr("set/level_of_detail.set", sample_lod_set)
+                z.writestr("set/level_of_detail_scenario.set", sample_lod_set)
+                z.writestr("set/level_of_detail.inc", sample_lod_inc)
+            files = m.e2e_map_files(game)
+            cam = m.birdseye_camera_reg(game).decode("latin1")
+            lods = {k: v.decode("latin1") for k, v in m.birdseye_lod_files(game).items()}
+        self.assertEqual(set(files), set(m.E2E_MAP_FILES))
+        self.assertEqual(set(lods), set(m.E2E_LOD_FILES))
+        self.assertIn("(* 5.00 %d)", lods[Path("resource/set/level_of_detail.set")])
+        self.assertIn("(* 5.00 %d2)", lods[Path("resource/set/level_of_detail_scenario.set")])
+        self.assertEqual(lods[Path("resource/set/level_of_detail.inc")].count("d(25000)"), 3)
+        for name in m.E2E_MAP_FILES:
+            self.assertEqual(files[name], b"payload:" + name.encode())
+        for tok in ("{zfar\t25000}", "{distance\t8000}", "{viewMax\t89}", "{distance\t4200}", "{viewAngle\t65}",
+                    "{outline_width 3.0}", "{active_outlines {friendly 1}{hostile 1}{allied 1}{neutral 1}}",
+                    "{active_outlines_hc {friendly 1}{hostile 1}{allied 1}{neutral 1}}",
+                    "{allied_color 0xFF2898FF}", "{neutral_color 0xFF2898FF}", "{hostile_color 0xFFFF2424}",
+                    "{distance_fade_start 8000}", "{distance_fade_end 10000}",
+                    "{time_active 999.0}", "{time_active_HC 999.0}"):
+            self.assertIn(tok, cam)
+        self.assertEqual(
+            launch.enable_silhouettes_bytes(b"{settings\n\t{highlight_silhouettes 0}\n}\n"),
+            b"{settings\n\t{highlight_silhouettes}\n}\n",
+        )
+        self.assertIn(b"{highlight_silhouettes}", launch.enable_silhouettes_bytes(b"{settings\n}\n"))
+        from scripts import live_visual
 
-        out_map = arena["map"].decode("latin1")
-        self.assertNotIn("Entity", out_map)
-        self.assertNotIn("Inventory", out_map)
-        self.assertIn("{zlevel -100}", out_map)
-        self.assertIn("{camera -1400 -5000 1400 5000}", out_map)
-        self.assertIn("{pather -1400 -5000 1400 5000}", out_map)
-
-        grid_off = arena["map.net"].index(b"GRID") + 4
-        self.assertEqual(arena["map.net"][grid_off:], b"\x00\x00\x01\x01" * 6)
-
-        self.assertEqual(struct.unpack_from("<6f", arena["map.ply"], 8), (-100.0, -100.0, -0.5, 100.0, 100.0, 0.5))
-        vstart = arena["map.ply"].index(b"VERT") + 12
-        for i in range(3):
-            x, y, z, nx, ny, nz, rgba, u1, v1, u2, v2 = struct.unpack_from("<6fI4f", arena["map.ply"], vstart + i * 44)
-            self.assertEqual((x, y, z, nx, ny, nz, rgba), (float(i * 50), float(i * -50), 0.0, 0.0, 0.0, 1.0, 0xFF7F7F7F))
-            self.assertEqual((u1, v1, u2, v2), (1.0, 2.0, 3.0, 4.0))
-
-        self.assertEqual(arena["map.grs"][-20:], b"\x00" * 20)
+        proj = live_visual.make_projector((125.0, -2600.0, 5768.0), (125.0, -200.0, 10.0), 50.0, 1800, 1125)
+        cx, cy = proj(125.0, -200.0, 10.0)
+        self.assertAlmostEqual(cx, 900.0, places=3)
+        self.assertAlmostEqual(cy, 562.5, places=3)
+        # GEM left-handed Z-up: +X projects left of center, +Y projects above center (bottom-up CoreGraphics Y).
+        lx, _ = proj(1000.0, -200.0, 10.0)
+        _, uy = proj(125.0, 600.0, 10.0)
+        self.assertLess(lx, cx)
+        self.assertGreater(uy, cy)
+        with tempfile.TemporaryDirectory() as tmp:
+            tl = Path(tmp) / "goh_telemetry.jsonl"
+            tl.write_text('{"sim_tick": 100}\n{"sim_tick": 91234}\n{"partial": ', encoding="utf-8")
+            self.assertEqual(live_visual.latest_sim_tick(tl), 91234)
 
     def test_refuses_symlink_or_unknown_mod(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -9,8 +9,20 @@ from pathlib import Path
 
 SHA = "81a13de787c1869b766004cdcadb9ff99012f0b1b58b89db9a7741b10b9f059a"
 MEMBER = "single/00-bootcamp/02_vehicle-control/0.mi"
-MAP_DIR = "single/00-bootcamp/02_vehicle-control"
-MAP_FILES = ("map", "map.net", "map.ply", "map.grs")
+E2E_MAP_SRC = "multi/1v1_oryol"
+E2E_MAP_FILES = (".materials", "map", "map.net", "map.ply", "map.grs", "minimap.dds")
+E2E_CAMERA_REG = Path("resource/set/registry/camera.reg")
+E2E_DIFFICULTY = Path("resource/set/difficulty/heroic.dl")
+E2E_LOD_FILES = (
+    Path("resource/set/level_of_detail.set"),
+    Path("resource/set/level_of_detail_scenario.set"),
+    Path("resource/set/level_of_detail.inc"),
+)
+E2E_ENV = "goh/multi/1v1_kalinin/var1"
+E2E_FLAG = (-11, -7)
+E2E_FLAG_RADIUS_M = 30.0
+# GEM entity IDs are 16-bit; multi/1v1_oryol/map leaves 0x7877..0xFFEF free.
+E2E_EID_BASE = 0x8000
 MI = Path("resource/map") / MEMBER
 SCALE = 20.0
 INF = "infantry_combined_ops"
@@ -28,6 +40,8 @@ MOLOTOV = '"molotov_cocktail" "grenade"'
 SEATS = {
     "panzer4d": "driver gunner charger gunner3 commander",
     "t3476_40": "driver gunner gunner3 commander",
+    "t35": "driver gunner charger commander gunner3 charger3 gunner4 charger4 gunner5 gunner6",
+    "sdkfz222a": "driver gunner commander",
     "ba64": "driver gunner",
     "45mm_m37": "gunner charger charger2",
     "sdkfz251c": "driver gunner2",
@@ -60,8 +74,11 @@ def overview_cut(name):
 
 @dataclass
 class Tactical:
-    """Battle manifest. Named combatants carry their original value through all three waves."""
-    duration_s: int = 300
+    """Battle manifest for the staged 1v1 Oryol center-flag battle."""
+    duration_s: int = 240
+    infantry_checkpoint_s: int = 90
+    flag_xy: tuple[float, float] = E2E_FLAG
+    flag_radius_m: float = E2E_FLAG_RADIUS_M
     friendly_player: int = 2
     enemy_player: int = 3
     friendly_infantry: list[str] = field(default_factory=list)
@@ -93,6 +110,7 @@ class Phase:
     mids: dict = field(default_factory=dict)
     tactical: Tactical | None = None
     mid_base: int | None = None
+    eid_base: int = 0x8000
     capacity: int = 99
 
     def overview(self):
@@ -100,8 +118,14 @@ class Phase:
         cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
         span = math.hypot(max(xs) - min(xs), max(ys) - min(ys))
         scale = max(1, span / 1100)
+        dy, dz = 1200 * scale, 950 * scale
+        if self.tactical:
+            # High bird's-eye angle matching the unlocked E2E camera_clip and scaled LODs:
+            # frames every SW/NE spawn inside the 50° FOV cone while keeping eye inside map bounds.
+            dy = min(dy, 2400)
+            dz = max(dz, math.ceil(span * 1.15))
         view = (
-            f"{{position {cx:g} {cy - 1200 * scale:g} {10 + 950 * scale:g}}}"
+            f"{{position {cx:g} {cy - dy:g} {10 + dz:g}}}"
             f"{{look_at {cx:g} {cy:g} 10}}{{fov 50}}"
         )
         return f'{{"cam_{self.name}" {{"key000" {view}}}{{"key001" {{time 0.5}}{view}}}}}'
@@ -136,7 +160,7 @@ class Phase:
         mid = base + len(self.mids) + 1
         self.mids[role] = mid
         self.positions.append((x, y))
-        eid = hex(0x8000 + mid)
+        eid = hex(self.eid_base + mid)
         human = model.startswith("mp/")
         kind = "Human" if human else "Entity"
         owner = "" if player is None else f"{{Player {player}}}"
@@ -179,7 +203,7 @@ class Phase:
         return eid
 
     def kit(self, role, *items):
-        eid = hex(0x8000 + self.mids[role])
+        eid = hex(self.eid_base + self.mids[role])
         box = "".join("{item " + item + "}" for item in items)
         self.relations.append(f"{{Inventory {eid} {{box {{clear}}{box}}}}}")
 
@@ -202,7 +226,7 @@ class Phase:
     def reveal(self, wave):
         self.act("entity_state", wave, "{tag_remove hidden}{inactive off}")
 
-    def objective(self, name, x, y, player=2):
+    def objective(self, name, x, y, player=2, radius=120):
         # Use the stock battle_zones unlinked ammo place for a contested objective.
         placer = '{Placer {State "ammo" {Unlinked}}}' if player is None else ""
         self.add(
@@ -210,7 +234,7 @@ class Phase:
             body=placer + f'{{Extender "map_point" {{name {name}}}{{zone {{radius 0}}{{zoneId "{name}"}}}}'
                 "{phase 0}{order 1}{show All}{visor MapPoint}{allow {enableCapture}{enableRelease}}}",
         )
-        self.zones.append(f'{{zone "circle" {{position {x:g} {y:g} 0}}{{Name "{name}"}}{{Radius 120}}}}')
+        self.zones.append(f'{{zone "circle" {{position {x:g} {y:g} 0}}{{Name "{name}"}}{{Radius {radius:g}}}}}')
 
     def thrower(self, x, y, aim):
         self.human(
@@ -481,21 +505,26 @@ def close_at():
     return p
 
 
-WAVE_START = {"entry": 0, "wave2": 90, "wave3": 180}
-VEHICLE_POINTS = {
-    "panzer4d": 10, "t3476_40": 10, "sdkfz251c": 5, "45mm_m37": 5,
-    "ba64": 3, "blitz3_6_art_ammo": 3,
-}
+WAVE_START = {"entry": 0, "armor": 90}
+VEHICLE_POINTS = {"panzer4d": 10, "t35": 12, "sdkfz222a": 4}
 FRAG = '"m24" "grenade"'
 
 
 @dataclass
 class BattleSide:
-    """Author positions and headings on the west side and reflect them across x=0."""
+    """Spawn an identical staged force on one approach to the multi/1v1_oryol center flag."""
     phase: Phase
     label: str
     player: int
-    direction: int
+    origin: tuple[float, float]
+    yaw_deg: float
+    medic_wp: tuple[float, float]
+    car_spawn: tuple[float, float, float]
+    car_rush_wp: tuple[float, float]
+    pz4_spawn: tuple[float, float, float]
+    pz4_wp: tuple[float, float]
+    t35_spawn: tuple[float, float, float]
+    t35_wp: tuple[float, float]
     wave: str = "entry"
 
     def role(self, name):
@@ -504,12 +533,17 @@ class BattleSide:
     def roles(self, names):
         return tuple(self.role(name) for name in names)
 
-    def yaw(self, degrees):
-        return degrees if self.direction == 1 else 180 - degrees
+    def local_xy(self, fwd, lat):
+        ang = math.radians(self.yaw_deg)
+        ca, sa = math.cos(ang), math.sin(ang)
+        x = round(self.origin[0] + fwd * ca - lat * sa, 1)
+        y = round(self.origin[1] + fwd * sa + lat * ca, 1)
+        return x, y
 
-    def human(self, name, breed, x, y, groups=(), **kw):
+    def human(self, name, breed, fwd, lat, groups=(), **kw):
         role = self.role(name)
-        self.phase.human(role, breed, self.direction * x, y, self.player, yaw=self.yaw(0),
+        x, y = self.local_xy(fwd, lat)
+        self.phase.human(role, breed, x, y, self.player, yaw=self.yaw_deg,
                          groups=self.roles(groups), wave=self.wave, **kw)
         if breed == "medic":
             self.phase.tactical.deploy(self.player, role, "support", 2, self.wave)
@@ -517,24 +551,15 @@ class BattleSide:
             self.phase.tactical.deploy(self.player, role, "infantry", 1, self.wave)
         return role
 
-    def vehicle(self, name, model, x, y, yaw=0, riders=0, **kw):
+    def vehicle(self, name, model, x, y, yaw, riders=0, **kw):
         role = self.role(name)
-        self.phase.vehicle(role, model, self.direction * x, y, self.player, yaw=self.yaw(yaw),
+        self.phase.vehicle(role, model, x, y, self.player, yaw=yaw,
                            wave=self.wave, riders=riders, **kw)
-        group = "support" if model == "blitz3_6_art_ammo" else "vehicles"
-        self.phase.tactical.deploy(self.player, role, group, VEHICLE_POINTS[model], self.wave)
-        # Halftrack assault seats are visible to the observer. Tank hull riders
-        # can be promoted into invisible crew stations, so they stay crew reserves.
-        if model == "sdkfz251c":
-            for i in range(1, riders + 1):
-                self.phase.tactical.deploy(self.player, f"{role}_seat{i}", "infantry", 1, self.wave)
+        self.phase.tactical.deploy(self.player, role, "vehicles", VEHICLE_POINTS[model], self.wave)
         return role
 
-    def cover(self, name, model, x, y, yaw=0):
-        self.phase.add(self.role(name), model, self.direction * x, y, yaw=self.yaw(yaw))
-
     def advance(self, name, x, y):
-        self.phase.advance(self.role(name), self.direction * x, y, 0)
+        self.phase.advance(self.role(name), x, y, 0)
 
 
 def assault_kit(p, role):
@@ -544,159 +569,103 @@ def assault_kit(p, role):
     p.inventory(role, SMOKE, 2)
 
 
-def assault_halftrack(s, name, x, y):
-    role = s.vehicle(name, "sdkfz251c", x, y, riders=4)
-    assault_kit(s.phase, role + "_seat1")
-    for seat in ("seat2", "seat3", "seat4"):
-        passenger = role + "_" + seat
-        s.phase.inventory(passenger, AT, 2)
-        s.phase.inventory(passenger, SMOKE, 2)
-
-
-def battle_terrain(s):
-    # Symmetric 3-lane obstacle layout on the flat z=0 arena.
-    # South lane: urban CQB walls, sandbags, soft wooden fence, and rear aid cover.
-    s.cover("south_wall", "dutch_brick_wall01_straight_short", -285, 34, yaw=90)
-    s.cover("south_fence", "fence-wood_3", -205, 115)
-    s.cover("south_bags", "sandbag_structured_straight", -110, 30)
-    s.cover("south_mid_wall", "dutch_brick_wall01_straight_short", -110, 100, yaw=90)
-    s.cover("south_inner_wall", "dutch_brick_wall01_straight_short", -68, 155, yaw=90)
-    s.cover("south_aid_wall", "dutch_brick_wall01_straight_short", -395, 75, yaw=90)
-    # East-west sightline dividers keeping center vehicles from immediately sniping south CQB.
-    s.cover("south_div_inner", "dutch_brick_wall01_straight_short", -120, 190)
-    s.cover("south_div_outer", "dutch_brick_wall01_straight_short", -240, 190)
-    # Center lane: flag-flank cover and rear aid-station wall.
-    s.cover("center_bags", "sandbag_structured_straight", -150, 235)
-    s.cover("center_wall", "dutch_brick_wall01_straight_short", -120, 390, yaw=90)
-    s.cover("center_aid_wall", "dutch_brick_wall01_straight_short", -395, 252, yaw=90)
-    # North lane: armor corridor with crushable wooden fences and AT-gun sandbags.
-    s.cover("north_fence", "fence-wood_3", -325, 605)
-    s.cover("north_bags", "sandbag_structured_straight", -240, 485)
-    s.cover("north_flank_fence", "fence-wood_3", -200, 675)
-    s.cover("north_at_bags", "sandbag_structured_straight", -390, 688)
-
-
-def first_wave(s):
+def infantry_stage(s):
+    """Stage 1 (0-90s): 10-man German infantry squad + 1 rear medic contesting the center flag."""
     p = s.phase
-    south = ("south_squad",)
-    s.human("south_leader", "smg_1", -380, 75, groups=south)
-    for name, y in (("south_rifle1", 15), ("south_rifle2", 142), ("south_donor", 107)):
-        role = s.human(name, RIFLE, -385, y, groups=south)
+    sq = ("squad",)
+    front = (
+        ("sq_smg1", "smg_1", -72),
+        ("sq_rifle1", RIFLE, -36),
+        ("sq_leader", "sl", 0),
+        ("sq_rifle2", RIFLE, 36),
+        ("sq_smg2", "smg_1", 72),
+    )
+    for name, breed, lat in front:
+        role = s.human(name, breed, 25, lat, groups=sq)
         p.inventory(role, SMOKE, 2)
         p.inventory(role, FRAG, 2)
-    p.inventory(s.role("south_donor"), BELT, 100)
-    mg = s.human("south_mg", "mgun_1", -410, 89, groups=south)
-    p.kit(mg, '"mg34_belt" {cell 0 0}{user "hand_right"}', f"{BELT} 3 {{cell 0 3}}")
-    assault_kit(p, s.human("south_at", "antitank_1", -385, 171, groups=south))
-    p.squad(s.role("south_squad"))
-    # Protected aid station 19.5 m behind the South fighting line (inside 36 m medic radius).
-    s.human("south_medic", "medic", -450, 75, mode="hold")
+    # Spare MG belt on rifle1 so squad_logistics can feed the low-ammo MG gunner.
+    p.inventory(s.role("sq_rifle1"), BELT, 100)
 
-    for i, name in enumerate(("smg1", "rifle1", "smg2", "rifle2")):
-        smg = i % 2 == 0
-        role = s.human("center_" + name, "smg_1" if smg else RIFLE, -285, 210 + 28*i,
-                       groups=("center_front",))
-        # Replace the entire breed inventory. Only the loaded 32-round MP40
-        # magazine or five K98 rounds are available until the unit resupplies.
-        weapon = "mp40_unfolded" if smg else "k98"
-        p.kit(role, f'"{weapon}" filled {{cell 0 0}}{{user "hand_right"}}',
-              '"bandage_ger" 2 {cell 3 2}')
-    p.squad(s.role("center_front"))
-    s.human("center_medic", "medic", -450, 252, mode="hold")
-    s.vehicle("center_truck", "blitz3_6_art_ammo", -680, 252, mode="hold",
-              body='{Extender "supply_zone" {enabled}{current 0}}')
-    assault_halftrack(s, "center_halftrack", -620, 340)
-    s.vehicle("center_car", "ba64", -530, 416)
+    assault_kit(p, s.human("sq_at1", "antitank_1", -25, -72, groups=sq))
+    s.human("sq_mg1", "mgun_1", -25, -36, groups=sq)
+    rifle3 = s.human("sq_rifle3", RIFLE, -25, 0, groups=sq)
+    p.inventory(rifle3, SMOKE, 2)
+    p.inventory(rifle3, FRAG, 2)
+    mg2 = s.human("sq_mg2", "mgun_1", -25, 36, groups=sq)
+    p.kit(mg2, '"mg34_belt" {cell 0 0}{user "hand_right"}', f"{BELT} 3 {{cell 0 3}}")
+    assault_kit(p, s.human("sq_at2", "antitank_1", -25, 72, groups=sq))
+    p.squad(s.role("squad"))
 
-    tank = s.vehicle("north_tank", "panzer4d", -570, 537)
-    p.inventory(tank, '"repair_kit"', 4)
-    s.vehicle("north_desant", "t3476_40", -710, 642, riders=4)
-    s.vehicle("north_gun", "45mm_m37", -430, 688, yaw=-37, mode="hold")
-    for i in range(4):
-        s.human(f"north_screen{i+1}", RIFLE if i % 2 == 0 else "smg_1",
-                -407 - (i % 2)*38, 473 + 33*i, groups=("north_screen",))
-    p.squad(s.role("north_screen"))
+    s.human("medic", "medic", -90, 0)
 
 
-def second_wave(s):
-    p = s.phase
-    for i, (name, breed) in enumerate((("smg", "smg_1"), ("rifle", RIFLE),
-                                       ("at", "antitank_1"), ("mg", "mgun_1"))):
-        role = s.human("south2_" + name, breed, -1000, 22 + i*42, groups=("south2_squad",))
-        p.inventory(role, SMOKE, 2)
-        p.inventory(role, FRAG, 2)
-        if name == "at":
-            p.inventory(role, AT, 2)
-    p.squad(s.role("south2_squad"))
-    assault_halftrack(s, "center2_halftrack", -990, 344)
-    s.vehicle("center2_car", "ba64", -1020, 428)
-    tank = s.vehicle("north2_tank", "panzer4d", -1085, 569)
-    p.inventory(tank, '"repair_kit"', 4)
-    for i in range(4):
-        s.human(f"north2_escort{i+1}", RIFLE if i % 2 == 0 else "smg_1",
-                -973 - (i % 2)*38, 478 + i*29, groups=("north2_escort",))
-    p.squad(s.role("north2_escort"))
-
-
-def third_wave(s):
-    s.vehicle("north3_desant", "t3476_40", -1115, 668, riders=4)
-    for i in range(4):
-        role = s.human(f"north3_assault{i+1}", "antitank_1" if i == 0 else "smg_1",
-                       -985 - (i % 2)*34, 599 + i*31, groups=("north3_assault",))
-        if i == 0:
-            assault_kit(s.phase, role)
-        else:
-            s.phase.inventory(role, SMOKE, 2)
-            s.phase.inventory(role, AT, 2)
-    s.phase.squad(s.role("north3_assault"))
+def armor_stage(s):
+    """Stage 2 (90-240s): fast Sd.Kfz.222 rushing through center + Panzer IV + 5-turret T-35."""
+    s.vehicle("car_222", "sdkfz222a", *s.car_spawn)
+    pz4 = s.vehicle("tank_pz4", "panzer4d", *s.pz4_spawn)
+    s.phase.inventory(pz4, '"repair_kit"', 4)
+    t35 = s.vehicle("tank_t35", "t35", *s.t35_spawn, riders=4)
+    s.phase.inventory(t35, '"repair_kit"', 4)
 
 
 def e2e():
-    p = Phase("e2e_combined_arms_battle", 4, tactical=Tactical(), mid_base=4000, capacity=500)
-    sides = (BattleSide(p, "a", 2, 1), BattleSide(p, "b", 3, -1))
-    p.objective("center", 0, 320, player=None)
+    p = Phase(
+        "e2e_flag_battle",
+        4,
+        tactical=Tactical(),
+        mid_base=4000,
+        eid_base=E2E_EID_BASE,
+        capacity=500,
+    )
+    sides = (
+        BattleSide(
+            p, "a", 2,
+            origin=(-520, -1040), yaw_deg=64,
+            medic_wp=(-320, -560),
+            car_spawn=(-1250, -925, 38), car_rush_wp=(180, 420),
+            pz4_spawn=(-1835, -920, 0), pz4_wp=(-360, -260),
+            t35_spawn=(-2185, -1320, 70), t35_wp=(-440, -100),
+        ),
+        BattleSide(
+            p, "b", 3,
+            origin=(660, 940), yaw_deg=-125,
+            medic_wp=(360, 500),
+            car_spawn=(1200, 970, -142), car_rush_wp=(-180, -420),
+            pz4_spawn=(1220, 1460, -90), pz4_wp=(340, 250),
+            t35_spawn=(1930, 1270, -138), t35_wp=(420, 80),
+        ),
+    )
+    p.objective("center", *E2E_FLAG, player=None, radius=int(E2E_FLAG_RADIUS_M * SCALE))
     for s in sides:
-        battle_terrain(s)
-        first_wave(s)
-        s.advance("south_squad", -60, 86)
-        s.advance("center_front", -150, 245)
-        s.advance("north_screen", -45, 490)
-    # Armor follows the forward screen. Staggered waypoints keep the two
-    # vehicles in each lane off one another's destinations.
-    p.actions.append(delay(3))
-    for s in sides:
-        s.advance("center_car", -68, 414)
-        s.advance("north_tank", -60, 545)
-    p.actions.append(delay(4))
-    for s in sides:
-        s.advance("center_halftrack", -62, 340)
-        s.advance("north_desant", -70, 634)
+        infantry_stage(s)
+        s.advance("squad", *E2E_FLAG)
+        s.advance("medic", *s.medic_wp)
 
-    p.actions.append(delay(83))  # t=90, first reinforcements
-    p.reveal("wave2")
+    p.actions.append(delay(45))  # t=45, re-push infantry onto the contested flag
     for s in sides:
-        s.wave = "wave2"
-        second_wave(s)
-        s.advance("south2_squad", -15, 122)
-        s.advance("north2_escort", -75, 518)
-    p.actions.append(delay(3))
-    for s in sides:
-        s.advance("center2_car", -165, 414)
-        s.advance("north2_tank", -170, 569)
-    p.actions.append(delay(4))
-    for s in sides:
-        s.advance("center2_halftrack", -150, 349)
+        s.advance("squad", *E2E_FLAG)
 
-    p.actions.append(delay(83))  # t=180, final push off the northern flank
-    p.reveal("wave3")
+    p.actions.append(delay(45))  # t=90, Stage 1 checkpoint -> car zooms through center + tanks reinforce
+    p.reveal("armor")
     for s in sides:
-        s.wave = "wave3"
-        third_wave(s)
-        s.advance("north3_assault", -20, 322)
-    p.actions.append(delay(4))
+        s.wave = "armor"
+        armor_stage(s)
+        s.advance("car_222", *s.car_rush_wp)
+    p.actions.append(delay(2))
     for s in sides:
-        s.advance("north3_desant", -65, 295)
-    p.actions.append(delay(116))
+        s.advance("tank_pz4", *s.pz4_wp)
+    p.actions.append(delay(2))
+    for s in sides:
+        s.advance("tank_t35", *s.t35_wp)
+
+    p.actions.append(delay(71))  # t=165, final combined push onto center flag
+    for s in sides:
+        s.advance("squad", *E2E_FLAG)
+        s.advance("car_222", *E2E_FLAG)
+        s.advance("tank_pz4", *E2E_FLAG)
+        s.advance("tank_t35", *E2E_FLAG)
+    p.actions.append(delay(75))  # t=240, end of battle
     return p
 
 
@@ -772,8 +741,8 @@ def validate(text):
     objects = [e for e in root[1:] if e[0] in ("Human", "Entity")]
     ids = [e[2] for e in objects]
     mids = [int(n[1]) for e in objects for n in e[3:] if n[0] == "MID"]
-    if not all(re.fullmatch(r"0x[0-9a-f]+", eid) for eid in ids):
-        raise ValueError("invalid hex entity ID")
+    if not all(re.fullmatch(r"0x[0-9a-f]+", eid) and int(eid, 16) <= 0xFFFF for eid in ids):
+        raise ValueError("invalid or >16-bit hex entity ID")
     if len(ids) != len(set(ids)) or len(mids) != len(set(mids)):
         raise ValueError("missing or duplicate entity ID/MID")
     for e in objects:
@@ -801,8 +770,13 @@ def validate(text):
             raise ValueError(f"undefined waypoint {n[1]}")
         if n[0].lower() == "position":
             x, y = map(float, n[1:3])
-            if not (-1394 < x < 1400 and -5000 < y < 5000):
-                raise ValueError(f"outside vehicle-control pather: {x}, {y}")
+            in_bounds = (
+                (-4475 < x < 4498 and -4481 < y < 4490)
+                if "GOH_L1_DONE_e2e" in text
+                else (-1394 < x < 1400 and -5000 < y < 5000)
+            )
+            if not in_bounds:
+                raise ValueError(f"outside map pather bounds: {x}, {y}")
     return objects
 
 
@@ -833,8 +807,14 @@ def generate(suite="full", speed="normal"):
             (marker("END", p.name), command("delete", p.selector("phase")), delay(3))
         )
     # A live completion witness also works when GEM console output is unavailable.
-    witness = Phase("complete", 90 + SUITES.index(suite))
-    witness.human("done", RIFLE, 580, 300, mode="hold", fire="hold")
+    is_e2e = suite == "e2e"
+    witness = Phase(
+        "complete",
+        90 + SUITES.index(suite),
+        eid_base=E2E_EID_BASE if is_e2e else 0x8000,
+    )
+    wx, wy = E2E_FLAG if is_e2e else (580, 300)
+    witness.human("done", RIFLE, wx, wy, mode="hold", fire="hold")
     actions.extend(
         (
             command("game_speed", "{mode normal}"),
@@ -848,15 +828,33 @@ def generate(suite="full", speed="normal"):
     cameras = [p.overview() for p in phases]
     phases.append(witness)
     aliases = '{Players {user 0}{alias 0 "player"}{alias 1 "ai"}'
-    if suite == "e2e":
+    if is_e2e:
         aliases += '{alias 2 "west_ai"}{alias 3 "east_ai"}'
     else:
         aliases += '{alias 2 "enemy"}'
+    env = E2E_ENV if is_e2e else ENVIRONMENT
+    if is_e2e:
+        # Spectator Player 0 has zero active units during combat (done witness is hidden until END).
+        # Allying P0 with SW (P2) and keeping P0 hostile to NE (P3) enables native GoH allied-blue vs
+        # hostile-red coloring while P2/P3 stay mutually hostile (1); E2E overlays symmetric 1.0/1.0
+        # heroic.dl HP/accuracy (matching MP) so allied P2 and hostile P3 have identical stats.
+        diplomacy = [
+            "1 2 2 1 1 1 1 1",
+            "2 1 2 1 1 1 1 1",
+            "2 2 1 1 1 1 1 1",
+            *(["1 1 1 1 1 1 1 1"] * 5),
+        ]
+    else:
+        diplomacy = [
+            "1 2 1 1 1 1 1 1",
+            "2 1 1 1 1 1 1 1",
+            *(["1 1 1 1 1 1 1 1"] * 6),
+        ]
     rows = [
         "{mission",
         *(o for p in phases for o in p.objects),
         *(r for p in phases for r in p.relations),
-        f'{{Environment "{ENVIRONMENT}"}}',
+        f'{{Environment "{env}"}}',
         "{Helpers",
         "{cameras", *cameras, "}",
         *(zone for p in phases for zone in p.zones),
@@ -869,9 +867,7 @@ def generate(suite="full", speed="normal"):
         # Bootcamp uses 1 for hostile and 2 for allied. Only 0 and 1 are
         # allied here. 2/3, 3/2, and their entries against 0 are all hostile.
         aliases + "{diplomacy",
-        "1 2 1 1 1 1 1 1",
-        "2 1 1 1 1 1 1 1",
-        *(["1 1 1 1 1 1 1 1"] * 6),
+        *diplomacy,
         "}}",
         "{Fog 0}",
         "}",
@@ -881,125 +877,118 @@ def generate(suite="full", speed="normal"):
     return text
 
 
-def flatten_map_text(stock_map):
-    """Strip stock map entities/inventories, sink Ocean below z=0, and symmetrize X clip bounds."""
-    text = stock_map.decode("latin1")
-    newline = "\r\n" if "\r\n" in text else "\n"
-    kept = []
-    depth = 0
-    skipping = False
-    in_ocean = False
-    in_clips = False
-    for line in text.splitlines():
-        s = line.strip()
-        if depth == 1:
-            if s.startswith(("{Entity", "{Inventory")):
-                skipping = True
-            elif s.startswith("{Ocean"):
-                in_ocean = True
-            elif s.startswith("{Clips"):
-                in_clips = True
-        if not skipping:
-            if in_ocean and s.startswith("{zlevel "):
-                line = re.sub(r"\{zlevel\s+[^}]+\}", "{zlevel -100}", line)
-            elif in_clips and s.startswith(("{camera ", "{pather ")):
-                line = re.sub(
-                    r"(\{(?:camera|pather)\s+)[-0-9.]+\s+([-0-9.]+)\s+[-0-9.]+\s+([-0-9.]+)\}",
-                    r"\1-1400 \2 1400 \3}",
-                    line,
-                )
-            kept.append(line)
-        depth += s.count("{") - s.count("}")
-        if depth == 1:
-            skipping = False
-            in_ocean = False
-            in_clips = False
-    if depth != 0:
-        raise ValueError("unbalanced stock map file")
-    return (newline.join(kept) + newline).encode("latin1")
+def e2e_map_files(game):
+    """Read the stock multi/1v1_oryol map files from multi.pak (read-only) for the E2E overlay."""
+    with zipfile.ZipFile(game / "resource/map/multi.pak") as pak:
+        return {name: pak.read(f"{E2E_MAP_SRC}/{name}") for name in E2E_MAP_FILES}
 
 
-def flatten_map_net(stock_net):
-    """Flatten every map.net cell to height=0 and uniform ground material (map0=1, map1=1)."""
-    if stock_net[:2] != b"\x05\x02":
-        raise ValueError("unexpected map.net version header")
-    width, height = struct.unpack_from("<HH", stock_net, 2)
-    grid_off = stock_net.index(b"GRID") + 4
-    if len(stock_net) - grid_off != width * height * 4:
-        raise ValueError("unexpected map.net grid length")
-    return stock_net[:grid_off] + (b"\x00\x00\x01\x01" * (width * height))
+def patch_camera_reg(stock_reg):
+    """Unlock bird's-eye zoom and enable high-contrast team-colored unit outlines in the E2E overlay."""
+    text = stock_reg.decode("latin1")
+    text = re.sub(r"(\{zfar\s+)\d+(\})", r"\g<1>25000\2", text)
+    text = re.sub(
+        r"(\{max_distance\s*\{distance\s+)\d+(\}\s*\{viewMin\s+\d+\}\s*\{viewMax\s+)\d+(\})",
+        r"\g<1>8000\g<2>89\3",
+        text,
+    )
+    text = re.sub(
+        r"(\{default\s*\{distance\s+)\d+(\}\s*\{viewAngle\s+)[\d.]+(\})",
+        r"\g<1>4200\g<2>65\3",
+        text,
+    )
+    text = re.sub(r"(\{intensity_regular\s+)[\d.]+(\s*\})", r"\g<1>5.0\2", text)
+    text = re.sub(r"(\{intensity_emphasized\s+)[\d.]+(\s*\})", r"\g<1>6.0\2", text)
+    text = re.sub(r"(\{outline_width\s+)[\d.]+(\s*\})", r"\g<1>3.0\2", text)
+    # Enable both neutral and hostile outlines even on heroic/hardcore (_hc).
+    text = re.sub(
+        r"(\{active_outlines(?:_hc)?\s*\{friendly\s+)\d+(\}\s*\{hostile\s+)\d+(\}\s*\{allied\s+)\d+(\}\s*\{neutral\s+)\d+(\})",
+        r"\g<1>1\g<2>1\g<3>1\g<4>1\5",
+        text,
+    )
+    # Vivid blue for SW (neutral to spectator P0) and vivid red for NE (hostile to P0).
+    text = re.sub(r"(\{allied_color\s+)0x[0-9a-fA-F]+(\})", r"\g<1>0xFF2898FF\2", text)
+    text = re.sub(r"(\{neutral_color\s+)0x[0-9a-fA-F]+(\})", r"\g<1>0xFF2898FF\2", text)
+    text = re.sub(r"(\{hostile_color\s+)0x[0-9a-fA-F]+(\})", r"\g<1>0xFFFF2424\2", text)
+    text = re.sub(r"(\{distance_fade_start\s+)\d+(\})", r"\g<1>8000\2", text)
+    text = re.sub(r"(\{distance_fade_end\s+)\d+(\})", r"\g<1>10000\2", text)
+    text = re.sub(r"(\{time_active(?:_HC)?\s+)[\d.]+(\})", r"\g<1>999.0\2", text)
+    return text.encode("latin1")
 
 
-def flatten_map_ply(stock_ply):
-    """Flatten every BPLY terrain vertex to z=0, normal=(0,0,1), and neutral grey vertex color."""
-    if stock_ply[:8] != b"BPLYBNDS":
-        raise ValueError("unexpected map.ply header")
-    out = bytearray(stock_ply)
-    # BNDS = <6f: minX, minY, minZ, maxX, maxY, maxZ (offsets 8..32).
-    struct.pack_into("<f", out, 16, -0.5)
-    struct.pack_into("<f", out, 28, 0.5)
-    vert_off = stock_ply.index(b"VERT")
-    vcount, vstride = struct.unpack_from("<II", out, vert_off + 4)
-    vstart = vert_off + 12
-    vend = vstart + vcount * vstride
-    if vstride != 44 or vend + 4 > len(out) or out[vend : vend + 4] not in (b"IND4", b"INDX"):
-        raise ValueError("unexpected map.ply VERT layout")
-    flat_tail = struct.pack("<4fI", 0.0, 0.0, 0.0, 1.0, 0xFF7F7F7F)
-    for pos in range(vstart + 8, vend, 44):
-        out[pos : pos + 20] = flat_tail
-    return bytes(out)
+def birdseye_camera_reg(game):
+    """Build the unlocked E2E camera.reg from stock gamelogic.pak (read-only)."""
+    with zipfile.ZipFile(game / "resource/gamelogic.pak") as pak:
+        return patch_camera_reg(pak.read("set/registry/camera.reg"))
 
 
-def flatten_map_grs(stock_grs):
-    """Clear all decorative grass cells from map.grs while keeping its grid bounds intact."""
-    if stock_grs[:4] != b"GRAS":
-        raise ValueError("unexpected map.grs header")
-    pmap = stock_grs.index(b"PMAP") + 4
-    count = struct.unpack_from("<I", stock_grs, pmap)[0]
-    off = pmap + 4
-    for _ in range(count):
-        off += 1 + stock_grs[off]
-    x0, y0, x1, y1, _step = struct.unpack_from("<4if", stock_grs, off)
-    grid_off = off + 20
-    expected = (x1 - x0) * (y1 - y0) * 5
-    if x1 <= x0 or y1 <= y0 or len(stock_grs) - grid_off != expected:
-        raise ValueError("unexpected map.grs grid layout")
-    return stock_grs[:grid_off] + (b"\x00" * expected)
+def patch_lod_set(stock_set):
+    """Scale RTS/scenario LOD distances 5x so infantry/weapons/tracers stay rendered at bird's-eye height."""
+    text = stock_set.decode("latin1")
+    text = re.sub(r"(\(\*\s+)[\d.]+(\s+%d\))", r"\g<1>5.00\2", text)
+    text = re.sub(r"(\(\*\s+)[\d.]+(\s+%d2\))", r"\g<1>5.00\2", text)
+    return text.encode("latin1")
 
 
-def flat_arena(game):
-    """Build the 4 flat z=0 symmetric map overlay files from stock single.pak (read-only)."""
-    pak_path = game / "resource/map/single.pak"
-    with zipfile.ZipFile(pak_path) as pak:
+def patch_lod_inc(stock_inc):
+    """Push combat-entity LOD off-cutoffs out past bird's-eye distance even under low detail presets."""
+    text = stock_inc.decode("latin1")
+    for cls in ("human", "stuff_weapon", "stuff_grenade", "tracer", "cannon", "vehicle"):
+        text = re.sub(
+            rf'(\{{"{cls}".*?\{{distance\s+\("scale"\s+d\()\d+(\)\)\s*\("off(?:_small)?"\))',
+            r"\g<1>25000\2",
+            text,
+            count=1,
+            flags=re.S,
+        )
+    return text.encode("latin1")
+
+
+def e2e_symmetric_difficulty():
+    """Return a symmetric MP-parity heroic.dl overlay (1.0 HP / 1.0 accuracy for all sides)."""
+    return (
+        '{difficulty\r\n'
+        '\t(include "difficulty_generic.inc")\r\n'
+        '\t{any\r\n\t\t{health 1.0}\r\n\t\t{accuracy 1.0}\r\n\t}\r\n'
+        '\t{enemy\r\n\t\t{health 1.0}\r\n\t\t{accuracy 1.0}\r\n\t}\r\n'
+        '\t{ally\r\n\t\t{health 1.0}\r\n\t\t{accuracy 1.0}\r\n\t}\r\n'
+        '\t{player\r\n\t\t{health 1.0}\r\n\t\t{accuracy 1.0}\r\n\t}\r\n'
+        '}\r\n'
+    ).encode("latin1")
+
+
+def birdseye_lod_files(game):
+    """Build scaled E2E LOD overlays from stock gamelogic.pak (read-only)."""
+    with zipfile.ZipFile(game / "resource/gamelogic.pak") as pak:
         return {
-            "map": flatten_map_text(pak.read(f"{MAP_DIR}/map")),
-            "map.net": flatten_map_net(pak.read(f"{MAP_DIR}/map.net")),
-            "map.ply": flatten_map_ply(pak.read(f"{MAP_DIR}/map.ply")),
-            "map.grs": flatten_map_grs(pak.read(f"{MAP_DIR}/map.grs")),
+            Path("resource/set/level_of_detail.set"): patch_lod_set(pak.read("set/level_of_detail.set")),
+            Path("resource/set/level_of_detail_scenario.set"): patch_lod_set(
+                pak.read("set/level_of_detail_scenario.set")
+            ),
+            Path("resource/set/level_of_detail.inc"): patch_lod_inc(pak.read("set/level_of_detail.inc")),
         }
 
 
 def check_stock(game, text):
     """Validate model/item catalogue, baked terrain and scene-ID namespace from the installed archives."""
     objects = validate(text)
-    flat_e2e = "GOH_L1_DONE_e2e" in text
+    is_e2e = "GOH_L1_DONE_e2e" in text
     resource = game / "resource"
-    with zipfile.ZipFile(resource / "map/single.pak") as pak:
-        pak.getinfo(MEMBER)
-        stock = pak.read(MEMBER.replace("0.mi", "map")).decode("latin1")
-        grid = pak.read(MEMBER.replace("0.mi", "map.net"))
-    if flat_e2e:
-        flat_arena(game)
+    if is_e2e:
+        map_data = e2e_map_files(game)
+        stock = map_data["map"].decode("latin1")
+        grid = map_data["map.net"]
+    else:
+        with zipfile.ZipFile(resource / "map/single.pak") as pak:
+            pak.getinfo(MEMBER)
+            stock = pak.read(MEMBER.replace("0.mi", "map")).decode("latin1")
+            grid = pak.read(MEMBER.replace("0.mi", "map.net"))
     width, height, ox, oy = struct.unpack_from("<HHff", grid, 2)
     offset = grid.index(b"GRID") + 4
     if len(grid) - offset != width * height * 4 or grid[:2] != b"\x05\x02":
         raise ValueError("unexpected map.net grid")
-    map_models = (
-        {}
-        if flat_e2e
-        else {eid: model for model, eid in re.findall(r'\{(?:Entity|Human) "([^"]+)" (0x[0-9a-f]+)', stock)}
-    )
-    stock_mids = set() if flat_e2e else {int(mid) for mid in re.findall(r'\{MID\s+(\d+)\}', stock)}
+    map_models = {int(eid, 16) & 0xFFFF: model for model, eid in re.findall(r'\{(?:Entity|Human) "([^"]+)" (0x[0-9a-f]+)', stock)}
+    stock_mids = {int(mid) for mid in re.findall(r'\{MID\s+(\d+)\}', stock)}
     with zipfile.ZipFile(resource / "gamelogic.pak") as pak:
         logic = set(pak.namelist())
     models = set()
@@ -1017,19 +1006,18 @@ def check_stock(game, text):
             if kind == "Human"
             else model in models
         )
-        if not valid or eid in map_models:
+        if not valid or (int(eid, 16) & 0xFFFF) in map_models:
             raise ValueError(f"unknown model or map ID collision: {model} {eid}")
         for f in fields:
             if f[0] == "MID" and int(f[1]) in stock_mids:
                 raise ValueError(f"stock map MID collision: {model} {f[1]}")
-        if not flat_e2e:
-            pos = next(f for f in fields if f[0] == "Position")
-            x, y = map(float, pos[1:3])
-            heights = [
-                elevation(x + dx, y + dy) for dx in (-10, 0, 10) for dy in (-10, 0, 10)
-            ]
-            if max(heights) - min(heights) > 10:
-                raise ValueError(f"steep spawn footprint at {x}, {y} for {model}")
+        pos = next(f for f in fields if f[0] == "Position")
+        x, y = map(float, pos[1:3])
+        heights = [
+            elevation(x + dx, y + dy) for dx in (-10, 0, 10) for dy in (-10, 0, 10)
+        ]
+        if max(heights) - min(heights) > 10:
+            raise ValueError(f"steep spawn footprint at {x}, {y} for {model}")
     stuff = {Path(n).name for n in logic if n.startswith("set/stuff/")}
     for n in nodes(parse(text)):
         if n[0] == "item":

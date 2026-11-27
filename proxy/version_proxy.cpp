@@ -22,7 +22,10 @@
 #define _WINVER_
 #include <windows.h>
 
+#include <atomic>
+#include <cctype>
 #include <cstdarg>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <cwchar>
@@ -32,6 +35,8 @@ namespace {
 HMODULE g_SelfModule = nullptr;
 HMODULE g_RealVersionDll = nullptr;
 HMODULE g_ModDll = nullptr;
+std::atomic<bool> g_StopWatcher{false};
+wchar_t g_ShadowPath[MAX_PATH * 4]{};
 
 INIT_ONCE g_RealVersionOnce = INIT_ONCE_STATIC_INIT;
 SRWLOCK g_LogLock = SRWLOCK_INIT;
@@ -161,6 +166,254 @@ bool EnsureRealVersionDll() noexcept {
            g_RealVersionDll != nullptr;
 }
 
+struct FileStamp {
+    std::uint64_t mtime{};
+    DWORD size{};
+    bool valid{};
+};
+
+FileStamp StatFileW(const wchar_t* path) noexcept {
+    FileStamp st{};
+    WIN32_FILE_ATTRIBUTE_DATA data{};
+    if (!path || !GetFileAttributesExW(path, GetFileExInfoStandard, &data)) return st;
+    if ((data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0 || data.nFileSizeHigh != 0) return st;
+    st.mtime = (static_cast<std::uint64_t>(data.ftLastWriteTime.dwHighDateTime) << 32) |
+               static_cast<std::uint64_t>(data.ftLastWriteTime.dwLowDateTime);
+    st.size = data.nFileSizeLow;
+    st.valid = true;
+    return st;
+}
+
+bool FileExistsW(const wchar_t* path) noexcept {
+    if (!path) return false;
+    const DWORD attrs = GetFileAttributesW(path);
+    return attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_DIRECTORY) == 0;
+}
+
+bool CanReadFileExclusivelyW(const wchar_t* path) noexcept {
+    HANDLE h = CreateFileW(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING,
+                           FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (h == INVALID_HANDLE_VALUE) return false;
+    CloseHandle(h);
+    return true;
+}
+
+bool IsHotReloadEnabled() noexcept {
+    wchar_t markerPath[MAX_PATH * 4]{};
+    if (BuildSiblingPathW(g_SelfModule, L"goh_ai.hotreload", markerPath,
+                          static_cast<DWORD>(sizeof(markerPath) / sizeof(markerPath[0]))) &&
+        FileExistsW(markerPath)) {
+        return true;
+    }
+    wchar_t iniPath[MAX_PATH * 4]{};
+    if (!BuildSiblingPathW(g_SelfModule, L"goh_ai.ini", iniPath,
+                           static_cast<DWORD>(sizeof(iniPath) / sizeof(iniPath[0])))) {
+        return false;
+    }
+    FILE* f = _wfopen(iniPath, L"rb");
+    if (!f) return false;
+    char line[512]{};
+    bool inTesting = false;
+    bool enabled = false;
+    while (std::fgets(line, static_cast<int>(sizeof(line)), f)) {
+        char* p = line;
+        if (static_cast<unsigned char>(p[0]) == 0xEF && static_cast<unsigned char>(p[1]) == 0xBB &&
+            static_cast<unsigned char>(p[2]) == 0xBF) {
+            p += 3;
+        }
+        for (char* c = p; *c; ++c) {
+            if (*c == ';' || *c == '#' || *c == '\r' || *c == '\n') {
+                *c = '\0';
+                break;
+            }
+        }
+        while (*p && std::isspace(static_cast<unsigned char>(*p)))
+            ++p;
+        std::size_t len = std::strlen(p);
+        while (len > 0 && std::isspace(static_cast<unsigned char>(p[len - 1])))
+            p[--len] = '\0';
+        if (len == 0) continue;
+        if (p[0] == '[' && p[len - 1] == ']') {
+            char sec[64]{};
+            std::size_t si = 0;
+            for (std::size_t i = 1; i + 1 < len && si + 1 < sizeof(sec); ++i) {
+                if (!std::isspace(static_cast<unsigned char>(p[i]))) {
+                    sec[si++] = static_cast<char>(std::tolower(static_cast<unsigned char>(p[i])));
+                }
+            }
+            sec[si] = '\0';
+            inTesting = (std::strcmp(sec, "testing") == 0);
+            continue;
+        }
+        if (!inTesting) continue;
+        char* eq = std::strchr(p, '=');
+        if (!eq) continue;
+        *eq = '\0';
+        char key[64]{};
+        std::size_t ki = 0;
+        for (const char* k = p; *k && ki + 1 < sizeof(key); ++k) {
+            if (!std::isspace(static_cast<unsigned char>(*k))) {
+                key[ki++] = static_cast<char>(std::tolower(static_cast<unsigned char>(*k)));
+            }
+        }
+        key[ki] = '\0';
+        if (std::strcmp(key, "hot_reload") != 0) continue;
+        char val[32]{};
+        std::size_t vi = 0;
+        for (const char* v = eq + 1; *v && vi + 1 < sizeof(val); ++v) {
+            if (!std::isspace(static_cast<unsigned char>(*v))) {
+                val[vi++] = static_cast<char>(std::tolower(static_cast<unsigned char>(*v)));
+            }
+        }
+        val[vi] = '\0';
+        if (std::strcmp(val, "true") == 0 || std::strcmp(val, "1") == 0 || std::strcmp(val, "yes") == 0 ||
+            std::strcmp(val, "on") == 0) {
+            enabled = true;
+        } else if (std::strcmp(val, "false") == 0 || std::strcmp(val, "0") == 0 || std::strcmp(val, "no") == 0 ||
+                   std::strcmp(val, "off") == 0) {
+            enabled = false;
+        }
+    }
+    std::fclose(f);
+    return enabled;
+}
+
+void CleanupStaleShadows() noexcept {
+    wchar_t pattern[MAX_PATH * 4]{};
+    if (!BuildSiblingPathW(g_SelfModule, L"goh_ai_mod.live.*.dll", pattern,
+                           static_cast<DWORD>(sizeof(pattern) / sizeof(pattern[0])))) {
+        return;
+    }
+    WIN32_FIND_DATAW fd{};
+    HANDLE find = FindFirstFileW(pattern, &fd);
+    if (find == INVALID_HANDLE_VALUE) return;
+    do {
+        if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) continue;
+        wchar_t candidate[MAX_PATH * 4]{};
+        if (BuildSiblingPathW(g_SelfModule, fd.cFileName, candidate,
+                              static_cast<DWORD>(sizeof(candidate) / sizeof(candidate[0])))) {
+            DeleteFileW(candidate);
+        }
+    } while (FindNextFileW(find, &fd));
+    FindClose(find);
+}
+
+bool LoadShadowMod(const wchar_t* sourcePath, unsigned generation) {
+    wchar_t shadowName[128]{};
+    std::swprintf(shadowName, sizeof(shadowName) / sizeof(shadowName[0]), L"goh_ai_mod.live.%lu.%u.dll",
+                  static_cast<unsigned long>(GetCurrentProcessId()), generation);
+    wchar_t shadowPath[MAX_PATH * 4]{};
+    if (!BuildSiblingPathW(g_SelfModule, shadowName, shadowPath,
+                           static_cast<DWORD>(sizeof(shadowPath) / sizeof(shadowPath[0])))) {
+        ProxyLog("ERROR: Could not build shadow path for gen=%u", generation);
+        return false;
+    }
+    if (!CopyFileW(sourcePath, shadowPath, FALSE)) {
+        ProxyLog("WARNING: CopyFileW to shadow gen=%u failed (error %lu)", generation,
+                 static_cast<unsigned long>(GetLastError()));
+        return false;
+    }
+    HMODULE mod = LoadLibraryW(shadowPath);
+    if (!mod) {
+        ProxyLog("WARNING: LoadLibraryW on shadow gen=%u failed (error %lu)", generation,
+                 static_cast<unsigned long>(GetLastError()));
+        DeleteFileW(shadowPath);
+        return false;
+    }
+    g_ModDll = mod;
+    std::wmemcpy(g_ShadowPath, shadowPath, sizeof(g_ShadowPath) / sizeof(g_ShadowPath[0]));
+    char utf8Shadow[MAX_PATH * 4]{};
+    WideToUtf8(shadowPath, utf8Shadow, static_cast<int>(sizeof(utf8Shadow)));
+    ProxyLog("Hot-reload loaded shadow gen=%u (%s)", generation, utf8Shadow);
+    return true;
+}
+
+bool UnloadCurrentModForReload() {
+    if (!g_ModDll) return true;
+    auto shutdownFn = reinterpret_cast<LPTHREAD_START_ROUTINE>(GetProcAddress(g_ModDll, "ShutdownAndUnload"));
+    if (!shutdownFn) {
+        ProxyLog("WARNING: ShutdownAndUnload export missing; cannot hot-unload safely");
+        return false;
+    }
+    DWORD lastCode = ERROR_BUSY;
+    for (int attempt = 0; attempt < 25 && !g_StopWatcher.load(std::memory_order_acquire); ++attempt) {
+        HANDLE worker = CreateThread(nullptr, 0, shutdownFn, nullptr, 0, nullptr);
+        if (!worker) {
+            ProxyLog("WARNING: CreateThread(ShutdownAndUnload) failed (error %lu)",
+                     static_cast<unsigned long>(GetLastError()));
+            return false;
+        }
+        const DWORD wait = WaitForSingleObject(worker, 15000);
+        DWORD exitCode = ERROR_GEN_FAILURE;
+        if (wait == WAIT_OBJECT_0) GetExitCodeThread(worker, &exitCode);
+        CloseHandle(worker);
+        lastCode = exitCode;
+        if (wait == WAIT_OBJECT_0 && exitCode == 0) {
+            g_ModDll = nullptr;
+            if (g_ShadowPath[0] != L'\0') {
+                DeleteFileW(g_ShadowPath);
+                g_ShadowPath[0] = L'\0';
+            }
+            return true;
+        }
+        if (exitCode != ERROR_BUSY) break;
+        Sleep(250);
+    }
+    ProxyLog("WARNING: ShutdownAndUnload deferred/failed during hot-reload (code=%lu)",
+             static_cast<unsigned long>(lastCode));
+    return false;
+}
+
+void RunHotReloadWatcher(const wchar_t* modPath, FileStamp loadedStamp, unsigned generation) {
+    wchar_t triggerPath[MAX_PATH * 4]{};
+    const bool haveTrigger = BuildSiblingPathW(g_SelfModule, L"goh_ai.reload", triggerPath,
+                                               static_cast<DWORD>(sizeof(triggerPath) / sizeof(triggerPath[0])));
+    while (!g_StopWatcher.load(std::memory_order_acquire)) {
+        Sleep(300);
+        if (g_StopWatcher.load(std::memory_order_acquire)) break;
+        const bool triggered = haveTrigger && FileExistsW(triggerPath);
+        const FileStamp now = StatFileW(modPath);
+        const bool changed = now.valid && now.size >= 4096 &&
+                             (!loadedStamp.valid || now.mtime != loadedStamp.mtime || now.size != loadedStamp.size);
+        if (!triggered && !changed) continue;
+
+        // Wait until the replacement DLL stops changing and can be read without a concurrent writer.
+        FileStamp stable = now;
+        bool ready = false;
+        for (int wait = 0; wait < 20 && !g_StopWatcher.load(std::memory_order_acquire); ++wait) {
+            Sleep(200);
+            const FileStamp again = StatFileW(modPath);
+            if (again.valid && again.size >= 4096 && again.mtime == stable.mtime && again.size == stable.size &&
+                CanReadFileExclusivelyW(modPath)) {
+                stable = again;
+                ready = true;
+                break;
+            }
+            stable = again;
+        }
+        if (triggered) DeleteFileW(triggerPath);
+        if (!ready) {
+            ProxyLog("WARNING: Hot-reload skipped (goh_ai_mod.dll not ready/stable)");
+            continue;
+        }
+
+        ProxyLog("Hot-reload detected updated goh_ai_mod.dll (size=%lu); unloading gen=%u",
+                 static_cast<unsigned long>(stable.size), generation);
+        if (!UnloadCurrentModForReload()) {
+            loadedStamp = stable;
+            continue;
+        }
+        CleanupStaleShadows();
+        ++generation;
+        if (LoadShadowMod(modPath, generation)) {
+            loadedStamp = stable;
+            ProxyLog("Hot-reload complete gen=%u (size=%lu)", generation, static_cast<unsigned long>(stable.size));
+        } else {
+            loadedStamp = stable;
+        }
+    }
+}
+
 DWORD WINAPI LoadModThread(LPVOID /*param*/) {
     // Only activate inside the game executable; leave the editor and helper tools untouched.
     if (!IsTargetGameProcess()) return 0;
@@ -176,6 +429,8 @@ DWORD WINAPI LoadModThread(LPVOID /*param*/) {
                  static_cast<unsigned long>(GetLastError()));
     }
 
+    CleanupStaleShadows();
+
     if (GetModuleHandleW(L"goh_ai_mod.dll")) {
         ProxyLog("goh_ai_mod.dll is already loaded; skipping duplicate load");
         return 0;
@@ -190,6 +445,27 @@ DWORD WINAPI LoadModThread(LPVOID /*param*/) {
 
     char utf8Path[MAX_PATH * 4]{};
     WideToUtf8(modPath, utf8Path, static_cast<int>(sizeof(utf8Path)));
+
+    if (IsHotReloadEnabled()) {
+        // Pin version.dll until ExitProcess so an explicit FreeLibrary(version.dll) during
+        // shutdown cannot unmap RunHotReloadWatcher while it is sleeping.
+        HMODULE pinned = nullptr;
+        GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_PIN,
+                           reinterpret_cast<LPCWSTR>(&LoadModThread), &pinned);
+        const FileStamp initialStamp = StatFileW(modPath);
+        if (!initialStamp.valid) {
+            ProxyLog("WARNING: goh_ai_mod.dll not found at %s; running vanilla", utf8Path);
+            return 1;
+        }
+        if (!LoadShadowMod(modPath, 1u)) {
+            ProxyLog("WARNING: Shadow load failed; running vanilla");
+            return 1;
+        }
+        ProxyLog("Hot-reload complete gen=1 (size=%lu)", static_cast<unsigned long>(initialStamp.size));
+        RunHotReloadWatcher(modPath, initialStamp, 1u);
+        return 0;
+    }
+
     ProxyLog("Loading %s", utf8Path);
 
     g_ModDll = LoadLibraryW(modPath);
@@ -215,11 +491,16 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
             break;
         }
         case DLL_PROCESS_DETACH:
+            g_StopWatcher.store(true, std::memory_order_release);
             // On process termination (lpvReserved != nullptr), let the OS reclaim handles/DLLs safely.
             if (lpvReserved) return TRUE;
             if (g_ModDll) {
                 FreeLibrary(g_ModDll);
                 g_ModDll = nullptr;
+            }
+            if (g_ShadowPath[0] != L'\0') {
+                DeleteFileW(g_ShadowPath);
+                g_ShadowPath[0] = L'\0';
             }
             if (g_RealVersionDll) {
                 FreeLibrary(g_RealVersionDll);

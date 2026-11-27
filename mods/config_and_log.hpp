@@ -106,6 +106,13 @@ struct Tuning {
 struct Settings {
     std::uint32_t ai_player_mask{0xFFFFFFFFu};
     float sim_speed{0.0f};
+    bool skip_intro{false};
+    bool auto_dismiss_loading{false};
+    bool suppress_cursor_grab{false};
+    bool hot_reload{false};
+    std::uint32_t restart_seq{0};
+    std::uint32_t quit_seq{0};
+    std::string auto_mission;
     LogLevel log_level{LogLevel::summary};
     std::string log_filename{"goh_ai.log"};
     std::uint32_t log_flush_ms{500};
@@ -193,6 +200,21 @@ inline bool safe_log_filename(std::string_view name) noexcept {
     return name != "." && name != "..";
 }
 
+inline bool safe_mission_path(std::string_view path) noexcept {
+    if (path.empty() || path.size() > 128 || path.front() == '/' || path.back() == '/') return false;
+    if (path.find("..") != std::string_view::npos || path.find("//") != std::string_view::npos) return false;
+    bool has_slash = false;
+    for (char c : path) {
+        const auto uc = static_cast<unsigned char>(c);
+        if (c == '/') {
+            has_slash = true;
+            continue;
+        }
+        if (!(std::isalnum(uc) || c == '_' || c == '-' || c == '.' || c == ':')) return false;
+    }
+    return has_slash;
+}
+
 } // namespace detail
 
 // Pure C++17 INI parser (no Win32 dependency; identical on host tests and DLL).
@@ -242,6 +264,24 @@ inline Settings parse_ini(std::string_view text) {
                                 s.sim_speed = 0.0f;
                             else
                                 s.sim_speed = detail::parse_float(val, s.sim_speed, 0.25f, 20.0f);
+                        } else if (key == "skip_intro") {
+                            s.skip_intro = detail::parse_bool(val, s.skip_intro);
+                        } else if (key == "auto_dismiss_loading") {
+                            s.auto_dismiss_loading = detail::parse_bool(val, s.auto_dismiss_loading);
+                        } else if (key == "suppress_cursor_grab") {
+                            s.suppress_cursor_grab = detail::parse_bool(val, s.suppress_cursor_grab);
+                        } else if (key == "hot_reload") {
+                            s.hot_reload = detail::parse_bool(val, s.hot_reload);
+                        } else if (key == "restart_seq") {
+                            s.restart_seq = detail::parse_u32(val, s.restart_seq, 0u, UINT32_MAX);
+                        } else if (key == "quit_seq") {
+                            s.quit_seq = detail::parse_u32(val, s.quit_seq, 0u, UINT32_MAX);
+                        } else if (key == "auto_mission") {
+                            const std::string low = detail::to_lower(val);
+                            if (low.empty() || low == "off" || low == "none" || low == "false")
+                                s.auto_mission.clear();
+                            else if (detail::safe_mission_path(val))
+                                s.auto_mission = std::string(val);
                         }
                     } else if (section == "modules") {
                         auto& m = s.modules;

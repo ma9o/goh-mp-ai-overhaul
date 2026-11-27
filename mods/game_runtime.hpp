@@ -131,6 +131,18 @@ struct BuildTable {
         Address board_order = 0x008FADC0;
         Address boarder_move = 0x007A0240;
         Address set_slowdown = 0x0066EC70;
+        Address event_post = 0x00663390;
+        Address filename_ctor = 0x00564E40;
+        Address filename_dtor = 0x00565010;
+        Address loc_find_child = 0x00C1F850;
+        Address loc_enter = 0x00C22BE0;
+        Address loc_reset_root = 0x00C22D10;
+        Address loc_current = 0x00C23090;
+        Address sp_launcher_ctor = 0x00276540;
+        Address page_init = 0x0034A8B0;
+        Address page_mgr_get = 0x00171AE0;
+        Address page_mgr_show = 0x00349E00;
+        Address page_loading_continue = 0x0025EE10;
     } fn;
 
     struct Hooks {
@@ -154,6 +166,8 @@ struct BuildTable {
         Address human_weapon_swap = 0x0095CEA0;
         Address select_exit_door = 0x0079D3C0;
         Address weapon_fire_dtor = 0x008EF8E0;
+        Address opening_main_page = 0x00C0F600;
+        Address page_loading_event = 0x0025EBB0;
     } hook;
 
     struct Globals {
@@ -165,6 +179,8 @@ struct BuildTable {
         Address master_client = 0x015D2BE0;
         Address local_player = 0x014AEF38;
         Address quant_manager = 0x01584520;
+        Address show_start_video = 0x014B40A8;
+        Address location_root = 0x015D2530;
     } glob;
 
     struct Vtables {
@@ -203,6 +219,9 @@ struct BuildTable {
         Address info_medic = 0x0107EEA8;
         Address burning = 0x010FD478;
         Address holder_hand_right = 0x010FF210;
+        Address page_loading = 0x01058828;
+        Address cm_game_restart = 0x0104FEF0;
+        Address cm_quit = 0x010EC890;
     } vt;
 };
 
@@ -467,6 +486,9 @@ inline RttiVerifyResult resolve_and_verify_vtables(Address base, bool apply_reso
         {".?AUeInfo_Medic@Human@@", 0, &vt.info_medic},
         {".?AVeBurning@Entity@@", 0, &vt.burning},
         {".?AVeHolderHandRight@Inventory@@", 0, &vt.holder_hand_right},
+        {".?AVeGUI_PageLoading@GUI2@@", 0, &vt.page_loading},
+        {".?AUcmGameRestart@Scene@Events@@", 0, &vt.cm_game_restart},
+        {".?AUcmQuit@Events@@", 0, &vt.cm_quit},
     };
 
     for (const auto& e : entries) {

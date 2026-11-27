@@ -176,9 +176,12 @@ def final_sample_window(samples, rate):
     return max(5 * rate, math.ceil(interval * 11 / 10))
 
 
-def force_value(p, actors, player, roster, start, end, rate, window):
+def force_value(p, actors, player, roster, start, end, rate, window, expected_waves=None):
     t = p.tactical
     deployed_pts = alive_pts = hp_weighted_pts = 0
+    flag_units = 0
+    fx, fy = t.flag_xy
+    flag_rad = t.flag_radius_m * mission.SCALE
     seen_waves = set()
     missing = []
     invalid = []
@@ -218,6 +221,8 @@ def force_value(p, actors, player, roster, start, end, rate, window):
                 hp_values.append(hp)
                 alive_pts += weight
                 hp_weighted_pts += weight * hp
+                if math.hypot(recent[-1]["pos_x"] - fx, recent[-1]["pos_y"] - fy) <= flag_rad:
+                    flag_units += 1
         health, alive, total = math.fsum(hp_values), len(hp_values), len(roles)
         side[kind] = {
             "alive": alive, "total": total,
@@ -232,9 +237,11 @@ def force_value(p, actors, player, roster, start, end, rate, window):
         "remaining_pts": remaining_pts, "remaining_pct": 100 * remaining_pts / deployed_pts,
         "lost_pts": deployed_pts - remaining_pts,
     }
+    side["flag_units"] = flag_units
     side["unobserved_roles"] = missing
+    wanted_waves = set(t.waves.values()) if expected_waves is None else set(expected_waves)
     issues = [f"no Player {player} units observed for the {w}s wave"
-              for w in sorted(set(t.waves.values()) - seen_waves)]
+              for w in sorted(wanted_waves - seen_waves)]
     if invalid:
         issues.append("invalid final HP or actor type: " + ", ".join(invalid))
     if wrong_control:
@@ -242,7 +249,7 @@ def force_value(p, actors, player, roster, start, end, rate, window):
     return side, issues
 
 
-def battle_outcome(p, actors, start, end, rate, window, delta):
+def battle_outcome(p, actors, start, end, rate, window, delta, stage1_delta=None):
     t = p.tactical
     a, issues_a = force_value(p, actors, t.friendly_player, (
         ("infantry", t.friendly_infantry), ("vehicles", t.friendly_vehicles), ("support", t.friendly_support),
@@ -253,12 +260,34 @@ def battle_outcome(p, actors, start, end, rate, window, delta):
     av, bv = a["force_value"], b["force_value"]
     a["exchange_ratio"] = bv["lost_pts"] / max(1, av["lost_pts"])
     b["exchange_ratio"] = av["lost_pts"] / max(1, bv["lost_pts"])
-    return {
+    outcome = {
         "score": round(50 + (av["remaining_pct"] - bv["remaining_pct"]) / 2, 2),
         "sides": {"A": a, "B": b}, "activity": dict(sorted(delta.items())),
         "activity_scope": "all players during the battle",
         "final_window_s": window / rate if rate > 0 else None,
-    }, issues_a + issues_b
+    }
+    if t.infantry_checkpoint_s and rate > 0:
+        ckpt_end = min(end, start + round(t.infantry_checkpoint_s * rate))
+        ia, _ = force_value(p, actors, t.friendly_player, (
+            ("infantry", [r for r in t.friendly_infantry if t.waves[r] == 0]),
+            ("vehicles", ()),
+            ("support", [r for r in t.friendly_support if t.waves[r] == 0]),
+        ), start, ckpt_end, rate, window, expected_waves={0})
+        ib, _ = force_value(p, actors, t.enemy_player, (
+            ("infantry", [r for r in t.enemy_infantry if t.waves[r] == 0]),
+            ("vehicles", ()),
+            ("support", [r for r in t.enemy_support if t.waves[r] == 0]),
+        ), start, ckpt_end, rate, window, expected_waves={0})
+        iav, ibv = ia["force_value"], ib["force_value"]
+        ia["exchange_ratio"] = ibv["lost_pts"] / max(1, iav["lost_pts"])
+        ib["exchange_ratio"] = iav["lost_pts"] / max(1, ibv["lost_pts"])
+        outcome["infantry_stage"] = {
+            "checkpoint_s": t.infantry_checkpoint_s,
+            "score": round(50 + (iav["remaining_pct"] - ibv["remaining_pct"]) / 2, 2),
+            "sides": {"A": ia, "B": ib},
+            "activity": dict(sorted((stage1_delta or Counter()).items())),
+        }
+    return outcome, issues_a + issues_b
 
 
 def grade(lines, ai_log, game_log=None, suite="full"):
@@ -454,7 +483,13 @@ def grade(lines, ai_log, game_log=None, suite="full"):
                     f"{len(samples)} samples, maximum displacement {displacement:.2f} m",
                 )
         if p.tactical:
-            outcome, issues = battle_outcome(p, actors, start, end, rate, window, delta)
+            stage1_delta = Counter()
+            if p.tactical.infantry_checkpoint_s and rate > 0:
+                ckpt_end = min(end, start + round(p.tactical.infantry_checkpoint_s * rate))
+                for r in rows:
+                    if r["event"] == "stats_delta" and start <= r["since_tick"] <= r["sim_tick"] <= ckpt_end:
+                        stage1_delta.update(r["counters"])
+            outcome, issues = battle_outcome(p, actors, start, end, rate, window, delta, stage1_delta)
             outcome["runaway_actions"] = phase_overruns
             if not 1 <= rate <= 1_000_000:
                 issues.append("invalid simulation clock")
@@ -465,6 +500,8 @@ def grade(lines, ai_log, game_log=None, suite="full"):
                   f"all waves observed on both sides, {missing} individual roles never sampled")
             if issues:
                 outcome["score"] = None
+                if "infantry_stage" in outcome:
+                    outcome["infantry_stage"]["score"] = None
             scenarios[p.name] = outcome
         for k in sorted(high - reported):
             check(
@@ -532,8 +569,30 @@ def grade(lines, ai_log, game_log=None, suite="full"):
 
 def battle_table(tactical, passed):
     result, = tactical["scenarios"].values()
+    lines = []
+    if "infantry_stage" in result:
+        st1 = result["infantry_stage"]
+        s1_score = f"{st1['score']:.2f}/100" if passed and st1["score"] is not None else "unavailable"
+        lines.append(f"Stage 1 Infantry Flag Fight (0-{st1['checkpoint_s']}s)  {s1_score}  (50 = parity, higher favors Side A / SW P2)")
+        s1_rows = [("Side", "Infantry", "Support", "Remaining value", "On flag", "Exchange")]
+        for label, side in st1["sides"].items():
+            inf, sup, val = side["infantry"], side["support"], side["force_value"]
+            s1_rows.append((
+                f"{label} (P{side['player']})",
+                f"{inf['alive']}/{inf['total']} {inf['remaining_hp_pct']:.1f}%",
+                f"{sup['alive']}/{sup['total']} {sup['remaining_hp_pct']:.1f}%",
+                f"{val['remaining_pts']:.1f}/{val['deployed_pts']} ({val['remaining_pct']:.1f}%)",
+                str(side["flag_units"]),
+                f"{side['exchange_ratio']:.2f}×",
+            ))
+        w1 = [max(map(len, col)) for col in zip(*s1_rows)]
+        lines.extend("  ".join(v.ljust(w) for v, w in zip(row, w1)).rstrip() for row in s1_rows)
+        if st1["activity"]:
+            items = [f"{k}={v}" for k, v in st1["activity"].items()]
+            lines.append("Stage 1 AI activity  " + ", ".join(items[:10]))
+
     rows = [("Side", "Infantry", "Vehicles", "Support", "Alive pts", "HP pts",
-             "Remaining value", "Exchange")]
+             "Remaining value", "On flag", "Exchange")]
     for label, side in result["sides"].items():
         classes = []
         for key in ("infantry", "vehicles", "support"):
@@ -543,11 +602,14 @@ def battle_table(tactical, passed):
         rows.append((f"{label} (P{side['player']})", *classes, f"{value['alive_pts']:g}",
                      f"{value['hp_weighted_pts']:.1f}",
                      f"{value['remaining_pts']:.1f}/{value['deployed_pts']} ({value['remaining_pct']:.1f}%)",
+                     str(side["flag_units"]),
                      f"{side['exchange_ratio']:.2f}×"))
     widths = [max(map(len, column)) for column in zip(*rows)]
-    lines = ["  ".join(value.ljust(w) for value, w in zip(row, widths)).rstrip() for row in rows]
     overall = tactical["overall_score"]
     score = f"{overall:.2f}/100" if passed and overall is not None else "unavailable (failed run checks)"
+    lines.append(f"E2E force-value score  {score}  (50 = parity, higher favors Side A / SW P2)")
+    lines.append("Unit classes show survivors/deployed and remaining roster HP.")
+    lines.extend("  ".join(value.ljust(w) for value, w in zip(row, widths)).rstrip() for row in rows)
     activity = result["activity"]
     lines.append("AI activity across both sides")
     if activity:
@@ -558,8 +620,7 @@ def battle_table(tactical, passed):
     if "session_field_support_totals" in tactical:
         totals = tactical["session_field_support_totals"]
         lines.append("  DLL shutdown totals  " + ", ".join(f"{k}={v}" for k, v in totals.items()))
-    return [f"E2E force-value score  {score}  (50 = parity, higher favors Side A / West P2)",
-            "Unit classes show survivors/deployed and remaining roster HP.", *lines]
+    return lines
 
 
 def table(report):

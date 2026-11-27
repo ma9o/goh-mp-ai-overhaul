@@ -83,8 +83,10 @@ int main() {
     assert(w.sample(150, 257, snapshot) && !w.sample(151, 257, snapshot));
     assert(reads == 257);
     w.stats(200, 1020, counters(c, i, t));
+    assert(!w.stats_due(210, 1030));
+    assert(w.stats_due(210, 10)); // Immediate scene_reset before snapshot_interval_ms elapses
     c.dodges = 0;
-    w.stats(250, 10, counters(c, i, t));
+    w.stats(210, 10, counters(c, i, t));
     assert(w.module_event(151, 30, "close_grenade", "released", 101, 102));
     assert(w.reloaded(cfg, 151, 30));
     assert(std::fseek(file, 0, SEEK_SET) == 0);

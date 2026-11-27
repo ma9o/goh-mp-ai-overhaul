@@ -120,13 +120,27 @@ For Steam build 26734796, place the built `goh_ai_mod.dll` and `version.dll` bes
 python3 scripts/live_harness.py run --suite full --speed fast --restore-options
 ```
 
-The command installs the overlay, enables telemetry, activates `ai_test_harness:0` in the player profile and launches the game with `-no_reload_caching`. It compiles a Win32 UI helper with MinGW GCC into `local-work/build-ai/`, skips the intro, selects Bootcamp → Vehicle Control, and dismisses the loading prompt. It waits for the final GEM marker and completion witness, closes the game, and saves the three logs, table and JSON grade under `local-work/level1/runs/`. Exit status 0 means every check passed, 1 means a run check failed, and 2 means setup failed.
+The command installs the overlay, enables telemetry, activates `ai_test_harness:0` in the player profile, and launches the game with `-no_preload` (skipping multiplayer CRC preload). Opt-in `[testing]` INI settings (off by default for regular players) disable intro videos (`skip_intro=true`), auto-launch Bootcamp → Vehicle Control natively (`auto_mission=single/00-bootcamp/02_vehicle-control:0`), auto-dismiss the loading prompt (`auto_dismiss_loading=true`), suppress cursor warping and window focus stealing (`suppress_cursor_grab=true`), and exit cleanly via native `Events::cmQuit` (`quit_seq`) without moving the mouse cursor or stealing focus (falling back to the MinGW Win32 UI helper in `local-work/build-ai/` only if an older DLL is installed). It waits for the final GEM marker and completion witness, closes the game, and saves the three logs, table, and JSON grade under `local-work/level1/runs/`. Exit status 0 means every check passed, 1 means a run check failed, and 2 means setup failed.
 
 Each phase starts with a wide overview that includes its initial positions and later waves.
 
-Use `--profile PATH` to select among profiles and `--game-dir PATH` or `GOH_GAME_DIR` for another Steam library. CrossOver defaults to the Steam bottle. Use `--wine PATH` or `--bottle NAME` for another installation. The game window receives normalized menu clicks using the English UI. `--restore-options` restores the prior mod selection on exit while preserving other option changes. Otherwise `clean` restores the saved selection and removes the overlay.
+Use `--profile PATH` to select among profiles and `--game-dir PATH` or `GOH_GAME_DIR` for another Steam library. CrossOver defaults to the Steam bottle. Use `--wine PATH` or `--bottle NAME` for another installation. `--restore-options` restores the prior mod selection on exit while preserving other option changes. Otherwise `clean` restores the saved selection and removes the overlay.
 
-The serial observer opens the configured JSONL on the first actor callback. It checks the INI once per second for module, tuning, logging and telemetry changes. The regular log filename and extra smoke lists are set at startup. Both `run` and `sweep` restore the original INI on exit. A manual install with `--write-ini` persists its settings.
+For rapid iteration, `run` and `sweep` default to `--speed fast`, persistent single-process sessions (`--keep-open` and `--reuse` on by default), shadow-copy DLL hot-swap (`[testing] hot_reload=true`), and native in-process `Events::Scene::cmGameRestart` (`restart_seq`). Pass `--close` to close the game cleanly via `Events::cmQuit` after completion, or `--fresh-process` to cold-boot per trial:
+
+```sh
+# Fast day-to-day iteration (boots once, keeps open, auto-reuses & hot-swaps rebuilt DLLs on subsequent runs):
+python3 scripts/live_harness.py sweep
+python3 scripts/live_harness.py sweep
+
+# Manually hot-swap a rebuilt goh_ai_mod.dll and restart the mission in-process:
+python3 scripts/live_harness.py reload --force-dll
+
+# Close the persistent game cleanly via cmQuit and restore options.set / goh_ai.ini (or pass --close to run/sweep):
+python3 scripts/live_harness.py stop
+```
+
+The serial observer opens the configured JSONL on the first actor callback. It checks the INI once per second for module, tuning, logging, telemetry, and testing lifecycle changes (`sim_speed`, `suppress_cursor_grab`, `restart_seq`, `quit_seq`). The regular log filename and extra smoke lists are set at startup. Both `run` and `sweep` restore the original INI on exit (or on `stop` for `--keep-open` sessions). A manual install with `--write-ini` persists its settings.
 
 ```sh
 python3 scripts/live_harness.py install --suite full --speed fast --write-ini

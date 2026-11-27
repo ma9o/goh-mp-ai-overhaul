@@ -77,6 +77,16 @@ def overrides(args):
             section, key = live_launch.PLAYER_MASK
         elif k == "sim_speed":
             section, key = live_launch.SIM_SPEED
+        elif k in (
+            "skip_intro",
+            "auto_dismiss_loading",
+            "suppress_cursor_grab",
+            "auto_mission",
+            "hot_reload",
+            "restart_seq",
+            "quit_seq",
+        ):
+            section, key = "testing", k
         elif k in ("enabled", "snapshot_interval_ms", "flush_ms", "filename"):
             section, key = "telemetry", k
         elif k in live_launch.MODULE_KEYS:
@@ -89,6 +99,17 @@ def overrides(args):
             v = live_launch.player_mask(v)
         elif (section, key) == live_launch.SIM_SPEED:
             v = live_launch.sim_speed_value(v)
+        elif section == "testing" and key in (
+            "skip_intro",
+            "auto_dismiss_loading",
+            "suppress_cursor_grab",
+            "hot_reload",
+            "auto_mission",
+            "restart_seq",
+            "quit_seq",
+        ):
+            if key in ("restart_seq", "quit_seq") and not v.isdecimal():
+                raise ValueError(f"{key} requires an unsigned integer")
         elif section not in ("telemetry", "modules", "tuning", "logging", "smoke"):
             raise ValueError("unknown section " + section)
         result[section, key] = v
@@ -116,16 +137,24 @@ def atomic_write(path, data):
 
 def arena_paths(game, base):
     rel_dir = base.relative_to(game) / mission.MI.parent
-    return {name: safe_child(game, rel_dir / name) for name in mission.MAP_FILES}
+    return {name: safe_child(game, rel_dir / name) for name in mission.E2E_MAP_FILES}
+
+
+def visual_paths(game, base):
+    rel = base.relative_to(game)
+    files = (mission.E2E_CAMERA_REG, mission.E2E_DIFFICULTY, *mission.E2E_LOD_FILES)
+    return {p: safe_child(game, rel / p) for p in files}
 
 
 def overlay(game):
     base = safe_child(game, Path("mods") / MOD)
     info = safe_child(game, base.relative_to(game) / "mod.info")
     file = safe_child(game, base.relative_to(game) / mission.MI)
+    visuals = visual_paths(game, base)
     arena = arena_paths(game, base)
     if base.exists():
-        allowed = {info, file, *arena.values(), *file.parents}
+        visual_parents = {parent for dst in visuals.values() for parent in dst.parents}
+        allowed = {info, file, *visuals.values(), *arena.values(), *file.parents, *visual_parents}
         if (
             not info.is_file()
             or info.read_bytes() != INFO.encode()
@@ -173,10 +202,20 @@ def install(game, suite, speed, settings, write_ini=False):
     verify_game(game)
     base, info, target = overlay(game)
     arena_targets = arena_paths(game, base)
+    visual_targets = visual_paths(game, base)
     ini = safe_child(game, Path("binaries/x64/goh_ai.ini"))
     text = mission.generate(suite, speed)
     mission.check_stock(game, text)
-    arena_data = mission.flat_arena(game) if suite == "e2e" else {}
+    arena_data = mission.e2e_map_files(game) if suite == "e2e" else {}
+    visual_data = (
+        {
+            mission.E2E_CAMERA_REG: mission.birdseye_camera_reg(game),
+            mission.E2E_DIFFICULTY: mission.e2e_symmetric_difficulty(),
+            **mission.birdseye_lod_files(game),
+        }
+        if suite == "e2e"
+        else {}
+    )
     patch = merged_ini(ini, run_settings(suite, settings)) if write_ini or settings else None
     if not base.exists():
         base.parent.mkdir(exist_ok=True)
@@ -186,6 +225,8 @@ def install(game, suite, speed, settings, write_ini=False):
             atomic_write(root / mission.MI, text.encode())
             for name, payload in arena_data.items():
                 atomic_write(root / mission.MI.parent / name, payload)
+            for rel_path, payload in visual_data.items():
+                atomic_write(root / rel_path, payload)
             root.rename(base)
     else:
         atomic_write(target, text.encode())
@@ -194,6 +235,21 @@ def install(game, suite, speed, settings, write_ini=False):
                 atomic_write(dst, arena_data[name])
             else:
                 dst.unlink(missing_ok=True)
+        for rel_path, dst in visual_targets.items():
+            if rel_path in visual_data:
+                atomic_write(dst, visual_data[rel_path])
+            else:
+                dst.unlink(missing_ok=True)
+        if not visual_data:
+            for dst in visual_targets.values():
+                for folder in dst.parents:
+                    if folder == base / "resource" or folder == base:
+                        break
+                    if folder.exists():
+                        try:
+                            folder.rmdir()
+                        except OSError:
+                            break
     if patch is not None:
         atomic_write(ini, patch)
     return target
@@ -202,16 +258,21 @@ def install(game, suite, speed, settings, write_ini=False):
 def clean(game, options=None):
     base, info, target = overlay(game)
     arena_targets = arena_paths(game, base)
+    visual_targets = visual_paths(game, base)
     benchmark = options and target.is_file() and "GOH_L1_DONE_e2e" in target.read_text(encoding="utf-8")
     if base.exists():
         target.unlink(missing_ok=True)
-        for dst in arena_targets.values():
+        for dst in (*visual_targets.values(), *arena_targets.values()):
             dst.unlink(missing_ok=True)
-        for folder in target.parents:
-            if folder == base:
-                break
-            if folder.exists():
-                folder.rmdir()
+        for leaf in (*visual_targets.values(), target):
+            for folder in leaf.parents:
+                if folder == base:
+                    break
+                if folder.exists():
+                    try:
+                        folder.rmdir()
+                    except OSError:
+                        pass
         info.unlink()
         base.rmdir()
     if options:
@@ -238,14 +299,17 @@ def telemetry_lines(stream):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     subs = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("generate", "install", "clean", "grade", "run", "sweep"):
+    for name in ("generate", "install", "clean", "grade", "run", "sweep", "stop", "reload"):
         p = subs.add_parser(name)
         p.add_argument("--game-dir", help="Steam game root (or GOH_GAME_DIR)")
-        if name not in ("clean", "sweep"):
+        if name not in ("clean", "sweep", "stop", "reload"):
             p.add_argument("--suite", choices=mission.SUITES, default="full")
             p.add_argument("--set", action="append", default=[], metavar="[SECTION.]KEY=VALUE")
-        if name in ("install", "generate", "run", "sweep"):
+        if name in ("install", "generate"):
             p.add_argument("--speed", choices=mission.SPEEDS, default="normal")
+        if name in ("run", "sweep"):
+            p.add_argument("--speed", choices=mission.SPEEDS, default="fast",
+                           help="mission speed mode (default fast)")
         if name == "generate":
             p.add_argument("-o", "--output", type=Path, help="write a .mi file (default stdout)")
         if name == "install":
@@ -254,7 +318,7 @@ def main(argv=None):
                 action="store_true",
                 help="enable telemetry beside the DLL; --set implies this",
             )
-        if name in ("clean", "run"):
+        if name in ("clean", "run", "stop"):
             p.add_argument("--profile", help="player profile directory or options.set")
         if name == "sweep":
             p.add_argument("--suite", choices=("e2e",), default="e2e")
@@ -271,15 +335,66 @@ def main(argv=None):
                 action="store_true",
                 help="run modded profiles on both West (P2, mask=4) and East (P3, mask=8) to cancel side bias",
             )
-        if name in ("run", "sweep"):
+        if name in ("run", "sweep", "stop", "reload"):
             p.add_argument("--wine", help="Wine or CrossOver wine executable")
             p.add_argument("--bottle", default="Steam", help="CrossOver bottle (default Steam)")
+        if name in ("run", "sweep", "reload"):
             p.add_argument("--timeout", type=int,
                            help="timeout per launch in seconds (default 720, longer for sub-1× E2E runs)")
+        if name in ("run", "sweep"):
+            p.add_argument(
+                "--screenshot-interval",
+                type=float,
+                default=2.5,
+                help="seconds between periodic E2E bird's-eye screenshots in <evidence>/frames/ (0 disables; default 2.5)",
+            )
             p.add_argument(
                 "--restore-options",
                 action="store_true",
                 help="restore prior mod selection on exit (E2E always restores the player profile)",
+            )
+            p.add_argument(
+                "--keep-open",
+                dest="keep_open",
+                action="store_true",
+                default=True,
+                help="keep call_to_arms.exe open after completion for fast reuse (default; use --close or 'stop' to exit)",
+            )
+            p.add_argument(
+                "--close",
+                "--no-keep-open",
+                dest="keep_open",
+                action="store_false",
+                help="close call_to_arms.exe and restore profile/INI immediately after completion",
+            )
+            p.add_argument(
+                "--reuse",
+                dest="reuse",
+                action="store_true",
+                default=True,
+                help="reuse a running persistent call_to_arms.exe session and hot-reload rebuilt DLLs (default)",
+            )
+            p.add_argument(
+                "--no-reuse",
+                dest="reuse",
+                action="store_false",
+                help="do not reuse an existing persistent session",
+            )
+            p.add_argument(
+                "--fresh-process",
+                action="store_true",
+                help="cold-boot a fresh call_to_arms.exe per trial and close after completion",
+            )
+        if name == "reload":
+            p.add_argument(
+                "--force-dll",
+                action="store_true",
+                help="force a DLL hot-reload even if goh_ai_mod.dll SHA-256 has not changed",
+            )
+            p.add_argument(
+                "--no-wait",
+                action="store_true",
+                help="return immediately after signaling restart instead of waiting for page_scene_game",
             )
         if name == "grade":
             p.add_argument("--telemetry", type=Path, help="JSONL from the DLL")
@@ -293,6 +408,19 @@ def main(argv=None):
             p.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
     try:
+        if a.cmd == "stop":
+            live_launch.stop_persistent_session(a, game_dir(a.game_dir), sys.modules[__name__])
+            print("Stopped persistent game session and restored profile/INI")
+            return 0
+        if a.cmd == "reload":
+            info = live_launch.reload_persistent_session(
+                a, game_dir(a.game_dir), sys.modules[__name__], force_dll=a.force_dll, wait=not a.no_wait
+            )
+            print(
+                f"Triggered in-process mission restart (restart_seq={info['restart_seq']}, "
+                f"dll_reloaded={info['reloaded_dll']})"
+            )
+            return 0
         if a.cmd == "clean":
             options = None
             if a.profile or any(
