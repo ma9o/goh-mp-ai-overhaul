@@ -763,7 +763,7 @@ def launch_timeout(suite, config, requested):
         except ValueError:
             speed = 0  # The native parser also accepts "off".
         if 0.25 <= speed < 1:
-            return 720 + math.ceil(300 * (1 / speed - 1))
+            return 720 + math.ceil(420 * (1 / speed - 1))
     return 720
 
 
@@ -1603,15 +1603,33 @@ def comparison_table(summary):
             " Modded−Vanilla (pp)",
         ),
     }[evaluated]
+    ckpt_s = next(
+        (
+            sc["infantry_stage"]["checkpoint_s"]
+            for t in summary.get("trials", ())
+            for sc in ((t.get("tactical") or {}).get("scenarios") or {}).values()
+            if "infantry_stage" in sc and sc["infantry_stage"].get("checkpoint_s")
+        ),
+        180,
+    )
+    dur_s = next(
+        (
+            sc["duration_s"]
+            for t in summary.get("trials", ())
+            for sc in ((t.get("tactical") or {}).get("scenarios") or {}).values()
+            if sc.get("duration_s")
+        ),
+        420,
+    )
     if any(p.get("infantry_stage_score") is not None for p in profiles.values()):
-        metric("Stage 1 Infantry score (0-90s, 50 = parity)",
+        metric(f"Stage 1 Infantry score (0-{ckpt_s}s, 50 = parity)",
                (p.get("infantry_stage_score") for p in profiles.values()),
                best.get("infantry_stage", ()))
         metric("Stage 1 Infantry survival" + delta_label,
                (p["infantry_stage_advantage_pp"].get("infantry_survival_pct") for p in profiles.values()), fmt="+.1f")
         metric("Stage 1 Flag units delta",
                (p.get("infantry_stage_flag_delta") for p in profiles.values()), fmt="+.1f")
-    metric("Final E2E score (0-240s, 50 = parity)", (p["score"] for p in profiles.values()), best["overall"])
+    metric(f"Final E2E score (0-{dur_s}s, 50 = parity)", (p["score"] for p in profiles.values()), best["overall"])
     if "vanilla" in profiles:
         metric("Delta vs vanilla", (p["delta_vs_vanilla"] for p in profiles.values()), fmt="+.2f")
     for label, key in (

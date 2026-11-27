@@ -466,7 +466,7 @@ class E2EMissionTests(unittest.TestCase):
         self.assertEqual(m.SUITES, ("full", "infantry", "armor", "close_at", "e2e"))
         p, t = self.phase, self.roster
         self.assertEqual((p.name, t.duration_s, t.infantry_checkpoint_s, t.friendly_player, t.enemy_player),
-                         (BATTLE_NAME, 240, 90, 2, 3))
+                         (BATTLE_NAME, 420, 180, 2, 3))
         text = m.generate("e2e", "fast")
         objects = m.validate(text)
         self.assertEqual(p.eid_base, m.E2E_EID_BASE)
@@ -515,24 +515,23 @@ class E2EMissionTests(unittest.TestCase):
         self.assertEqual(set(scored), set(t.points))
         self.assertEqual(len(scored), len(t.points))
         self.assertEqual(set(t.waves), set(scored))
-        weights = {"panzer4d": 10, "t35": 12, "sdkfz222a": 4, "medic": 2}
         tags = {r[-1]: set(r[1:-1]) for r in self.records if r[0] == "Tags"}
         links = {r[1]: r[2] for r in self.records if r[0] == "Link"}
         duration, actions = action_timeline(p)
-        self.assertEqual(duration, 240)
+        self.assertEqual(duration, 420)
         reveals = {p.tag("entry"): 0}
         reveals.update({
             next(n[1] for n in r[1] if n[0] == "tag"): when
             for when, r in actions if r[0] == "entity_state" and ["inactive", "off"] in r
         })
-        self.assertEqual(set(reveals.values()), {0, 90})
+        self.assertEqual(set(reveals.values()), {0, 180})
         for side in ("friendly", "enemy"):
             roles = [r for kind in ("infantry", "vehicles", "support") for r in getattr(t, side + "_" + kind)]
             wave_points = Counter()
             for role in roles:
                 obj = self.objects[p.mids[role]]
                 model = obj[1].rsplit("/", 1)[-1]
-                self.assertEqual(t.points[role], weights.get(model, 1), role)
+                self.assertEqual(t.points[role], m.MP_UNIT_COSTS[model], role)
                 hint = links.get(obj[2])
                 actor = hint[0] if hint else obj[2]
                 stages = tags[actor].intersection(reveals)
@@ -540,7 +539,9 @@ class E2EMissionTests(unittest.TestCase):
                 deploy = reveals[stages.pop()]
                 self.assertEqual(t.waves[role], deploy, role)
                 wave_points[deploy] += t.points[role]
-            self.assertEqual(wave_points, {0: 12, 90: 26})
+            # Stage 1: 3*8 (rifle) + 2*10 (smg) + 10 (sl) + 2*30 (at) + 2*40 (mg) + 40 (medic) = 234 MP.
+            # Stage 2: 240 (sdkfz222a) + 395 (panzer4d) + 390 (t35) = 1025 MP.
+            self.assertEqual(wave_points, {0: 234, 180: 1025})
             self.assertEqual(tuple(len(getattr(t, side + "_" + k)) for k in ("infantry", "vehicles", "support")),
                              (10, 3, 1))
             models = Counter(self.objects[p.mids[r]][1] for r in getattr(t, side + "_vehicles"))
@@ -575,15 +576,18 @@ class E2EMissionTests(unittest.TestCase):
                 orders[side].append((when, role, math.hypot(x - m.E2E_FLAG[0], y - m.E2E_FLAG[1]) / m.SCALE))
         self.assertEqual(sorted(grants["a"]), sorted(grants["b"]))
         self.assertEqual([(w, r) for w, r, _ in orders["a"]], [(w, r) for w, r, _ in orders["b"]])
-        self.assertIn((90, "tank_pz4", [["action", "add"], ["item", "repair_kit"], ["amount", "4"]]), grants["a"])
-        self.assertIn((90, "tank_t35", [["action", "add"], ["item", "repair_kit"], ["amount", "4"]]), grants["a"])
+        self.assertIn((180, "tank_pz4", [["action", "add"], ["item", "repair_kit"], ["amount", "4"]]), grants["a"])
+        self.assertIn((180, "tank_t35", [["action", "add"], ["item", "repair_kit"], ["amount", "4"]]), grants["a"])
         self.assertIn((0, "sq_rifle1", [["action", "add"], ["item", "mgun_ger", "belt", "ammo"],
                                         ["amount", "100"]]), grants["a"])
-        # Both squads advance onto the center flag at t=0, t=45 and t=165; car rushes at t=90, tanks at t=92/94.
+        # Both squads advance onto the center flag at t=0, 60, 120, 270, 345; car rushes at t=180, tanks at t=182/184.
         self.assertTrue(any(w == 0 and r == "squad" and d < 1 for w, r, d in orders["a"]))
-        self.assertTrue(any(w == 90 and r == "car_222" for w, r, _ in orders["a"]))
-        self.assertTrue(any(w == 92 and r == "tank_pz4" for w, r, _ in orders["a"]))
-        self.assertTrue(any(w == 165 and r == "tank_t35" and d < 1 for w, r, d in orders["a"]))
+        self.assertTrue(any(w == 60 and r == "squad" and d < 1 for w, r, d in orders["a"]))
+        self.assertTrue(any(w == 120 and r == "squad" and d < 1 for w, r, d in orders["a"]))
+        self.assertTrue(any(w == 180 and r == "car_222" for w, r, _ in orders["a"]))
+        self.assertTrue(any(w == 182 and r == "tank_pz4" for w, r, _ in orders["a"]))
+        self.assertTrue(any(w == 270 and r == "tank_t35" and d < 1 for w, r, d in orders["a"]))
+        self.assertTrue(any(w == 345 and r == "tank_t35" and d < 1 for w, r, d in orders["a"]))
         kits = {r[1]: r[2] for r in self.records if r[0] == "Inventory"}
         for side in ("a", "b"):
             mg2 = self.objects[p.mids[f"{side}_sq_mg2"]][2]
@@ -598,6 +602,32 @@ class E2EMissionTests(unittest.TestCase):
         for suite in ("full", "e2e"):
             with self.subTest(suite=suite):
                 m.check_stock(game, m.generate(suite))
+        parsed_costs = m.load_mp_unit_costs(game)
+        for unit, expected in m.MP_UNIT_COSTS.items():
+            self.assertEqual(parsed_costs.get(unit), expected, f"MP cost mismatch for {unit}")
+
+    def test_mp_unit_costs_parser(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            game = Path(tmp)
+            pak = game / "resource" / "gamelogic.pak"
+            pak.parent.mkdir(parents=True)
+            with m.zipfile.ZipFile(pak, "w") as z:
+                z.writestr(
+                    "set/multiplayer/units/mid/inf_ger.set",
+                    '{"mp/ger/mid/rifleman_1" ("inf_tier2_lite" side(ger) period(mid) cost(8.0))}\n'
+                    '{"mp/ger/mid/tankman" ("inf_tankman" side(ger) period(mid) cost(5.0))}\n'
+                    '{"mp/ger/mid/tank_commander" ("inf_tankman" side(ger) period(mid) cost(5.0))}\n',
+                )
+                z.writestr(
+                    "set/multiplayer/units/mid/units_ger.set",
+                    '{"panzer4d"\n'
+                    '\t("vehicle2" period(mid) side(ger) crew1(tankman:4) crew2(tank_commander:1) cost(370))\n'
+                    '}\n',
+                )
+            costs = m.load_mp_unit_costs(game)
+            self.assertEqual(costs["rifleman_1"], 8)
+            self.assertEqual(costs["tankman"], 5)
+            self.assertEqual(costs["panzer4d"], 395)
 
 
 class GraderTests(unittest.TestCase):
@@ -774,7 +804,7 @@ class E2EGradeTests(unittest.TestCase):
         car, pz4, t35 = t.friendly_vehicles
         for role, hp in ((pz4, 0), (t35, .5), (t.enemy_infantry[0], 0), (t.enemy_support[0], 0)):
             self.last(role)["hp_ratio"] = hp
-        # Place one friendly soldier on the flag at t=90s and end to verify flag_units tracking.
+        # Place one friendly soldier on the flag at t=180s and end to verify flag_units tracking.
         flag_mid = self.phase.mids[t.friendly_infantry[0]]
         for r in self.rows:
             if r.get("mid") == flag_mid:
@@ -783,31 +813,33 @@ class E2EGradeTests(unittest.TestCase):
         scored_mids = {self.phase.mids[r] for r in t.points}
         extras = [n[1] for n in mission_records(self.phase) if n[0] == "Link"
                   and n[2][1] in ("driver", "seat1") and int(n[1], 16) - self.phase.eid_base not in scored_mids]
+        end_tick = 100 + t.duration_s * 10
         for eid in extras:
-            self.rows.append(observation(int(eid, 16) - self.phase.eid_base, 2500, ms=31250, ticks_per_second=10,
-                                         player=2, control=0, hp_ratio=0))
+            self.rows.append(observation(int(eid, 16) - self.phase.eid_base, end_tick, ms=end_tick * 100 // 8,
+                                         ticks_per_second=10, player=2, control=0, hp_ratio=0))
         self.assertTrue(extras)
         result = self.result()
         a, b = (result["sides"][k] for k in ("A", "B"))
         self.assertEqual((a["player"], b["player"]), (2, 3))
-        # Deployed = 10 inf (1) + 1 medic (2) + sdkfz222a (4) + pz4 (10) + t35 (12) = 38 pts.
-        # Side A lost pz4 (10) and half HP on t35 (6 HP-pts): alive=28, hp_weighted=22, remaining=0.6*28+0.4*22=25.6, lost=12.4.
-        for key, expected in (("deployed_pts", 38), ("alive_pts", 28), ("hp_weighted_pts", 22.0),
-                              ("remaining_pts", 25.6), ("lost_pts", 12.4)):
+        # Deployed (real GoH mid MP): inf=194 + medic=40 + sdkfz222a=240 + pz4=395 + t35=390 = 1259 MP.
+        # Side A lost pz4 (395) and half HP on t35 (195 HP-MP): alive=864, hp_weighted=669, remaining=786.0, lost=473.0.
+        # Side B lost smg_1 (10) and medic (40): remaining=1209.0, lost=50.0.
+        for key, expected in (("deployed_pts", 1259), ("alive_pts", 864), ("hp_weighted_pts", 669.0),
+                              ("remaining_pts", 786.0), ("lost_pts", 473.0)):
             self.assertAlmostEqual(a["force_value"][key], expected)
-        self.assertAlmostEqual(b["force_value"]["remaining_pts"], 35.0)
-        self.assertAlmostEqual(result["score"], 50 + 50 * (25.6 - 35.0) / 38, delta=.01)
-        self.assertAlmostEqual(a["exchange_ratio"], 3 / 12.4, delta=.005)
-        self.assertAlmostEqual(b["exchange_ratio"], 12.4 / 3, delta=.005)
+        self.assertAlmostEqual(b["force_value"]["remaining_pts"], 1209.0)
+        self.assertAlmostEqual(result["score"], 50 + 50 * (786.0 - 1209.0) / 1259, delta=.01)
+        self.assertAlmostEqual(a["exchange_ratio"], 50.0 / 473.0, delta=.005)
+        self.assertAlmostEqual(b["exchange_ratio"], 473.0 / 50.0, delta=.005)
         self.assertEqual((a["flag_units"], b["flag_units"]), (1, 0))
         for side, totals in ((a, (10, 2, 1)), (b, (9, 3, 0))):
             for kind, alive, deployed in zip(("infantry", "vehicles", "support"), totals, (10, 3, 1)):
                 self.assertEqual((side[kind]["alive"], side[kind]["total"]), (alive, deployed))
         self.assertAlmostEqual(a["vehicles"]["remaining_hp_pct"], 100 * 1.5 / 3, delta=.01)
         self.assertAlmostEqual(a["vehicles"]["mean_hp_pct"], 100 * 1.5 / 2, delta=.01)
-        # Stage 1 checkpoint at t=90s (before tanks spawn): all infantry + medics intact at 90s!
+        # Stage 1 checkpoint at t=180s (before tanks spawn): all infantry + medics intact at 180s!
         st1 = result["infantry_stage"]
-        self.assertEqual(st1["checkpoint_s"], 90)
+        self.assertEqual(st1["checkpoint_s"], 180)
         self.assertEqual(st1["score"], 50.0)
         self.assertEqual((st1["sides"]["A"]["flag_units"], st1["sides"]["B"]["flag_units"]), (1, 0))
 
@@ -840,7 +872,7 @@ class E2EGradeTests(unittest.TestCase):
         lost = self.phase.mids[t.friendly_infantry[0]]
         self.rows = [r for r in self.rows if r.get("mid") != lost]
         self.assertEqual(self.result()["sides"]["A"]["infantry"]["alive"], 9)
-        armor_wave = {self.phase.mids[r] for r in t.points if t.waves[r] == 90}
+        armor_wave = {self.phase.mids[r] for r in t.points if t.waves[r] == t.infantry_checkpoint_s}
         for keep in (lambda r: r.get("mid") not in armor_wave, lambda r: r.get("player") != 3):
             report = e2e_grade([r for r in self.rows if keep(r)], self.markers)
             self.assertFalse(report["passed"])
@@ -850,7 +882,9 @@ class E2EGradeTests(unittest.TestCase):
         limit = grader.E2E_ACTION_LIMITS["crew_total"]
         self.assertGreater(limit, grader.ACTION_LIMITS["crew_total"])
         counters = {"crew_total": limit, "tank_face": 3, "natural_event": 4}
-        self.rows.append(row("stats_delta", 2490, ms=31125, since_tick=2480, counters=counters))
+        end_tick = 100 + self.roster.duration_s * 10
+        self.rows.append(row("stats_delta", end_tick - 10, ms=(end_tick - 10) * 100 // 8,
+                             since_tick=end_tick - 20, counters=counters))
         self.rows.append(row("stats_delta", 101, ms=1262, since_tick=99, counters={"tank_face": 20}))
         self.assertEqual(self.result()["activity"], counters)
         shutdown = "ShutdownAndUnload complete recrew=3 rearm=2 heavyPickup=1 corpseLoot=4"
@@ -1179,7 +1213,7 @@ class SweepTests(unittest.TestCase):
             self.assertEqual(cfg.has_option("testing", "sim_speed"), speed > 0)
             if speed:
                 self.assertEqual(cfg.getfloat("testing", "sim_speed"), speed)
-            self.assertEqual(launch.launch_timeout("e2e", cfg, None), 1620 if speed == .25 else 720)
+            self.assertEqual(launch.launch_timeout("e2e", cfg, None), 1980 if speed == .25 else 720)
             self.assertEqual(launch.launch_timeout("e2e", cfg, 60), 60)
             self.assertEqual(launch.launch_timeout("full", cfg, None), 720)
             self.assertEqual(float(cli.overrides([f"testing.sim_speed={speed}"])[("testing", "sim_speed")]), speed)
@@ -1221,8 +1255,8 @@ class SweepTests(unittest.TestCase):
         worn = deepcopy(rows)
         phase, = m.phases_for("e2e")
         t = phase.tactical
-        tanks = [role for role in t.enemy_vehicles if t.points[role] >= 10]
-        medic = next(role for role in t.enemy_support if t.points[role] == 2)
+        tanks = [role for role in t.enemy_vehicles if t.points[role] >= 300]
+        medic = next(role for role in t.enemy_support if t.points[role] == m.MP_UNIT_COSTS["medic"])
         for role, hp in ((tanks[0], .5), (tanks[1], 0), (medic, 0)):
             mid = phase.mids[role]
             next(r for r in reversed(worn) if r.get("mid") == mid)["hp_ratio"] = hp

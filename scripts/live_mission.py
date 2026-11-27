@@ -75,8 +75,8 @@ def overview_cut(name):
 @dataclass
 class Tactical:
     """Battle manifest for the staged 1v1 Oryol center-flag battle."""
-    duration_s: int = 240
-    infantry_checkpoint_s: int = 90
+    duration_s: int = 420
+    infantry_checkpoint_s: int = 180
     flag_xy: tuple[float, float] = E2E_FLAG
     flag_radius_m: float = E2E_FLAG_RADIUS_M
     friendly_player: int = 2
@@ -505,9 +505,76 @@ def close_at():
     return p
 
 
-WAVE_START = {"entry": 0, "armor": 90}
-VEHICLE_POINTS = {"panzer4d": 10, "t35": 12, "sdkfz222a": 4}
+WAVE_START = {"entry": 0, "armor": 180}
+# Canonical Gates of Hell multiplayer (mid-war) unit point costs from resource/gamelogic.pak
+# (set/multiplayer/units/mid/{inf_ger,inf_rus,units_ger,units_rus}.set).
+# Vehicle costs apply stock vehicle/vehicle2 {squad_cost_factor 1}{round_multiple 5.0}:
+# chassis cost + crew cost, rounded to the nearest 5 MP.
+MP_UNIT_COSTS = {
+    "rifleman_1": 8,
+    "smg_1": 10,
+    "sl": 10,
+    "antitank_1": 30,
+    "mgun_1": 40,
+    "medic": 40,
+    "tankman": 5,
+    "tankman_scout": 5,
+    "tank_commander": 5,
+    "tank_commander_scout": 5,
+    "sdkfz222a": 240,  # 225 chassis + 3*5 crew
+    "panzer4d": 395,   # 370 chassis + 5*5 crew
+    "t35": 390,        # 340 chassis + 10*5 crew
+}
 FRAG = '"m24" "grenade"'
+
+
+def load_mp_unit_costs(game_dir, period="mid"):
+    """Parse canonical GoH multiplayer unit MP costs from resource/gamelogic.pak."""
+    pak = Path(game_dir) / "resource" / "gamelogic.pak"
+    costs = {}
+    with zipfile.ZipFile(pak) as z:
+        inf_costs = {}
+        for side in ("ger", "rus"):
+            member = f"set/multiplayer/units/{period}/inf_{side}.set"
+            if member not in z.namelist():
+                continue
+            text = z.read(member).decode("utf-8", "replace")
+            for m in re.finditer(
+                r'\{"mp/([^/\s"]+)/[^/\s"]+/([^"\s]+)"[^\n]*?\bcost\(\s*([0-9.]+)\s*\)',
+                text,
+            ):
+                s_name, breed, val = m.group(1), m.group(2), float(m.group(3))
+                cost_int = int(round(val))
+                inf_costs[(s_name, breed)] = cost_int
+                costs.setdefault(breed, cost_int)
+        for side in ("ger", "rus"):
+            member = f"set/multiplayer/units/{period}/units_{side}.set"
+            if member not in z.namelist():
+                continue
+            text = z.read(member).decode("utf-8", "replace")
+            for m in re.finditer(r'\{"([^"\s]+)"([\s\S]*?)\n\}', text):
+                unit, body = m.group(1), m.group(2)
+                cost_m = re.search(r'\bcost\(\s*([0-9.]+)\s*\)|\{cost\s+([0-9.]+)\}', body)
+                if not cost_m:
+                    continue
+                chassis = float(cost_m.group(1) or cost_m.group(2))
+                unit_side_m = re.search(r'\bside\(\s*([a-z]+)\s*\)', body)
+                unit_side = unit_side_m.group(1) if unit_side_m else side
+                crew_cost = 0.0
+                for cm in re.finditer(r'\bcrew\d*\(\s*([^)]+)\)', body):
+                    for part in cm.group(1).split():
+                        if ":" in part:
+                            cbreed, count = part.split(":", 1)
+                            n = int(count)
+                        else:
+                            cbreed, n = part, 1
+                        crew_cost += n * inf_costs.get((unit_side, cbreed), costs.get(cbreed, 0))
+                total = chassis + crew_cost
+                # Stock vehicle / vehicle2 templates round total cost to a multiple of 5 MP.
+                if re.search(r'"vehicle2?"', body):
+                    total = round(total / 5.0) * 5
+                costs[unit] = int(round(total))
+    return costs
 
 
 @dataclass
@@ -545,17 +612,15 @@ class BattleSide:
         x, y = self.local_xy(fwd, lat)
         self.phase.human(role, breed, x, y, self.player, yaw=self.yaw_deg,
                          groups=self.roles(groups), wave=self.wave, **kw)
-        if breed == "medic":
-            self.phase.tactical.deploy(self.player, role, "support", 2, self.wave)
-        else:
-            self.phase.tactical.deploy(self.player, role, "infantry", 1, self.wave)
+        group = "support" if breed == "medic" else "infantry"
+        self.phase.tactical.deploy(self.player, role, group, MP_UNIT_COSTS[breed], self.wave)
         return role
 
     def vehicle(self, name, model, x, y, yaw, riders=0, **kw):
         role = self.role(name)
         self.phase.vehicle(role, model, x, y, self.player, yaw=yaw,
                            wave=self.wave, riders=riders, **kw)
-        self.phase.tactical.deploy(self.player, role, "vehicles", VEHICLE_POINTS[model], self.wave)
+        self.phase.tactical.deploy(self.player, role, "vehicles", MP_UNIT_COSTS[model], self.wave)
         return role
 
     def advance(self, name, x, y):
@@ -570,7 +635,7 @@ def assault_kit(p, role):
 
 
 def infantry_stage(s):
-    """Stage 1 (0-90s): 10-man German infantry squad + 1 rear medic contesting the center flag."""
+    """Stage 1 (0-180s): 10-man German infantry squad + 1 rear medic contesting the center flag."""
     p = s.phase
     sq = ("squad",)
     front = (
@@ -601,7 +666,7 @@ def infantry_stage(s):
 
 
 def armor_stage(s):
-    """Stage 2 (90-240s): fast Sd.Kfz.222 rushing through center + Panzer IV + 5-turret T-35."""
+    """Stage 2 (180-420s): fast Sd.Kfz.222 rushing through center + Panzer IV + 5-turret T-35."""
     s.vehicle("car_222", "sdkfz222a", *s.car_spawn)
     pz4 = s.vehicle("tank_pz4", "panzer4d", *s.pz4_spawn)
     s.phase.inventory(pz4, '"repair_kit"', 4)
@@ -642,11 +707,15 @@ def e2e():
         s.advance("squad", *E2E_FLAG)
         s.advance("medic", *s.medic_wp)
 
-    p.actions.append(delay(45))  # t=45, re-push infantry onto the contested flag
+    p.actions.append(delay(60))  # t=60, re-push infantry onto the contested flag
     for s in sides:
         s.advance("squad", *E2E_FLAG)
 
-    p.actions.append(delay(45))  # t=90, Stage 1 checkpoint -> car zooms through center + tanks reinforce
+    p.actions.append(delay(60))  # t=120, third infantry push before armor arrives
+    for s in sides:
+        s.advance("squad", *E2E_FLAG)
+
+    p.actions.append(delay(60))  # t=180, Stage 1 checkpoint -> car zooms through center + tanks reinforce
     p.reveal("armor")
     for s in sides:
         s.wave = "armor"
@@ -659,13 +728,20 @@ def e2e():
     for s in sides:
         s.advance("tank_t35", *s.t35_wp)
 
-    p.actions.append(delay(71))  # t=165, final combined push onto center flag
+    p.actions.append(delay(86))  # t=270, mid-Stage-2 combined push onto center flag
     for s in sides:
         s.advance("squad", *E2E_FLAG)
         s.advance("car_222", *E2E_FLAG)
         s.advance("tank_pz4", *E2E_FLAG)
         s.advance("tank_t35", *E2E_FLAG)
-    p.actions.append(delay(75))  # t=240, end of battle
+
+    p.actions.append(delay(75))  # t=345, final combined push onto center flag
+    for s in sides:
+        s.advance("squad", *E2E_FLAG)
+        s.advance("car_222", *E2E_FLAG)
+        s.advance("tank_pz4", *E2E_FLAG)
+        s.advance("tank_t35", *E2E_FLAG)
+    p.actions.append(delay(75))  # t=420, end of battle
     return p
 
 

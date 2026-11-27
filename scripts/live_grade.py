@@ -56,9 +56,9 @@ ACTION_LIMITS = {
 }
 
 
-# Five minutes with overlapping formations and reinforcements: allow four
-# short engagement windows at twice the concurrent force size.
-E2E_ACTION_LIMITS = {key: 8 * limit for key, limit in ACTION_LIMITS.items()}
+# Seven-minute staged battle with infantry and armor waves: allow comfortable
+# headroom over short unit-scenario limits while still catching runaway loops.
+E2E_ACTION_LIMITS = {key: 12 * limit for key, limit in ACTION_LIMITS.items()}
 
 
 def latest(lines):
@@ -258,9 +258,11 @@ def battle_outcome(p, actors, start, end, rate, window, delta, stage1_delta=None
         ("infantry", t.enemy_infantry), ("vehicles", t.enemy_vehicles), ("support", t.enemy_support),
     ), start, end, rate, window)
     av, bv = a["force_value"], b["force_value"]
-    a["exchange_ratio"] = bv["lost_pts"] / max(1, av["lost_pts"])
-    b["exchange_ratio"] = av["lost_pts"] / max(1, bv["lost_pts"])
+    loss_floor = min(t.points.values()) if t.points else 1
+    a["exchange_ratio"] = bv["lost_pts"] / max(loss_floor, av["lost_pts"])
+    b["exchange_ratio"] = av["lost_pts"] / max(loss_floor, bv["lost_pts"])
     outcome = {
+        "duration_s": t.duration_s,
         "score": round(50 + (av["remaining_pct"] - bv["remaining_pct"]) / 2, 2),
         "sides": {"A": a, "B": b}, "activity": dict(sorted(delta.items())),
         "activity_scope": "all players during the battle",
@@ -279,8 +281,8 @@ def battle_outcome(p, actors, start, end, rate, window, delta, stage1_delta=None
             ("support", [r for r in t.enemy_support if t.waves[r] == 0]),
         ), start, ckpt_end, rate, window, expected_waves={0})
         iav, ibv = ia["force_value"], ib["force_value"]
-        ia["exchange_ratio"] = ibv["lost_pts"] / max(1, iav["lost_pts"])
-        ib["exchange_ratio"] = iav["lost_pts"] / max(1, ibv["lost_pts"])
+        ia["exchange_ratio"] = ibv["lost_pts"] / max(loss_floor, iav["lost_pts"])
+        ib["exchange_ratio"] = iav["lost_pts"] / max(loss_floor, ibv["lost_pts"])
         outcome["infantry_stage"] = {
             "checkpoint_s": t.infantry_checkpoint_s,
             "score": round(50 + (iav["remaining_pct"] - ibv["remaining_pct"]) / 2, 2),
@@ -574,7 +576,7 @@ def battle_table(tactical, passed):
         st1 = result["infantry_stage"]
         s1_score = f"{st1['score']:.2f}/100" if passed and st1["score"] is not None else "unavailable"
         lines.append(f"Stage 1 Infantry Flag Fight (0-{st1['checkpoint_s']}s)  {s1_score}  (50 = parity, higher favors Side A / SW P2)")
-        s1_rows = [("Side", "Infantry", "Support", "Remaining value", "On flag", "Exchange")]
+        s1_rows = [("Side", "Infantry", "Support", "Remaining MP", "On flag", "Exchange")]
         for label, side in st1["sides"].items():
             inf, sup, val = side["infantry"], side["support"], side["force_value"]
             s1_rows.append((
@@ -591,8 +593,8 @@ def battle_table(tactical, passed):
             items = [f"{k}={v}" for k, v in st1["activity"].items()]
             lines.append("Stage 1 AI activity  " + ", ".join(items[:10]))
 
-    rows = [("Side", "Infantry", "Vehicles", "Support", "Alive pts", "HP pts",
-             "Remaining value", "On flag", "Exchange")]
+    rows = [("Side", "Infantry", "Vehicles", "Support", "Alive MP", "HP MP",
+             "Remaining MP", "On flag", "Exchange")]
     for label, side in result["sides"].items():
         classes = []
         for key in ("infantry", "vehicles", "support"):
