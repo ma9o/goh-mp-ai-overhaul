@@ -241,6 +241,32 @@ inline Byte eligible(Address brain, Address sub) {
     if (!sub || (stock && !config::active().modules.allegiance_guard)) return stock;
     const auto actor = owner(brain, false);
     if (!actor || !pr::autonomous_fire(image, brain)) return stock;
+    bool extended = false;
+    if (!stock) {
+        const auto now = function<runtime::Tick (*)()>(runtime::table().auth.clock_read)();
+        const auto seconds = function<float (*)(int)>(0x66e7c0);
+        const auto age = seconds(static_cast<int>(now - read<unsigned>(sub, 0x64)));
+        const auto deadline = read<unsigned>(sub, 0x70);
+        if (!(age <= 20.f) || !deadline || now < deadline || read<Byte>(sub, 0x6c)) return 0;
+        const auto entity = read<Address>(sub, 0x18);
+        const auto bit = read<unsigned>(image, 0x15c6a58);
+        if (bit >= 32) return 0;
+        const bool burning = entity && (read<Byte>(entity, 0xdad + bit / 8) & (1u << (bit % 8)));
+        if (!burning && !((read<unsigned>(brain, 0x398) & 3) == 1 && age > 10.f)) return 0;
+        if (burning && (!sim::has_actor(entity) || !(read<Byte>(entity, 0x30) & 8) ||
+                        !(read<unsigned>(entity, 0xdb4) & 0x100) || s::has_destruction_tag(entity)))
+            return 0;
+        if ((read<Byte>(actor, 0x30) & 4) && (read<unsigned>(entity, 0x1c0) & (1u << 28)) &&
+            !(read<unsigned>(brain, 0x39c) & (1u << 17))) {
+            const auto parent = read<Address>(read<Address>(entity, 0x560), 8);
+            if (!parent || function<Byte (*)(Address, Address)>(0x4c1cb0)(parent, image + 0x159d880)) return 0;
+        }
+        const auto flags = read<unsigned>(sub, 0x14);
+        const bool recent = !(flags & (1 | (1u << 10))) && read<Address>(sub, 0x40) &&
+                            seconds(static_cast<int>(now - read<unsigned>(sub, 0x5c))) < read<float>(image, 0x102af14);
+        if (!p::target_flags(flags, read<unsigned>(sub, 0x10), entity != 0, recent)) return 0;
+        extended = true;
+    }
     if (config::active().modules.allegiance_guard) {
         switch (pr::target_veto(image, actor, sub)) {
             case pr::TargetVeto::towing: ++stats.towed_gun_suppress; return 0;
@@ -248,31 +274,8 @@ inline Byte eligible(Address brain, Address sub) {
             case pr::TargetVeto::none: break;
         }
     }
-    if (stock) return stock;
-    const auto now = function<runtime::Tick (*)()>(runtime::table().auth.clock_read)();
-    const auto seconds = function<float (*)(int)>(0x66e7c0);
-    const auto age = seconds(static_cast<int>(now - read<unsigned>(sub, 0x64)));
-    const auto deadline = read<unsigned>(sub, 0x70);
-    if (!(age <= 20.f) || !deadline || now < deadline || read<Byte>(sub, 0x6c)) return 0;
-    const auto entity = read<Address>(sub, 0x18);
-    const auto bit = read<unsigned>(image, 0x15c6a58);
-    if (bit >= 32) return 0;
-    const bool burning = entity && (read<Byte>(entity, 0xdad + bit / 8) & (1u << (bit % 8)));
-    if (!burning && !((read<unsigned>(brain, 0x398) & 3) == 1 && age > 10.f)) return 0;
-    if (burning && (!sim::has_actor(entity) || !(read<Byte>(entity, 0x30) & 8) ||
-                    !(read<unsigned>(entity, 0xdb4) & 0x100) || s::has_destruction_tag(entity)))
-        return 0;
-    if ((read<Byte>(actor, 0x30) & 4) && (read<unsigned>(entity, 0x1c0) & (1u << 28)) &&
-        !(read<unsigned>(brain, 0x39c) & (1u << 17))) {
-        const auto parent = read<Address>(read<Address>(entity, 0x560), 8);
-        if (!parent || function<Byte (*)(Address, Address)>(0x4c1cb0)(parent, image + 0x159d880)) return 0;
-    }
-    const auto flags = read<unsigned>(sub, 0x14);
-    const bool recent = !(flags & (1 | (1u << 10))) && read<Address>(sub, 0x40) &&
-                        seconds(static_cast<int>(now - read<unsigned>(sub, 0x5c))) < read<float>(image, 0x102af14);
-    if (!p::target_flags(flags, read<unsigned>(sub, 0x10), entity != 0, recent)) return 0;
-    ++stats.eligible;
-    return 1;
+    if (extended) ++stats.eligible;
+    return stock ? stock : 1;
 }
 struct ReloadAttempt {
     s::Identity actor{};

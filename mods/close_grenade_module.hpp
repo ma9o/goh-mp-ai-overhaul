@@ -612,6 +612,7 @@ inline bool clear_area(const sim::World& w, Address a, Vec3 point, float radius,
     for (Address p = list.first; p != list.end; p += 8) {
         Address ally = read<Address>(p);
         if (!sim::has_actor(ally) || ally == a) continue;
+        if ((read<Byte>(ally, 0x30) & 8) && ai_support::has_destruction_tag(ally)) continue;
         unsigned player = read<Byte>(ally, 0xDA8);
         if (player < 18 && player >= unsigned(stride)) return false;
         if (!sim::allies(base, owner, player)) continue;

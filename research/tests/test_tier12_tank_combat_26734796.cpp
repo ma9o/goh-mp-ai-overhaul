@@ -197,6 +197,11 @@ void allegiance_and_towing() {
     f.armor.put(0x14, 1u << 10);
     assert(!ef::detail::eligible(f.tank.brain.ptr(), f.armor.ptr()));
     assert(ef::stats.allegiance_veto == 3);
+    // An already-rejected (stock == 0, non-extended) ally or dead wreck must not count as a veto.
+    f.armor.put(0x64, 1500u); // age = 5s (<= 10s, not burning) -> extended eligibility rejects it first.
+    assert(!ef::detail::eligible(f.tank.brain.ptr(), f.armor.ptr()));
+    assert(ef::stats.allegiance_veto == 3);
+    f.armor.put(0x64, 900u);
     f.enemy.actor.put<Byte>(0xda8, 2);
     assert(ef::detail::eligible(f.tank.brain.ptr(), f.armor.ptr()));
     f.tank.actor.put(0x578, f.aggregate.ptr());
