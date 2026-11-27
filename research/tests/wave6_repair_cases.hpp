@@ -273,6 +273,88 @@ inline void run() {
     assert(!r::is_busy(f->loader.actor.ptr()) && !r::has_active_episode(a));
     r::on_actor_post_quant(a);
     assert(!d::find(a));
+
+    // Tank under-fire and hostile-LOS dismount guards (both Scenario::full and Scenario::turret_track).
+    {
+        Fixture tf{};
+        f = &tf;
+        d::reset();
+        config::reset_defaults();
+        d::base = tf.image.base();
+        ai_support::base = d::base;
+        auth.is_quant_worker = reinterpret_cast<Address>(is_worker) - d::base;
+        auth.is_remote_client = reinterpret_cast<Address>(is_remote) - d::base;
+        tf.destruct_vt.put<Address>(0, reinterpret_cast<Address>(&destroy_emit));
+        const auto tank = tf.gun.actor.ptr();
+        tf.vehicle_class("tank_medium");
+        tf.gun.body_name.ename(0, "body");
+        tf.gun.track_name.ename(0, "trackleft");
+        tf.gun.set_body_state(1); // Scenario::full
+        auto tank_full = tf.damage();
+        assert(tank_full.is_tank && tank_full.trigger() == d::Scenario::full);
+        d::Damage tank_partial = tank_full;
+        tank_partial.body = 0;
+        tank_partial.working_gun = false;
+        d::Crew loader_crew{};
+        loader_crew.seat = 1;
+        loader_crew.role = 1;
+
+        // 1. Recent hit (under_fire within 6s) blocks BOTH Scenario::full and broken-gun turret_track,
+        //    even when no enemy is currently spotted (unseen rear/flank shooter).
+        tf.subject.put<unsigned>(0x10, 1u << 28); // Not visible.
+        tf.sensor.put<unsigned>(0x2F4, tf.world.now);
+        assert(!d::may_dismount(tank, tf.world, d::Scenario::full, tank_full, loader_crew, 2));
+        assert(!d::may_dismount(tank, tf.world, partial, tank_partial, loader_crew, 2));
+        // Live post-quant holds seated crew inside while keeping the episode tracked (suppressing stock dispatch).
+        r::on_actor_post_quant(tank);
+        assert(tf.emitted.empty() && r::has_active_episode(tank));
+
+        // After 6s without another hit and no visible hostile, dismount is allowed.
+        tf.world.now += tf.world.duration(6.1f);
+        tf.image.put<runtime::Tick>(0x1584568, tf.world.now);
+        assert(d::may_dismount(tank, tf.world, d::Scenario::full, tank_full, loader_crew, 2));
+        assert(d::may_dismount(tank, tf.world, partial, tank_partial, loader_crew, 2));
+
+        // 2. Visible enemy vehicle/tank within 140m blocks dismount even without recent hits;
+        //    smoke breaking LOS (clearing bit 29) or distance > 140m unblocks it.
+        vehicle::FakeTank enemy_tank{};
+        enemy_tank.setup(tf.image.base(), 99, 9, 2);
+        tf.subject.put<unsigned>(0x10, (1u << 29) | (1u << 28));
+        tf.subject.put<unsigned>(0x14, 2u | 1u); // Hostile + valid actor ptr.
+        tf.subject.put<Address>(0x18, enemy_tank.actor.ptr());
+        tf.subject.put<auto_smoke::Vec3>(0x28, {90.f, 0.f, 0.f});
+        assert(!d::may_dismount(tank, tf.world, d::Scenario::full, tank_full, loader_crew, 2));
+        assert(!d::may_dismount(tank, tf.world, partial, tank_partial, loader_crew, 2));
+        tf.subject.put<auto_smoke::Vec3>(0x28, {145.f, 0.f, 0.f});
+        assert(d::may_dismount(tank, tf.world, d::Scenario::full, tank_full, loader_crew, 2));
+        tf.subject.put<auto_smoke::Vec3>(0x28, {90.f, 0.f, 0.f});
+        tf.subject.put<unsigned>(0x10, 1u << 28); // Smoke broke LOS.
+        assert(d::may_dismount(tank, tf.world, d::Scenario::full, tank_full, loader_crew, 2));
+
+        // 3. Visible enemy infantry at 90m: passive rifleman does not stall body repair,
+        //    active shooter (rel & 0x180, recent +0x68) or any enemy within 45m DOES block dismount.
+        vehicle::FakeHuman enemy_inf{};
+        enemy_inf.setup(tf.image.base(), 98, 8, 2, 0);
+        tf.subject.put<unsigned>(0x10, (1u << 29) | (1u << 28));
+        tf.subject.put<unsigned>(0x14, 2u | 1u);
+        tf.subject.put<Address>(0x18, enemy_inf.actor.ptr());
+        tf.subject.put<auto_smoke::Vec3>(0x28, {90.f, 0.f, 0.f});
+        assert(d::may_dismount(tank, tf.world, d::Scenario::full, tank_full, loader_crew, 2));
+        tf.subject.put<unsigned>(0x14, 2u | 1u | 0x100u);
+        tf.subject.put<unsigned>(0x68, tf.world.now);
+        assert(!d::may_dismount(tank, tf.world, d::Scenario::full, tank_full, loader_crew, 2));
+        tf.subject.put<unsigned>(0x14, 2u | 1u);
+        tf.subject.put<auto_smoke::Vec3>(0x28, {44.9f, 0.f, 0.f});
+        assert(!d::may_dismount(tank, tf.world, d::Scenario::full, tank_full, loader_crew, 2));
+        tf.subject.put<auto_smoke::Vec3>(0x28, {45.1f, 0.f, 0.f});
+        assert(d::may_dismount(tank, tf.world, d::Scenario::full, tank_full, loader_crew, 2));
+
+        // Once safe, the deferred Scenario::full tank emits crew on post-quant.
+        r::on_actor_post_quant(tank);
+        assert(!tf.emitted.empty());
+        f = &fixture;
+    }
+
     auth = saved_auth;
     r::after_hooks_removed();
     ai_support::base = old_support_base;

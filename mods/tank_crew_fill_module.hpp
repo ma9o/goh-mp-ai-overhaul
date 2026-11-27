@@ -108,6 +108,19 @@ struct TankState {
         Tick retry_until{};
         std::uint8_t attempts{};
     };
+    struct InternalMove {
+        unsigned human_id{};
+        short src{-1}, dst{-1};
+        Tick until{};
+    };
+    struct DstWatch {
+        short dst{-1};
+        short src{-1};
+        unsigned human_id{};
+        Tick placed_at{};
+        Tick backoff_until{};
+        bool block_same_human{};
+    };
     support::Identity entity{};
     std::uint16_t route{};
     Tick last_tick{};
@@ -117,6 +130,8 @@ struct TankState {
     Tick secondary_gunner_until{};
     Tick defer_stat_until{};
     std::array<TransferAttempt, 4> recent_transfers{};
+    std::array<InternalMove, 8> recent_internal_humans{};
+    std::array<DstWatch, 4> dst_watches{};
     bool serviced{};
     bool matches(Address a) const {
         return entity.ptr && entity.matches(a) && read<std::uint16_t>(a, 0xDAA) == route;
@@ -246,6 +261,12 @@ inline bool has_exit_walker(Span walkers) {
         const auto final_node = read<Address>(p, 0x30);
         if (actor && final_node && read<int>(final_node, 4) == 1) return true;
     }
+    return false;
+}
+
+inline bool has_active_walker(Span walkers) {
+    for (auto p = walkers.first; p != walkers.end; p += 0x90)
+        if (read<Address>(p, 8) != 0) return true;
     return false;
 }
 
@@ -421,6 +442,87 @@ inline bool eligible_occupant(Address human, Address vehicle, Address vehicle_br
     return true;
 }
 
+inline void update_dst_watches(TankState& st, Span seats, const World& w) {
+    for (auto& watch : st.dst_watches) {
+        if (watch.dst < 0) continue;
+        if (watch.backoff_until && !pending(watch.backoff_until, w.now)) {
+            watch.backoff_until = 0;
+            watch.block_same_human = false;
+        }
+        if (!watch.human_id) {
+            if (!watch.backoff_until) watch = {};
+            continue;
+        }
+        if (static_cast<std::int32_t>(w.now - watch.placed_at) > static_cast<std::int32_t>(w.duration(20.f))) {
+            watch.human_id = 0;
+            if (!watch.backoff_until) watch = {};
+            continue;
+        }
+        short found_slot = -1;
+        bool dst_occupied = false;
+        for (auto slot = seats.first; slot != seats.end; slot += 0x298) {
+            const auto idx = static_cast<short>((slot - seats.first) / 0x298);
+            const auto occ = read<Address>(slot, 0x280);
+            if (!occ) continue;
+            if (idx == watch.dst) dst_occupied = true;
+            if (read<unsigned>(occ, 0xC0) == watch.human_id) found_slot = idx;
+        }
+        if (found_slot < 0) {
+            // Crewman died or exited the vehicle: lift watch so a real casualty is replaced immediately.
+            watch = {};
+        } else if (found_slot != watch.dst && !dst_occupied) {
+            // Crewman is still alive in another seat while dst is vacant again: stock ePlacer reclaimed them.
+            if (!pending(watch.backoff_until, w.now)) watch.backoff_until = w.now + w.duration(12.f);
+            if (found_slot != watch.src) watch.block_same_human = true;
+        }
+    }
+}
+
+inline bool dst_watch_blocks(const TankState& st, short dst, unsigned human_id, Tick now) {
+    for (const auto& watch : st.dst_watches) {
+        if (watch.dst == dst && pending(watch.backoff_until, now) &&
+            (watch.block_same_human || human_id != watch.human_id))
+            return true;
+    }
+    return false;
+}
+
+inline bool human_cross_seat_blocked(const TankState& st, unsigned human_id, short src, short dst, Tick now) {
+    for (const auto& entry : st.recent_internal_humans) {
+        if (entry.human_id == human_id && pending(entry.until, now) && (entry.src != src || entry.dst != dst))
+            return true;
+    }
+    return false;
+}
+
+inline void record_internal_move(TankState& st, unsigned human_id, short src, short dst, const World& w) {
+    TankState::InternalMove* hslot = nullptr;
+    TankState::InternalMove* holdest = nullptr;
+    for (auto& entry : st.recent_internal_humans) {
+        if (entry.human_id == human_id) {
+            hslot = &entry;
+            break;
+        }
+        if (!entry.human_id && !hslot) hslot = &entry;
+        if (!holdest || static_cast<std::int32_t>(entry.until - holdest->until) < 0) holdest = &entry;
+    }
+    if (!hslot) hslot = holdest;
+    *hslot = {human_id, src, dst, w.now + w.duration(10.f)};
+
+    TankState::DstWatch* wslot = nullptr;
+    TankState::DstWatch* woldest = nullptr;
+    for (auto& watch : st.dst_watches) {
+        if (watch.dst == dst) {
+            wslot = &watch;
+            break;
+        }
+        if (watch.dst < 0 && !wslot) wslot = &watch;
+        if (!woldest || static_cast<std::int32_t>(watch.placed_at - woldest->placed_at) < 0) woldest = &watch;
+    }
+    if (!wslot) wslot = woldest;
+    *wslot = {dst, src, human_id, w.now, 0, false};
+}
+
 inline void service_vehicle(Address tank, Address tank_brain, const World& w, pol::VehicleTacticalContext ctx) {
     auto* st = state_for(tank, w.now);
     if (st->serviced && st->last_tick == w.now) return;
@@ -451,12 +553,13 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
 
     const bool placer_blocked = read<Byte>(placer, 0x48) != 0;
     const bool emit_cooldown = pending(st->emit_until, w.now);
-    const bool exit_walker = has_exit_walker(walkers);
-    if (placer_blocked || emit_cooldown || exit_walker || pending(st->retry_until, w.now)) return;
+    const bool active_walker = has_active_walker(walkers);
+    if (placer_blocked || emit_cooldown || active_walker || pending(st->retry_until, w.now)) return;
 
     const unsigned tank_player = support::owner(tank);
     unsigned available_crew_slots = 0;
-    pol::SlotFacts best_dst{}, internal_dst{};
+    pol::SlotFacts best_dst{};
+    std::array<pol::SlotFacts, 3> essential_dst{};
     bool same_player_crew_inside = false;
     for (auto slot = seats.first; slot != seats.end; slot += 0x298) {
         const auto index = static_cast<short>((slot - seats.first) / 0x298);
@@ -479,14 +582,18 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
             facts.is_cannon_gunner = repair::detail::cannon_gunner_seat(tank, facts.name);
             ++available_crew_slots;
             if (best_dst.slot_index < 0 || pol::better_crew_slot(facts, best_dst)) best_dst = facts;
-            if (pol::internal_destination_useful(facts, ctx) &&
-                (internal_dst.slot_index < 0 || pol::better_crew_slot(facts, internal_dst)))
-                internal_dst = facts;
+            const int prio = pol::crew_slot_priority(facts);
+            if (prio <= 2 && pol::internal_destination_useful(facts, ctx) &&
+                (essential_dst[prio].slot_index < 0 || pol::better_crew_slot(facts, essential_dst[prio])))
+                essential_dst[prio] = facts;
         }
     }
+    update_dst_watches(*st, seats, w);
     if (!available_crew_slots) return;
 
-    pol::SeatOccupant internal{}, passenger{};
+    std::array<pol::SeatOccupant, 16> donors{};
+    std::size_t donor_count = 0;
+    pol::SeatOccupant passenger{};
     ctx.secondary_gunner_backoff = pending(st->secondary_gunner_until, w.now);
     for (auto slot = seats.first; slot != seats.end; slot += 0x298) {
         const auto human = read<Address>(slot, 0x280);
@@ -504,27 +611,45 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
             candidate.slot.is_cannon_gunner = repair::detail::cannon_gunner_seat(tank, candidate.slot.name);
             candidate.slot.actively_requested = slot_actively_requested(placer, candidate.slot.name);
             if (!pol::internal_source_available(candidate.slot, ctx)) continue;
-            if (internal.slot.slot_index < 0 || pol::better_internal_source(candidate, internal)) internal = candidate;
+            if (donor_count < donors.size()) donors[donor_count++] = candidate;
         } else if (passenger.slot.slot_index < 0 || pol::better_passenger(candidate.passenger, passenger.passenger)) {
             passenger = candidate;
         }
     }
 
-    // If the least critical crewman cannot promote, no higher-priority crewman can either.
-    // The downward gunner-to-driver exception requires a sole crewman.
     ctx.has_eligible_passenger = passenger.slot.slot_index >= 0;
     ctx.has_move_order = orders.has_move_order;
     ctx.swap_cooldown_active = pending(st->driver_gunner_swap_until, w.now);
-    if (internal.slot.name == "driver" && internal_dst.name == "gunner" && !ctx.has_eligible_passenger)
-        ctx.has_visible_enemy = has_visible_enemy(tank_brain);
-    const bool promote = pol::can_promote_internal(internal.slot, internal_dst, ctx);
+    bool promote = false;
+    pol::SeatOccupant internal{};
+    pol::SlotFacts internal_dst{};
+    for (int prio = 0; prio <= 2 && !promote; ++prio) {
+        const auto& dst_cand = essential_dst[prio];
+        if (dst_cand.slot_index < 0) continue;
+        if (prio == 0 && !ctx.has_eligible_passenger) ctx.has_visible_enemy = has_visible_enemy(tank_brain);
+        pol::SeatOccupant best_donor{};
+        for (std::size_t i = 0; i < donor_count; ++i) {
+            const auto& cand = donors[i];
+            if (!pol::can_promote_internal(cand.slot, dst_cand, ctx)) continue;
+            if (human_cross_seat_blocked(*st, cand.passenger.entity_id, cand.slot.slot_index, dst_cand.slot_index,
+                                         w.now))
+                continue;
+            if (dst_watch_blocks(*st, dst_cand.slot_index, cand.passenger.entity_id, w.now)) continue;
+            if (best_donor.slot.slot_index < 0 || pol::better_internal_source(cand, best_donor)) best_donor = cand;
+        }
+        if (best_donor.slot.slot_index >= 0) {
+            promote = true;
+            internal = best_donor;
+            internal_dst = dst_cand;
+        }
+    }
     unsigned returning = 0;
     if (!promote) {
         if (!ctx.has_eligible_passenger) return;
         returning = count_expected_returning_crew(w, tank);
         const pol::TransferGate gate{available_crew_slots, returning,          ctx.has_eligible_passenger,
                                      placer_blocked,       orders.emit_active, emit_cooldown,
-                                     exit_walker};
+                                     active_walker};
         if (!pol::can_transfer(gate)) {
             if (!pending(st->defer_stat_until, w.now)) {
                 ++stat_deferred_repair;
@@ -575,9 +700,10 @@ inline void service_vehicle(Address tank, Address tank_brain, const World& w, po
 
     const unsigned n = ++stat_transfers;
     if (promote) ++stat_transfers_internal;
-    // Stock can re-man a secondary weapon with a different human on the next
-    // quant. Leave that weapon staffed even if the next vacancy changes too.
-    if (promote && pol::secondary_gunner(src.slot)) st->secondary_gunner_until = w.now + w.duration(10);
+    // Stock can re-man a secondary turret seat with a different human on the next
+    // quant. Leave secondary turrets staffed even if the next vacancy changes too.
+    if (promote && pol::secondary_turret_seat(src.slot)) st->secondary_gunner_until = w.now + w.duration(10);
+    if (promote && !swap_driver_gunner) record_internal_move(*st, src.passenger.entity_id, src_place, dst_place, w);
     if (swap_driver_gunner) st->driver_gunner_swap_until = w.now + w.duration(3.0f);
     if (!ctx.is_tank) ++stat_transfers_nontank;
     const int tier = pol::passenger_tier(src.passenger);

@@ -1066,6 +1066,134 @@ void test_active_placer_request_and_multi_crew_backoff() {
     h.expect_move(5, 2, 1);
 }
 
+void test_multiturret_t35_anti_churn() {
+    // 1. Policy checks: internal promotion only targets essential main seats (gunner=0, driver=1, charger=2)
+    //    and never pulls a secondary cannon gunner into main charger.
+    {
+        const auto seat = [](std::string_view name, short index, bool occ, bool cannon = false) {
+            p::SlotFacts s{};
+            s.group = "crew";
+            s.name = name;
+            s.slot_index = index;
+            s.occupied = occ;
+            s.is_cannon_gunner = cannon;
+            return s;
+        };
+        p::VehicleTacticalContext ctx{};
+        ctx.is_tank = true;
+        const auto charger3 = seat("charger3", 5, true);
+        const auto gunner5 = seat("gunner5", 8, true);
+        const auto gunner4_cannon = seat("gunner4", 6, true, true);
+        const auto commander = seat("commander", 3, true);
+        const auto empty_cmd = seat("commander", 3, false);
+        const auto empty_g4 = seat("gunner4", 6, false, true);
+        const auto empty_c3 = seat("charger3", 5, false);
+        const auto empty_charger = seat("charger", 2, false);
+        const auto empty_driver = seat("driver", 0, false);
+
+        assert(!p::can_promote_internal(charger3, empty_cmd, ctx));
+        assert(!p::can_promote_internal(charger3, empty_g4, ctx));
+        assert(!p::can_promote_internal(gunner5, empty_cmd, ctx));
+        assert(!p::can_promote_internal(gunner5, empty_g4, ctx));
+        assert(!p::can_promote_internal(gunner5, empty_c3, ctx));
+        assert(!p::can_promote_internal(gunner4_cannon, empty_charger, ctx));
+        assert(p::can_promote_internal(gunner4_cannon, empty_driver, ctx));
+        assert(p::can_promote_internal(commander, empty_charger, ctx));
+        assert(p::secondary_charger(charger3) && p::secondary_turret_seat(charger3));
+        ctx.secondary_gunner_backoff = true;
+        assert(!p::internal_source_available(charger3, ctx));
+    }
+
+    // 2. Active internal walker (final_node type == 2, NOT exit type == 1) blocks overlapping swaps.
+    {
+        Harness h;
+        h.install();
+        FakeTank t;
+        t.setup(h.img.base(), 130, 30, 1);
+        t.set_slot_count(8);
+        FakeHuman drv, gun, chg, cmd, c3, g5, rider;
+        drv.setup(h.img.base(), 400, 100, 1, t.actor.ptr());
+        gun.setup(h.img.base(), 401, 101, 1, t.actor.ptr());
+        chg.setup(h.img.base(), 402, 102, 1, t.actor.ptr());
+        cmd.setup(h.img.base(), 403, 103, 1, t.actor.ptr());
+        c3.setup(h.img.base(), 405, 105, 1, t.actor.ptr());
+        g5.setup(h.img.base(), 408, 108, 1, t.actor.ptr());
+        rider.setup(h.img.base(), 409, 109, 1, t.actor.ptr());
+
+        // Main seats (driver, gunner, charger) occupied; commander & gunner4 empty; charger3 & gunner5 occupied.
+        t.set_slot(0, "driver", "crew", 0x1000u, "driver", "", drv.actor.ptr(), 400);
+        t.set_slot(1, "gunner", "crew", 0x1000u, "main", "", gun.actor.ptr(), 401);
+        t.set_slot(2, "charger", "crew", 0x1000u, "", "", chg.actor.ptr(), 402);
+        t.set_slot(3, "commander", "crew", 0x1000u, "around", "", 0);
+        t.set_slot(4, "charger3", "crew", 0x1000u, "", "", c3.actor.ptr(), 405);
+        t.set_slot(5, "gunner4", "crew", 0x1000u, "aux2", "", 0);
+        t.set_slot(6, "gunner5", "crew", 0x1000u, "aux3", "", g5.actor.ptr(), 408);
+        t.set_slot(7, "seat1", "passenger", 0u, "", "seat01", 0);
+
+        // No internal reshuffle into commander or gunner4!
+        h.tick(t.actor.ptr());
+        assert(h.moves.empty());
+
+        // External hull rider STILL fills commander cleanly!
+        t.set_slot(7, "seat1", "passenger", 0u, "", "seat01", rider.actor.ptr(), 409);
+        h.tick(t.actor.ptr());
+        h.expect_move(1, 7, 3);
+        t.set_slot(3, "commander", "crew", 0x1000u, "around", "", cmd.actor.ptr(), 403);
+
+        // Vacate driver(0), but place an internal walker (final_node type == 2) in flight -> must wait!
+        t.set_slot(0, "driver", "crew", 0x1000u, "driver", "", 0);
+        Memory<0x20> place_node{};
+        place_node.put<int>(0x04, 2); // Place node (internal walk, NOT exit type 1).
+        std::memset(t.walkers.data.data(), 0, 0x90);
+        t.walkers.put<Address>(0x08, g5.actor.ptr());
+        t.walkers.put<Address>(0x30, place_node.ptr());
+        t.boarder.put<Address>(0x60, t.walkers.ptr());
+        t.boarder.put<Address>(0x68, t.walkers.ptr() + 0x90);
+        h.tick(t.actor.ptr(), 2000);
+        assert(h.moves.size() == 1);
+        t.clear_walkers();
+
+        // Once walker finishes, gunner5(6) fills driver(0) AND arms 10s secondary turret backoff (blocks charger3).
+        h.tick(t.actor.ptr(), 50);
+        h.expect_move(2, 6, 0);
+
+        // 3. Stock ePlacer tug-of-war reclaim detector:
+        //    Stock moves g5 (408) out of driver(0) into gunner4(5), leaving driver(0) empty again!
+        t.set_slot(0, "driver", "crew", 0x1000u, "driver", "", 0);
+        t.set_slot(5, "gunner4", "crew", 0x1000u, "aux2", "", g5.actor.ptr(), 408);
+        // Even after retry_until (1.5s), neither commander(3) nor charger(2) nor g5(5) fights stock over driver(0)
+        // for 12s while g5 is still alive inside the tank!
+        h.tick(t.actor.ptr(), 2000);
+        assert(h.moves.size() == 2);
+        h.tick(t.actor.ptr(), 5000);
+        assert(h.moves.size() == 2);
+
+        // If g5 (408) actually DIES (removed from gunner4), the reclaim watch lifts immediately and
+        // commander(3) replaces the dead driver without waiting for the remaining 12s backoff!
+        t.set_slot(5, "gunner4", "crew", 0x1000u, "aux2", "", 0);
+        h.tick(t.actor.ptr(), 50);
+        h.expect_move(3, 3, 0); // commander(403) -> driver(0)
+
+        // 4. Per-human cross-seat bounce cooldown:
+        //    Vacate gunner(1) 2s later while cmd(403) just arrived in driver(0) (only cmd + chg left) ->
+        //    cmd(403) must NOT be bounced driver(0) -> gunner(1) within 10s; chg(402) covers gunner(1) instead!
+        t.set_slot(1, "gunner", "crew", 0x1000u, "main", "", 0);
+        t.set_slot(4, "charger3", "crew", 0x1000u, "", "", 0);
+        h.tick(t.actor.ptr(), 2000);
+        h.expect_move(4, 2, 1); // charger(402) -> gunner(1)
+
+        // Now vacate driver(0) and move chg(402) back to charger(2), leaving only chg(402):
+        // chg(402) just moved charger(2)->gunner(1) 2s ago, so bouncing chg(402) charger(2)->driver(0) is blocked for 10s!
+        t.set_slot(0, "driver", "crew", 0x1000u, "driver", "", 0);
+        t.set_slot(1, "gunner", "crew", 0x1000u, "main", "", gun.actor.ptr(), 401);
+        t.set_slot(2, "charger", "crew", 0x1000u, "", "", chg.actor.ptr(), 402);
+        h.tick(t.actor.ptr(), 2000);
+        assert(h.moves.size() == 4); // Blocked by 10s cross-seat cooldown!
+        h.tick(t.actor.ptr(), 8500);
+        h.expect_move(5, 2, 0); // Allowed once 10s cross-seat cooldown expires!
+    }
+}
+
 } // namespace
 
 int main() {
@@ -1090,6 +1218,7 @@ int main() {
     test_cannon_guards();
     test_accepted_cannon_transfer_stalls();
     test_active_placer_request_and_multi_crew_backoff();
+    test_multiturret_t35_anti_churn();
     std::printf("test_tank_crew_fill_26734796: ALL PASSED\n");
     return 0;
 }

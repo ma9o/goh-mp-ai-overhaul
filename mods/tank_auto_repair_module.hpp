@@ -860,18 +860,45 @@ inline bool unassigned_work(const Damage& d, const Claims& taken) {
         if (!taken.used[(p - d.rows.first) / 0x28] && !(read<Byte>(p, 0x25) & 1) && damage(p)) return true;
     return false;
 }
+inline bool tank_under_fire(Address vehicle, const World& w) {
+    const auto sen = read<Address>(vehicle, 0xDD0);
+    return sen && read<Address>(sen, 0x260) == vehicle && sim::recent(w, read<unsigned>(sen, 0x2F4), 6);
+}
+inline bool tank_hostile_los(Address vehicle, const World& w) {
+    const auto sen = read<Address>(vehicle, 0xDD0);
+    if (!sen || read<Address>(sen, 0x260) != vehicle) return true;
+    const auto subs = span(sen, 0x280);
+    if (!subs.valid(8, 4096)) return true;
+    const auto self = support::pos(vehicle);
+    const float close_r = 45.f * w.length;
+    const float duel_r = 140.f * w.length;
+    for (auto p = subs.first; p != subs.end; p += 8) {
+        const auto sub = read<Address>(p);
+        if (!sub || read<Byte>(sub, 0x6C)) continue;
+        const auto rel = read<unsigned>(sub, 0x14);
+        const auto flags = read<unsigned>(sub, 0x10);
+        if ((rel & 0x1Eu) != 2u || !(flags & (1u << 29))) continue;
+        if (!(flags & (1u << 28))) return true;
+        const auto seen = read<sim::Vec3>(sub, 0x28);
+        if (!sim::finite(seen) || support::within(self, seen, close_r)) return true;
+        if (!support::within(self, seen, duel_r)) continue;
+        if ((rel & 0x180u) && sim::recent(w, read<unsigned>(sub, 0x68), 6)) return true;
+        if (rel & 1u) {
+            const auto enemy = read<Address>(sub, 0x18);
+            if (enemy && sim::has_actor(enemy) && (read<Byte>(enemy, 0x30) & 8u)) return true;
+        }
+    }
+    return false;
+}
 inline bool may_dismount(Address vehicle, const World& w, Scenario scenario, const Damage& d, const Crew& c,
                          int living_crew) {
     if (!d.is_tank && !support::free_slot(vehicle)) return false;
+    if (d.is_tank) {
+        if (scenario == Scenario::turret_track && c.role == 2 && d.working_gun && living_crew >= 2) return false;
+        return !tank_under_fire(vehicle, w) && !tank_hostile_los(vehicle, w);
+    }
     if (scenario != Scenario::turret_track) return true;
     if (c.role == 2 && d.working_gun && living_crew >= 2) return false;
-    if (d.is_tank) {
-        if (!d.working_gun) return true;
-        const auto sen = read<Address>(vehicle, 0xDD0);
-        const bool under_fire =
-            sen && read<Address>(sen, 0x260) == vehicle && sim::recent(w, read<unsigned>(sen, 0x2F4), 5);
-        return !(under_fire && support::visible_near(vehicle, 40.f * w.length));
-    }
     return !support::visible_near(vehicle, 25.f * w.length);
 }
 inline void service(Tank& t, Address a, const World& w, Damage d) {
@@ -954,6 +981,7 @@ inline void service(Tank& t, Address a, const World& w, Damage d) {
             (!continuing && pending(t.death_until, w.now)))
             continue;
         if (c.seat < 0 && t.scenario == Scenario::turret_track && !c.needs_board && !c.assigned) continue;
+        if (c.seat < 0 && d.is_tank && tank_under_fire(a, w)) continue;
         if (c.seat < 0 && !v.kits && !s.public_kits) {
             auto donor = crew_provider(t, v.human, a, w);
             if (!donor) continue;

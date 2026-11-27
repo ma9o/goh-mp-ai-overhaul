@@ -82,14 +82,22 @@ inline bool secondary_gunner(const SlotFacts& s) {
                : s.name.size() == 7 && s.name.substr(0, 6) == "gunner" && s.name[6] >= '1' && s.name[6] <= '9';
 }
 
+inline bool secondary_charger(const SlotFacts& s) {
+    return s.name.size() == 8 && s.name.substr(0, 7) == "charger" && s.name[7] >= '1' && s.name[7] <= '6';
+}
+
+inline bool secondary_turret_seat(const SlotFacts& s) {
+    return secondary_gunner(s) || secondary_charger(s);
+}
+
 inline bool internal_destination_useful(const SlotFacts& s, const VehicleTacticalContext& ctx) {
     if (s.name == "driver") return !ctx.immobilized;
     return !ctx.main_gun_broken || (s.name != "gunner" && s.name != "charger");
 }
 
 inline bool internal_source_available(const SlotFacts& s, const VehicleTacticalContext& ctx) {
-    return is_internal_crew_source(s) && !s.actively_requested &&
-           !(secondary_gunner(s) && (ctx.main_gun_broken || ctx.secondary_gunner_backoff));
+    return is_internal_crew_source(s) && !s.actively_requested && !(secondary_gunner(s) && ctx.main_gun_broken) &&
+           !(secondary_turret_seat(s) && ctx.secondary_gunner_backoff);
 }
 
 inline bool can_promote_internal(const SlotFacts& src, const SlotFacts& dst, const VehicleTacticalContext& ctx) {
@@ -98,7 +106,12 @@ inline bool can_promote_internal(const SlotFacts& src, const SlotFacts& dst, con
         return false;
     const int from = crew_slot_priority(src);
     const int to = crew_slot_priority(dst);
-    if (to > 5) return false;
+    // Internal reshuffles only rescue essential primary seats (gunner=0, driver=1, charger=2).
+    // Commander and secondary turret seats are refilled from hull passengers, never by
+    // cannibalizing interior crew seats (which fights stock ePlacer on multi-turret tanks).
+    if (to > 2) return false;
+    // Never pull an active secondary cannon gunner off their turret just to load the main gun.
+    if (to == 2 && src.is_cannon_gunner) return false;
     if (from >= 2) return to < from;
     if (ctx.has_eligible_passenger || ctx.swap_cooldown_active) return false;
     if (from == 1 && to == 0) return !ctx.has_move_order && (ctx.immobilized || ctx.has_visible_enemy);
