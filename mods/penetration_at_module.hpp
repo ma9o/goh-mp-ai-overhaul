@@ -428,7 +428,8 @@ inline Options vehicle_options(const World& w, Address brain, Address s, std::in
     for (auto row = rows.first; row != rows.end; row += pr::row_size) {
         auto weapon = read<Address>(row, 8);
         if (!weapon || read<Address>(weapon, 0x90) != pr::scope.actor || !read<Address>(weapon, 0x98) ||
-            !read<Address>(weapon, 0xa0) || (selecting && read<Byte>(row)) || pr::reserved_for_other(weapon, priority))
+            !read<Address>(weapon, 0xa0) || (selecting && read<Byte>(row)) ||
+            pr::reserved_for_other(weapon, priority, !selecting))
             continue;
         auto gunner = read<Address>(weapon, 0xc0);
         if (!gunner || (read<Byte>(brain, 0x420) && native<pr::Predicate>(0x825600)(gunner) &&

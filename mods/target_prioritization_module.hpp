@@ -605,9 +605,10 @@ template <class Visit> inline bool ammunition(Address row, Address w, bool loade
                [&](Address ammo) { return native<Byte (*)(Address, Address)>(0x565A50)(ammo + 0xec8, def + 0x120); },
                visit);
 }
-inline bool reserved_for_other(Address w, std::int16_t priority) {
+inline bool reserved_for_other(Address w, std::int16_t priority, bool allow_autonomous = false) {
     if (!read<int>(w, 0xD0)) return false;
     int mode = read<int>(w, 0x208);
+    if (allow_autonomous && mode == 2) return false;
     return mode == 1 || mode == 3 || read<std::int16_t>(w, 0x214) < priority;
 }
 // The first assignment pass measures approach from the actor, using +0x20
@@ -629,7 +630,7 @@ inline void vehicle_pairs(Loadout& kit, Address brain) {
     bool loaded_only = native<Predicate>(0x91B190)(brain) != 0;
     for (Address row = rows.first; row != rows.end; row += row_size) {
         Address w = read<Address>(row, 8);
-        if (!w || !read<Address>(w, 0x98) || !read<Address>(w, 0xA0) || reserved_for_other(w, priority)) continue;
+        if (!w || !read<Address>(w, 0x98) || !read<Address>(w, 0xA0) || reserved_for_other(w, priority, true)) continue;
         Address gunner = read<Address>(w, 0xC0);
         if (read<Byte>(brain, 0x420) &&
             (!gunner || (native<Predicate>(0x825600)(gunner) && native<Predicate>(0x825730)(gunner))))
@@ -680,6 +681,7 @@ inline RowKind row_kind(Address weapon) {
 struct Row {
     Address row, weapon, incumbent;
     RowKind kind;
+    bool armor_claimed{};
 };
 struct Coverage {
     Address subject, row;
@@ -688,7 +690,7 @@ struct Assignment {
     Address brain{};
     std::vector<Row> rows;
     std::vector<Coverage> covered;
-    bool economy{}, multi_cannon{}, selecting{};
+    bool economy{}, multi_cannon{}, selecting{}, visible_armor_threat{};
     Address proposed_weapon{}, proposed_target{}, proposed_ammo{};
 };
 inline void capture_rows(Assignment& a) {
@@ -731,7 +733,7 @@ struct Candidate {
     Address subject{}, place{};
     Vec3 origin{}, aim_point{};
     float score{-1}, class_bonus{};
-    bool has_origin{}, grenade{}, armored{}, soft_pass{};
+    bool has_origin{}, grenade{}, armored{}, high_threat{}, soft_pass{};
     Sight sight{Sight::unknown};
     std::size_t ordinal{};
     penetration_at::policy::Outcome armor{};
@@ -969,7 +971,8 @@ inline Candidate evaluate(Address brain, Address subject, const Loadout& kit, Ad
     const float aim_threat = enemy_aims_here(subject, scope.actor)
                                  ? 1.f
                                  : ((!human && enemy_aims_at_ally(subject, scope.actor)) ? .8f : 0.f);
-    float danger = .5f * rate + .3f * aim_threat + .2f * urgency;
+    const float base_danger = .5f * rate + .3f * aim_threat + .2f * urgency;
+    float danger = base_danger;
     const float actor_distance = distance(self, feet);
     auto rating = rate_armor ? rate_armor(brain, subject, kit, danger) : ArmorRating{};
     if (rate_armor) danger = rating.danger;
@@ -977,6 +980,7 @@ inline Candidate evaluate(Address brain, Address subject, const Loadout& kit, Ad
     c.armor_complete = rating.complete;
     if (!human) {
         c.armored = armored_enemy;
+        c.high_threat = !armored_enemy && rate_armor && (rating.danger - base_danger >= 1.f);
         c.soft_pass = armored_enemy;
         c.class_bonus =
             vehicle_class_bonus(armored_enemy, !armored_enemy && cannon_class(enemy),
@@ -1097,10 +1101,21 @@ inline void rank_candidates(Plan& result) {
     }
     result.should_rewrite = order.front().grenade || result.open || (!stock_effective && order.front().score >= 0);
     if (result.open) {
+        auto tier_of = [](const Candidate& c) noexcept {
+            if (c.grenade) return 3;
+            if (c.score < 0) return 0;
+            const bool impenetrable = c.armor_complete && c.armor.seen && !c.armor.clean && c.armor.ratio < .85f;
+            // Live penetrable armor must not be demoted below ordinary infantry by a coarse single-ray probe.
+            if (c.armored && !impenetrable) return 2;
+            if (c.high_threat && c.sight == Sight::open) return 2;
+            return c.sight == Sight::open ? 1 : 0;
+        };
         std::sort(order.begin(), order.end(), [&](const Candidate& a, const Candidate& b) {
-            if (a.grenade != b.grenade) return a.grenade;
+            const int ta = tier_of(a), tb = tier_of(b);
+            if (ta != tb) return ta > tb;
             const bool a_open = a.sight == Sight::open, b_open = b.sight == Sight::open;
-            return a_open != b_open ? a_open : higher(a, b);
+            if (a_open != b_open) return a_open;
+            return higher(a, b);
         });
     }
 }
@@ -1394,6 +1409,32 @@ inline void __fastcall alternate_rebuild(Address brain) {
     auto result = plan(brain, entries(v), preferred);
     rewrite(v, result, brain, "rebuild");
 }
+inline bool has_visible_armor_threat(const Assignment& a, Span candidates) {
+    if (!candidates.valid(8) || !scope.actor || !a.brain) return false;
+    bool has_main = false;
+    for (const Row& r : a.rows) {
+        if (r.kind == RowKind::main_gun) {
+            has_main = true;
+            break;
+        }
+    }
+    if (!has_main) return false;
+    const Vec3 self = read<Vec3>(scope.actor, 0x74);
+    if (!finite(self)) return false;
+    const float cached_range = read<float>(a.brain, 0x14C);
+    const float max_range =
+        (std::isfinite(cached_range) && cached_range > 0.f) ? cached_range : 180.f * spatial_scale();
+    const float limit = max_range * 1.15f;
+    for (Address p = candidates.first; p != candidates.end; p += 8) {
+        const Address s = read<Address>(p);
+        if (!hostile_observation(s) || read<Byte>(s, 0x6C)) continue;
+        const Address target = read<Address>(s, 0x18);
+        if (!auto_smoke::has_actor(target) || !armoured_class(target) || defanged_armor(target)) continue;
+        const Vec3 feet = read<Vec3>(s, 0x28);
+        if (finite(feet) && distance(self, feet) <= limit) return true;
+    }
+    return false;
+}
 inline void __fastcall vehicle_assign(Address brain) {
     runtime::HookGuard guard(hook_gate);
     if (!hook_gate.accepting.load(std::memory_order_acquire) || !config::active().modules.target_prioritization) {
@@ -1423,6 +1464,7 @@ inline void __fastcall vehicle_assign(Address brain) {
         orig_assign(brain);
         return;
     }
+    a.visible_armor_threat = has_visible_armor_threat(a, entries(v));
     ArmorMemory hidden{};
     if (const auto* memory = remember_armor(brain, entries(v))) hidden = *memory;
     struct Frame {
@@ -1731,6 +1773,39 @@ inline bool reject_selection(Address out) {
     selection_call<void (*)(Address)>(0x7e1ec0)(temp);
     return false;
 }
+inline bool hold_cannon_ap_for_armor(bool is_main_gun, bool row_claimed_for_armor, bool visible_armor_threat,
+                                     bool ap_loaded_or_loading, bool target_is_armored,
+                                     bool target_is_immediate_at) noexcept {
+    if (!is_main_gun || target_is_armored || target_is_immediate_at) return false;
+    if (row_claimed_for_armor) return true;
+    return visible_armor_threat && ap_loaded_or_loading;
+}
+inline void ap_reload_mask(const Assignment& assignment, Address subject, std::vector<PartitionEntry>& mask) {
+    const bool any_claimed =
+        std::any_of(assignment.rows.begin(), assignment.rows.end(), [](const Row& r) { return r.armor_claimed; });
+    if (!assignment.visible_armor_threat && !any_claimed) return;
+    if (!hostile_observation(subject) || read<Byte>(subject, 0x6c)) return;
+    const auto target = read<Address>(subject, 0x18);
+    if (!auto_smoke::has_actor(target) || armoured_class(target)) return;
+    if (!(read<Byte>(target, 0x30) & 4) || !tag_equals(target + 0xde8, "human")) return;
+    const auto self = read<Vec3>(scope.actor, 0x74), pos = read<Vec3>(subject, 0x28);
+    if (!finite(self) || !finite(pos)) return;
+    const float metres = distance(self, pos) / spatial_scale();
+    const auto inf = infantry_loadout(target);
+    const bool immediate_at = inf.known && inf.immediate(metres);
+    if (immediate_at) return;
+    for (const auto& row : assignment.rows) {
+        if (row.kind != RowKind::main_gun || read<Byte>(row.row)) continue;
+        bool ap_loaded = false;
+        if (!row.armor_claimed && assignment.visible_armor_threat) {
+            const auto charger = read<Address>(row.weapon, 0xb0);
+            const auto loaded = charger ? native<Unary>(0x820B50)(charger) : 0;
+            ap_loaded = loaded && (!has_tag(loaded, "all_he") || has_tag(loaded, "heat_shell"));
+        }
+        if (hold_cannon_ap_for_armor(true, row.armor_claimed, assignment.visible_armor_threat, ap_loaded, false, false))
+            mask.push_back({row.row, 0, true, row.kind});
+    }
+}
 inline bool __fastcall vehicle_select(Address brain, Address s, std::int16_t priority, Address out, int mode) {
     runtime::HookGuard hook_guard(hook_gate);
     auto original = [&] { return orig_select(brain, s, priority, out, mode); };
@@ -1751,16 +1826,37 @@ inline bool __fastcall vehicle_select(Address brain, Address s, std::int16_t pri
         if (r.row != live.first + i * row_size || read<Address>(r.row, 8) != r.weapon) return original();
     }
     std::vector<PartitionEntry> held;
-    if (autonomous && assignment_memory) {
+    std::vector<PartitionEntry> ap_held;
+    if (autonomous) {
         try {
-            memory_mask(*a, s, held);
+            if (assignment_memory) memory_mask(*a, s, held);
+            ap_reload_mask(*a, s, ap_held);
         } catch (const std::bad_alloc&) {
             return original();
         }
     }
     RowMask bearing_guard(held, Pass::fallback);
     if (!held.empty()) ++stat_memory_holds;
-    if (!select_armor && !a->economy && !a->multi_cannon) return original();
+    // Remove any rows already masked by bearing_guard so ap_guard does not double-restore.
+    ap_held.erase(
+        std::remove_if(ap_held.begin(), ap_held.end(), [](const PartitionEntry& e) { return read<Byte>(e.row) != 0; }),
+        ap_held.end());
+    RowMask ap_guard(ap_held, Pass::fallback);
+    auto remember_selection = [&](bool result) {
+        const Address chosen_row = result ? read<Address>(out) : 0;
+        a->proposed_weapon = chosen_row ? read<Address>(chosen_row, 8) : 0;
+        a->proposed_target = result && s ? read<Address>(s, 0x18) : 0;
+        a->proposed_ammo = result ? read<Address>(out, 0x10) : 0;
+        if (chosen_row && hostile_observation(s)) {
+            const Address tgt = read<Address>(s, 0x18);
+            if (auto_smoke::has_actor(tgt) && armoured_class(tgt)) {
+                for (Row& r : a->rows)
+                    if (r.row == chosen_row && r.kind == RowKind::main_gun) r.armor_claimed = true;
+            }
+        }
+        return result;
+    };
+    if (!select_armor && !a->economy && !a->multi_cannon) return remember_selection(original());
     struct InSelector {
         bool& flag;
         explicit InSelector(bool& f) : flag(f) {
@@ -1769,12 +1865,6 @@ inline bool __fastcall vehicle_select(Address brain, Address s, std::int16_t pri
         ~InSelector() {
             flag = false;
         }
-    };
-    auto remember_selection = [&](bool result) {
-        a->proposed_weapon = result && read<Address>(out) ? read<Address>(read<Address>(out), 8) : 0;
-        a->proposed_target = result && s ? read<Address>(s, 0x18) : 0;
-        a->proposed_ammo = result ? read<Address>(out, 0x10) : 0;
-        return result;
     };
     auto choose = [&] {
         InSelector guard(a->selecting);

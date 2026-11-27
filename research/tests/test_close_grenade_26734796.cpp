@@ -308,6 +308,67 @@ void vehicle_target_ranking() {
     h.entity = veh_ent.addr();
     h.volume = vol_veh.addr();
     assert(!pr::clear_segment(ray, hits, 20.f, nullptr, true));
+
+    // Pre-assign vehicle ranking must NOT treat its own autonomous mode-2 weapon
+    // reservation (weapon+0x214 < next free bit) as reserved_for_other, while manual
+    // (mode 1) and explicit Attack (mode 3) stay reserved in both modes.
+    Object<0x240> weap;
+    weap.set(0xD0, 1);                // active entity target
+    weap.set(0x208, 2);               // autonomous AI mode
+    weap.set(0x214, std::int16_t(0)); // holds priority bit 0 while next free bit is 1
+    assert(pr::reserved_for_other(weap.addr(), 1, false));
+    assert(!pr::reserved_for_other(weap.addr(), 1, true));
+    weap.set(0xD0, 2); // active point target while reloading
+    assert(!pr::reserved_for_other(weap.addr(), 1, true));
+    weap.set(0x208, 1); // manual / direct control
+    assert(pr::reserved_for_other(weap.addr(), 1, true));
+    weap.set(0x208, 3); // explicit Order::eAttack
+    assert(pr::reserved_for_other(weap.addr(), 1, true));
+    weap.set(0xD0, 0); // idle
+    assert(!pr::reserved_for_other(weap.addr(), 1, false));
+
+    // Coarse single-ray block on live armor must not demote it below ordinary open infantry,
+    // while open armor and open immediate AT infantry still beat blocked armor.
+    pr::Candidate rifle_open{}, tank_blocked{}, tank_open{}, bazooka_open{};
+    rifle_open.subject = 100;
+    rifle_open.ordinal = 0;
+    rifle_open.score = 0.45f;
+    rifle_open.sight = pr::Sight::open;
+    tank_blocked.subject = 200;
+    tank_blocked.ordinal = 1;
+    tank_blocked.score = 0.65f;
+    tank_blocked.class_bonus = 0.45f;
+    tank_blocked.armored = true;
+    tank_blocked.sight = pr::Sight::blocked;
+    pr::Plan blocked_vs_rifle{{rifle_open, tank_blocked}, true, false};
+    pr::rank_candidates(blocked_vs_rifle);
+    assert(blocked_vs_rifle.order[0].subject == 200 && blocked_vs_rifle.order[1].subject == 100);
+
+    tank_open = tank_blocked;
+    tank_open.subject = 201;
+    tank_open.ordinal = 2;
+    tank_open.score = 0.60f;
+    tank_open.sight = pr::Sight::open;
+    bazooka_open.subject = 300;
+    bazooka_open.ordinal = 3;
+    bazooka_open.score = 1.25f;
+    bazooka_open.high_threat = true;
+    bazooka_open.sight = pr::Sight::open;
+    pr::Plan tier_order{{rifle_open, tank_blocked, tank_open, bazooka_open}, true, false};
+    pr::rank_candidates(tier_order);
+    assert(tier_order.order[0].subject == 300 && tier_order.order[1].subject == 201 &&
+           tier_order.order[2].subject == 200 && tier_order.order[3].subject == 100);
+
+    // AP reload / chamber hold prevents non-AT infantry from hijacking a main gun and
+    // thrashing AP<->HE while enemy armor is present, while leaving MGs, HE-loaded turrets,
+    // armored targets, and immediate AT infantry unrestricted.
+    assert(pr::hold_cannon_ap_for_armor(true, true, false, false, false, false));
+    assert(pr::hold_cannon_ap_for_armor(true, false, true, true, false, false));
+    assert(!pr::hold_cannon_ap_for_armor(true, false, true, false, false, false));
+    assert(!pr::hold_cannon_ap_for_armor(true, false, false, true, false, false));
+    assert(!pr::hold_cannon_ap_for_armor(false, true, true, true, false, false));
+    assert(!pr::hold_cannon_ap_for_armor(true, true, true, true, true, false));
+    assert(!pr::hold_cannon_ap_for_armor(true, true, true, true, false, true));
 }
 
 void wire_pair() {
