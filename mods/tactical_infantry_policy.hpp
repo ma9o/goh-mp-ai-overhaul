@@ -60,11 +60,24 @@ struct Balance {
                morale >= 0 && morale <= 100;
     }
 };
+inline constexpr float kPreferredSpacingMinM = 5.0f;
+inline constexpr float kPreferredSpacingMaxM = 8.0f;
+inline constexpr float kClumpTriggerM = 4.0f;
+inline constexpr float kClumpMinDestM = 4.5f;
+inline constexpr float kClumpMinGainM = 2.0f;
+inline constexpr double kDisperseCooldownS = 8.0;
+inline constexpr double kDisperseRetryS = 2.5;
+inline constexpr float kMarchCoverRadiusM = 18.0f;
+inline constexpr double kMarchCoverCooldownS = 10.0;
+inline constexpr double kMarchCoverRetryS = 2.5;
+inline constexpr double kCoverBreakHoldS = 10.0;
+
 struct Soldier {
     Posture posture{hold};
     bool initialized{}, covered{};
     double changed{never}, entered{never}, left_cover{never}, moved{never}, fire_until{never}, detour_until{never},
-        next_search{never};
+        next_search{never}, dispersed_at{never}, disperse_retry{never}, cover_break_until{never},
+        march_cover_retry{never};
     void observe_cover(bool present, double now) {
         if (present && !covered) entered = now;
         if (!present && covered) left_cover = now;
@@ -171,9 +184,19 @@ using Elements = std::array<bool, 64>;
 inline float meters_between(XY a, XY b, float length) {
     return std::hypot(a.x - b.x, a.y - b.y) / length;
 }
+// Anti-HE/MG dispersion curve: prefers 5-8 m spacing with finite fallback down to <= 2.5 m
+// so soldiers still take scarce cover rather than staying exposed in the open.
+inline float crowding_penalty(float spacing_m) {
+    if (!std::isfinite(spacing_m)) return spacing_m > 0.f ? 0.f : 22.f;
+    if (spacing_m >= kPreferredSpacingMaxM) return 0.f;
+    if (spacing_m <= 2.5f) return 22.f;
+    if (spacing_m < 5.5f) return 4.f + (5.5f - spacing_m) * 6.f;
+    return (kPreferredSpacingMaxM - spacing_m) * 1.6f;
+}
 inline float assistant_anchor_bonus(XY candidate, XY gunner_pos, float length) {
     const float d = meters_between(candidate, gunner_pos, length);
-    return d >= 2.5f && d <= 8.f ? 12.f : 0.f;
+    if (d < 2.5f || d > 8.f) return 0.f;
+    return d >= 4.5f ? 14.f : 12.f;
 }
 inline bool assistant_cohesive(XY from, XY to, XY gunner_pos, float length) {
     const float after = meters_between(to, gunner_pos, length);
@@ -234,13 +257,13 @@ inline float score_overflow_spot(float native_score, XY point, XY anchor, float 
     const float d = meters_between(point, anchor, length);
     if (!(spacing_m >= 1.5f && d <= radius_m) || (hold_position && !(d < (std::min)(radius_m, 7.f))))
         return -std::numeric_limits<float>::infinity();
-    return native_score - d;
+    return native_score - d * .5f - crowding_penalty(spacing_m);
 }
 // Eight deterministic directions also separate passengers with identical exit positions.
 inline XY pick_dismount_spread_offset(XY self, XY centroid, XY away, unsigned id, unsigned attempt, float length) {
     XY outward = unit(self - centroid);
     if (!squared(outward)) outward = squared(away) > 0 ? unit(away) : XY{1, 0};
-    return rotate(outward, 45.f * ((id + attempt) % 8)) * (5.f * length);
+    return rotate(outward, 45.f * ((id + attempt) % 8)) * (6.f * length);
 }
 inline Elements bounders(const Roster& roster, std::size_t count, unsigned phase, unsigned cycle = 0) {
     Elements selected{};
@@ -370,6 +393,13 @@ struct Claims {
                     d = (std::min)(d, squared(point - c.point));
         return d;
     }
+    bool has_outbound_claim(Id scene, Id squad, Id actor, XY from_point, float min_distance_sq, double now) const {
+        if (!squad) return false;
+        for (const auto& c : entries)
+            if (c.scene == scene && c.squad == squad && c.actor == actor && c.until > now)
+                return squared(c.point - from_point) >= min_distance_sq;
+        return false;
+    }
 };
 enum class Sight {
     unknown,
@@ -386,7 +416,7 @@ inline float cover_height(int protected_class, int firing_class, bool retreat) {
     }
 }
 struct CoverSelection {
-    static constexpr unsigned limit = 12;
+    static constexpr unsigned limit = 32;
     unsigned probes{}, winner{limit};
     float score{-std::numeric_limits<float>::infinity()};
     template <class Probe> Sight probe(Probe measure) {
@@ -405,7 +435,94 @@ inline float cover_score(float native, Sight sight, bool retreat, float alignmen
                          bool is_screened = false) {
     const bool useful = retreat ? sight == Sight::blocked : sight == Sight::open;
     return native + (useful ? 12.f : 0.f) + (is_screened ? 8.f : 0.f) + 6.f * std::clamp(alignment, 0.f, 1.f) -
-           (spacing_m <= 2.5f ? 15.f : std::clamp((3.f - spacing_m) * 30.f, 0.f, 15.f));
+           crowding_penalty(spacing_m);
+}
+inline bool anchor_beats(bool mate_covered, bool mate_is_gunner, Role mate_role, unsigned mate_id, bool self_covered,
+                         Role self_role, unsigned self_id) {
+    if (mate_covered != self_covered) return mate_covered;
+    if (mate_is_gunner) return true;
+    const bool mate_heavy = mate_role == Role::heavy;
+    const bool self_heavy = self_role == Role::heavy;
+    if (mate_heavy != self_heavy) return mate_heavy;
+    return mate_id < self_id;
+}
+inline bool should_disperse_clump(const Soldier& s, double now, bool under_threat, float nearest_mate_m,
+                                  bool higher_priority_mate_close) {
+    if (s.covered || !under_threat || !higher_priority_mate_close) return false;
+    if (!std::isfinite(nearest_mate_m) || nearest_mate_m > kClumpTriggerM) return false;
+    return now - s.dispersed_at >= kDisperseCooldownS && now >= s.disperse_retry;
+}
+inline bool dispersion_step_safe(XY from, XY to, XY threat) {
+    const XY to_threat = unit(threat - from);
+    if (!squared(to_threat)) return false;
+    return dot(to - from, to_threat) <= 0.f;
+}
+inline bool spacing_improved(float current_spacing_m, float candidate_spacing_m, bool screened_cover) {
+    if (!std::isfinite(candidate_spacing_m)) return candidate_spacing_m > 0.f;
+    const float min_dest = screened_cover ? 3.5f : kClumpMinDestM;
+    const float min_gain = screened_cover ? 1.5f : kClumpMinGainM;
+    const float base = std::isfinite(current_spacing_m) ? current_spacing_m : 0.f;
+    return candidate_spacing_m >= min_dest && candidate_spacing_m >= base + min_gain;
+}
+inline float score_disperse_cover(float native_score, Sight sight, float spacing_m, float dist_m, bool is_screened) {
+    if (!is_screened || !std::isfinite(native_score) || !std::isfinite(dist_m) || dist_m < 2.f || dist_m > 10.f)
+        return -std::numeric_limits<float>::infinity();
+    return native_score + 16.f + (sight == Sight::open ? 10.f : 0.f) - crowding_penalty(spacing_m) - dist_m * .3f;
+}
+inline float score_disperse_offset(float spacing_m, float exposure, Sight sight, float dist_m, float outward_dot) {
+    if (!std::isfinite(exposure) || !std::isfinite(dist_m) || dist_m < 3.5f || dist_m > 13.f)
+        return -std::numeric_limits<float>::infinity();
+    const float sight_term = sight == Sight::open ? 12.f : (sight == Sight::blocked ? -6.f : 0.f);
+    return sight_term - crowding_penalty(spacing_m) - exposure * 4.f + 2.f * std::clamp(outward_dot, -1.f, 1.f) -
+           dist_m * .25f;
+}
+inline std::array<XY, 10> lateral_disperse_candidates(XY self, XY threat, XY clump_center, unsigned actor_id,
+                                                      float length) {
+    const XY to_threat = unit(threat - self);
+    const XY side_axis = left(to_threat);
+    const float away_side = dot(self - clump_center, side_axis);
+    const float first_sign =
+        (std::fabs(away_side) > 0.25f * length) ? (away_side >= 0.f ? 1.f : -1.f) : ((actor_id & 1u) ? 1.f : -1.f);
+    const float second_sign = -first_sign;
+    const XY back = to_threat * -1.f;
+    // Lateral (±90° at 6 / 7.5 / 12.5 m), oblique-back (±140° at 7.2 m), and rear (180° at 6 / 7.8 m):
+    // every candidate satisfies dot(step, to_threat) <= 0 and gives 5-8 man clumps >= 5 m pairwise clearance.
+    const XY ob1 = unit(side_axis * first_sign * .6427876f + back * .7660444f);
+    const XY ob2 = unit(side_axis * second_sign * .6427876f + back * .7660444f);
+    return {
+        self + side_axis * (first_sign * 6.f * length),
+        self + side_axis * (first_sign * 7.5f * length),
+        self + side_axis * (second_sign * 6.f * length),
+        self + side_axis * (second_sign * 7.5f * length),
+        self + ob1 * (7.2f * length),
+        self + ob2 * (7.2f * length),
+        self + back * (7.8f * length),
+        self + back * (6.f * length),
+        self + side_axis * (first_sign * 12.5f * length),
+        self + side_axis * (second_sign * 12.5f * length),
+    };
+}
+inline bool ai_march_allows(unsigned modes, unsigned flags) {
+    const auto ctrl = modes & 3u;
+    const auto fire = (modes >> 10) & 3u;
+    const auto move = modes & 0x3000u;
+    return ctrl == 0u && move == 0u && !(flags & 0x0110003fu) && (fire == 0u || (fire == 2u && (flags & (1u << 18))));
+}
+inline bool ai_march_under_fire(float morale, bool losing_morale, bool recent_hit_signal, unsigned brain_flags,
+                                bool hostile_threatening) {
+    if (recent_hit_signal || losing_morale || hostile_threatening) return true;
+    if (brain_flags & 0x1C000u) return true;
+    return std::isfinite(morale) && morale >= 0.f && morale < 75.f;
+}
+inline bool should_seek_march_cover(const Soldier& s, double now, bool marching, bool under_fire) {
+    return !s.covered && marching && under_fire && now >= s.cover_break_until && now >= s.march_cover_retry;
+}
+inline float score_march_cover(float native_score, bool is_screened, float spacing_m, float dist_m,
+                               float radius_m = kMarchCoverRadiusM) {
+    if (!is_screened || !std::isfinite(native_score) || !std::isfinite(dist_m) || !(spacing_m >= 1.5f) ||
+        dist_m > radius_m)
+        return -std::numeric_limits<float>::infinity();
+    return native_score + 16.f - crowding_penalty(spacing_m) - dist_m * .45f;
 }
 inline bool stable_cover(double now, const Soldier& s, bool screened, bool taking_fire, bool can_fire) {
     return s.covered && now - (std::max)(s.entered, s.moved) < 9 && (screened || (!taking_fire && can_fire));

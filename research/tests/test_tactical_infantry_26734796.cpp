@@ -146,6 +146,10 @@ void spacing_and_movement() {
     assert(std::isinf(claims.nearest(1, 6, 11, {2, 0}, 11)));
     claims.claim({1, 10, 5, 8, {9, 0}, 20}, 8);
     assert(claims.nearest(1, 5, 11, {9, 0}, 9) == 0);
+    assert(claims.has_outbound_claim(1, 5, 10, {0, 0}, 16, 9));
+    assert(!claims.has_outbound_claim(1, 5, 10, {8, 0}, 16, 9));
+    assert(!claims.has_outbound_claim(1, 5, 10, {0, 0}, 16, 20));
+    assert(!claims.has_outbound_claim(1, 6, 10, {0, 0}, 16, 9));
     const auto forward = p::bound_range(false), back = p::bound_range(true);
     assert(forward.contains(5) && forward.contains(18) && !forward.contains(4.9f) && !forward.contains(18.1f));
     assert(back.contains(8) && back.contains(20) && !back.contains(7.9f) && !back.contains(20.1f));
@@ -160,10 +164,24 @@ void spacing_and_movement() {
     assert(!p::bound_arrived({40, 0}, {}, 20, true, false));
     assert(!p::bound_arrived({40.1f, 0}, {}, 20, true, true));
     using V = p::Sight;
-    assert(p::cover_score(10, V::unknown, true, 0, 4, true) == 18);
-    assert(p::cover_score(10, V::open, false, 0, 4, true) == 30);
-    assert(p::cover_score(10, V::blocked, true, 0, 4, true) == 30);
-    assert(p::cover_score(40, V::blocked, false, 0, 4, false) > p::cover_score(10, V::open, false, 0, 4, true));
+    // Anti-HE/MG crowding curve: full clearance at >= 8 m, smooth taper across 5.5-8 m and 2.5-5.5 m, finite fallback.
+    assert(p::crowding_penalty(std::numeric_limits<float>::infinity()) == 0.f);
+    assert(p::crowding_penalty(8.f) == 0.f && p::crowding_penalty(12.f) == 0.f);
+    assert(std::abs(p::crowding_penalty(7.f) - 1.6f) < .01f);
+    assert(std::abs(p::crowding_penalty(6.f) - 3.2f) < .01f);
+    assert(std::abs(p::crowding_penalty(5.5f) - 4.f) < .01f);
+    assert(std::abs(p::crowding_penalty(4.f) - 13.f) < .01f);
+    assert(std::abs(p::crowding_penalty(3.f) - 19.f) < .01f);
+    assert(p::crowding_penalty(2.5f) == 22.f && p::crowding_penalty(0.f) == 22.f);
+    assert(p::crowding_penalty(std::numeric_limits<float>::quiet_NaN()) == 22.f);
+    assert(p::cover_score(10, V::unknown, true, 0, 8, true) == 18);
+    assert(p::cover_score(10, V::open, false, 0, 8, true) == 30);
+    assert(p::cover_score(10, V::blocked, true, 0, 8, true) == 30);
+    assert(p::cover_score(40, V::blocked, false, 0, 8, false) > p::cover_score(10, V::open, false, 0, 8, true));
+    // 6-8 m spaced cover strongly beats 2.5-3.5 m clumped cover, while scarce cover stays finite and usable.
+    assert(p::cover_score(10, V::open, false, 0, 7, true) > p::cover_score(10, V::open, false, 0, 3, true) + 15.f);
+    assert(std::isfinite(p::cover_score(10, V::open, false, 0, 2, true)));
+    assert(p::cover_score(25, V::open, false, 0, 2.5f, true) > p::cover_score(0, V::blocked, false, 0, 8, false));
     assert(p::cover_height(2, 3, false) == 1.35f && p::cover_height(2, 3, true) == .9f);
     assert(p::cover_height(3, 0, false) == 0 && p::cover_height(3, 0, true) == 1.35f);
     assert(p::cover_height(2, 7, false) == 0 && p::cover_height(1, 1, false) == .35f);
@@ -180,10 +198,20 @@ void spacing_and_movement() {
     ranked.consider(1, std::numeric_limits<float>::quiet_NaN());
     ranked.consider(p::CoverSelection::limit, 30);
     assert(calls == 6 && ranked.winner == 3 && ranked.score == 20);
-    assert(p::cover_score(10, V::open, false, 1, 3) == 28);
-    assert(p::cover_score(10, V::open, false, 1, 2.5) == 13);
-    assert(p::cover_score(10, V::unknown, true, 0, 4) == 10);
-    assert(p::cover_score(10, V::blocked, true, 0, 4) == 22);
+    assert(p::cover_score(10, V::open, false, 1, 8) == 28);
+    assert(p::cover_score(10, V::open, false, 1, 2.5) == 6);
+    assert(p::cover_score(10, V::unknown, true, 0, 8) == 10);
+    assert(p::cover_score(10, V::blocked, true, 0, 8) == 22);
+    // Assistant cohesion favors the 4.5-8 m anti-HE sweet spot while keeping 2.5-4.5 m viable when scarce.
+    assert(p::assistant_anchor_bonus({120, 0}, {}, 20) == 14.f);
+    assert(p::assistant_anchor_bonus({60, 0}, {}, 20) == 12.f);
+    assert(p::assistant_anchor_bonus({40, 0}, {}, 20) == 0.f);
+    assert(p::assistant_anchor_bonus({180, 0}, {}, 20) == 0.f);
+    // Overflow cover prefers 6-7 m spacing over 2 m clumping while honoring Hold Position < 7 m and scarce fallback.
+    assert(p::score_overflow_spot(20, {130, 0}, {}, 20, 8, false, 6.5f) >
+           p::score_overflow_spot(20, {40, 0}, {}, 20, 8, false, 2.f));
+    assert(std::isfinite(p::score_overflow_spot(20, {40, 0}, {}, 20, 8, true, 2.f)));
+    assert(!std::isfinite(p::score_overflow_spot(20, {140, 0}, {}, 20, 8, true, 7.f)));
     assert(!p::replan({40, 0}, {0, 0}, {1, 1}, 20, false));
     assert(p::replan({41, 0}, {0, 0}, {1, 1}, 20, false));
     assert(!p::replan({120, 0}, {0, 0}, {1, 1}, 20, true));
@@ -264,6 +292,126 @@ void cover_and_authority() {
     assert(!p::allows(1, 0, false, false, true));
     assert(p::allows(0, 1u << 28));
     assert(!p::allows(0, (1u << 28) | (1u << 20)));
+}
+void anti_clump_and_march_cover_policy() {
+    using R = p::Role;
+    using V = p::Sight;
+    // Anchor priority: covered > paired gunner > heavy > lower entity ID.
+    assert(p::anchor_beats(true, false, R::rifle, 99, false, R::heavy, 1));
+    assert(!p::anchor_beats(false, false, R::heavy, 1, true, R::rifle, 99));
+    assert(p::anchor_beats(false, true, R::heavy, 50, false, R::heavy, 2));
+    assert(p::anchor_beats(false, false, R::heavy, 50, false, R::rifle, 2));
+    assert(!p::anchor_beats(false, false, R::rifle, 2, false, R::heavy, 50));
+    assert(p::anchor_beats(false, false, R::rifle, 2, false, R::rifle, 5));
+    assert(!p::anchor_beats(false, false, R::rifle, 5, false, R::rifle, 2));
+
+    // Anti-clump trigger, cooldown, and retry hysteresis.
+    p::Soldier s;
+    assert(p::should_disperse_clump(s, 10, true, 3.5f, true));
+    assert(p::should_disperse_clump(s, 10, true, 4.0f, true));
+    assert(!p::should_disperse_clump(s, 10, true, 4.1f, true));
+    assert(!p::should_disperse_clump(s, 10, false, 2.0f, true));
+    assert(!p::should_disperse_clump(s, 10, true, 2.0f, false));
+    s.covered = true;
+    assert(!p::should_disperse_clump(s, 10, true, 2.0f, true));
+    s.covered = false;
+    s.dispersed_at = 10;
+    assert(!p::should_disperse_clump(s, 17.9, true, 2.0f, true));
+    assert(p::should_disperse_clump(s, 18.0, true, 2.0f, true));
+    s.disperse_retry = 20.5;
+    assert(!p::should_disperse_clump(s, 20.4, true, 2.0f, true));
+    assert(p::should_disperse_clump(s, 20.5, true, 2.0f, true));
+
+    // Never step toward enemies, and enforce spacing gain hysteresis.
+    assert(p::dispersion_step_safe({0, 0}, {0, 120}, {400, 0}));   // pure lateral left
+    assert(p::dispersion_step_safe({0, 0}, {0, -120}, {400, 0}));  // pure lateral right
+    assert(p::dispersion_step_safe({0, 0}, {-40, 120}, {400, 0})); // oblique back
+    assert(!p::dispersion_step_safe({0, 0}, {10, 120}, {400, 0})); // stepping forward rejected
+    assert(!p::dispersion_step_safe({0, 0}, {100, 0}, {400, 0}));  // straight toward enemy rejected
+    assert(!p::dispersion_step_safe({0, 0}, {0, 120}, {0, 0}));    // degenerate threat rejected
+
+    assert(p::spacing_improved(1.5f, 4.5f, false));
+    assert(!p::spacing_improved(1.5f, 4.4f, false));
+    assert(!p::spacing_improved(3.5f, 5.4f, false));
+    assert(p::spacing_improved(3.5f, 5.5f, false));
+    assert(p::spacing_improved(1.5f, 3.5f, true));
+    assert(!p::spacing_improved(2.5f, 3.9f, true));
+    assert(p::spacing_improved(2.5f, 4.0f, true));
+    assert(p::spacing_improved(3.5f, std::numeric_limits<float>::infinity(), false));
+
+    // Lateral dispersion fan: all 10 points are 6-12.5 m away, never step toward enemies, split clumps both ways,
+    // and let a 6-man clump fan out >= 5 m pairwise without colliding on only two side slots.
+    const auto even_cands = p::lateral_disperse_candidates({0, 0}, {400, 0}, {0, 0}, 2, 20);
+    const auto odd_cands = p::lateral_disperse_candidates({0, 0}, {400, 0}, {0, 0}, 3, 20);
+    assert(even_cands[0].y < 0.f && odd_cands[0].y > 0.f); // opposite initial lateral directions on tie
+    for (const auto& pt : even_cands) {
+        const float d = p::meters_between(pt, {0, 0}, 20);
+        assert(d >= 5.9f && d <= 12.6f);
+        assert(p::dispersion_step_safe({0, 0}, pt, {400, 0}));
+    }
+    std::array<p::XY, 6> placed{};
+    placed[0] = {0, 0}; // anchor
+    for (unsigned idx = 1; idx < 6; ++idx) {
+        const auto cands = p::lateral_disperse_candidates({0, 0}, {400, 0}, {0, 0}, idx + 1, 20);
+        bool found = false;
+        for (const auto& pt : cands) {
+            float nearest = std::numeric_limits<float>::infinity();
+            for (unsigned j = 0; j < idx; ++j)
+                nearest = (std::min)(nearest, p::meters_between(pt, placed[j], 20));
+            if (nearest >= 5.f) {
+                placed[idx] = pt;
+                found = true;
+                break;
+            }
+        }
+        assert(found);
+    }
+    assert(p::score_disperse_cover(15, V::open, 6.5f, 5.f, true) >
+           p::score_disperse_cover(15, V::blocked, 6.5f, 5.f, true));
+    assert(!std::isfinite(p::score_disperse_cover(15, V::open, 6.5f, 5.f, false))); // unscreened rejected
+    assert(p::score_disperse_offset(6.5f, .2f, V::open, 6.f, 1.f) >
+           p::score_disperse_offset(6.5f, 1.5f, V::open, 6.f, 1.f));
+    assert(p::score_disperse_offset(6.5f, .2f, V::open, 6.f, 1.f) >
+           p::score_disperse_offset(6.5f, .2f, V::blocked, 6.f, 1.f));
+
+    // Goal 3: AI march cover authority, under-fire detection, cooldown, and screened cover scoring.
+    assert(p::ai_march_allows(0, 0));
+    assert(p::ai_march_allows(0, (1u << 6) | (1u << 9) | (1u << 28))); // AI direct goal / follow / move bits allowed
+    assert(p::ai_march_allows(2u << 10, 1u << 18));                    // alerted return fire allowed
+    assert(!p::ai_march_allows(1, 0));                                 // player control=1 strictly rejected
+    assert(!p::ai_march_allows(1, 1u << 28));                          // player active_user_move strictly rejected
+    assert(!p::ai_march_allows(0x1000u, 0));                           // Hold Position strictly rejected
+    assert(!p::ai_march_allows(0x2000u, 0));                           // Move in Zone strictly rejected
+    assert(!p::ai_march_allows(1u << 10, 0));                          // Hold Fire rejected
+    assert(!p::ai_march_allows(2u << 10, 0));                          // unalerted Return Fire rejected
+    for (unsigned flag : {1u, 63u, 1u << 20, 1u << 24})
+        assert(!p::ai_march_allows(0, flag));
+
+    assert(!p::ai_march_under_fire(100.f, false, false, 0, false));
+    assert(p::ai_march_under_fire(70.f, false, false, 0, false));
+    assert(p::ai_march_under_fire(100.f, true, false, 0, false));
+    assert(p::ai_march_under_fire(100.f, false, true, 0, false));
+    assert(p::ai_march_under_fire(100.f, false, false, 1u << 14, false));
+    assert(p::ai_march_under_fire(100.f, false, false, 0, true));
+
+    p::Soldier m;
+    assert(p::should_seek_march_cover(m, 10, true, true));
+    assert(!p::should_seek_march_cover(m, 10, false, true));
+    assert(!p::should_seek_march_cover(m, 10, true, false));
+    m.cover_break_until = 20;
+    assert(!p::should_seek_march_cover(m, 19.9, true, true));
+    assert(p::should_seek_march_cover(m, 20.0, true, true));
+    m.march_cover_retry = 22.5;
+    assert(!p::should_seek_march_cover(m, 22.4, true, true));
+    assert(p::should_seek_march_cover(m, 22.5, true, true));
+    m.covered = true;
+    assert(!p::should_seek_march_cover(m, 30.0, true, true));
+
+    assert(!std::isfinite(p::score_march_cover(20, false, 7.f, 10.f))); // unscreened rejected
+    assert(!std::isfinite(p::score_march_cover(20, true, 1.4f, 10.f))); // occupied/stacked rejected
+    assert(!std::isfinite(p::score_march_cover(20, true, 7.f, 18.5f))); // beyond 18 m rejected
+    assert(p::score_march_cover(20, true, 7.5f, 14.f) > p::score_march_cover(20, true, 2.5f, 8.f));
+    assert(std::isfinite(p::score_march_cover(20, true, 2.0f, 10.f))); // scarce cover fallback
 }
 #if defined(_WIN32) || defined(GOH_TACTICAL_ADAPTER_FIXTURES)
 bool fixture_selected{};
@@ -417,6 +565,68 @@ void support_and_orders() {
     d::put(b, 0xf0, std::uintptr_t{});
     assert(!d::protected_order(b, a));
 
+    // AI march roster permits active squad waypoints (squad+0x1C8) ONLY for AI Move-at-Will squads.
+    d::put(b, 0x398, 0u);
+    d::put(addr(squad), 0x1c8, std::uintptr_t{0x1234});
+    assert(!d::roster_permits(addr(squad), a));
+    assert(d::ai_march_roster_permits(addr(squad), a));
+    d::put(b, 0x398, 1u); // player control=1 rejected even with waypoint
+    assert(!d::ai_march_roster_permits(addr(squad), a));
+    d::put(b, 0x398, 0x1000u); // Hold Position rejected
+    assert(!d::ai_march_roster_permits(addr(squad), a));
+    d::put(b, 0x398, 0u);
+    fixture_selected = true;
+    assert(!d::ai_march_roster_permits(addr(squad), a));
+    fixture_selected = false;
+    d::put(addr(squad), 0x1c8, std::uintptr_t{0});
+
+    // march_order_state distinguishes safe march legs (eMove/eMoveTask/eAdvance) from cover/combat/listened orders.
+    const auto& vt = goh::runtime::table().vt;
+    bool active_m = false, repl = false;
+    d::march_order_state(a, b, active_m, repl);
+    assert(!active_m && repl); // free slot
+    d::put(b, 0xf0, o);
+    d::put(o, 8, a + 0xaf0);
+    d::put(o, 0, goh::ai_support::base + vt.move_order);
+    d::march_order_state(a, b, active_m, repl);
+    assert(active_m && repl);
+    d::put(o, 0x10, std::uintptr_t{0x99}); // external listener vetoes replacement
+    d::march_order_state(a, b, active_m, repl);
+    assert(!active_m && !repl);
+    d::put(o, 0x10, std::uintptr_t{0});
+    d::put(o, 0, goh::ai_support::base + vt.move_to_cover); // already moving to cover: never interrupt
+    d::march_order_state(a, b, active_m, repl);
+    assert(!active_m && !repl);
+    d::put(o, 0, goh::ai_support::base + vt.attack_order); // explicit attack: never interrupt
+    d::march_order_state(a, b, active_m, repl);
+    assert(!active_m && !repl);
+    d::put(o, 0, goh::ai_support::base + vt.advance_order);
+    d::put(b, 0x39c, 1u << 24); // inside Exec callback: never touch brain+0xF0
+    d::march_order_state(a, b, active_m, repl);
+    assert(!active_m && !repl);
+    d::put(b, 0x39c, 0u);
+    d::march_order_state(a, b, active_m, repl);
+    assert(active_m && repl);
+    // Single-item eComplex wrapping eAdvance is replaceable; multi-item eComplex must never drop tail orders.
+    alignas(16) std::array<std::byte, 0x60> complex_ord{};
+    std::array<std::uintptr_t, 2> block{o, 0};
+    std::array<std::uintptr_t, 1> map{reinterpret_cast<std::uintptr_t>(block.data())};
+    const auto cx = addr(complex_ord);
+    d::put(cx, 0, goh::ai_support::base + 0x110D490);
+    d::put(cx, 8, a + 0xaf0);
+    d::put(cx, 0x30, reinterpret_cast<std::uintptr_t>(map.data()));
+    d::put(cx, 0x38, std::size_t{1});
+    d::put(cx, 0x40, std::size_t{0});
+    d::put(cx, 0x48, std::size_t{1});
+    d::put(b, 0xf0, cx);
+    d::march_order_state(a, b, active_m, repl);
+    assert(active_m && repl);
+    d::put(cx, 0x48, std::size_t{2}); // queued tail order -> veto replacement
+    d::march_order_state(a, b, active_m, repl);
+    assert(!active_m && !repl);
+    d::put(b, 0xf0, std::uintptr_t{});
+    d::put(b, 0x398, 1u);
+
     auto& r = smoke::reservations[0];
     smoke::cache_scene = w.scene;
     r.carrier = a;
@@ -539,9 +749,11 @@ void lifecycle() {
     d::record_bound(c, &cover, nullptr);
     assert(c.soldier->issued_cover && c.soldier->goal.x == 18 && c.team->issued_bounds == 2);
     d::issued.store(9);
+    t::stat_clump_spread.store(4);
+    t::stat_march_cover.store(5);
     assert(t::stat_issued() == 9);
     t::after_hooks_removed();
-    assert(t::stat_issued() == 0);
+    assert(t::stat_issued() == 0 && t::stat_clump_spread == 0 && t::stat_march_cover == 0);
     d::soldiers[0].key = 1;
     d::squads[0].key = 2;
     d::claims.entries[0].actor = 3;
@@ -555,6 +767,7 @@ int main() {
     elements();
     spacing_and_movement();
     cover_and_authority();
+    anti_clump_and_march_cover_policy();
 #if defined(_WIN32) || defined(GOH_TACTICAL_ADAPTER_FIXTURES)
     defensive_line();
     support_and_orders();

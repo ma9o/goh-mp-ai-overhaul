@@ -101,26 +101,66 @@ struct Squad {
         soldiers[index].actor.put(0x74, position);
         soldiers[index].cover.put(0x30, descriptor);
     }
-    void spot(unsigned index, float x, float y, float score) {
+    bool last_used_cover{};
+    void spot(unsigned index, float x, float y, float score, bool screened_flag = true) {
         d::put(spots[index].ptr(), 4, 1);
+        d::put(spots[index].ptr(), 8, 2);
+        d::put(spots[index].ptr(), 0xc, 2);
         d::put(spots[index].ptr(), 0x10, p::XY{x, y});
+        d::put(spots[index].ptr(), 0x30, Byte{screened_flag ? Byte{1} : Byte{0}});
         d::put(spots[index].ptr(), 0x80, score);
     }
-    bool tick(unsigned index, unsigned tick, bool collect = true) {
+    bool tick(unsigned index, unsigned tick_now, bool collect = true) {
         d::Context c{};
-        world.now = tick;
+        world.now = tick_now;
         c.w = world;
         c.actor = roster[index];
         return d::settle_squad(c, [&](d::Context& frame, d::Purpose why) {
             ++attempts;
             purpose = why;
+            last_used_cover = false;
             if (!collect) return false;
             d::Choice best{};
             const auto first = reinterpret_cast<Address>(spots.data());
             if (!d::select_cover(frame, {first, first + sizeof(spots)}, why, best)) return false;
             last = best.spot.xy();
+            last_used_cover = true;
             d::claim(frame, last);
             return true;
+        });
+    }
+    template <class PassableFn, class SightFn>
+    bool tick_tactical(unsigned index, unsigned tick_now, PassableFn passable, SightFn probe_sight,
+                       bool allow_cover = true) {
+        d::Context c{};
+        world.now = tick_now;
+        c.w = world;
+        c.actor = roster[index];
+        return d::settle_squad(c, [&](d::Context& frame, d::Purpose why) {
+            ++attempts;
+            purpose = why;
+            last_used_cover = false;
+            const auto first = reinterpret_cast<Address>(spots.data());
+            if (allow_cover && (why == d::Purpose::march_cover || why == d::Purpose::disperse_cover)) {
+                d::Choice best{};
+                auto is_screened = [](Address desc, p::XY, p::XY) { return s::read<Byte>(desc, 0x30) != 0; };
+                if (d::select_screened_cover(frame, {first, first + sizeof(spots)}, why, best, is_screened,
+                                             probe_sight)) {
+                    last = best.spot.xy();
+                    last_used_cover = true;
+                    d::claim(frame, last);
+                    return true;
+                }
+            }
+            if (why == d::Purpose::disperse_cover) {
+                p::XY offset{};
+                if (d::choose_disperse_offset(frame, passable, probe_sight, offset)) {
+                    last = offset;
+                    d::claim(frame, last);
+                    return true;
+                }
+            }
+            return false;
         });
     }
 };
@@ -460,6 +500,221 @@ void exposed_crews() {
     assert(!shot(cg::Vehicle::gun));
     modules.close_grenade = true;
 }
+void wider_overflow_dispersion() {
+    s::base = reinterpret_cast<Address>(&selection) - 0x91b190;
+    auto& modules = goh::config::active().modules;
+    modules.weapon_team_cohesion = false;
+    Squad f;
+    f.covered(1, {0, 0}, {0, 0}); // covered mate at origin
+    f.soldiers[0].actor.put(0x74, p::XY{0, 0});
+    f.soldiers[0].brain.put(0x39c, 1u << 28);
+    assert(!f.tick(0, 100));
+    f.soldiers[0].brain.put(0x39c, 0u);
+    f.spot(0, 50, 0, 25);  // 2.5 m from covered mate (heavily crowded)
+    f.spot(1, 130, 0, 20); // 6.5 m from covered mate (anti-HE spaced!)
+    assert(f.tick(0, 101) && f.purpose == d::Purpose::overflow && f.last.x == 130.f);
+
+    // Graceful fallback when cover is scarce: only a 2.5 m slot exists, soldier still takes cover.
+    Squad scarce;
+    scarce.covered(1, {0, 0}, {0, 0});
+    scarce.soldiers[0].actor.put(0x74, p::XY{0, 0});
+    scarce.soldiers[0].brain.put(0x39c, 1u << 28);
+    assert(!scarce.tick(0, 100));
+    scarce.soldiers[0].brain.put(0x39c, 0u);
+    scarce.spot(0, 50, 0, 20); // only scarce cover slot at 2.5 m
+    assert(scarce.tick(0, 101) && scarce.purpose == d::Purpose::overflow && scarce.last.x == 50.f);
+    modules.weapon_team_cohesion = true;
+}
+void active_clump_dispersion() {
+    s::base = reinterpret_cast<Address>(&selection) - 0x91b190;
+    Squad f;
+    // Place 4 Move-at-Will player soldiers tightly clumped within 1.5 m in open ground.
+    f.soldiers[0].actor.put(0x74, p::XY{0, 0});
+    f.soldiers[1].actor.put(0x74, p::XY{10, 0});
+    f.soldiers[2].actor.put(0x74, p::XY{0, 10});
+    f.soldiers[3].actor.put(0x74, p::XY{15, 10});
+    for (unsigned i = 0; i < 4; ++i)
+        f.soldiers[i].brain.put(0x474, 100.f);
+    d::actor_record(f.roster[0], f.soldiers[0].brain.ptr(), 10.)->role = p::Role::heavy; // MG anchor
+
+    auto all_passable = [](p::XY) { return true; };
+    auto all_open = [](p::XY, float) { return p::Sight::open; };
+
+    // Without any hostile threat, peaceful clumped Move-at-Will infantry do NOT disperse.
+    assert(!f.tick_tactical(1, 101, all_passable, all_open) && f.attempts == 0);
+
+    // Add a visible hostile contact 30 m east (600 world units).
+    Memory<0x80> enemy_sub;
+    enemy_sub.put(0x10, 3u << 28); // remembered + visible
+    enemy_sub.put(0x14, 0x102u);   // hostile + attacking
+    enemy_sub.put(0x28, p::XY{600, 0});
+    enemy_sub.put(0x64, 102u);
+    enemy_sub.put(0x68, 102u);
+    std::array<Address, 1> subs{enemy_sub.ptr()};
+    for (unsigned i = 0; i < 4; ++i) {
+        f.soldiers[i].sensor.put(0x280, reinterpret_cast<Address>(subs.data()));
+        f.soldiers[i].sensor.put(0x288, reinterpret_cast<Address>(subs.data() + 1));
+    }
+
+    // Authority vetoes: Hold Position, active_user_move, selected squad, explicit eAttack, Direct Control.
+    f.soldiers[1].brain.put(0x398, 0x1001u); // Hold Position
+    assert(!f.tick_tactical(1, 102, all_passable, all_open) && f.attempts == 0);
+    f.soldiers[1].brain.put(0x398, 1u);
+    f.soldiers[2].brain.put(0x39c, 1u << 28); // active_user_move on squadmate vetoes entire squad
+    assert(!f.tick_tactical(1, 102, all_passable, all_open) && f.attempts == 0);
+    assert(!f.tick_tactical(2, 102, all_passable, all_open) && f.attempts == 0);
+    f.soldiers[2].brain.put(0x39c, 0u);
+    d::actor_record(f.roster[2], f.soldiers[2].brain.ptr(), 10.2)->prev_user_move = false;
+    selected_brain = f.soldiers[0].brain.ptr();
+    assert(!f.tick_tactical(1, 102, all_passable, all_open) && f.attempts == 0);
+    selected_brain = 0;
+    Memory<0x60> attack_order;
+    attack_order.put(0, s::base + goh::runtime::table().vt.attack_order);
+    attack_order.put(8, f.roster[1] + 0xaf0);
+    f.soldiers[1].brain.put(0xf0, attack_order.ptr());
+    assert(!f.tick_tactical(1, 102, all_passable, all_open) && f.attempts == 0);
+    f.soldiers[1].brain.put(0xf0, Address{});
+    f.soldiers[1].brain.put(0x39c, 1u); // Direct Control / inhibition
+    assert(!f.tick_tactical(1, 102, all_passable, all_open) && f.attempts == 0);
+    f.soldiers[1].brain.put(0x39c, 0u);
+
+    // Anchor (MG gunner, lowest ID) holds ground instead of dispersing.
+    assert(!f.tick_tactical(0, 103, all_passable, all_open) && f.attempts == 0);
+
+    // Excess soldier 1 prefers nearby screened cover that does NOT step toward the enemy (east).
+    f.spot(0, 120, 40, 40, true);   // forward toward enemy -> rejected
+    f.spot(1, -20, 130, 35, false); // unscreened -> rejected
+    f.spot(2, -10, 130, 20, true);  // 6.5 m north-west, screened, safe -> chosen!
+    assert(f.tick_tactical(1, 103, all_passable, all_open));
+    assert(f.purpose == d::Purpose::disperse_cover && f.last_used_cover && f.last.x == -10.f && f.last.y == 130.f);
+    assert(p::dispersion_step_safe({10, 0}, f.last, {600, 0}));
+
+    // Excess soldier 2 has no screened cover left -> falls back to low-exposure lateral offset 5-8 m away,
+    // preferring the side clear of soldier 1's claim (-10, 130) and never stepping east toward enemy.
+    assert(f.tick_tactical(2, 103, all_passable, all_open, false));
+    assert(f.purpose == d::Purpose::disperse_cover && !f.last_used_cover);
+    assert(p::dispersion_step_safe({0, 10}, f.last, {600, 0}));
+    assert(p::meters_between(f.last, {0, 10}, 20) >= 5.5f && p::meters_between(f.last, {0, 10}, 20) <= 8.f);
+    assert(p::meters_between(f.last, {-10, 130}, 20) >= 5.f);
+
+    // Failed search on soldier 3 arms the 2.5 s retry backoff without throwing away cooldown.
+    auto blocked_all = [](p::XY) { return false; };
+    const unsigned before_fail = f.attempts;
+    assert(!f.tick_tactical(3, 103, blocked_all, all_open, false) && f.attempts == before_fail + 1);
+    assert(!f.tick_tactical(3, 120, all_passable, all_open, false) && f.attempts == before_fail + 1); // < 2.5 s backoff
+    assert(f.tick_tactical(3, 128, all_passable, all_open, false) && f.attempts == before_fail + 2);  // >= 2.5 s retry
+    // Now all 3 excess soldiers have outbound claims -> even a non-heavy anchor does not cascade-evacuate!
+    d::actor_record(f.roster[0], f.soldiers[0].brain.ptr(), 12.8)->role = p::Role::rifle;
+    assert(!f.tick_tactical(0, 128, all_passable, all_open, false));
+
+    // Cooldown prevents re-dispersing soldier 1 within 8 s (80 ticks at 10 ticks/s).
+    const unsigned before_cd = f.attempts;
+    assert(!f.tick_tactical(1, 150, all_passable, all_open) && f.attempts == before_cd);
+}
+void ai_march_cover_seeking() {
+    s::base = reinterpret_cast<Address>(&selection) - 0x91b190;
+    Squad f;
+    // Configure AI-controlled (control == 0) Move-at-Will squad marching on a waypoint with active eAdvance orders.
+    f.squad.put(0x1c8, Address{0xCAFE});
+    std::array<Memory<0x60>, 4> adv_orders{};
+    for (unsigned i = 0; i < 4; ++i) {
+        f.soldiers[i].brain.put(0x398, 0u); // control = AI, move = free, fire = open
+        f.soldiers[i].brain.put(0x39c, i == 0 ? (1u << 6) : (1u << 9));
+        f.soldiers[i].brain.put(0x474, 100.f);
+        f.soldiers[i].actor.put(0x74, p::XY{float(i) * 20.f, 0.f});
+        adv_orders[i].put(0, s::base + goh::runtime::table().vt.advance_order);
+        adv_orders[i].put(8, f.roster[i] + 0xaf0);
+        f.soldiers[i].brain.put(0xf0, adv_orders[i].ptr());
+    }
+    // Distant visible enemy that is NOT threatening/firing yet: AI squad keeps marching uninterrupted!
+    Memory<0x80> enemy_sub;
+    enemy_sub.put(0x10, 3u << 28);
+    enemy_sub.put(0x14, 2u); // hostile only, not threatening/attacking
+    enemy_sub.put(0x28, p::XY{0, 1000});
+    enemy_sub.put(0x64, 105u);
+    std::array<Address, 1> subs{enemy_sub.ptr()};
+    f.soldiers[0].sensor.put(0x280, reinterpret_cast<Address>(subs.data()));
+    f.soldiers[0].sensor.put(0x288, reinterpret_cast<Address>(subs.data() + 1));
+    f.spot(0, 0, 200, 25, true);    // 10 m north, screened
+    f.spot(1, 40, 200, 25, true);   // 2 m from spot 0 (clumped)
+    f.spot(2, 140, 200, 24, true);  // 7 m from spot 0 (spread out!)
+    f.spot(3, -140, 200, 24, true); // 7 m west of spot 0 (spread out!)
+    f.spot(4, 0, 400, 50, true);    // 20 m (> 18 m limit -> rejected)
+    f.spot(5, 0, 120, 50, false);   // 6 m unscreened -> rejected
+    auto passable = [](p::XY) { return true; };
+    auto open = [](p::XY, float) { return p::Sight::open; };
+    assert(!f.tick_tactical(0, 105, passable, open) && f.attempts == 0);
+
+    // Enemy opens fire on point man (hit signal at sensor+0x2F4): entire AI squad breaks into spread-out screened cover!
+    f.soldiers[0].sensor.put(0x2f4, 105u);
+    assert(f.tick_tactical(0, 106, passable, open));
+    assert(f.purpose == d::Purpose::march_cover && f.last_used_cover && f.last.x == 0.f && f.last.y == 200.f);
+    // Squadmate 1 sees spot 0 claimed and skips clumped spot 1 (2 m away), picking spot 2 (7 m away)!
+    assert(f.tick_tactical(1, 106, passable, open));
+    assert(f.purpose == d::Purpose::march_cover && f.last_used_cover && f.last.x == 140.f && f.last.y == 200.f);
+    // Squadmate 2 picks spot 3 (-140, 200), 7 m on the opposite flank!
+    assert(f.tick_tactical(2, 106, passable, open));
+    assert(f.purpose == d::Purpose::march_cover && f.last_used_cover && f.last.x == -140.f && f.last.y == 200.f);
+    // Squadmate 3 already running Order::eMoveToCover or explicit Order::eAttack is NEVER interrupted!
+    adv_orders[3].put(0, s::base + goh::runtime::table().vt.move_to_cover);
+    assert(!f.tick_tactical(3, 106, passable, open) && f.attempts == 3);
+    adv_orders[3].put(0, s::base + goh::runtime::table().vt.attack_order);
+    assert(!f.tick_tactical(3, 106, passable, open) && f.attempts == 3);
+    // Restore eAdvance: scarce fallback takes spot 1 (2 m from spot 0) rather than staying exposed in the open!
+    adv_orders[3].put(0, s::base + goh::runtime::table().vt.advance_order);
+    assert(f.tick_tactical(3, 106, passable, open) && f.last.x == 40.f);
+    // Cover-break hold prevents re-triggering for 10 s (100 ticks).
+    const unsigned attempts_after_break = f.attempts;
+    assert(!f.tick_tactical(0, 180, passable, open) && f.attempts == attempts_after_break);
+
+    // Retry backoff when bare open field has no screened cover within 18 m, plus AI Hold Position veto.
+    Squad open_ai;
+    open_ai.squad.put(0x1c8, Address{0xCAFE});
+    Memory<0x60> ai_adv;
+    ai_adv.put(0, s::base + goh::runtime::table().vt.advance_order);
+    ai_adv.put(8, open_ai.roster[0] + 0xaf0);
+    for (unsigned i = 0; i < 4; ++i) {
+        open_ai.soldiers[i].brain.put(0x398, 0u);
+        open_ai.soldiers[i].brain.put(0x39c, 0u);
+        open_ai.soldiers[i].brain.put(0x474, 40.f); // suppressed
+    }
+    open_ai.soldiers[0].brain.put(0xf0, ai_adv.ptr());
+    open_ai.soldiers[0].sensor.put(0x280, reinterpret_cast<Address>(subs.data()));
+    open_ai.soldiers[0].sensor.put(0x288, reinterpret_cast<Address>(subs.data() + 1));
+    open_ai.soldiers[0].sensor.put(0x2f4, 105u);
+    open_ai.spot(0, 0, 140, 20, true); // 7 m screened cover
+    // AI Hold Position vetoes march cover-seeking.
+    open_ai.soldiers[0].brain.put(0x398, 0x1000u); // control = AI, move = hold
+    assert(!open_ai.tick_tactical(0, 106, passable, open) && open_ai.attempts == 0);
+    open_ai.soldiers[0].brain.put(0x398, 0u);
+    // When no screened cover exists, 2.5 s retry backoff stops per-tick searches until 25 ticks later.
+    assert(!open_ai.tick_tactical(0, 106, passable, open, false) && open_ai.attempts == 1);
+    assert(!open_ai.tick_tactical(0, 120, passable, open, true) && open_ai.attempts == 1);
+    assert(open_ai.tick_tactical(0, 132, passable, open, true) && open_ai.attempts == 2);
+
+    // Ironclad player authority: player-controlled (control == 1) Move-at-Will squad under fire with active_user_move
+    // MUST NEVER be hijacked by AI march cover-seeking!
+    Squad player_sq;
+    player_sq.squad.put(0x1c8, Address{0xCAFE});
+    Memory<0x60> pm_order;
+    pm_order.put(0, s::base + goh::runtime::table().vt.move_order);
+    pm_order.put(8, player_sq.roster[0] + 0xaf0);
+    for (unsigned i = 0; i < 4; ++i) {
+        player_sq.soldiers[i].brain.put(0x398, 1u); // control = user!
+        player_sq.soldiers[i].brain.put(0x39c, 1u << 28);
+        player_sq.soldiers[i].brain.put(0x474, 40.f);
+        player_sq.soldiers[i].sensor.put(0x2f4, 105u);
+    }
+    player_sq.soldiers[0].brain.put(0xf0, pm_order.ptr());
+    player_sq.soldiers[0].sensor.put(0x280, reinterpret_cast<Address>(subs.data()));
+    player_sq.soldiers[0].sensor.put(0x288, reinterpret_cast<Address>(subs.data() + 1));
+    player_sq.spot(0, 0, 200, 30, true);
+    assert(!player_sq.tick_tactical(0, 106, passable, open) && player_sq.attempts == 0);
+    // Mixed squad (AI member with 1 Hold-Position mate or 1 player mate) is also strictly vetoed!
+    player_sq.soldiers[0].brain.put(0x398, 0u);
+    player_sq.soldiers[0].brain.put(0x39c, 0u);
+    assert(!player_sq.tick_tactical(0, 106, passable, open) && player_sq.attempts == 0);
+}
 } // namespace
 int main() {
     pairs();
@@ -467,9 +722,14 @@ int main() {
     overflow();
     dismount();
     exposed_crews();
-    t::stat_overflow_cover = t::stat_dismount_spread = cg::stat_mg_small_arms_defer = 3;
+    wider_overflow_dispersion();
+    active_clump_dispersion();
+    ai_march_cover_seeking();
+    t::stat_overflow_cover = t::stat_dismount_spread = t::stat_clump_spread = t::stat_march_cover =
+        cg::stat_mg_small_arms_defer = 3;
     t::after_hooks_removed();
     cg::disconnect();
-    assert(!t::stat_overflow_cover && !t::stat_dismount_spread && !cg::stat_mg_small_arms_defer);
+    assert(!t::stat_overflow_cover && !t::stat_dismount_spread && !t::stat_clump_spread && !t::stat_march_cover &&
+           !cg::stat_mg_small_arms_defer);
     std::puts("Stream C squad tactics fixtures passed.");
 }

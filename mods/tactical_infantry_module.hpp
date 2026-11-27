@@ -23,7 +23,7 @@ using s::read;
 using s::World;
 inline constexpr bool runtime_allowed = false;
 inline constexpr auto& executable_sha256 = s::executable_sha256;
-inline std::atomic<unsigned> stat_overflow_cover{}, stat_dismount_spread{};
+inline std::atomic<unsigned> stat_overflow_cover{}, stat_dismount_spread{}, stat_clump_spread{}, stat_march_cover{};
 namespace detail {
 using Tick = std::uint32_t;
 template <class T> inline void put(Address ptr, unsigned off, const T& v) {
@@ -104,11 +104,33 @@ template <class Table> auto* record(Table& table, Address key, double now) {
     }
     return available;
 }
+inline Address complex_front(Address order) noexcept {
+    const auto count = read<std::size_t>(order, 0x48);
+    const Address map = read<Address>(order, 0x30);
+    const auto blocks = read<std::size_t>(order, 0x38);
+    const auto start = read<std::size_t>(order, 0x40);
+    if (!count || count > 0x7fff || !map || !blocks || (blocks & (blocks - 1)) || (count + 1) / 2 > blocks) return 0;
+    const Address block = read<Address>(map, ((start >> 1) & (blocks - 1)) * sizeof(Address));
+    return block ? read<Address>(block, (start & 1) * sizeof(Address)) : 0;
+}
 inline bool protected_order(Address brain, Address actor) {
     Address o = read<Address>(brain, 0xF0);
+    const auto& tbl = runtime::table().vt;
     for (unsigned i = 0; o && i < 32; ++i) {
         auto vt = read<Address>(o);
-        if (read<Address>(o, 8) != actor + 0xAF0 || vt == s::base + 0x110C018 || vt == s::base + 0x110D278) return true;
+        if (read<Address>(o, 8) != actor + 0xAF0 || vt == s::base + tbl.attack_order ||
+            vt == s::base + tbl.avoid_grenade)
+            return true;
+        if (vt == s::base + tbl.move_order || vt == s::base + tbl.weapon_fire_order) return false;
+        if (vt == s::base + tbl.move_task_order || vt == s::base + tbl.advance_order ||
+            vt == s::base + tbl.move_to_cover) {
+            o = read<Address>(o, 0x30);
+            continue;
+        }
+        if (vt == s::base + 0x110D490) {
+            o = complex_front(o);
+            continue;
+        }
         o = sim::orders::active_child(s::base, o);
     }
     return o != 0;
@@ -204,6 +226,7 @@ struct Context {
     std::size_t count{};
     Address gunner{};
     XY gunner_pos{}, placement_center{}, spread_away{};
+    float clump_spacing{std::numeric_limits<float>::infinity()};
 };
 inline bool movement_roster_permits(Address squad, Address self, bool overflow) {
     if (!squad) return true;
@@ -225,6 +248,36 @@ inline bool movement_roster_permits(Address squad, Address self, bool overflow) 
 }
 inline bool roster_permits(Address squad, Address self) {
     return movement_roster_permits(squad, self, false);
+}
+// Strictly AI-controlled (control == 0) Move-at-Will squads; permits active squad waypoints (squad+0x1C8).
+inline bool ai_march_roster_permits(Address squad, Address self) {
+    if (!squad || read<Address>(squad) != s::base + 0x110F3A0) return false;
+    const auto roster = s::span(squad, 0x80);
+    if (!roster.valid(8, 64)) return false;
+    bool found = false;
+    for (auto it = roster.first; it != roster.end; it += 8) {
+        const auto a = read<Address>(it);
+        if (!s::live_entity(a)) continue;
+        const auto b = read<Address>(a, 0xdc8);
+        if (!b || read<Address>(b, 0x38) != a || selected(b)) return false;
+        const auto modes = read<unsigned>(b, 0x398);
+        if ((modes & 3u) != 0u || (modes & 0x3000u) != 0u || p::active_user_move(modes, read<unsigned>(b, 0x39c)))
+            return false;
+        found |= a == self;
+    }
+    return found;
+}
+inline bool ai_march_available(const World& w, Address a, Address b) {
+    if (!config::active().modules.tactical_infantry) return false;
+    if (!s::autonomous_if(a, true, p::ai_march_allows) || read<Address>(a, 0xDC8) != b || !read<Address>(a, 0xDC0) ||
+        !read<Address>(a, 0xDD0))
+        return false;
+    if (selected(b) || protected_order(b, a)) return false;
+    if (!coord::instance().can_act(a, coord::Module::tactical_infantry, coord::Priority::tactical_infantry,
+                                   read<unsigned>(a, 0xC0), w.now))
+        return false;
+    return !auto_medic::occupied(a) && !auto_resupply::occupied(a) && !sim::is_busy(w, a) &&
+           !close_grenade::is_busy(w, a) && !tank_auto_repair::is_busy(a);
 }
 inline bool observe_epoch(Context& c) {
     const Address epoch = s::entity_scene(c.w);
@@ -253,9 +306,33 @@ inline bool context(Context& c, Address b) {
     c.self = read<XY>(c.actor, 0x74);
     return std::isfinite(c.self.x) && std::isfinite(c.self.y);
 }
+inline bool ai_march_context(Context& c, Address b) {
+    if (!accepting.load() || !b || !s::serial_thread()) return false;
+    c.actor = s::current_actor();
+    if (!s::callback(c.actor, c.w) || !runtime::actor_ai_allowed(c.actor) || pr::scope.actor != c.actor ||
+        pr::depth != 1 || read<Address>(c.actor, 0xdc8) != b || !ai_march_available(c.w, c.actor, b))
+        return false;
+    c.squad = read<Address>(b, 0x100);
+    if (!ai_march_roster_permits(c.squad, c.actor)) return false;
+    if (!observe_epoch(c)) return false;
+    c.brain = b;
+    c.soldier = actor_record(c.actor, b, c.now);
+    if (!c.soldier) return false;
+    c.sub = target(c.actor, b);
+    c.self = read<XY>(c.actor, 0x74);
+    return std::isfinite(c.self.x) && std::isfinite(c.self.y);
+}
 inline bool for_state(Context& c, Address state) {
     return accepting.load() && s::serial_thread() && s::current_actor() && state &&
            context(c, read<Address>(state, 0x30));
+}
+inline bool for_ai_march_state(Context& c, Address state) {
+    return accepting.load() && s::serial_thread() && s::current_actor() && state &&
+           ai_march_context(c, read<Address>(state, 0x30));
+}
+inline bool screened_against(Address descriptor, XY enemy_xy, XY point) {
+    if (!std::isfinite(enemy_xy.x) || !std::isfinite(enemy_xy.y)) return false;
+    return native<Byte (*)(Address, const XY*, const XY*)>(0x8BB590)(descriptor, &enemy_xy, &point) != 0;
 }
 inline bool screened(const Context& c, Address descriptor, XY point) {
     if (!c.sub) return false;
@@ -457,10 +534,14 @@ inline float spacing(const Context& c, XY point) {
     float d = claims.nearest(scene, c.squad, c.actor, point, c.now);
     if (c.squad) {
         const auto list = s::span(c.squad, 0x80);
-        for (auto it = list.first; it != list.end; it += 8) {
-            auto a = read<Address>(it);
-            if (a != c.actor && s::live_entity(a)) d = (std::min)(d, p::squared(point - read<XY>(a, 0x74)));
-        }
+        if (list.valid(8, 64))
+            for (auto it = list.first; it != list.end; it += 8) {
+                const auto a = read<Address>(it);
+                if (a == c.actor || !s::live_entity(a)) continue;
+                d = (std::min)(d, p::squared(point - read<XY>(a, 0x74)));
+                const auto cover = read<Address>(a, 0xdc0);
+                if (cover && read<int>(cover, 0x24)) d = (std::min)(d, p::squared(point - read<XY>(cover, 0x30)));
+            }
     }
     return std::sqrt(d) / c.w.length;
 }
@@ -515,7 +596,9 @@ enum class Purpose {
     update,
     overflow,
     spread,
-    assist
+    assist,
+    disperse_cover,
+    march_cover
 };
 inline bool withdrawing(const Context& c) {
     return !read<Byte>(c.brain, 0x521) && read<int>(c.brain, 0x52c) <= p::fallback;
@@ -541,16 +624,7 @@ struct Choice {
     float score{-std::numeric_limits<float>::infinity()};
 };
 inline float placement_spacing(const Context& c, XY point) {
-    float nearest = spacing(c, point);
-    const auto list = s::span(c.squad, 0x80);
-    for (auto it = list.first; it != list.end; it += 8) {
-        const auto a = read<Address>(it);
-        if (a == c.actor || !s::live_entity(a)) continue;
-        const auto cover = read<Address>(a, 0xdc0);
-        if (read<int>(cover, 0x24))
-            nearest = (std::min)(nearest, p::meters_between(point, read<XY>(cover, 0x30), c.w.length));
-    }
-    return nearest;
+    return spacing(c, point);
 }
 inline float placement_score(const Context& c, Purpose purpose, XY point, float native_score) {
     const float spacing_m = placement_spacing(c, point);
@@ -562,11 +636,88 @@ inline float placement_score(const Context& c, Purpose purpose, XY point, float 
     if (!(spacing_m >= 1.5f)) return -std::numeric_limits<float>::infinity();
     if (purpose == Purpose::assist) {
         if (!(d >= 2.5f && d <= 8.f)) return -std::numeric_limits<float>::infinity();
-        return native_score - p::meters_between(point, c.self, c.w.length);
+        return native_score + p::assistant_anchor_bonus(point, c.placement_center, c.w.length) -
+               p::crowding_penalty(spacing_m) * .5f - p::meters_between(point, c.self, c.w.length) * .5f;
     }
-    if (!(d >= 3.5f && d <= 7.f) || p::dot(point - c.self, c.spread_away) < 0)
+    if (!(d >= 3.5f && d <= 8.5f) || p::dot(point - c.self, c.spread_away) < 0)
         return -std::numeric_limits<float>::infinity();
-    return native_score + (std::min)(spacing_m, 7.f);
+    return native_score - p::crowding_penalty(spacing_m) + (std::min)(spacing_m, 8.f) * .5f;
+}
+template <class ScreenedFn, class SightFn>
+inline bool select_screened_cover(Context& c, s::Span list, Purpose purpose, Choice& best, ScreenedFn is_screened,
+                                  SightFn probe_sight) {
+    if (!list.valid(sizeof(Descriptor), 65536)) return false;
+    struct Candidate {
+        Descriptor desc{};
+        XY point{};
+        float native_score{};
+        float spacing_m{};
+        float dist_m{};
+        float probe_height{};
+        float base_val{-std::numeric_limits<float>::infinity()};
+        p::Sight visibility{p::Sight::unknown};
+        bool probed{};
+    };
+    std::array<Candidate, p::CoverSelection::limit> pool{};
+    unsigned count = 0;
+    const bool is_march = purpose == Purpose::march_cover;
+    for (auto it = list.first; it != list.end && count < p::CoverSelection::limit; it += sizeof(Descriptor)) {
+        const auto desc = read<Descriptor>(it);
+        if (!read<int>(desc.ptr(), 4)) continue;
+        const XY pt = desc.xy();
+        const float dist_m = p::meters_between(pt, c.self, c.w.length);
+        if (!std::isfinite(dist_m)) continue;
+        if (is_march) {
+            if (dist_m > p::kMarchCoverRadiusM) continue;
+        } else {
+            if (dist_m < 2.f || dist_m > 10.f || !within_team(c, pt) || !p::dispersion_step_safe(c.self, pt, c.threat))
+                continue;
+        }
+        const float sp = spacing(c, pt);
+        if (is_march) {
+            if (!(sp >= 1.5f)) continue;
+        } else if (!p::spacing_improved(c.clump_spacing, sp, true)) {
+            continue;
+        }
+        if (!is_screened(desc.ptr(), c.threat, pt)) continue;
+        const float nat = read<float>(desc.ptr(), 0x80);
+        float base_val = is_march ? p::score_march_cover(nat, true, sp, dist_m)
+                                  : p::score_disperse_cover(nat, p::Sight::unknown, sp, dist_m, true);
+        if (!std::isfinite(base_val)) continue;
+        if (c.gunner && p::assistant_cohesive(c.self, pt, c.gunner_pos, c.w.length))
+            base_val += p::assistant_anchor_bonus(pt, c.gunner_pos, c.w.length);
+        const float ph = is_march ? 0.f : p::cover_height(read<int>(desc.ptr(), 8), read<int>(desc.ptr(), 0xc), false);
+        pool[count++] = {desc, pt, nat, sp, dist_m, ph, base_val, p::Sight::unknown, false};
+    }
+    if (!count) return false;
+    if (!is_march && c.sub) {
+        // Spend at most 4 firing-LOF ray probes on the highest base-scored screened cover candidates.
+        for (unsigned step = 0; step < 4; ++step) {
+            unsigned pick = count;
+            float top = -std::numeric_limits<float>::infinity();
+            for (unsigned i = 0; i < count; ++i)
+                if (!pool[i].probed && pool[i].probe_height > 0.f && pool[i].base_val > top) {
+                    top = pool[i].base_val;
+                    pick = i;
+                }
+            if (pick == count) break;
+            pool[pick].probed = true;
+            pool[pick].visibility = probe_sight(pool[pick].point, pool[pick].probe_height);
+        }
+    }
+    unsigned winner = count;
+    float winner_score = -std::numeric_limits<float>::infinity();
+    for (unsigned i = 0; i < count; ++i) {
+        float val = pool[i].base_val;
+        if (!is_march && pool[i].visibility == p::Sight::open) val += 10.f;
+        if (std::isfinite(val) && val > winner_score) {
+            winner_score = val;
+            winner = i;
+        }
+    }
+    if (winner == count) return false;
+    best = {pool[winner].desc, winner_score};
+    return true;
 }
 inline bool select_cover(Context& c, s::Span list, Purpose purpose, Choice& best) {
     if (!list.valid(sizeof(Descriptor), 65536)) return false;
@@ -583,23 +734,66 @@ inline bool select_cover(Context& c, s::Span list, Purpose purpose, Choice& best
         }
         return eligible != 0;
     }
+    if (purpose == Purpose::march_cover || purpose == Purpose::disperse_cover) {
+        return select_screened_cover(
+            c, list, purpose, best, [](Address desc, XY enemy, XY pt) { return screened_against(desc, enemy, pt); },
+            [&](XY pt, float h) { return sight(c, pt, h); });
+    }
     const bool retreat = purpose == Purpose::retreat || (purpose != Purpose::peek && withdrawing(c));
     const bool directed = purpose == Purpose::bound || purpose == Purpose::retreat;
-    p::CoverSelection selection;
+    const bool check_screen = directed || purpose == Purpose::update || purpose == Purpose::native;
+    struct Candidate {
+        unsigned index{};
+        Descriptor desc{};
+        XY point{};
+        float native_score{};
+        float align_val{};
+        float spacing_m{};
+        float assist_bonus{};
+        float probe_height{};
+        float base_val{-std::numeric_limits<float>::infinity()};
+        p::Sight visibility{p::Sight::unknown};
+        bool is_screened{};
+        bool probed{};
+    };
+    std::array<Candidate, p::CoverSelection::limit> pool{};
+    unsigned count = 0;
     for (unsigned i = 0; i < p::CoverSelection::limit && list.first + i * sizeof(Descriptor) < list.end; ++i) {
-        auto d = read<Descriptor>(list.first + i * sizeof(Descriptor));
-        XY point = d.xy();
-        float distance = std::hypot(point.x - c.self.x, point.y - c.self.y) / c.w.length;
+        const auto d = read<Descriptor>(list.first + i * sizeof(Descriptor));
+        const XY point = d.xy();
+        const float distance = std::hypot(point.x - c.self.x, point.y - c.self.y) / c.w.length;
         if (!std::isfinite(distance) || !within_team(c, point)) continue;
         if (directed && !p::bound_range(purpose == Purpose::retreat).contains(distance)) continue;
-        const float probe_height = p::cover_height(read<int>(d.ptr(), 8), read<int>(d.ptr(), 0xc), retreat);
-        auto visibility =
-            probe_height > 0 ? selection.probe([&] { return sight(c, point, probe_height); }) : p::Sight::unknown;
-        if (purpose == Purpose::peek && visibility != p::Sight::open) continue;
-        float value = p::cover_score(read<float>(d.ptr(), 0x80), visibility, retreat, alignment(c, point),
-                                     spacing(c, point), directed && screened(c, d.ptr(), point));
-        if (c.gunner) value += p::assistant_anchor_bonus(point, c.gunner_pos, c.w.length);
-        selection.consider(i, value);
+        const float nat = read<float>(d.ptr(), 0x80);
+        const float align_val = alignment(c, point);
+        const float sp = spacing(c, point);
+        const bool scr = check_screen && screened(c, d.ptr(), point);
+        const float assist_bonus = c.gunner ? p::assistant_anchor_bonus(point, c.gunner_pos, c.w.length) : 0.f;
+        const float base_val = p::cover_score(nat, p::Sight::unknown, retreat, align_val, sp, scr) + assist_bonus;
+        const float ph = p::cover_height(read<int>(d.ptr(), 8), read<int>(d.ptr(), 0xc), retreat);
+        pool[count++] = {i, d, point, nat, align_val, sp, assist_bonus, ph, base_val, p::Sight::unknown, scr, false};
+    }
+    p::CoverSelection selection;
+    // Prioritize the 6 LOF ray probes for well-spaced, screened candidates instead of crowded head slots.
+    for (unsigned step = 0; step < 6; ++step) {
+        unsigned pick = count;
+        float top = -std::numeric_limits<float>::infinity();
+        for (unsigned i = 0; i < count; ++i)
+            if (!pool[i].probed && pool[i].probe_height > 0.f && pool[i].base_val > top) {
+                top = pool[i].base_val;
+                pick = i;
+            }
+        if (pick == count) break;
+        pool[pick].probed = true;
+        pool[pick].visibility = selection.probe([&] { return sight(c, pool[pick].point, pool[pick].probe_height); });
+    }
+    for (unsigned i = 0; i < count; ++i) {
+        const auto& cand = pool[i];
+        if (purpose == Purpose::peek && cand.visibility != p::Sight::open) continue;
+        const float value = p::cover_score(cand.native_score, cand.visibility, retreat, cand.align_val, cand.spacing_m,
+                                           cand.is_screened) +
+                            cand.assist_bonus;
+        selection.consider(cand.index, value);
     }
     if (selection.winner == p::CoverSelection::limit) return false;
     best = {read<Descriptor>(list.first + selection.winner * sizeof(Descriptor)), selection.score};
@@ -641,7 +835,7 @@ inline bool issue(Context& c, Address state, const Descriptor* spot, const XY* p
     push(seq, notice, 0, 1);
     if (move) {
         if (squad_bound) record_bound(c, spot, point);
-        if (spot) claim(c, spot->xy());
+        claim(c, spot ? spot->xy() : *point);
     }
     if (issued_order) *issued_order = seq;
     const unsigned count = issued.fetch_add(1, std::memory_order_relaxed) + 1;
@@ -777,22 +971,274 @@ inline bool placement_ready(const Context& c, bool overflow) {
     return on_foot(c.actor) && s::free_slot(c.actor) && movement_available(c.w, c.actor, c.brain, overflow) &&
            movement_roster_permits(c.squad, c.actor, overflow) && !close_grenade::is_busy(c.w, c.actor);
 }
+inline bool clump_ready(const Context& c) {
+    if (!on_foot(c.actor) || !s::free_slot(c.actor) || !movement_available(c.w, c.actor, c.brain, false) ||
+        close_grenade::is_busy(c.w, c.actor))
+        return false;
+    const bool ai_unit = (read<unsigned>(c.brain, 0x398) & 3u) == 0u;
+    return ai_unit ? ai_march_roster_permits(c.squad, c.actor) : movement_roster_permits(c.squad, c.actor, false);
+}
+inline bool losing_morale(const World& w, Address brain) {
+    const auto recovery = read<Tick>(brain, 0x478);
+    if (!recovery) return false;
+    const auto remaining = recovery - w.now;
+    return remaining > w.duration(7.f) && remaining <= w.duration(10.f);
+}
+inline bool ordinary_order(Address actor, Address o) {
+    return o && read<Address>(o, 8) == actor + 0xaf0 && !(read<unsigned>(o, 0x18) & (1u << 23)) &&
+           !read<Address>(o, 0x10) && !s::tracked(o);
+}
+// Inspect whether brain+0xF0 is either free or an unlistened, untracked march leg
+// (eMove / eMoveTask / eAdvance, standalone or front of eComplex) safe to replace on AI units.
+inline void march_order_state(Address actor, Address brain, bool& active_march, bool& replaceable) {
+    active_march = false;
+    replaceable = false;
+    if ((read<unsigned>(brain, 0x39c) & (1u << 24)) || read<int>(brain, 0x88) != 0 ||
+        read<Address>(brain, 0x98) != read<Address>(brain, 0xa0))
+        return;
+    if (s::free_slot(actor)) {
+        replaceable = true;
+        return;
+    }
+    const auto root = read<Address>(brain, 0xf0);
+    if (!ordinary_order(actor, root)) return;
+    Address o = root;
+    if (read<Address>(root) == s::base + 0x110D490) {
+        // Require a single-item eComplex so replacing brain+0xF0 never drops queued tail orders.
+        if (read<std::size_t>(root, 0x48) != 1 || (read<unsigned>(root, 0x20) & 7u) || read<Address>(root, 0x50))
+            return;
+        o = complex_front(root);
+        if (!ordinary_order(actor, o)) return;
+    }
+    const auto vt = read<Address>(o);
+    const auto& tbl = runtime::table().vt;
+    const bool is_move = vt == s::base + tbl.move_order;
+    const bool is_move_task = vt == s::base + tbl.move_task_order;
+    const bool is_advance = vt == s::base + tbl.advance_order;
+    if (!is_move && !is_move_task && !is_advance) return;
+    const auto child = read<Address>(o, 0x30);
+    if (child) {
+        if (!ordinary_order(actor, child)) return;
+        const auto cvt = read<Address>(child);
+        if (is_move) return;
+        if (is_move_task && cvt != s::base + tbl.move_order) return;
+        if (is_advance && cvt != s::base + tbl.move_order && cvt != s::base + tbl.move_task_order &&
+            cvt != s::base + tbl.weapon_fire_order)
+            return;
+    }
+    active_march = true;
+    replaceable = true;
+}
+inline void scan_sensor_threat(const World& w, Address actor, Address brain, XY ref_pos, bool own_sensor,
+                               bool& under_fire, bool& has_threat, int& best_rank, float& best_d2, XY& threat_xy) {
+    const auto sensor = read<Address>(actor, 0xdd0);
+    const bool hit_sig = sensor && sim::recent(w, read<Tick>(sensor, 0x2f4), 4.f);
+    const float morale = read<float>(brain, 0x474);
+    const unsigned bflags = read<unsigned>(brain, 0x39c);
+    bool hostile_threatening = false;
+    const auto contacts = pr::subjects(actor);
+    const float max_d2 = (100.f * w.length) * (100.f * w.length);
+    if (contacts.valid(8)) {
+        for (auto it = contacts.first; it != contacts.end; it += 8) {
+            const auto sub = read<Address>(it);
+            if (!remembered(sub)) continue;
+            const bool vis = pr::is_visible(sub);
+            if (!vis && !sim::recent(w, read<Tick>(sub, 0x64), own_sensor ? 8.f : 6.f)) continue;
+            const XY pos = read<XY>(sub, 0x28);
+            if (!std::isfinite(pos.x) || !std::isfinite(pos.y)) continue;
+            const float d2 = p::squared(pos - ref_pos);
+            if (!(d2 > 0.f && d2 <= max_d2)) continue;
+            const unsigned rel = read<unsigned>(sub, 0x14);
+            const bool recent_atk = (rel & 0x180u) && (vis || sim::recent(w, read<Tick>(sub, 0x68), 4.f));
+            hostile_threatening |= recent_atk;
+            const int rank = (own_sensor ? 8 : 0) + (recent_atk ? 4 : 0) + (vis ? 2 : 0) + 1;
+            if (!has_threat || rank > best_rank || (rank == best_rank && d2 < best_d2)) {
+                has_threat = true;
+                best_rank = rank;
+                best_d2 = d2;
+                threat_xy = pos;
+            }
+        }
+    }
+    if (p::ai_march_under_fire(morale, losing_morale(w, brain), hit_sig, bflags, hostile_threatening))
+        under_fire = true;
+}
+inline void find_squad_threat(const Context& c, XY& threat_xy, bool& under_fire, bool& has_threat) {
+    under_fire = false;
+    has_threat = false;
+    int best_rank = -1;
+    float best_d2 = std::numeric_limits<float>::infinity();
+    scan_sensor_threat(c.w, c.actor, c.brain, c.self, true, under_fire, has_threat, best_rank, best_d2, threat_xy);
+    if (c.squad) {
+        const auto members = s::span(c.squad, 0x80);
+        if (members.valid(8, 64))
+            for (auto it = members.first; it != members.end; it += 8) {
+                const auto mate = read<Address>(it);
+                if (!s::live_entity(mate) || mate == c.actor) continue;
+                const auto mb = read<Address>(mate, 0xdc8);
+                if (!live_squad_human(mate, mb, c.squad) || !on_foot(mate)) continue;
+                scan_sensor_threat(c.w, mate, mb, c.self, false, under_fire, has_threat, best_rank, best_d2, threat_xy);
+            }
+    }
+    if (!has_threat) under_fire = false;
+}
+inline void resolve_cached_gunner(Context& c) {
+    if (c.gunner || !c.soldier || !c.squad) return;
+    if (c.soldier->pair_squad != c.squad || !c.soldier->paired_gunner) return;
+    const auto g = c.soldier->paired_gunner;
+    const auto gb = s::live_entity(g) ? read<Address>(g, 0xdc8) : 0;
+    if (!live_squad_human(g, gb, c.squad) || !on_foot(g) || read<unsigned>(g, 0xc0) != c.soldier->gunner_id) return;
+    const XY gpos = read<XY>(g, 0x74);
+    if (!std::isfinite(gpos.x) || !std::isfinite(gpos.y)) return;
+    c.gunner = g;
+    c.gunner_pos = gpos;
+}
+inline bool detect_clump(const Context& c, XY& clump_center, float& nearest_m, bool& higher_priority) {
+    nearest_m = std::numeric_limits<float>::infinity();
+    higher_priority = false;
+    if (!c.squad || !c.soldier) return false;
+    const auto members = s::span(c.squad, 0x80);
+    if (!members.valid(8, 64)) return false;
+    const float trigger_sq = (p::kClumpTriggerM * c.w.length) * (p::kClumpTriggerM * c.w.length);
+    XY sum = c.self;
+    unsigned close = 0;
+    for (auto it = members.first; it != members.end; it += 8) {
+        const auto mate = read<Address>(it);
+        if (!s::live_entity(mate) || mate == c.actor) continue;
+        const auto mb = read<Address>(mate, 0xdc8);
+        if (!live_squad_human(mate, mb, c.squad) || !on_foot(mate)) continue;
+        const XY pos = read<XY>(mate, 0x74);
+        if (!std::isfinite(pos.x) || !std::isfinite(pos.y)) continue;
+        const float d2 = p::squared(pos - c.self);
+        if (d2 > trigger_sq) continue;
+        // Ignore a squadmate who has already claimed a dispersion/cover destination clear of this clump.
+        if (claims.has_outbound_claim(scene, c.squad, mate, c.self, trigger_sq, c.now)) continue;
+        const float dist_m = std::sqrt(d2) / c.w.length;
+        nearest_m = (std::min)(nearest_m, dist_m);
+        sum = sum + pos;
+        ++close;
+        const auto mcov = read<Address>(mate, 0xdc0);
+        const bool mate_cov = mcov && read<int>(mcov, 0x24) != 0;
+        const auto* mrow = mcov ? actor_record(mate, mb, c.now) : nullptr;
+        const p::Role mrole = mrow ? mrow->role : p::Role::rifle;
+        const unsigned mid = mrow ? mrow->id : read<unsigned>(mate, 0xc0);
+        if (p::anchor_beats(mate_cov, mate == c.gunner, mrole, mid, c.soldier->covered, c.soldier->role, c.soldier->id))
+            higher_priority = true;
+    }
+    if (!close) return false;
+    clump_center = sum * (1.f / static_cast<float>(close + 1));
+    return true;
+}
+inline float point_exposure(const Context& c, XY xy) {
+    float exposure = 0.f;
+    const auto list = pr::subjects(c.actor);
+    if (list.valid(8))
+        for (auto it = list.first; it != list.end; it += 8) {
+            const auto sub = read<Address>(it);
+            if (remembered(sub) && pr::is_visible(sub))
+                exposure += 1.f / (1.f + std::sqrt(p::squared(xy - read<XY>(sub, 0x28))) / c.w.length);
+        }
+    return exposure;
+}
+template <class PassableFn, class SightFn>
+inline bool choose_disperse_offset(const Context& c, PassableFn is_passable, SightFn probe_sight, XY& winner) {
+    const auto candidates =
+        p::lateral_disperse_candidates(c.self, c.threat, c.placement_center, c.soldier->id, c.w.length);
+    const XY outward = p::unit(c.self - c.placement_center);
+    struct OffsetCand {
+        XY xy{};
+        float spacing_m{};
+        float dist_m{};
+        float exposure{};
+        float outward_dot{};
+        float base_val{-std::numeric_limits<float>::infinity()};
+        p::Sight vis{p::Sight::unknown};
+        bool probed{};
+    };
+    std::array<OffsetCand, 10> pool{};
+    unsigned count = 0;
+    for (const XY& cand : candidates) {
+        if (count >= pool.size()) break;
+        if (!std::isfinite(cand.x) || !std::isfinite(cand.y)) continue;
+        if (!within_team(c, cand) || !p::dispersion_step_safe(c.self, cand, c.threat)) continue;
+        const float sp = spacing(c, cand);
+        if (!p::spacing_improved(c.clump_spacing, sp, false)) continue;
+        if (!is_passable(cand)) continue;
+        const float dist_m = p::meters_between(cand, c.self, c.w.length);
+        const float exp = point_exposure(c, cand);
+        const float odot = p::squared(outward) > 0.f ? p::dot(p::unit(cand - c.self), outward) : 0.f;
+        const float bval = p::score_disperse_offset(sp, exp, p::Sight::unknown, dist_m, odot);
+        if (!std::isfinite(bval)) continue;
+        pool[count++] = {cand, sp, dist_m, exp, odot, bval, p::Sight::unknown, false};
+    }
+    if (!count) return false;
+    if (c.sub) {
+        // Probe firing LOF on up to 4 best lateral candidates (using crouch height if prone so shooters stay effective).
+        const int cur = stance(c);
+        const float probe_h = cur == 1 ? .9f : height(cur);
+        for (unsigned step = 0; step < 4; ++step) {
+            unsigned pick = count;
+            float top = -std::numeric_limits<float>::infinity();
+            for (unsigned i = 0; i < count; ++i)
+                if (!pool[i].probed && pool[i].base_val > top) {
+                    top = pool[i].base_val;
+                    pick = i;
+                }
+            if (pick == count) break;
+            pool[pick].probed = true;
+            pool[pick].vis = probe_sight(pool[pick].xy, probe_h);
+        }
+    }
+    unsigned best_idx = count;
+    float best_score = -std::numeric_limits<float>::infinity();
+    for (unsigned i = 0; i < count; ++i) {
+        const float val = p::score_disperse_offset(pool[i].spacing_m, pool[i].exposure, pool[i].vis, pool[i].dist_m,
+                                                   pool[i].outward_dot);
+        if (std::isfinite(val) && val > best_score) {
+            best_score = val;
+            best_idx = i;
+        }
+    }
+    if (best_idx == count) return false;
+    winner = pool[best_idx].xy;
+    return true;
+}
 // These orders can also be issued in idle. Only battle states own battle bookkeeping and event 0x10.
 inline bool place_soldier(Context& c, Purpose purpose) {
     const bool overflow = purpose == Purpose::overflow;
+    const bool is_march = purpose == Purpose::march_cover;
+    const bool is_disperse = purpose == Purpose::disperse_cover;
     const float radius = overflow                     ? config::active().tuning.overflow_cover_radius_m
-                         : purpose == Purpose::spread ? 7.f
+                         : is_march                   ? p::kMarchCoverRadiusM
+                         : is_disperse                ? 9.f
+                         : purpose == Purpose::spread ? 8.5f
                                                       : 8.f;
-    Search search(c, 0, c.placement_center, radius);
+    Search search(c, 0, is_march || is_disperse ? c.self : c.placement_center, radius);
     put(search.ptr(), 0x124, std::uint16_t{0});
-    put(search.ptr(), 0x170, 10.f); // Require native path reachability for the descriptor.
+    if (is_march || is_disperse) {
+        native<void (*)(Address, float)>(0x8BB160)(search.ptr() + 0x170, 0.f);
+        put(search.ptr(), 0x170, 10.f);
+        put(search.ptr(), 0x174, 10.f);
+        put(search.ptr(), 0x178, 10.f);
+    } else {
+        put(search.ptr(), 0x170, 10.f); // Require native path reachability for the descriptor.
+    }
     Choice best{};
     Address order = 0;
     XY point{};
     if (choose(c, search.ptr(), purpose, best)) {
         point = best.spot.xy();
         order = native<Address (*)(const Descriptor*)>(0x8E2770)(&best.spot);
-    } else if (!overflow) {
+    } else if (is_disperse) {
+        s::PathContext path(c.actor);
+        const sim::Vec3 self_pos = s::pos(c.actor);
+        auto passable = [&](XY cand) {
+            sim::Vec3 dest{cand.x, cand.y, 0.f};
+            return s::ground(c.w, dest) && s::corridor(c.w, path, self_pos, dest);
+        };
+        if (choose_disperse_offset(c, passable, [&](XY pt, float h) { return sight(c, pt, h); }, point))
+            order = native<Address (*)(const XY*, unsigned)>(0x90A8C0)(&point, 0);
+    } else if (!overflow && !is_march) {
         s::PathContext path(c.actor);
         for (unsigned i = 0; i < 8; ++i) {
             point = c.placement_center + p::pick_dismount_spread_offset(c.self, c.placement_center, c.spread_away,
@@ -805,19 +1251,33 @@ inline bool place_soldier(Context& c, Purpose purpose) {
         }
     }
     if (!order) return false;
-    if (!placement_ready(c, overflow) ||
-        !claims.try_claim({scene, c.actor, c.squad, c.soldier->id, point, c.now + 12}, c.now)) {
+    bool ready = false;
+    if (is_march) {
+        bool active_m = false, repl = false;
+        march_order_state(c.actor, c.brain, active_m, repl);
+        ready = on_foot(c.actor) && repl && ai_march_available(c.w, c.actor, c.brain) &&
+                ai_march_roster_permits(c.squad, c.actor);
+    } else if (is_disperse) {
+        ready = clump_ready(c);
+    } else {
+        ready = placement_ready(c, overflow);
+    }
+    if (!ready || !claims.try_claim({scene, c.actor, c.squad, c.soldier->id, point, c.now + 12}, c.now)) {
         s::discard(order);
         return false;
     }
+    if ((is_march || is_disperse) && (read<unsigned>(c.brain, 0x39c) & (1u << 9)))
+        native<void (*)(Address, Byte)>(0x91B360)(c.brain, 0);
     const auto queue = read<Address>(c.brain, 0xf0);
-    if (queue)
+    if (queue && s::free_slot(c.actor))
         native<Address (*)(Address, Address, int, Byte)>(0x919270)(queue, order, 0, 1);
     else
         native<void (*)(Address, Address)>(0x91DB30)(c.brain, order);
     issued.fetch_add(1, std::memory_order_relaxed);
     if (overflow) stat_overflow_cover.fetch_add(1, std::memory_order_relaxed);
     if (purpose == Purpose::spread) stat_dismount_spread.fetch_add(1, std::memory_order_relaxed);
+    if (is_disperse) stat_clump_spread.fetch_add(1, std::memory_order_relaxed);
+    if (is_march) stat_march_cover.fetch_add(1, std::memory_order_relaxed);
     return true;
 }
 template <class Place> bool follow_gunner(Context& c, Place place) {
@@ -859,11 +1319,77 @@ inline bool movement(Context& c, Address state) {
     Choice choice;
     if (choose(c, search.ptr(), retreat ? Purpose::retreat : Purpose::bound, choice))
         return issue(c, state, &choice.spot, nullptr, -1, retreat ? 8 : 7, squad_bound);
-    if (!point_action || !within_team(c, goal) || spacing(c, goal) < 2.5f) return false;
-    sim::Vec3 endpoint{goal.x, goal.y, 0};
+    if (!point_action) return false;
+    const XY lat = p::left(direction);
+    const sim::Vec3 self_pos = s::pos(c.actor);
     s::PathContext path(c.actor);
-    if (!s::ground(c.w, endpoint) || !s::corridor(c.w, path, s::pos(c.actor), endpoint)) return false;
-    return issue(c, state, nullptr, &goal, -1, point_action, squad_bound);
+    XY chosen{};
+    float best_sp = -1.f;
+    for (float off : {0.f, 5.5f, -5.5f, 7.5f, -7.5f}) {
+        const XY cand = goal + lat * (off * c.w.length);
+        if (!within_team(c, cand)) continue;
+        const float sp = spacing(c, cand);
+        if (sp < 2.5f) continue;
+        sim::Vec3 endpoint{cand.x, cand.y, 0.f};
+        if (!s::ground(c.w, endpoint) || !s::corridor(c.w, path, self_pos, endpoint)) continue;
+        if (sp >= p::kPreferredSpacingMinM) {
+            chosen = cand;
+            best_sp = sp;
+            break;
+        }
+        if (sp > best_sp) {
+            chosen = cand;
+            best_sp = sp;
+        }
+    }
+    if (best_sp < 0.f) return false;
+    return issue(c, state, nullptr, &chosen, -1, point_action, squad_bound);
+}
+inline bool try_battle_clump_disperse(Context& c, Address state) {
+    if (c.soldier->covered || !c.squad || !c.sub) return false;
+    XY clump_center{};
+    float clump_spacing = std::numeric_limits<float>::infinity();
+    bool higher_priority = false;
+    if (!detect_clump(c, clump_center, clump_spacing, higher_priority) ||
+        !p::should_disperse_clump(*c.soldier, c.now, true, clump_spacing, higher_priority))
+        return false;
+    const XY threat_xy = read<XY>(c.sub, 0x28);
+    if (!std::isfinite(threat_xy.x) || !std::isfinite(threat_xy.y)) return false;
+    c.threat = threat_xy;
+    c.placement_center = clump_center;
+    c.clump_spacing = clump_spacing;
+    c.soldier->disperse_retry = c.now + p::kDisperseRetryS;
+    Search search(c, state, c.self, 9.f);
+    auto q = search.ptr();
+    put(q, 0x124, std::uint16_t{0});
+    native<void (*)(Address, float)>(0x8BB160)(q + 0x170, 0.f);
+    put(q, 0x170, 10.f);
+    put(q, 0x174, 10.f);
+    put(q, 0x178, 10.f);
+    Choice choice{};
+    if (choose(c, q, Purpose::disperse_cover, choice)) {
+        if (issue(c, state, &choice.spot, nullptr, -1, 7)) {
+            c.soldier->dispersed_at = c.now;
+            stat_clump_spread.fetch_add(1, std::memory_order_relaxed);
+            return true;
+        }
+        return false;
+    }
+    s::PathContext path(c.actor);
+    const sim::Vec3 self_pos = s::pos(c.actor);
+    auto passable = [&](XY cand) {
+        sim::Vec3 dest{cand.x, cand.y, 0.f};
+        return s::ground(c.w, dest) && s::corridor(c.w, path, self_pos, dest);
+    };
+    XY offset_pt{};
+    if (choose_disperse_offset(
+            c, passable, [&](XY pt, float h) { return sight(c, pt, h); }, offset_pt) &&
+        issue(c, state, nullptr, &offset_pt, -1, 7)) {
+        c.soldier->dispersed_at = c.now;
+        stat_clump_spread.fetch_add(1, std::memory_order_relaxed);
+        return true;
+    }
+    return false;
 }
 inline bool update_cover(Context& c, Address state) {
     coordinate(c);
@@ -874,13 +1400,15 @@ inline bool update_cover(Context& c, Address state) {
         // The follower branch reaches update_cover independently of native formation twitch.
         return movement(c, state);
     }
+    if (!c.soldier->covered && try_battle_clump_disperse(c, state)) return true;
     const bool screen = screened(c);
     const auto visibility = current_sight(c);
+    const bool keep_open_shot = !withdrawing(c) && hold_shot(c);
     if ((screen && c.team) || visibility == p::Sight::unknown ||
         p::stable_cover(c.now, *c.soldier, screen, read<unsigned>(c.sub, 0x14) & 0x180, visibility == p::Sight::open) ||
-        (!withdrawing(c) && hold_shot(c)))
+        (c.soldier->covered && keep_open_shot))
         return false;
-    Search search(c, state, c.self, 2);
+    Search search(c, state, c.self, c.soldier->covered ? 6.f : 10.f);
     // Evaluate both descriptors with identical weights. Native zeroes w170 only for the incumbent.
     auto q = search.ptr();
     put(q, 0x124, std::uint16_t{0});
@@ -891,6 +1419,7 @@ inline bool update_cover(Context& c, Address state) {
     c.soldier->next_search = c.now + 1;
     Choice choice;
     if (!choose(c, q, Purpose::update, choice)) return false;
+    if (!c.soldier->covered && keep_open_shot && !screened(c, choice.spot.ptr(), choice.spot.xy())) return false;
     if (c.soldier->covered) {
         auto current = read<Descriptor>(read<Address>(c.actor, 0xdc0), 0x20);
         native<void (*)(Address)>(0x8BB180)(current.ptr() + 0x5c);
@@ -899,7 +1428,7 @@ inline bool update_cover(Context& c, Address state) {
         put(current.ptr(), 0x80, std::numeric_limits<float>::quiet_NaN());
         native<Byte (*)(Address, Address)>(0x8B6090)(q, current.ptr());
         float incumbent =
-            p::cover_score(read<float>(current.ptr(), 0x80), visibility, withdrawing(c), 0, spacing(c, c.self));
+            p::cover_score(read<float>(current.ptr(), 0x80), visibility, withdrawing(c), 0, spacing(c, c.self), screen);
         if (!std::isfinite(incumbent) || choice.score < incumbent + 8) return false;
     }
     return issue(c, state, &choice.spot, nullptr, -1, 7);
@@ -1018,6 +1547,9 @@ inline void dispatch(Address b) {
             put(b, 0x52c, int(posture));
             put(b, 0x530, Tick{});
         }
+    } else if (GOH_TACTICAL_CALLER() == s::base + 0x95ABDB && ai_march_context(c, b) &&
+               c.now < c.soldier->cover_break_until && (read<unsigned>(b, 0x39c) & (1u << 9))) {
+        native<void (*)(Address, Byte)>(0x91B360)(b, 0);
     }
     original.base(b);
 }
@@ -1034,6 +1566,9 @@ inline void cover_execute(Address state) {
             const Tick due = read<Tick>(state, 0x3ec);
             if (!due || due > c.w.now) put(state, 0x3ec, c.w.now ? c.w.now : Tick{1});
         }
+    } else if (for_ai_march_state(c, state) && c.now < c.soldier->cover_break_until &&
+               (read<unsigned>(c.brain, 0x39c) & (1u << 9))) {
+        native<void (*)(Address, Byte)>(0x91B360)(c.brain, 0);
     }
     original.cover_execute(state);
 }
@@ -1045,6 +1580,8 @@ inline Byte follower(Address b) {
         if (context(c, b) && c.sub) {
             coordinate(c);
             if (c.team) return 0;
+        } else if (ai_march_context(c, b) && c.now < c.soldier->cover_break_until) {
+            return 0;
         }
     }
     return original.follower(b);
@@ -1056,6 +1593,8 @@ inline Byte follow(Address state) {
     if (for_state(c, state) && c.sub) {
         coordinate(c);
         if (c.team) return 0;
+    } else if (for_ai_march_state(c, state) && c.now < c.soldier->cover_break_until) {
+        return 0;
     }
     return original.follow(state);
 }
@@ -1106,9 +1645,11 @@ template <bool Cover> void post_move(Address state) {
 inline Byte search(Address state, Descriptor* out, Address query) {
     Guard guard;
     Context c{};
-    if (!for_state(c, state) || !c.sub || !out || !query || read<Address>(query, 0x108) != c.actor)
+    const bool normal = for_state(c, state);
+    if ((!normal && !for_ai_march_state(c, state)) || !c.sub || !out || !query ||
+        read<Address>(query, 0x108) != c.actor)
         return original.search(state, out, query);
-    coordinate(c);
+    if (normal) coordinate(c);
     Choice best;
     if (!choose(c, query, Purpose::native, best)) return 0;
     *out = best.spot;
@@ -1214,8 +1755,7 @@ template <class Place> bool settle_squad(Context& c, Place place) {
     const bool overflow = !row.overflow_done && c.now <= row.overflow_until;
     const bool follow_due = modules.weapon_team_cohesion && c.now >= row.next_follow && p::allows(modes, flags);
     if (follow_due) row.next_follow = c.now + 1.;
-    if ((!overflow && !spread && !follow_due) || !placement_ready(c, overflow)) return false;
-    if (spread || overflow) {
+    if ((spread || overflow) && placement_ready(c, overflow)) {
         unsigned covered = 0, close = 0;
         XY sum = c.self;
         const auto members = s::span(c.squad, 0x80); // placement_ready validated this roster.
@@ -1258,7 +1798,68 @@ template <class Place> bool settle_squad(Context& c, Place place) {
             if (place(c, Purpose::spread)) return true;
         }
     }
-    if (!follow_due || (overflow && !placement_ready(c, false))) return false;
+    // Goal 3: Opportunistic cover-seeking during AI (control == 0) Move-at-Will open-field marches under fire.
+    if (!row.covered && p::ai_march_allows(modes, flags) && c.now >= row.cover_break_until &&
+        c.now >= row.march_cover_retry && ai_march_available(c.w, actor, c.brain) &&
+        ai_march_roster_permits(c.squad, actor)) {
+        bool active_march = false, replaceable = false;
+        march_order_state(actor, c.brain, active_march, replaceable);
+        const bool marching =
+            active_march || read<Address>(c.squad, 0x1c8) != 0 || (flags & ((1u << 6) | (1u << 9))) != 0;
+        if (marching && replaceable) {
+            XY threat_xy{};
+            bool under_fire = false, has_threat = false;
+            find_squad_threat(c, threat_xy, under_fire, has_threat);
+            if (p::should_seek_march_cover(row, c.now, marching, under_fire && has_threat)) {
+                resolve_cached_gunner(c);
+                c.threat = threat_xy;
+                c.placement_center = c.self;
+                row.march_cover_retry = c.now + p::kMarchCoverRetryS;
+                if (place(c, Purpose::march_cover)) {
+                    row.cover_break_until = c.now + p::kCoverBreakHoldS;
+                    row.march_cover_retry = c.now + p::kMarchCoverCooldownS;
+                    return true;
+                }
+            }
+        }
+    }
+    // Goal 2: Active open-ground anti-clump dispersion for Move-at-Will infantry under threat.
+    if (!row.covered && p::allows(modes, flags) && c.now - row.dispersed_at >= p::kDisperseCooldownS &&
+        c.now >= row.disperse_retry && clump_ready(c)) {
+        XY threat_xy{};
+        bool under_fire = false, has_threat = false;
+        find_squad_threat(c, threat_xy, under_fire, has_threat);
+        const Address raw_sub = read<Address>(c.brain, 0x3b8);
+        const Address own_sub =
+            s::live_runtime(c.w)
+                ? target(actor, c.brain)
+                : (raw_sub && pr::contains(pr::subjects(actor), raw_sub) && remembered(raw_sub) ? raw_sub : 0);
+        const bool under_threat =
+            has_threat &&
+            (own_sub != 0 || under_fire || p::squared(threat_xy - c.self) <= (80.f * c.w.length) * (80.f * c.w.length));
+        if (under_threat) {
+            if (s::live_runtime(c.w)) load_role(row, c.now);
+            resolve_cached_gunner(c);
+            XY clump_center{};
+            float clump_spacing = std::numeric_limits<float>::infinity();
+            bool higher_priority = false;
+            if (detect_clump(c, clump_center, clump_spacing, higher_priority) &&
+                p::should_disperse_clump(row, c.now, under_threat, clump_spacing, higher_priority)) {
+                c.sub = own_sub;
+                c.threat = threat_xy;
+                c.placement_center = clump_center;
+                c.clump_spacing = clump_spacing;
+                row.disperse_retry = c.now + p::kDisperseRetryS;
+                if (place(c, Purpose::disperse_cover)) {
+                    row.dispersed_at = c.now;
+                    if ((modes & 3u) == 0u && read<Address>(c.squad, 0x1c8) != 0)
+                        row.cover_break_until = (std::max)(row.cover_break_until, c.now + 6.0);
+                    return true;
+                }
+            }
+        }
+    }
+    if (!follow_due || !placement_ready(c, false)) return false;
     load_role(row, c.now);
     if (row.role == p::Role::heavy) return false;
     p::Roster guns{};
@@ -1271,8 +1872,8 @@ inline bool settle_after_quant(Address actor) {
     const auto& modules = config::active().modules;
     Context c{};
     c.actor = actor;
-    return accepting.load() && modules.tactical_infantry && (modules.overflow_cover || modules.weapon_team_cohesion) &&
-           pr::depth == 1 && pr::scope.actor == actor && s::callback(actor, c.w) && settle_squad(c, place_soldier);
+    return accepting.load() && modules.tactical_infantry && pr::depth == 1 && pr::scope.actor == actor &&
+           s::callback(actor, c.w) && settle_squad(c, place_soldier);
 }
 } // namespace detail
 inline constexpr unsigned hook_count = 15;
@@ -1326,5 +1927,7 @@ inline void after_hooks_removed() {
     close_grenade::squad_after_quant = nullptr;
     stat_overflow_cover = 0;
     stat_dismount_spread = 0;
+    stat_clump_spread = 0;
+    stat_march_cover = 0;
 }
 } // namespace goh::tactical_infantry
