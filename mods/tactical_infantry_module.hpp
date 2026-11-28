@@ -23,7 +23,8 @@ using s::read;
 using s::World;
 inline constexpr bool runtime_allowed = false;
 inline constexpr auto& executable_sha256 = s::executable_sha256;
-inline std::atomic<unsigned> stat_overflow_cover{}, stat_dismount_spread{}, stat_clump_spread{}, stat_march_cover{};
+inline std::atomic<unsigned> stat_overflow_cover{}, stat_dismount_spread{}, stat_clump_spread{}, stat_march_cover{},
+    stat_wedge_moves{};
 namespace detail {
 using Tick = std::uint32_t;
 template <class T> inline void put(Address ptr, unsigned off, const T& v) {
@@ -221,7 +222,7 @@ struct Context {
     ActorState* soldier{};
     SquadState* team{};
     XY self{}, center{}, support{}, threat{};
-    bool moving_element{};
+    bool moving_element{}, wedge_element{};
     p::Roster members{};
     std::size_t count{};
     Address gunner{};
@@ -431,7 +432,8 @@ inline void coordinate(Context& c) {
     if (!c.squad || c.count) return;
     auto roster = s::span(c.squad, 0x80);
     if (!roster.valid(8, 64)) return;
-    unsigned contacts = 0, front = 0, seen = 0;
+    unsigned contacts = 0, front = 0, seen = 0, covered_count = 0, open_fire_count = 0;
+    bool armor_near = false;
     float a = 0, b = 0, morale = 0, ta = 0, tr = 0, l = 0, r = 0;
     std::array<ActorState*, 64> records{};
     for (auto it = roster.first; it != roster.end; it += 8) {
@@ -448,6 +450,7 @@ inline void coordinate(Context& c) {
         if (!std::isfinite(pos.x) || !std::isfinite(pos.y)) continue;
         c.members[c.count] = {actor, row->id, row->role, pos};
         records[c.count++] = row;
+        if (row->covered) ++covered_count;
         c.center = c.center + pos;
         a += bal.a;
         b += bal.b;
@@ -456,11 +459,20 @@ inline void coordinate(Context& c) {
         tr += bal.b * bal.retreat_ratio;
         Address sub = target(actor, brain);
         if (!sub) continue;
-        c.threat = c.threat + read<XY>(sub, 0x28);
+        const XY tpos = read<XY>(sub, 0x28);
+        c.threat = c.threat + tpos;
         ++contacts;
+        const Address tgt_actor = read<Address>(sub, 0x18);
+        if (sim::has_actor(tgt_actor) &&
+            classify::is_armored_vehicle_class(s::native_string(tgt_actor + 0xde8 + 0x40)) &&
+            !s::has_destruction_tag(tgt_actor) && p::meters_between(pos, tpos, c.w.length) <= 65.f)
+            armor_near = true;
         if (c.now - row->sight_at <= 2 && row->sight_target == sub && row->visibility != p::Sight::unknown) {
             ++seen;
-            front += row->visibility == p::Sight::open;
+            if (row->visibility == p::Sight::open) {
+                ++front;
+                ++open_fire_count;
+            }
         }
     }
     if (config::active().modules.weapon_team_cohesion && c.count) {
@@ -469,11 +481,29 @@ inline void coordinate(Context& c) {
         for (std::size_t i = 0; i < c.count; ++i)
             assign_assistant(c, *records[i], c.members[i], guns, gun_count);
     }
-    if (!contacts || c.count < 2) return;
-    auto* team = record(squads, c.squad, c.now);
-    if (!team) return;
+    auto* team = c.count >= 2 ? record(squads, c.squad, c.now) : nullptr;
+    if (team) team->observe_contact(c.now, contacts > 0);
+    if (!contacts || c.count < 2 || !team) return;
     c.center = c.center * (1.f / c.count);
     c.threat = c.threat * (1.f / contacts);
+    // Also check self sensor list for any live enemy armored vehicle within 65 m of squad center.
+    if (!armor_near) {
+        const auto subs = pr::subjects(c.actor);
+        if (subs.valid(8)) {
+            for (auto psub = subs.first; psub != subs.end; psub += 8) {
+                const auto sub = read<Address>(psub);
+                if (!pr::hostile_observation(sub) || read<Byte>(sub, 0x6c)) continue;
+                const auto ent = read<Address>(sub, 0x18);
+                if (!sim::has_actor(ent) || !classify::is_armored_vehicle_class(s::native_string(ent + 0xde8 + 0x40)) ||
+                    s::has_destruction_tag(ent))
+                    continue;
+                if (p::meters_between(c.center, read<XY>(sub, 0x28), c.w.length) <= 65.f) {
+                    armor_near = true;
+                    break;
+                }
+            }
+        }
+    }
     XY lateral = p::left(p::unit(c.threat - c.center));
     for (std::size_t i = 0; i < c.count; ++i) {
         float side = p::dot(c.members[i].position - c.center, lateral) / c.w.length;
@@ -485,11 +515,19 @@ inline void coordinate(Context& c) {
             r += value;
     }
     auto desired = p::Mode::hold;
+    const float enemy_dist_m = p::meters_between(c.center, c.threat, c.w.length);
+    const bool wedge_ready = (b >= 1.05f * ta) || (seen >= 2 && front * 2 < seen);
     if (a > 1.15f * tr || morale < 48 * c.count)
         desired = p::Mode::fallback;
     else if (b > 1.15f * ta && morale > 68 * c.count)
         desired = seen && front * 2 < seen ? p::Mode::left : p::Mode::bound;
-    auto active = p::bounders(c.members, c.count, team->phase, team->cycle);
+    else if (config::active().modules.flanking_wedge &&
+             p::should_wedge(c.count, covered_count, open_fire_count ? open_fire_count : contacts, armor_near,
+                             morale / c.count, enemy_dist_m, team->contact_duration(c.now), wedge_ready))
+        desired = p::Mode::wedge_left;
+    auto active = p::is_wedge(team->mode)
+                      ? p::wedge_elements(c.members, c.count, c.center, c.threat, p::wedge_sign(team->mode))
+                      : p::bounders(c.members, c.count, team->phase, team->cycle);
     bool arrived = true, any = false;
     for (std::size_t i = 0; i < c.count; ++i)
         if (active[i]) {
@@ -500,14 +538,19 @@ inline void coordinate(Context& c) {
         }
     team->update(c.now, desired, l, r, any && arrived);
     c.team = team;
-    active = p::bounders(c.members, c.count, team->phase, team->cycle);
+    active = p::is_wedge(team->mode)
+                 ? p::wedge_elements(c.members, c.count, c.center, c.threat, p::wedge_sign(team->mode))
+                 : p::bounders(c.members, c.count, team->phase, team->cycle);
     unsigned supporting = 0;
     for (std::size_t i = 0; i < c.count; ++i) {
         if (!active[i]) {
             c.support = c.support + c.members[i].position;
             ++supporting;
         }
-        if (c.members[i].actor == c.actor) c.moving_element = active[i] && p::advancing(team->mode);
+        if (c.members[i].actor == c.actor) {
+            c.moving_element = active[i] && p::advancing(team->mode);
+            c.wedge_element = active[i] && p::is_wedge(team->mode);
+        }
     }
     c.support = supporting ? c.support * (1.f / supporting) : c.center;
 }
@@ -598,7 +641,8 @@ enum class Purpose {
     spread,
     assist,
     disperse_cover,
-    march_cover
+    march_cover,
+    wedge
 };
 inline bool withdrawing(const Context& c) {
     return !read<Byte>(c.brain, 0x521) && read<int>(c.brain, 0x52c) <= p::fallback;
@@ -609,11 +653,14 @@ inline XY forward(const Context& c) {
 }
 inline bool lagging(const Context& c) {
     if (c.gunner) return p::meters_between(c.self, c.gunner_pos, c.w.length) > 10.f;
-    return c.team && p::squared(c.self - c.center) > 28 * 28 * c.w.length * c.w.length;
+    const float max_leash = c.wedge_element ? 38.f : 28.f;
+    return c.team && p::squared(c.self - c.center) > max_leash * max_leash * c.w.length * c.w.length;
 }
 inline bool within_team(const Context& c, XY point) {
     if (c.gunner && !p::assistant_cohesive(c.self, point, c.gunner_pos, c.w.length)) return false;
-    return !c.team || p::cohesive(c.self, point, c.center, c.support, c.w.length);
+    if (!c.team) return true;
+    if (c.wedge_element) return p::wedge_cohesive(c.self, point, c.center, c.support, c.threat, c.w.length);
+    return p::cohesive(c.self, point, c.center, c.support, c.w.length);
 }
 inline float alignment(const Context& c, XY point) {
     if (!c.team || (c.team->mode != p::Mode::left && c.team->mode != p::Mode::right)) return 0;
@@ -738,6 +785,69 @@ inline bool select_cover(Context& c, s::Span list, Purpose purpose, Choice& best
         return select_screened_cover(
             c, list, purpose, best, [](Address desc, XY enemy, XY pt) { return screened_against(desc, enemy, pt); },
             [&](XY pt, float h) { return sight(c, pt, h); });
+    }
+    if (purpose == Purpose::wedge && c.team && p::is_wedge(c.team->mode)) {
+        const float flank_sign = p::wedge_sign(c.team->mode);
+        const float angle_before = p::wedge_flank_angle_deg(c.self, c.center, c.threat, flank_sign);
+        const float enemy_dist_before = p::meters_between(c.self, c.threat, c.w.length);
+        const XY wdir = p::wedge_direction(c.self, c.center, c.threat, flank_sign, c.w.length);
+        struct WedgeCand {
+            Descriptor desc{};
+            XY point{};
+            float native_score{}, spacing_m{}, dist_m{}, angle_after{}, enemy_dist_after{}, progress_m{},
+                probe_height{};
+            float base_val{-std::numeric_limits<float>::infinity()};
+            p::Sight visibility{p::Sight::unknown};
+            bool probed{};
+        };
+        std::array<WedgeCand, p::CoverSelection::limit> pool{};
+        unsigned count = 0;
+        for (auto it = list.first; it != list.end && count < p::CoverSelection::limit; it += sizeof(Descriptor)) {
+            const auto d = read<Descriptor>(it);
+            if (!read<int>(d.ptr(), 4)) continue;
+            const XY pt = d.xy();
+            const float dist_m = p::meters_between(pt, c.self, c.w.length);
+            if (!std::isfinite(dist_m) || !within_team(c, pt)) continue;
+            const bool scr = screened(c, d.ptr(), pt);
+            if (!scr) continue;
+            const float sp = spacing(c, pt);
+            const float angle_after = p::wedge_flank_angle_deg(pt, c.center, c.threat, flank_sign);
+            const float enemy_dist_after = p::meters_between(pt, c.threat, c.w.length);
+            const float progress_m = p::dot(pt - c.self, wdir) / c.w.length;
+            const float nat = read<float>(d.ptr(), 0x80);
+            const float base_val = p::score_wedge_cover(nat, p::Sight::unknown, sp, dist_m, angle_before, angle_after,
+                                                        enemy_dist_before, enemy_dist_after, progress_m, true);
+            if (!std::isfinite(base_val)) continue;
+            const float ph = p::cover_height(read<int>(d.ptr(), 8), read<int>(d.ptr(), 0xc), false);
+            pool[count++] = {
+                d,    pt, nat, sp, dist_m, angle_after, enemy_dist_after, progress_m, ph, base_val, p::Sight::unknown,
+                false};
+        }
+        if (!count) return false;
+        p::CoverSelection selection;
+        for (unsigned step = 0; step < 6; ++step) {
+            unsigned pick = count;
+            float top = -std::numeric_limits<float>::infinity();
+            for (unsigned i = 0; i < count; ++i)
+                if (!pool[i].probed && pool[i].probe_height > 0.f && pool[i].base_val > top) {
+                    top = pool[i].base_val;
+                    pick = i;
+                }
+            if (pick == count) break;
+            pool[pick].probed = true;
+            pool[pick].visibility =
+                selection.probe([&] { return sight(c, pool[pick].point, pool[pick].probe_height); });
+        }
+        for (unsigned i = 0; i < count; ++i) {
+            const auto& cand = pool[i];
+            const float val =
+                p::score_wedge_cover(cand.native_score, cand.visibility, cand.spacing_m, cand.dist_m, angle_before,
+                                     cand.angle_after, enemy_dist_before, cand.enemy_dist_after, cand.progress_m, true);
+            selection.consider(i, val);
+        }
+        if (selection.winner == p::CoverSelection::limit) return false;
+        best = {pool[selection.winner].desc, selection.score};
+        return true;
     }
     const bool retreat = purpose == Purpose::retreat || (purpose != Purpose::peek && withdrawing(c));
     const bool directed = purpose == Purpose::bound || purpose == Purpose::retreat;
@@ -1303,6 +1413,32 @@ inline bool movement(Context& c, Address state) {
                         (c.soldier->issued_phase == c.team->phase_at && c.soldier->issued_squad == c.squad)))
         return false;
     if (!retreat && read<Byte>(c.brain, 0x520)) return false;
+    if (c.wedge_element && !rejoin && !retreat) {
+        // Real fire-and-maneuver: never peel out of cover while an enemy is actively shooting directly at you.
+        if (c.soldier->covered && (read<unsigned>(c.sub, 0x14) & 0x100u)) return false;
+        const float flank_sign = p::wedge_sign(c.team->mode);
+        const float flank_angle = p::wedge_flank_angle_deg(c.self, c.center, c.threat, flank_sign);
+        const float enemy_dist_m = p::meters_between(c.self, c.threat, c.w.length);
+        if (p::wedge_in_enfilade(flank_angle, enemy_dist_m, c.soldier->covered, current_sight(c) == p::Sight::open))
+            return false;
+        const XY wdir = p::wedge_direction(c.self, c.center, c.threat, flank_sign, c.w.length);
+        if (p::squared(wdir) < .9f) return false;
+        const XY wgoal = c.self + wdir * (12.f * c.w.length);
+        c.soldier->next_search = c.now + 1.5;
+        Search search(c, state, wgoal, 11.f);
+        auto q = search.ptr();
+        put(q, 0x124, std::uint16_t{0});
+        native<void (*)(Address, float)>(0x8BB160)(q + 0x170, 0.f);
+        put(q, 0x170, 10.f);
+        put(q, 0x174, 10.f);
+        put(q, 0x178, 10.f);
+        Choice choice{};
+        if (choose(c, q, Purpose::wedge, choice) && issue(c, state, &choice.spot, nullptr, -1, 7, squad_bound)) {
+            stat_wedge_moves.fetch_add(1, std::memory_order_relaxed);
+            return true;
+        }
+        return false; // Strictly cover-to-cover: never sprint into open fields without cover.
+    }
     if (!rejoin) {
         if (!retreat && c.team && !c.moving_element) return false;
         if (!retreat && !c.team && c.soldier->posture < p::advance) return false;
@@ -1929,5 +2065,6 @@ inline void after_hooks_removed() {
     stat_dismount_spread = 0;
     stat_clump_spread = 0;
     stat_march_cover = 0;
+    stat_wedge_moves = 0;
 }
 } // namespace goh::tactical_infantry

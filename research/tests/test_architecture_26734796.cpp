@@ -271,18 +271,22 @@ void test_config_and_log() {
     assert(defaults.tank_crew_fill && defaults.internal_crew_swap && defaults.nontank_crew_fill);
     assert(defaults.ammo_scavenge && defaults.tank_target_memory && defaults.cannon_aim_settle &&
            defaults.allegiance_guard && defaults.overflow_cover && defaults.weapon_team_cohesion &&
-           defaults.mg_crew_small_arms && defaults.movement_recovery && defaults.convoy_spacing);
+           defaults.mg_crew_small_arms && defaults.movement_recovery && defaults.convoy_spacing &&
+           defaults.flanking_wedge && defaults.cover_frag && defaults.role_target_split && defaults.offensive_smoke);
     const auto tier12 =
         parse_ini("[modules]\n"
                   "ammo_scavenge=false\ntank_target_memory=0\ncannon_aim_settle=off\nallegiance_guard=no\n"
                   "overflow_cover=false\nweapon_team_cohesion=false\nmg_crew_small_arms=false\n"
-                  "movement_recovery=false\nconvoy_spacing=false\n"
+                  "movement_recovery=false\nconvoy_spacing=false\nflanking_wedge=false\ncover_frag=false\n"
+                  "role_target_split=false\noffensive_smoke=false\n"
                   "[tuning]\n"
                   "scavenge_radius_m=99\ntank_memory_hold_s=0.1\ncannon_settle_max_s=99\n"
                   "overflow_cover_radius_m=1\nmovement_stall_s=99\nconvoy_gap_m=1\n");
     assert(!tier12.modules.ammo_scavenge && !tier12.modules.tank_target_memory && !tier12.modules.cannon_aim_settle &&
            !tier12.modules.allegiance_guard && !tier12.modules.overflow_cover && !tier12.modules.weapon_team_cohesion &&
-           !tier12.modules.mg_crew_small_arms && !tier12.modules.movement_recovery && !tier12.modules.convoy_spacing);
+           !tier12.modules.mg_crew_small_arms && !tier12.modules.movement_recovery && !tier12.modules.convoy_spacing &&
+           !tier12.modules.flanking_wedge && !tier12.modules.cover_frag && !tier12.modules.role_target_split &&
+           !tier12.modules.offensive_smoke);
     assert(tier12.tuning.scavenge_radius_m == 40.0f && tier12.tuning.tank_memory_hold_s == 1.0f &&
            tier12.tuning.cannon_settle_max_s == 5.0f && tier12.tuning.overflow_cover_radius_m == 3.0f &&
            tier12.tuning.movement_stall_s == 8.0f && tier12.tuning.convoy_gap_m == 4.0f);

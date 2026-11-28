@@ -54,6 +54,7 @@ inline void (*log_sink)(const char* fmt, ...) = nullptr;
 inline std::uint32_t stat_veh_smoke = 0;
 inline std::uint32_t stat_inf_smoke = 0;
 inline std::uint32_t stat_med_smoke = 0;
+inline std::uint32_t stat_off_smoke = 0;
 inline std::uint32_t stat_inf_released = 0;
 
 using Role = std::uint8_t(__fastcall*)();
@@ -226,6 +227,85 @@ inline Address FindCarriedPureSmokeItem(Address base, Address actor) noexcept {
         }
     }
     return FindPureSmokeItem(actor);
+}
+
+inline unsigned count_carried_pure_smoke(Address base, Address actor) noexcept {
+    if (!base || !actor) return 0;
+    const Address aggregate = read<Address>(actor, 0x578);
+    const Address manager = aggregate ? read<Address>(aggregate, 0x28) : 0;
+    if (!manager) return 0;
+    unsigned total = 0;
+    Address seen_hand[4]{};
+    unsigned seen_count = 0;
+    const Address first = read<Address>(manager, 0x88);
+    const Address end = read<Address>(manager, 0x90);
+    if (first && end >= first && (end - first) % sizeof(Address) == 0) {
+        for (Address slot = first; slot < end; slot += sizeof(Address)) {
+            const Address hand = read<Address>(slot);
+            if (!hand || read<Address>(hand) != base + 0x10FF210 || read<Address>(hand, 0x3D0) != actor) continue;
+            const Address item = read<Address>(hand, 0x3D8);
+            const auto qty = item ? read<std::int32_t>(item, 0x48) : 0;
+            if (item && read<Address>(item, 0x38) == hand && qty > 0 && !read<Address>(item, 0x50) &&
+                IsPureSmokeDefinition(read<Address>(item, 0x40))) {
+                total += static_cast<unsigned>(qty);
+                if (seen_count < 4) seen_hand[seen_count++] = item;
+            }
+        }
+    }
+    const Address box = read<Address>(manager, 0xA0);
+    if (box && read<Address>(box, 0x50) == actor) {
+        const Address bfirst = read<Address>(box, 0x10);
+        const Address bend = read<Address>(box, 0x18);
+        if (bfirst && bend >= bfirst && (bend - bfirst) % sizeof(Address) == 0) {
+            for (Address slot = bfirst; slot < bend; slot += sizeof(Address)) {
+                const Address item = read<Address>(slot);
+                if (!item || read<Address>(item, 0x30) != box || read<Address>(item, 0x50)) continue;
+                bool dup = false;
+                for (unsigned i = 0; i < seen_count; ++i)
+                    if (seen_hand[i] == item) dup = true;
+                if (dup) continue;
+                const auto qty = read<std::int32_t>(item, 0x48);
+                if (qty > 0 && IsPureSmokeDefinition(read<Address>(item, 0x40))) total += static_cast<unsigned>(qty);
+            }
+        }
+    }
+    return total;
+}
+
+inline bool is_medic_human(Address base, Address brain) noexcept {
+    if (!base || !brain || read<Address>(brain) != base + 0x110FF88) return false;
+    const Address root = read<Address>(brain, 0xE0);
+    if (!root || read<Address>(root) != base + 0x1110CD0 || read<Address>(root, 0x30) != brain) return false;
+    using IsMedic = std::uint8_t(__fastcall*)(Address);
+    return reinterpret_cast<IsMedic>(base + 0x96AAF0)(root) != 0;
+}
+
+inline bool holding_heavy_weapon(Address base, Address actor) noexcept {
+    if (!base || !actor) return false;
+    const Address agg = read<Address>(actor, 0x578);
+    const Address manager = agg ? read<Address>(agg, 0x28) : 0;
+    if (!manager) return false;
+    const Address first = read<Address>(manager, 0x88);
+    const Address end = read<Address>(manager, 0x90);
+    if (!first || end < first || (end - first) % sizeof(Address) != 0) return false;
+    for (Address slot = first; slot < end; slot += sizeof(Address)) {
+        const Address hand = read<Address>(slot);
+        if (!hand || read<Address>(hand) != base + 0x10FF210 || read<Address>(hand, 0x3D0) != actor) continue;
+        const Address item = read<Address>(hand, 0x3D8);
+        if (!item || read<Address>(item, 0x38) != hand || read<std::int32_t>(item, 0x48) <= 0) continue;
+        const Address def = read<Address>(item, 0x40);
+        if (def && classify::def_is_heavy_support_weapon(def)) return true;
+    }
+    return false;
+}
+
+inline bool qualifies_offensive_smoke(bool move_at_will, bool is_medic, bool heavy_gunner, unsigned squad_smoke_total,
+                                      bool enemy_mg_or_gun, bool enemy_firing, unsigned covered_cluster,
+                                      float dist_m) noexcept {
+    if (!move_at_will || is_medic || heavy_gunner || squad_smoke_total < 2u) return false;
+    if (!std::isfinite(dist_m) || dist_m < 16.f || dist_m > 105.f) return false;
+    if (dist_m <= 36.f) return enemy_mg_or_gun || covered_cluster >= 2u;
+    return (enemy_mg_or_gun && enemy_firing) || (covered_cluster >= 3u && enemy_firing);
 }
 
 namespace vehicle {
@@ -610,6 +690,7 @@ struct Threat {
     Vec3 position{};
     int rank = 0;
     float distance = 0;
+    bool armored_vehicle = false;
 };
 
 inline Threat primary_threat(const World& w, Address observer, bool vehicle, bool medical) noexcept {
@@ -673,7 +754,7 @@ inline Threat primary_threat(const World& w, Address observer, bool vehicle, boo
                           : threat ? 8
                                    : 0) +
                          (visible ? 4 : 0) + (combat_vehicle || antitank || mg ? 2 : 0) + 1;
-        if (rank > best.rank || (rank == best.rank && d2 < best.distance)) best = {pos, rank, d2};
+        if (rank > best.rank || (rank == best.rank && d2 < best.distance)) best = {pos, rank, d2, combat_vehicle};
     }
     return best;
 }
@@ -755,6 +836,33 @@ inline bool screen_point(const World& w, Vec3 origin, Vec3 anchor, Vec3 threat, 
         if (step == previous) continue;
         previous = step;
         float xy[2] = {anchor.x + step * ray.ux, anchor.y + step * ray.uy};
+        if (!dry_ground(w.base, terrain, xy)) continue;
+        Vec3 point{xy[0], xy[1], reinterpret_cast<Height>(w.base + 0xA5D440)(terrain, xy, 0)};
+        if (finite(point) && distance2(origin, point) <= range * range) {
+            out = point;
+            return true;
+        }
+    }
+    return false;
+}
+
+inline bool offensive_screen_point(const World& w, Vec3 origin, Vec3 threat, float range, Vec3& out) noexcept {
+    if (!finite(origin) || !finite(threat) || !std::isfinite(range) || !(w.length > 0) || range < 10.f * w.length)
+        return false;
+    const float separation = std::sqrt(length2_xy(origin, threat));
+    if (!std::isfinite(separation) || separation < 14.f * w.length) return false;
+    const float ux = (threat.x - origin.x) / separation, uy = (threat.y - origin.y) / separation;
+    const auto terrain = read<Address>(w.scene, 0x18);
+    using Height = float(__fastcall*)(Address, const float*, int);
+    const float max_step = (std::fmin)(separation - 3.f * w.length, range - 3.5f * w.length);
+    const float min_step = 10.f * w.length;
+    if (!(max_step >= min_step)) return false;
+    float previous = -1.f;
+    for (float pullback_m : {0.f, 2.f, 4.f, 6.f, 8.f}) {
+        const float step = (std::fmax)(min_step, max_step - pullback_m * w.length);
+        if (step == previous) continue;
+        previous = step;
+        float xy[2] = {origin.x + step * ux, origin.y + step * uy};
         if (!dry_ground(w.base, terrain, xy)) continue;
         Vec3 point{xy[0], xy[1], reinterpret_cast<Height>(w.base + 0xA5D440)(terrain, xy, 0)};
         if (finite(point) && distance2(origin, point) <= range * range) {
@@ -932,6 +1040,132 @@ inline Situation situation(const World& w, Address carrier, Address squad, bool 
     if (medical_threat.rank && (found_patient || (healing && (!assigned_patient || assigned_patient == carrier))))
         return {found_patient ? casualty : self, medical_threat, true, found_patient ? casualty_actor : carrier};
     if (healing) return {};
+    return result;
+}
+
+inline unsigned squad_reserve_smoke(const World& w, Address carrier, Address squad, Vec3 self) noexcept {
+    unsigned total = count_carried_pure_smoke(w.base, carrier);
+    if (total >= 2u || !squad || read<Address>(squad) != w.base + 0x110F3A0) return total;
+    const auto owner = read<std::uint8_t>(carrier, 0xDA8);
+    const auto begin = read<Address>(squad, 0x80), end = read<Address>(squad, 0x88);
+    if (!begin || end < begin || (end - begin) % 8 != 0 || (end - begin) / 8 > 256) return total;
+    const float nearby = 625.f * w.length * w.length; // 25 m
+    for (Address p = begin; p != end && total < 2u; p += 8) {
+        const Address mate = read<Address>(p);
+        if (!mate || mate == carrier || !has_actor(mate) || !(read<std::uint8_t>(mate, 0x30) & 4)) continue;
+        if (!allies(w.base, owner, read<std::uint8_t>(mate, 0xDA8))) continue;
+        const Address mb = read<Address>(mate, 0xDC8);
+        if (!mb || is_medic_human(w.base, mb)) continue;
+        const Vec3 pos = read<Vec3>(mate, 0x74);
+        if (!finite(pos) || distance2(self, pos) > nearby) continue;
+        total += count_carried_pure_smoke(w.base, mate);
+    }
+    return total;
+}
+
+inline Threat offensive_threat_for_observer(const World& w, Address observer, Vec3 origin) noexcept {
+    Threat best{};
+    const auto sensor = read<Address>(observer, 0xDD0);
+    if (!sensor || read<Address>(sensor, 0x260) != observer) return best;
+    const auto begin = read<Address>(sensor, 0x280), end = read<Address>(sensor, 0x288);
+    if (!begin || end < begin || (end - begin) % 8 || (end - begin) / 8 > 4096) return best;
+    struct HostileHuman {
+        Vec3 pos{};
+        bool covered{};
+        bool firing{};
+    };
+    HostileHuman humans[32]{};
+    unsigned human_count = 0;
+    for (Address p = begin; p != end; p += 8) {
+        const auto sub = read<Address>(p);
+        if (!sub || read<std::uint8_t>(sub, 0x6C)) continue;
+        const auto relation = read<std::uint32_t>(sub, 0x14), flags = read<std::uint32_t>(sub, 0x10);
+        if ((relation & 0x1Eu) != 2 || !(relation & 1) || !(flags & (1u << 28)) || !(flags & (1u << 29))) continue;
+        const auto enemy = read<Address>(sub, 0x18);
+        if (!has_actor(enemy)) continue;
+        const Vec3 pos = read<Vec3>(sub, 0x28);
+        const float d2 = distance2(origin, pos);
+        if (!finite(pos) || !std::isfinite(d2) || d2 <= 0.f) continue;
+        const float dist_m = std::sqrt(d2) / w.length;
+        if (dist_m < 16.f || dist_m > 105.f) continue;
+        const bool firing = ((relation & 0x180u) != 0) && recent(w, read<std::uint32_t>(sub, 0x68), 3.f);
+        const bool human_enemy = (read<std::uint8_t>(enemy, 0x30) & 4) != 0;
+        const auto weapon = read<Address>(sub, 0x40);
+        const auto wfirst = weapon ? read<Address>(weapon, 0x11E0) : 0;
+        const auto wlast = weapon ? read<Address>(weapon, 0x11E8) : 0;
+        const bool is_mg = (weapon && classify::def_is_heavy_support_weapon(weapon)) ||
+                           has_tag(wfirst, wlast, "mgun") || has_tag(wfirst, wlast, "machinegun");
+        bool is_gun = false;
+        if (!human_enemy) {
+            const auto tfirst = read<Address>(enemy, 0x4E8), tlast = read<Address>(enemy, 0x4F0);
+            if (!has_tag(tfirst, tlast, "destroyed") && !has_tag(tfirst, tlast, "broken")) {
+                for (const char* name : {"cannon_big", "cannon_small", "cannon_bullet", "cannon_zenite", "cannon_aa",
+                                         "howitzer", "cannon_howitzer", "mortar"}) {
+                    if (SmokeTagEquals(enemy + 0xDE8, name)) {
+                        is_gun = true;
+                        break;
+                    }
+                }
+            }
+        } else if (human_count < 32u) {
+            const auto cov = read<Address>(enemy, 0xDC0);
+            const bool covered = cov && read<int>(cov, 0x24) != 0;
+            humans[human_count++] = {pos, covered, firing};
+        }
+        if ((is_mg || is_gun) && (dist_m <= 36.f || firing)) {
+            const int rank = (is_gun ? 12 : 10) + (firing ? 4 : 0) + (dist_m <= 36.f ? 2 : 0);
+            if (rank > best.rank || (rank == best.rank && d2 < best.distance)) best = {pos, rank, d2, false};
+        }
+    }
+    const float cluster_r2 = (5.5f * w.length) * (5.5f * w.length);
+    for (unsigned i = 0; i < human_count; ++i) {
+        unsigned cluster = 0;
+        bool any_covered = false;
+        bool any_firing = false;
+        for (unsigned j = 0; j < human_count; ++j) {
+            if (length2_xy(humans[i].pos, humans[j].pos) <= cluster_r2) {
+                ++cluster;
+                any_covered |= humans[j].covered;
+                any_firing |= humans[j].firing;
+            }
+        }
+        if (!any_covered) continue;
+        const float d2 = distance2(origin, humans[i].pos);
+        const float dist_m = std::sqrt(d2) / w.length;
+        if (qualifies_offensive_smoke(true, false, false, 2u, false, any_firing, cluster, dist_m)) {
+            const int rank = 6 + static_cast<int>(cluster > 4u ? 4u : cluster) + (any_firing ? 2 : 0);
+            if (rank > best.rank || (rank == best.rank && d2 < best.distance)) best = {humans[i].pos, rank, d2, false};
+        }
+    }
+    return best;
+}
+
+inline Situation offensive_situation(const World& w, Address carrier, Address squad) noexcept {
+    Situation result{};
+    const Vec3 self = read<Vec3>(carrier, 0x74);
+    if (!finite(self)) return result;
+    Threat best = offensive_threat_for_observer(w, carrier, self);
+    if (squad && read<Address>(squad) == w.base + 0x110F3A0) {
+        const auto owner = read<std::uint8_t>(carrier, 0xDA8);
+        const auto begin = read<Address>(squad, 0x80), end = read<Address>(squad, 0x88);
+        const float nearby = 625.f * w.length * w.length; // 25 m
+        if (begin && end >= begin && (end - begin) % 8 == 0 && (end - begin) / 8 <= 256) {
+            for (Address p = begin; p != end; p += 8) {
+                const Address mate = read<Address>(p);
+                if (!mate || mate == carrier || !has_actor(mate) || !(read<std::uint8_t>(mate, 0x30) & 4)) continue;
+                if (!allies(w.base, owner, read<std::uint8_t>(mate, 0xDA8))) continue;
+                const auto mb = read<Address>(mate, 0xDC8);
+                if (!mb || read<Address>(mb) != w.base + 0x110FF88 || read<Address>(mb, 0x38) != mate ||
+                    read<Address>(mb, 0x100) != squad)
+                    continue;
+                const Vec3 mpos = read<Vec3>(mate, 0x74);
+                if (!finite(mpos) || distance2(self, mpos) > nearby) continue;
+                const auto obs = offensive_threat_for_observer(w, mate, self);
+                if (better(obs, best)) best = obs;
+            }
+        }
+    }
+    if (best.rank) result = {self, best, false, carrier};
     return result;
 }
 
@@ -1170,9 +1404,9 @@ struct Reservation {
     Address carrier{}, squad{}, protected_actor{};
     std::uint64_t ticket{};
     std::uint32_t entity{}, start{}, last{}, protected_id{};
-    Vec3 anchor{}, known_threat{};
+    Vec3 anchor{}, known_threat{}, screen{};
     std::uint8_t player{};
-    bool vehicle{}, released{}, medical{};
+    bool vehicle{}, released{}, medical{}, offensive{};
 };
 inline store::GrowableTable<Reservation, 64, 4096> reservations{};
 inline std::uint64_t next_reservation{};
@@ -1231,7 +1465,8 @@ inline bool recently_hit(const World& w, Address actor) noexcept {
         if (sample.actor == actor && sample.entity == id) return sample.hit && w.now - sample.last_hit <= w.duration(3);
     return false;
 }
-inline Reservation* available(const World& w, Address actor, Address squad, Vec3 anchor, bool for_vehicle) {
+inline Reservation* available(const World& w, Address actor, Address squad, Vec3 anchor, bool for_vehicle,
+                              bool offensive_request = false) {
     Reservation* free_slot = nullptr;
     const auto owner = read<std::uint8_t>(actor, 0xDA8);
     if (owner >= 18) return nullptr;
@@ -1245,12 +1480,39 @@ inline Reservation* available(const World& w, Address actor, Address squad, Vec3
         if (r.vehicle != for_vehicle) continue;
         if (r.carrier == actor && r.entity == read<std::uint32_t>(actor, 0xC0)) return nullptr;
         if (for_vehicle) continue;
+        // Never let another soldier's offensive smoke block emergency defensive or medical smoke.
+        if (!offensive_request && r.offensive) continue;
         if (squad && r.squad == squad) return nullptr;
         if ((!squad || !r.squad) && allies(w.base, owner, r.player) &&
             distance2(r.anchor, anchor) <= 400 * w.length * w.length)
             return nullptr;
     }
     return free_slot ? free_slot : reservations.append_slot();
+}
+
+inline bool has_recent_offensive_smoke_on(const World& w, std::uint8_t player, Vec3 target, Vec3 screen) noexcept {
+    if (w.scene != cache_scene || !(w.length > 0)) return false;
+    const float target_r2 = (28.f * w.length) * (28.f * w.length);
+    const float screen_r2 = (22.f * w.length) * (22.f * w.length);
+    for (const auto& r : reservations) {
+        if (!r.carrier || r.vehicle || !r.offensive || !allies(w.base, player, r.player)) continue;
+        const bool active = r.released ? (w.now - r.last <= w.duration(20.f)) : (w.now - r.start <= w.duration(6.f));
+        if (!active) continue;
+        if (length2_xy(r.known_threat, target) <= target_r2 || length2_xy(r.screen, screen) <= screen_r2) return true;
+    }
+    return false;
+}
+
+inline bool recent_offensive_smoke_near(const World& w, std::uint8_t player, Vec3 pos, float radius_m) noexcept {
+    if (w.scene != cache_scene || !(w.length > 0) || !(radius_m > 0.f)) return false;
+    const float r2 = (radius_m * w.length) * (radius_m * w.length);
+    for (const auto& r : reservations) {
+        if (!r.carrier || r.vehicle || !r.offensive || !r.released || !allies(w.base, player, r.player)) continue;
+        const auto age = w.now - r.last;
+        if (age < w.duration(1.5f) || age > w.duration(18.f)) continue;
+        if (length2_xy(r.screen, pos) <= r2 || length2_xy(r.anchor, pos) <= r2) return true;
+    }
+    return false;
 }
 inline void reserve(Reservation& r, const World& w, Address actor, Address squad, Vec3 anchor,
                     bool for_vehicle) noexcept {
@@ -1320,6 +1582,19 @@ inline bool still_screens(const World& w, Address actor, Vec3 screen, std::uint6
             read<std::uint32_t>(member, 0xC0) != r.protected_id ||
             !allies(w.base, r.player, read<std::uint8_t>(member, 0xDA8)))
             return false;
+        if (r.offensive) {
+            const auto fresh = offensive_situation(w, actor, r.squad);
+            if (!fresh.threat.rank && w.now - r.start > w.duration(4)) return false;
+            const Vec3 threat = fresh.threat.rank ? fresh.threat.position : r.known_threat;
+            const Vec3 anchor = read<Vec3>(actor, 0x74);
+            const float tx = threat.x - anchor.x, ty = threat.y - anchor.y;
+            const float sx = screen.x - anchor.x, sy = screen.y - anchor.y;
+            const float len = std::sqrt(tx * tx + ty * ty);
+            if (!(len > 0) || !std::isfinite(len)) return false;
+            const float forward = (sx * tx + sy * ty) / len;
+            return forward >= 6.f * w.length && forward <= 30.f * w.length && forward < len &&
+                   std::fabs(sx * ty - sy * tx) <= 4.5f * w.length * len;
+        }
         if (r.medical && member != actor && !patient(w, member)) return false;
         const auto fresh = situation(w, actor, r.squad, r.medical, r.medical ? member : 0);
         if (!fresh.threat.rank && w.now - r.start > w.duration(4)) return false;
@@ -2036,21 +2311,57 @@ inline void decide(Address brain) {
     const Address definition = read<Address>(item, 0x40);
     const float range = nominal_throw_range(base, definition);
     if (!(range > 0)) return;
-    const auto need = situation(w, actor, squad, path.healing, path.patient);
-    if (!need.threat.rank) return;
+    auto need = situation(w, actor, squad, path.healing, path.patient);
+    const float self_morale = read<float>(brain, 0x474);
+    const bool emergency_defensive =
+        need.medical || need.threat.armored_vehicle || !(std::isfinite(self_morale) && self_morale >= 60.f);
+    bool is_offensive = false;
     Vec3 screen{};
-    if (!screen_point(w, self, need.anchor, need.threat.position, range, screen)) return;
+    if (!path.healing && !emergency_defensive && config::active().modules.offensive_smoke) {
+        const auto policy = read<std::uint32_t>(brain, 0x398);
+        const bool move_at_will = ((policy >> 12) & 3u) == 0u;
+        if (move_at_will && !is_medic_human(base, brain) && !holding_heavy_weapon(base, actor) &&
+            squad_reserve_smoke(w, actor, squad, self) >= 2u) {
+            if (auto* off_slot = available(w, actor, squad, self, false, true)) {
+                const auto off_need = offensive_situation(w, actor, squad);
+                Vec3 off_screen{};
+                if (off_need.threat.rank &&
+                    offensive_screen_point(w, self, off_need.threat.position, range, off_screen) &&
+                    !has_recent_offensive_smoke_on(w, read<std::uint8_t>(actor, 0xDA8), off_need.threat.position,
+                                                   off_screen)) {
+                    slot = off_slot;
+                    need = off_need;
+                    screen = off_screen;
+                    is_offensive = true;
+                }
+            }
+        }
+    }
+    if (!is_offensive) {
+        if (!need.threat.rank) return;
+        if (!emergency_defensive && !available(w, actor, squad, self, false, true)) return;
+        if (!screen_point(w, self, need.anchor, need.threat.position, range, screen)) return;
+    }
 
     reserve(*slot, w, actor, squad, self, false);
     slot->protected_actor = need.protected_actor;
     slot->protected_id = read<std::uint32_t>(need.protected_actor, 0xC0);
     slot->known_threat = need.threat.position;
+    slot->screen = screen;
     slot->medical = need.medical;
+    slot->offensive = is_offensive;
     const auto ticket = slot->ticket;
     const Address shot = make_smoke_order(base, definition, screen);
     if (shot && slot->ticket == ticket && eligible(base, brain, actor) &&
         track_smoke_order(w, actor, shot, definition, screen, ticket) && orders::install(base, brain, path, shot)) {
-        if (need.medical) {
+        if (is_offensive) {
+            ++stat_off_smoke;
+            if (log_sink) {
+                log_sink("AUTO-SMOKE OFF #%u: actor=0x%llx squad=0x%llx screen=(%.1f,%.1f) threat=(%.1f,%.1f) rank=%d",
+                         stat_off_smoke, (unsigned long long)actor, (unsigned long long)squad, screen.x, screen.y,
+                         need.threat.position.x, need.threat.position.y, need.threat.rank);
+            }
+        } else if (need.medical) {
             ++stat_med_smoke;
             if (log_sink) {
                 log_sink("AUTO-SMOKE MED #%u: actor=0x%llx screen=(%.1f,%.1f) threat=(%.1f,%.1f) rank=%d",
@@ -2198,6 +2509,7 @@ inline void after_hooks_removed() noexcept {
     hulls.release();
     smoke_intents.release();
     active_intents.store(0, std::memory_order_relaxed);
+    stat_off_smoke = 0;
 }
 
 } // namespace goh::auto_smoke

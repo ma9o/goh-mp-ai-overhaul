@@ -1164,7 +1164,7 @@ class SweepTests(unittest.TestCase):
         native = (launch.ROOT / "mods/config_and_log.hpp").read_text()
         block = native.split("struct ModuleToggles {", 1)[1].split("\n};", 1)[0]
         module_keys = set(re.findall(r"bool (\w+)\{true\}", block))
-        self.assertEqual(len(module_keys), 40)
+        self.assertEqual(len(module_keys), 44)
         knobs = ("grenade_danger_radius_m", "medic_search_radius_m", "squad_share_radius_m",
                  "resupply_search_radius_m", "recrew_search_radius_m", "scavenge_search_radius_m",
                  "tank_facing_min_angle_deg")

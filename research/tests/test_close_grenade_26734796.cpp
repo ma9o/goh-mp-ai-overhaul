@@ -564,6 +564,64 @@ void vanilla_throw_marker() {
     sim::image_base = pr::base = 0;
     rt::table() = saved;
 }
+void cover_frag_policy() {
+    assert(!cg::qualifies_cover_frag(1, false, false, false, 0.f, 15.f, 7.f, 21.f));
+    assert(!cg::qualifies_cover_frag(3, true, true, true, 2.5f, 15.f, 7.f, 21.f));
+    assert(!cg::qualifies_cover_frag(3, true, true, true, 0.f, 5.5f, 7.f, 21.f));
+    assert(!cg::qualifies_cover_frag(3, true, true, true, 0.f, 23.f, 7.f, 21.f));
+    assert(cg::qualifies_cover_frag(2, false, false, false, 0.5f, 16.f, 7.f, 21.f));
+    assert(cg::qualifies_cover_frag(1, true, true, false, 0.f, 18.f, 7.f, 21.f));
+    assert(cg::qualifies_cover_frag(1, true, false, true, 0.f, 14.f, 7.f, 21.f));
+    assert(!cg::qualifies_cover_frag(1, true, false, false, 0.f, 14.f, 7.f, 21.f));
+
+    cg::Choice veh{};
+    veh.item = 1;
+    veh.target = 100;
+    veh.type = cg::Vehicle::tank;
+    veh.in_range = true;
+    veh.distance = 350.f;
+    cg::Choice frag3{};
+    frag3.item = 2;
+    frag3.target = 200;
+    frag3.type = cg::Vehicle::none;
+    frag3.in_range = true;
+    frag3.cover_frag = true;
+    frag3.cluster_count = 3;
+    frag3.distance = 250.f;
+    cg::Choice frag2 = frag3;
+    frag2.target = 201;
+    frag2.cluster_count = 2;
+    frag2.distance = 200.f;
+    assert(cg::better(veh, frag3) && !cg::better(frag3, veh));
+    assert(cg::better(frag3, frag2) && !cg::better(frag2, frag3));
+}
+void role_target_split_policy() {
+    // MGs prioritize dense enemy infantry clusters over lone targets.
+    assert(pr::human_role_bonus(true, 3, false, false, false) > pr::human_role_bonus(true, 2, false, false, false));
+    assert(pr::human_role_bonus(true, 2, false, false, false) > pr::human_role_bonus(true, 1, true, false, false));
+    assert(pr::human_role_bonus(true, 1, false, false, false) == 0.f);
+
+    // Rifles/SMGs prioritize high-value specialists (enemy MG > enemy AT > enemy medic > ordinary rifle).
+    assert(pr::human_role_bonus(false, 3, false, false, false) == 0.f);
+    assert(pr::human_role_bonus(false, 1, true, false, false) > pr::human_role_bonus(false, 1, false, true, false));
+    assert(pr::human_role_bonus(false, 1, false, true, false) > pr::human_role_bonus(false, 1, false, false, true));
+    assert(pr::human_role_bonus(false, 1, false, false, true) > 0.f);
+
+    // Role bonus promotes a specialist target over an ordinary rifleman of slightly higher raw score.
+    pr::Candidate rifle{}, enemy_mg{};
+    rifle.subject = 100;
+    rifle.ordinal = 0;
+    rifle.score = 0.60f;
+    rifle.sight = pr::Sight::open;
+    enemy_mg.subject = 200;
+    enemy_mg.ordinal = 1;
+    enemy_mg.score = 0.50f;
+    enemy_mg.sight = pr::Sight::open;
+    enemy_mg.role_bonus = pr::human_role_bonus(false, 1, true, false, false);
+    pr::Plan plan{{rifle, enemy_mg}, true, false};
+    pr::rank_candidates(plan);
+    assert(plan.should_rewrite && plan.order[0].subject == 200);
+}
 } // namespace
 
 int main() {
@@ -574,5 +632,7 @@ int main() {
     flight_contact();
     reservations();
     vehicle_target_ranking();
+    cover_frag_policy();
+    role_target_split_policy();
     wire_pair();
 }

@@ -260,7 +260,16 @@ inline bool exposed_mg_crew_shootable(const sim::World& w, Address actor, Addres
 inline bool defer_for_gunner(Payload kind, bool held, bool inside, float meters) {
     return !(kind == Payload::frag && held && inside && meters < 10.f);
 }
-inline std::atomic<unsigned> stat_mg_small_arms_defer{};
+inline bool qualifies_cover_frag(unsigned cluster_count, bool target_covered, bool target_high_value,
+                                 bool direct_shot_blocked, float speed_mps, float dist_m, float min_safe_m,
+                                 float max_throw_m) noexcept {
+    if (!std::isfinite(speed_mps) || !std::isfinite(dist_m) || !(dist_m >= min_safe_m && dist_m <= max_throw_m) ||
+        !(speed_mps <= 1.2f))
+        return false;
+    if (cluster_count >= 2) return true;
+    return target_covered && (target_high_value || direct_shot_blocked);
+}
+inline std::atomic<unsigned> stat_mg_small_arms_defer{}, stat_cover_frags{};
 template <class Locate> inline Aim damage_volume(Address target, Payload kind, Locate locate) {
     Aim body{};
     bool intact_engine = false;
@@ -318,6 +327,8 @@ struct Claim {
     unsigned target_id{}, actor_id{}, start{}, duration{};
     bool released{};
     bool approaching{};
+    Vec3 point{};
+    bool cover_frag{};
 };
 inline store::GrowableTable<Claim, 64, 4096> claims{};
 struct RushClaim {
@@ -517,7 +528,8 @@ inline Claim* available(const sim::World& w, Address target, Address actor, bool
     if (!empty) empty = claims.append_slot();
     return empty;
 }
-inline void reserve(Claim& c, const sim::World& w, Address target, Address a, bool released, bool approaching = false) {
+inline void reserve(Claim& c, const sim::World& w, Address target, Address a, bool released, bool approaching = false,
+                    Vec3 point = {}, bool cover_frag = false) {
     c = {target,
          a,
          read<unsigned>(target, 0xC0),
@@ -525,7 +537,23 @@ inline void reserve(Claim& c, const sim::World& w, Address target, Address a, bo
          w.now,
          w.duration(released ? 9.f : 3.f),
          released,
-         approaching};
+         approaching,
+         point,
+         cover_frag};
+}
+inline bool frag_zone_claimed(const sim::World& w, Vec3 point, Address actor) {
+    const unsigned aid = read<unsigned>(actor, 0xC0);
+    const float zone_r = 6.5f * w.length;
+    for (auto& c : claims) {
+        if (!c.target || w.now - c.start >= c.duration || (!c.released && !holder_alive(c.actor, c.actor_id))) {
+            c.target = 0;
+            continue;
+        }
+        if (!c.cover_frag || !pr::finite(c.point)) continue;
+        if (!c.released && c.actor == actor && c.actor_id == aid) continue;
+        if (pr::distance(c.point, point) <= zone_r) return true;
+    }
+    return false;
 }
 inline bool rush_available(const sim::World& w, Address target, Address actor) {
     const unsigned tid = read<unsigned>(target, 0xC0), aid = read<unsigned>(actor, 0xC0);
@@ -640,7 +668,8 @@ struct Choice {
     Aim aim{};
     Payload kind{};
     Vehicle type{};
-    bool in_range{}, held{};
+    bool in_range{}, held{}, cover_frag{};
+    unsigned cluster_count{};
     float distance{}, radius{}, max_range{};
 };
 inline bool choice(const sim::World& w, Address s, const pr::Pair& p, Payload kind, Vehicle type, Choice& out,
@@ -687,7 +716,84 @@ inline bool choice(const sim::World& w, Address s, const pr::Pair& p, Payload ki
     if (native<Reserved>(0x89E880)(base + 0x15B1D50, a, &observed, p.ammo)) return false;
     float radius = effect_radius(w, p.ammo, kind);
     if (!(p.max_range > radius + .5f * w.length) || !clear_area(w, a, aim.point, radius, kind)) return false;
-    out = {p.item, p.ammo, target, s, aim, kind, type, inside, p.held, d, radius, p.max_range};
+    out = {p.item, p.ammo, target, s, aim, kind, type, inside, p.held, false, 0, d, radius, p.max_range};
+    return true;
+}
+inline bool human_high_value(Address target) {
+    const Address hand = pr::hand_item(target);
+    const Address def = hand ? read<Address>(hand, 0x40) : 0;
+    return def && (classify::def_is_heavy_support_weapon(def) || classify::def_is_ranged_at_weapon(def));
+}
+inline bool cover_frag_choice(const sim::World& w, Address s, const pr::Pair& p, const Span& subjects, Choice& out,
+                              const Vec3* locked_point = nullptr) {
+    if (!config::active().modules.cover_frag || !s || !p.item || !p.ammo) return false;
+    Address a = pr::scope.actor, target = read<Address>(s, 0x18);
+    if (!sim::has_actor(target) || !(read<Byte>(target, 0x30) & 4) || !(read<unsigned>(target, 0xDB4) & 0x100) ||
+        !tag_equals(target + 0xDE8, "human") || in_backoff(w, a, target))
+        return false;
+    // Skip downed / incapacitated enemy soldiers.
+    const Address agg = read<Address>(target, 0x578);
+    const Address vit = agg ? read<Address>(agg, 0x18) : 0;
+    if (vit && (read<unsigned>(vit, 0x174) & 3)) return false;
+    Vec3 self = read<Vec3>(a, 0x74), observed = read<Vec3>(s, 0x28);
+    if (!pr::finite(self) || !pr::finite(observed)) return false;
+    float radius = effect_radius(w, p.ammo, Payload::frag);
+    if (!(radius > 0.f) || !(p.max_range > radius + 2.5f * w.length)) return false;
+    // Count live visible hostile humans clustered within 4.5 m of target and compute cluster centroid.
+    unsigned cluster = 1;
+    Vec3 sum = observed;
+    if (!locked_point) {
+        const float cluster_r = 4.5f * w.length;
+        for (Address it = subjects.first; it != subjects.end; it += 8) {
+            const Address other_s = read<Address>(it);
+            if (!other_s || other_s == s || !pr::hostile_observation(other_s) || read<Byte>(other_s, 0x6C)) continue;
+            const Address other = read<Address>(other_s, 0x18);
+            if (!sim::has_actor(other) || other == target || !(read<Byte>(other, 0x30) & 4) ||
+                !(read<unsigned>(other, 0xDB4) & 0x100) || !tag_equals(other + 0xDE8, "human"))
+                continue;
+            const Vec3 pos = read<Vec3>(other_s, 0x28);
+            if (pr::finite(pos) && pr::distance(pos, observed) <= cluster_r) {
+                sum.x += pos.x;
+                sum.y += pos.y;
+                sum.z += pos.z;
+                ++cluster;
+            }
+        }
+    }
+    const Vec3 aim_pt = locked_point ? *locked_point : Vec3{sum.x / cluster, sum.y / cluster, sum.z / cluster};
+    if (locked_point && pr::distance(*locked_point, observed) > 4.0f * w.length) return false;
+    const float d = pr::distance(self, aim_pt);
+    const float dist_m = d / w.length;
+    const float min_safe_m = radius / w.length + 1.5f;
+    const float max_throw_m = (p.max_range / w.length) - 1.0f;
+    if (!(dist_m >= min_safe_m && dist_m <= max_throw_m)) return false;
+    if (!locked_point) {
+        Vec3 vel{};
+        native<Vec3* (*)(Address, Vec3*)>(0x73A2A0)(target, &vel);
+        const float speed_mps = pr::finite(vel) ? (std::sqrt(vel.x * vel.x + vel.y * vel.y) * 1000.f / w.length) : 99.f;
+        const Address cov = read<Address>(target, 0xDC0);
+        const bool target_covered = cov && read<int>(cov, 0x24) != 0;
+        const bool hv = target_covered && human_high_value(target);
+        bool blocked = false;
+        if (cluster < 2 && target_covered && !hv) {
+            const Vec3 from = pr::raised_point(self, a, pr::RayPoint::muzzle, w.length);
+            const Vec3 to = pr::raised_point(observed, target, pr::RayPoint::target, w.length);
+            const float ray_d = pr::distance(from, to);
+            if (pr::finite(from) && pr::finite(to) && ray_d > 0.f)
+                blocked = !pr::visit_segment(pr::Ray{0, target, 0, 0, from, to, false}, [&](const pr::HitVec& hits) {
+                    return clear_gunner_ray(hits, 0, target, ray_d);
+                });
+        }
+        if (!qualifies_cover_frag(cluster, target_covered, hv, blocked, speed_mps, dist_m, min_safe_m, max_throw_m))
+            return false;
+        if (!available(w, target, a) || frag_zone_claimed(w, aim_pt, a)) return false;
+    }
+    using Reserved = Byte (*)(Address, Address, const Vec3*, Address);
+    if (!locked_point && native<Reserved>(0x89E880)(base + 0x15B1D50, a, &aim_pt, p.ammo)) return false;
+    if (!clear_area(w, a, aim_pt, radius, Payload::frag)) return false;
+    Aim aim{target, 0, aim_pt, true, false, false};
+    out = {p.item, p.ammo, target, s,       aim, Payload::frag, Vehicle::none,
+           true,   p.held, true,   cluster, d,   radius,        p.max_range};
     return true;
 }
 inline bool move_free_rush_eligible(Address brain) {
@@ -721,6 +827,8 @@ inline bool better(const Choice& a, const Choice& b) {
     } else {
         const int ra = vehicle_rank(a.type), rb = vehicle_rank(b.type);
         if (ra != rb) return ra > rb;
+        if (a.cover_frag && b.cover_frag && a.cluster_count != b.cluster_count)
+            return a.cluster_count > b.cluster_count;
     }
     return a.distance < b.distance;
 }
@@ -910,9 +1018,14 @@ inline void poll(Address a, unsigned id) {
             Address t = read<Address>(s, 0x18);
             if (!t || !sim::has_actor(t)) continue;
             Vehicle type = vehicle(t);
-            if (type == Vehicle::none || !pr::eligible_subject(brain, s)) continue;
+            if (!pr::eligible_subject(brain, s)) continue;
             Choice c{};
-            if (choice(w, s, pair, kind, type, c, allow_rush_equip) && better(c, best)) best = c;
+            if (type != Vehicle::none) {
+                if (choice(w, s, pair, kind, type, c, allow_rush_equip) && better(c, best)) best = c;
+            } else if (!rush_preempt && kind == Payload::frag && cover_frag_choice(w, s, pair, list, c) &&
+                       better(c, best)) {
+                best = c;
+            }
         }
     };
     consider(hand);
@@ -928,7 +1041,7 @@ inline void poll(Address a, unsigned id) {
     Claim* claim = available(w, best.target, a, best.in_range);
     if (!claim) return;
     if (best.held && !best.in_range) {
-        reserve(*claim, w, best.target, a, false, true);
+        reserve(*claim, w, best.target, a, false, true, best.aim.point, best.cover_frag);
         return;
     }
     Shot* slot = nullptr;
@@ -942,7 +1055,7 @@ inline void poll(Address a, unsigned id) {
         if (chassis && (stance == 1 || stance == 3)) {
             using SetType = void (*)(Address, int, Byte);
             read<SetType>(read<Address>(chassis), 0x170)(chassis, 2, 0);
-            reserve(*claim, w, best.target, a, false, false);
+            reserve(*claim, w, best.target, a, false, false, best.aim.point, best.cover_frag);
             return;
         }
         Address place = pr::selected_place(a);
@@ -963,7 +1076,7 @@ inline void poll(Address a, unsigned id) {
         return;
     }
     const bool still_approaching = !best.held && !best.in_range;
-    reserve(*claim, w, best.target, a, false, still_approaching);
+    reserve(*claim, w, best.target, a, false, still_approaching, best.aim.point, best.cover_frag);
     if (best.held) clear_rush(a);
     if (slot) remember(*slot, w, a, best, fresh, shooter);
     native<void (*)(Address, Address)>(0x91DB30)(brain, fresh);
@@ -1008,9 +1121,15 @@ inline Byte live_choice(const sim::World& w, Shot& shot, Address weapon, Choice&
     if (kind == Payload::none) return 3;
     float range = read<float>(read<Address>(shot.definition, 0x7D0), 0x10);
     pr::Pair pair{0, shot.definition, 0, range, true, 0, item};
-    if (!std::isfinite(range) || !choice(w, subject, pair, kind, vehicle(shot.target), c) || !c.in_range ||
-        c.aim.entity != shot.aim_entity)
-        return 5;
+    const Vehicle vtype = vehicle(shot.target);
+    if (!std::isfinite(range)) return 5;
+    if (vtype == Vehicle::none) {
+        if (kind != Payload::frag || !shot.bound.station_point) return 5;
+        const auto subjects = pr::subjects(a);
+        if (!subjects.valid(8) || !cover_frag_choice(w, subject, pair, subjects, c, &shot.bound.point)) return 5;
+        return 0;
+    }
+    if (!choice(w, subject, pair, kind, vtype, c) || !c.in_range || c.aim.entity != shot.aim_entity) return 5;
     return 0;
 }
 inline bool capture_native(Address order, Address brain, Address weapon, const sim::World& w) {
@@ -1209,6 +1328,16 @@ inline bool contact_allowed(Launch& l, const sim::Vec3& origin, const sim::Vec3&
     if (!std::isfinite(hull) || hull < 0.f) hull = 1.5f * scale;
 
     if (c.kind == Payload::frag) {
+        if (c.cover_frag) {
+            if (hit.entity == c.target && hit.volume) return true;
+            if (hit.volume && hit.entity && sim::has_actor(hit.entity) && (read<Byte>(hit.entity, 0x30) & 4) &&
+                native<int (*)(Address, Address, Byte)>(0xA65320)(l.shot.actor, hit.entity, 0) == 1 &&
+                near_point_xy_z(point, c.aim.point, 3.2f * scale, -2.5f * scale, 2.5f * scale))
+                return true;
+            // Accept ground landing or cover-wall bounce tightly inside the frag lethal zone of the cluster/defender.
+            return near_point_xy_z(point, c.aim.point, 3.2f * scale, -2.5f * scale, 2.5f * scale) ||
+                   near_point_xy_z(point, predicted, 3.2f * scale, -2.5f * scale, 2.5f * scale);
+        }
         if (frag_contact(c, hit, point, scale)) return true;
         // Accept hitting another hostile human crewman in the same open compartment/gun.
         if (hit.volume && hit.entity && hit.entity != c.target && sim::has_actor(hit.entity) &&
@@ -1384,13 +1513,14 @@ inline void release(sim::SmokeRelease original, Address shooter) {
         slot->spent = true;
         return;
     }
-    reserve(*claim, w, c.target, slot->actor, true);
+    reserve(*claim, w, c.target, slot->actor, true, false, c.aim.point, c.cover_frag);
     const Address owner = slot->actor, order = slot->order.load();
     Launch sample{*slot, shooter, weapon, c, w};
     launch = &sample;
     slot->spent = true;
     original(shooter); // the one scheduled native sample
     if (slot->order == order) slot->emitted = sample.spawned;
+    if (sample.spawned && c.cover_frag) stat_cover_frags.fetch_add(1, std::memory_order_relaxed);
     if (!sample.spawned && claim->actor == owner && claim->target == c.target && claim->start == w.now)
         claim->duration = w.duration(3.f);
     log_event(sample.spawned ? releases : vetoes, sample.spawned ? "release" : "contact-veto", owner, c.target, c.kind);
@@ -1423,5 +1553,6 @@ inline void disconnect() {
     mounts = fires = releases = vetoes = aborts = 0;
     stat_ff_vetoes = 0;
     stat_mg_small_arms_defer = 0;
+    stat_cover_frags = 0;
 }
 } // namespace goh::close_grenade

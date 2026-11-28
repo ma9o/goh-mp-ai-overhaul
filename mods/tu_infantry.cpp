@@ -180,6 +180,7 @@ Stats snapshot_stats() noexcept {
     s.smoke_veh = auto_smoke::stat_veh_smoke;
     s.smoke_inf = auto_smoke::stat_inf_smoke;
     s.smoke_med = auto_smoke::stat_med_smoke;
+    s.smoke_off = auto_smoke::stat_off_smoke;
     s.smoke_rel = auto_smoke::stat_inf_released;
     s.med_claim = auto_medic::stat_claims;
     s.med_fetch = auto_medic::stat_fetches;
@@ -191,6 +192,7 @@ Stats snapshot_stats() noexcept {
     s.tact_ord = tactical_infantry::stat_issued();
     s.overflow_cover = tactical_infantry::stat_overflow_cover.load(std::memory_order_relaxed);
     s.dismount_spread = tactical_infantry::stat_dismount_spread.load(std::memory_order_relaxed);
+    s.wedge_moves = tactical_infantry::stat_wedge_moves.load(std::memory_order_relaxed);
     s.obj_pursue = tactical_objectives::stat_pursues();
     s.obj_cap = tactical_objectives::stat_caps();
     s.fast_swaps = combat_logistics::stat_fast_swaps;

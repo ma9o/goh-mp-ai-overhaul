@@ -132,10 +132,18 @@ enum class Mode {
     bound,
     left,
     right,
+    wedge_left,
+    wedge_right,
     fallback
 };
+inline bool is_wedge(Mode m) {
+    return m == Mode::wedge_left || m == Mode::wedge_right;
+}
+inline float wedge_sign(Mode m) {
+    return m == Mode::wedge_left ? 1.f : (m == Mode::wedge_right ? -1.f : 0.f);
+}
 inline bool advancing(Mode m) {
-    return m == Mode::bound || m == Mode::left || m == Mode::right;
+    return m == Mode::bound || m == Mode::left || m == Mode::right || is_wedge(m);
 }
 inline Posture sync_squad_posture(Posture own, Mode mode, bool moving_element, bool lagging, bool no_advance,
                                   bool no_retreat) {
@@ -146,14 +154,30 @@ inline Posture sync_squad_posture(Posture own, Mode mode, bool moving_element, b
 struct Team {
     Mode mode{Mode::hold};
     unsigned phase{}, cycle{};
-    double committed{never}, phase_at{never}, arrived_at{never};
+    double committed{never}, phase_at{never}, arrived_at{never}, contact_since{never}, last_contact{never};
+    void observe_contact(double now, bool has_contact) {
+        if (has_contact) {
+            if (contact_since == never || now - last_contact > 4.0) contact_since = now;
+            last_contact = now;
+        } else if (last_contact != never && now - last_contact > 4.0) {
+            contact_since = never;
+        }
+    }
+    double contact_duration(double now) const {
+        return contact_since == never ? 0.0 : (std::max)(0.0, now - contact_since);
+    }
     void update(double now, Mode desired, float l, float r, bool arrived) {
         if (desired == Mode::left || desired == Mode::right) {
             if (mode == Mode::left) l += 6;
             if (mode == Mode::right) r += 6;
             desired = l >= r ? Mode::left : Mode::right;
+        } else if (desired == Mode::wedge_left || desired == Mode::wedge_right) {
+            if (mode == Mode::wedge_left) l += 6;
+            if (mode == Mode::wedge_right) r += 6;
+            desired = l >= r ? Mode::wedge_left : Mode::wedge_right;
         }
-        if (committed == never || (desired != mode && now - committed >= 6)) {
+        const bool abort_wedge = is_wedge(mode) && desired == Mode::fallback;
+        if (committed == never || abort_wedge || (desired != mode && now - committed >= 6)) {
             mode = desired;
             committed = phase_at = now;
             arrived_at = never;
@@ -164,6 +188,14 @@ struct Team {
             arrived_at = never;
         else if (arrived_at == never)
             arrived_at = now;
+        if (is_wedge(mode)) {
+            if (now - phase_at >= 6.5 || (arrived && now - arrived_at >= 2.5)) {
+                ++cycle;
+                phase_at = now;
+                arrived_at = never;
+            }
+            return;
+        }
         if (now - phase_at >= 7 || (arrived && now - arrived_at >= 3.5)) {
             phase ^= 1;
             if (!phase) ++cycle;
@@ -538,5 +570,86 @@ inline float peek_score(bool passable, bool open, float exposure, float spacing,
 }
 inline bool hold_anchor(unsigned modes, unsigned flags, bool covered, bool remembered) {
     return (modes & 0x3003u) == 0 && (flags & (1u << 11)) && (covered || remembered || (flags & (3u << 17)));
+}
+inline bool should_wedge(std::size_t squad_count, unsigned covered_count, unsigned open_fire_count, bool armor_near,
+                         float morale_avg, float enemy_dist_m, double contact_duration_s,
+                         bool fire_advantage_or_blocked) {
+    return squad_count >= 4 && covered_count >= 2 && open_fire_count >= 1 && !armor_near && fire_advantage_or_blocked &&
+           std::isfinite(morale_avg) && morale_avg >= 62.f && std::isfinite(enemy_dist_m) && enemy_dist_m >= 16.f &&
+           enemy_dist_m <= 50.f && contact_duration_s >= 5.0;
+}
+inline Elements wedge_elements(const Roster& roster, std::size_t count, XY center, XY threat, float flank_sign) {
+    Elements selected{};
+    count = (std::min)(count, roster.size());
+    if (count < 4 || !(std::fabs(flank_sign) > 0.f)) return selected;
+    const XY lat = left(unit(threat - center)) * flank_sign;
+    std::array<std::size_t, 64> cands{};
+    std::size_t n = 0;
+    for (std::size_t i = 0; i < count; ++i)
+        if (roster[i].role == Role::assault || roster[i].role == Role::rifle) cands[n++] = i;
+    const std::size_t pick_max = (std::min)(std::size_t{2}, count - 2);
+    std::sort(cands.begin(), cands.begin() + static_cast<std::ptrdiff_t>(n), [&](std::size_t a, std::size_t b) {
+        const bool a_assault = roster[a].role == Role::assault;
+        const bool b_assault = roster[b].role == Role::assault;
+        if (a_assault != b_assault) return a_assault;
+        const float pa = dot(roster[a].position - center, lat);
+        const float pb = dot(roster[b].position - center, lat);
+        if (std::fabs(pa - pb) > 1e-3f) return pa > pb;
+        return roster[a].id < roster[b].id;
+    });
+    for (std::size_t i = 0; i < n && i < pick_max; ++i)
+        selected[cands[i]] = true;
+    return selected;
+}
+inline float wedge_flank_angle_deg(XY self, XY center, XY threat, float flank_sign) {
+    const XY front = unit(threat - center);
+    const XY lat = left(front) * flank_sign;
+    if (!squared(front) || dot(self - center, lat) <= 0.f) return 0.f;
+    const XY from_threat = unit(self - threat);
+    const XY base_from_threat = unit(center - threat);
+    if (!squared(from_threat) || !squared(base_from_threat)) return 0.f;
+    const float cos_a = std::clamp(dot(from_threat, base_from_threat), -1.f, 1.f);
+    return std::acos(cos_a) * 57.2957795f;
+}
+inline bool wedge_in_enfilade(float flank_angle_deg, float enemy_dist_m, bool covered, bool open_sight) {
+    return covered && open_sight && flank_angle_deg >= 38.f && enemy_dist_m <= 34.f;
+}
+inline XY wedge_direction(XY self, XY center, XY threat, float flank_sign, float length) {
+    const XY front = unit(threat - center);
+    const XY lat = left(front) * flank_sign;
+    if (!squared(front)) return {};
+    const float angle = wedge_flank_angle_deg(self, center, threat, flank_sign);
+    const float dist_m = meters_between(self, threat, length);
+    if (angle < 38.f) return unit(front * 0.42f + lat * 0.91f);                // ~65 deg lateral-oblique hook
+    if (dist_m > 18.f) return unit(unit(threat - self) * 0.85f + lat * 0.52f); // curve inward to enfilade/frag range
+    return {};
+}
+inline bool wedge_cohesive(XY from, XY to, XY center, XY support, XY threat, float length) {
+    auto inside_or_closer = [&](XY anchor, float meters) {
+        const float before = squared(from - anchor), after = squared(to - anchor), limit = meters * length;
+        return after <= limit * limit || (before > limit * limit && after < before);
+    };
+    return inside_or_closer(center, 38.f) && inside_or_closer(support, 32.f) &&
+           meters_between(to, threat, length) >= 11.f;
+}
+inline float score_wedge_cover(float native_score, Sight sight, float spacing_m, float dist_m, float angle_before,
+                               float angle_after, float enemy_dist_before, float enemy_dist_after, float progress_m,
+                               bool is_screened) {
+    if (!is_screened || !std::isfinite(native_score) || !std::isfinite(dist_m) || !std::isfinite(progress_m) ||
+        !(spacing_m >= 2.5f))
+        return -std::numeric_limits<float>::infinity();
+    if (!(dist_m >= 4.5f && dist_m <= 21.f) || !(enemy_dist_after >= 11.f))
+        return -std::numeric_limits<float>::infinity();
+    // Beyond 45 m, require actual oblique forward closing instead of shuffling sideways along the back wall.
+    if (enemy_dist_before > 45.f && !(enemy_dist_after <= enemy_dist_before - 3.f))
+        return -std::numeric_limits<float>::infinity();
+    const bool angle_gain = angle_after >= angle_before + 2.5f;
+    const bool oblique_advance = progress_m >= 4.f && angle_after >= angle_before - 2.f;
+    const bool enfilade_close = angle_after >= 38.f && enemy_dist_after <= 34.f;
+    if (!angle_gain && !oblique_advance && !enfilade_close) return -std::numeric_limits<float>::infinity();
+    const float closing = enemy_dist_before > 26.f ? std::clamp(enemy_dist_before - enemy_dist_after, 0.f, 16.f) : 0.f;
+    return native_score + 14.f + (sight == Sight::open ? 12.f : 0.f) + 0.6f * std::clamp(progress_m, 0.f, 18.f) +
+           0.35f * closing + 0.45f * std::clamp(angle_after - angle_before, -5.f, 35.f) +
+           (angle_after >= 38.f ? 10.f : 0.f) - crowding_penalty(spacing_m) - dist_m * 0.2f;
 }
 } // namespace goh::tactical_infantry::policy

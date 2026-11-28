@@ -25,7 +25,7 @@ using Address = runtime::Address;
 static_assert(sizeof(Address) == 8, "Target prioritization requires Windows x64");
 inline constexpr const char* executable_sha256 = runtime::kBuild26734796Sha256;
 
-inline std::atomic<unsigned> stat_memory_holds{};
+inline std::atomic<unsigned> stat_memory_holds{}, stat_role_splits{};
 
 namespace detail {
 
@@ -732,7 +732,7 @@ inline float incumbent_bonus(Address brain, Address s, Address w, Address target
 struct Candidate {
     Address subject{}, place{};
     Vec3 origin{}, aim_point{};
-    float score{-1}, class_bonus{};
+    float score{-1}, class_bonus{}, role_bonus{};
     bool has_origin{}, grenade{}, armored{}, high_threat{}, soft_pass{};
     Sight sight{Sight::unknown};
     std::size_t ordinal{};
@@ -928,6 +928,39 @@ inline float vehicle_class_bonus(bool armored, bool cannon, bool light_vehicle, 
     if (light_vehicle) return .12f;
     return 0.f;
 }
+inline float human_role_bonus(bool shooter_is_mg, unsigned enemy_cluster_count, bool enemy_is_mg, bool enemy_is_at,
+                              bool enemy_is_medic) noexcept {
+    if (shooter_is_mg) {
+        const float cluster = enemy_cluster_count >= 3 ? .12f : (enemy_cluster_count == 2 ? .07f : 0.f);
+        return cluster + (enemy_is_mg ? .05f : 0.f);
+    }
+    float specialist = 0.f;
+    if (enemy_is_mg) specialist = (std::max)(specialist, .11f);
+    if (enemy_is_at) specialist = (std::max)(specialist, .10f);
+    if (enemy_is_medic) specialist = (std::max)(specialist, .07f);
+    return specialist;
+}
+inline unsigned hostile_human_cluster_near(Address actor, Address self_sub, Vec3 pos, float radius) {
+    unsigned count = 1;
+    const auto list = subjects(actor);
+    if (!list.valid(8)) return count;
+    for (Address p = list.first; p != list.end; p += 8) {
+        const Address s = read<Address>(p);
+        if (!s || s == self_sub || !hostile_observation(s) || read<Byte>(s, 0x6C)) continue;
+        const Address e = read<Address>(s, 0x18);
+        if (!auto_smoke::has_actor(e) || !(read<Byte>(e, 0x30) & 4) || !(read<unsigned>(e, 0xDB4) & 0x100) ||
+            !tag_equals(e + 0xDE8, "human"))
+            continue;
+        const Vec3 other = read<Vec3>(s, 0x28);
+        if (finite(other) && distance(pos, other) <= radius) ++count;
+    }
+    return count;
+}
+inline bool is_human_medic(Address actor) {
+    const Address brain = actor ? read<Address>(actor, 0xDC8) : 0;
+    return ai_support::tag(ai_support::span(actor, 0x4E8), "medic") ||
+           (base && brain && auto_smoke::is_medic_human(base, brain));
+}
 inline bool anti_armour(const Pair& pair) {
     return has_tag(pair.ammo, "ptr") || has_tag(pair.ammo, "rocketlauncher") ||
            has_tag(pair.ammo, "rifle_grenade_at") || has_tag(pair.ammo, "at") || has_tag(pair.ammo, "ic") ||
@@ -986,6 +1019,13 @@ inline Candidate evaluate(Address brain, Address subject, const Loadout& kit, Ad
             vehicle_class_bonus(armored_enemy, !armored_enemy && cannon_class(enemy),
                                 !armored_enemy && light_vehicle_class(enemy), rating.defanged, actor_distance / scale);
     }
+    bool human_enemy_info_loaded = false;
+    bool enemy_is_mg = false, enemy_is_at = false, enemy_is_medic = false;
+    unsigned enemy_cluster = 1;
+    bool cluster_loaded = false;
+    const bool human_enemy = human && config::active().modules.role_target_split && auto_smoke::has_actor(enemy) &&
+                             (read<Byte>(enemy, 0x30) & 4) && (read<unsigned>(enemy, 0xDB4) & 0x100) &&
+                             tag_equals(enemy + 0xDE8, "human");
     int best_priority = -1;
     for (const auto& p : kit.pairs) {
         if (human && p.item && grenade_priority && grenade_priority(brain, subject, p)) {
@@ -1007,12 +1047,38 @@ inline Candidate evaluate(Address brain, Address subject, const Loadout& kit, Ad
         Vec3 forward = bone ? read<Vec3>(bone, 0xA8) : read<Vec3>(scope.actor, 0x50);
         const float prox = 1.f / (1.f + d / prox_scale);
         float score = .40f * danger + .35f * prox + .125f * (1 + alignment(forward, delta));
+        float rbonus = 0.f;
+        if (human_enemy) {
+            if (!human_enemy_info_loaded) {
+                human_enemy_info_loaded = true;
+                const Address ehand = hand_item(enemy);
+                const Address edef = ehand ? read<Address>(ehand, 0x40) : 0;
+                enemy_is_mg = edef && classify::def_is_heavy_support_weapon(edef);
+                enemy_is_at = edef && classify::def_is_ranged_at_weapon(edef);
+                enemy_is_medic = is_human_medic(enemy);
+            }
+            Address wdef = place ? read<Address>(place, 0x98) : 0;
+            if (!wdef && human) {
+                const Address shand = hand_item(scope.actor);
+                wdef = shand ? read<Address>(shand, 0x40) : 0;
+            }
+            const bool shooter_mg = wdef && classify::def_is_heavy_support_weapon(wdef);
+            if (shooter_mg && !cluster_loaded) {
+                cluster_loaded = true;
+                enemy_cluster = hostile_human_cluster_near(scope.actor, subject, feet, 5.f * scale);
+            }
+            rbonus =
+                human_role_bonus(shooter_mg, shooter_mg ? enemy_cluster : 1u, enemy_is_mg, enemy_is_at, enemy_is_medic);
+        }
         score = (std::max)(0.f, score + rating.discipline);
         score += incumbent_bonus(brain, subject, place, enemy);
         if (subject == preferred) score += .12f;
-        if (score > c.score || (score == c.score && priority > best_priority)) {
+        const float ranked = score + rbonus;
+        const float prev_ranked = c.score >= 0.f ? (c.score + c.role_bonus) : c.score;
+        if (ranked > prev_ranked || (ranked == prev_ranked && priority > best_priority)) {
             best_priority = priority;
             c.score = score;
+            c.role_bonus = rbonus;
             c.origin = origin;
             c.has_origin = finite(origin);
             c.place = place;
@@ -1062,7 +1128,7 @@ inline void rank_candidates(Plan& result) {
         if (c.score >= 0 && !c.grenade) {
             const bool impenetrable = c.armor_complete && c.armor.seen && !c.armor.clean && c.armor.ratio < .85f;
             const float bonus = impenetrable ? 0.f : c.class_bonus;
-            c.score = (std::max)(0.f, c.score + bonus +
+            c.score = (std::max)(0.f, c.score + bonus + c.role_bonus +
                                           penetration_at::policy::killability(c.armor, c.armor_complete, alternative));
         }
     }
@@ -1190,11 +1256,15 @@ inline void log_promotion(const Plan& result, Address brain, Address previous, c
 }
 inline Address choose_subject(const Plan& result, Address brain, Address stock, const char* stage) {
     if (!result.should_rewrite) return stock;
+    if (result.order.front().subject != stock && result.order.front().role_bonus > 0.f)
+        stat_role_splits.fetch_add(1, std::memory_order_relaxed);
     log_promotion(result, brain, stock, stage);
     return result.order.front().subject;
 }
 inline void rewrite(SubjectPtrVec& v, const Plan& result, Address brain, const char* stage) {
     if (!result.should_rewrite) return;
+    if (result.order.front().subject != *v.begin && result.order.front().role_bonus > 0.f)
+        stat_role_splits.fetch_add(1, std::memory_order_relaxed);
     log_promotion(result, brain, *v.begin, stage);
     auto out = v.begin;
     for (const auto& c : result.order)
@@ -2019,6 +2089,7 @@ inline void after_hooks_removed() noexcept {
     memory_clock = memory_scene = 0;
     assignment_memory = nullptr;
     stat_memory_holds = 0;
+    stat_role_splits = 0;
     rollback_pending = false;
     orig_rank = nullptr;
     orig_picker = nullptr;

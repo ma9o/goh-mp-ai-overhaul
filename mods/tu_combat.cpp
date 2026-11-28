@@ -167,6 +167,8 @@ Stats snapshot_stats() noexcept {
     s.hit_dirt = hit_the_dirt::stat_hit_dirt;
     s.ff_vetoes = close_grenade::stat_ff_vetoes.load(std::memory_order_relaxed);
     s.mg_small_arms_defer = close_grenade::stat_mg_small_arms_defer.load(std::memory_order_relaxed);
+    s.cover_frags = close_grenade::stat_cover_frags.load(std::memory_order_relaxed);
+    s.role_splits = target_prio::stat_role_splits.load(std::memory_order_relaxed);
     s.dodges = grenade_dodge::total_dodges();
     s.player_escapes = grenade_dodge::total_player_escapes_preserved();
     s.soft_lof = lof_detour::total_soft_overrides();
