@@ -463,7 +463,7 @@ class E2EMissionTests(unittest.TestCase):
         self.records = mission_records(self.phase)
 
     def test_single_mirrored_company_and_witness(self):
-        self.assertEqual(m.SUITES, ("full", "infantry", "armor", "close_at", "e2e"))
+        self.assertEqual(m.SUITES, ("full", "infantry", "armor", "close_at", "e2e", "cqb"))
         p, t = self.phase, self.roster
         self.assertEqual((p.name, t.duration_s, t.infantry_checkpoint_s, t.friendly_player, t.enemy_player),
                          (BATTLE_NAME, 420, 180, 2, 3))
@@ -508,6 +508,19 @@ class E2EMissionTests(unittest.TestCase):
                 self.assertIn(["control", "AI"], brains[a[2]])
                 self.assertNotIn(["Impregnability", "full"], a)
                 self.assertNotIn(["Impregnability", "full"], b)
+
+    def test_cqb_skirmish_symmetry(self):
+        (p,) = m.phases_for("cqb")
+        t = p.tactical
+        self.assertEqual((p.name, t.duration_s, t.infantry_checkpoint_s, t.friendly_player, t.enemy_player),
+                         ("cqb_infantry_skirmish", 150, 75, 2, 3))
+        self.assertEqual(t.friendly_vehicles, [])
+        self.assertEqual(t.enemy_vehicles, [])
+        text = m.generate("cqb", "fast")
+        m.validate(text)
+        self.assertIn("GOH_L1_DONE_cqb", text)
+        teams = [{r[2:] for r in p.mids if r.startswith(side)} for side in ("a_", "b_")]
+        self.assertEqual(*teams)
 
     def test_deployments_and_points_by_stage(self):
         p, t = self.phase, self.roster
@@ -1163,8 +1176,11 @@ class SweepTests(unittest.TestCase):
     def test_profile_ini_matches_native_module_list_and_tunings(self):
         native = (launch.ROOT / "mods/config_and_log.hpp").read_text()
         block = native.split("struct ModuleToggles {", 1)[1].split("\n};", 1)[0]
-        module_keys = set(re.findall(r"bool (\w+)\{true\}", block))
-        self.assertEqual(len(module_keys), 44)
+        module_defaults = {k: v == "true" for k, v in re.findall(r"bool (\w+)\{(true|false)\}", block)}
+        module_keys = set(module_defaults)
+        self.assertEqual(len(module_keys), 42)
+        self.assertTrue(module_defaults["cover_frag"])
+        self.assertTrue(module_defaults["offensive_smoke"])
         knobs = ("grenade_danger_radius_m", "medic_search_radius_m", "squad_share_radius_m",
                  "resupply_search_radius_m", "recrew_search_radius_m", "scavenge_search_radius_m",
                  "tank_facing_min_angle_deg")
@@ -1187,7 +1203,13 @@ class SweepTests(unittest.TestCase):
             self.assertEqual(int(cfg["testing"]["ai_player_mask"], 0), 0 if name == "vanilla" else 8)
             self.assertEqual(set(cfg["modules"]), module_keys)
             for key in module_keys:
-                self.assertEqual(cfg.getboolean("modules", key), name != "vanilla" and (name, key) != ("local", "recrew_weapons"))
+                if name == "vanilla":
+                    want = False
+                elif (name, key) == ("local", "recrew_weapons"):
+                    want = False
+                else:
+                    want = module_defaults[key]
+                self.assertEqual(cfg.getboolean("modules", key), want)
             if name in expected:
                 self.assertEqual(tuple(cfg.getfloat("tuning", k) for k in knobs), expected[name])
             elif name == "local":
@@ -1199,7 +1221,7 @@ class SweepTests(unittest.TestCase):
             cfg = configparser.ConfigParser()
             cfg.read_string(launch.render_profile(custom["control"]).decode())
             self.assertEqual(int(cfg["testing"]["ai_player_mask"], 0), value)
-            self.assertTrue(all(cfg.getboolean("modules", k) for k in module_keys))
+            self.assertEqual({k: cfg.getboolean("modules", k) for k in module_keys}, module_defaults)
         for bad in ("typo:no_such_radius=8", "vanilla:medic_search_radius_m=22", "../bad:medic_search_radius_m=22",
                     "bad:modules.auto_medic=2", "bad:medic_search_radius_m=nan", "bad:telemetry.enabled=false",
                     "bad:testing.ai_player_mask=4294967296", "bad:testing.ai_player_mask=-1"):

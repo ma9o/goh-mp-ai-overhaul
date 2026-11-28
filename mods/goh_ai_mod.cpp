@@ -449,10 +449,9 @@ extern "C" __declspec(dllexport) DWORD WINAPI ShutdownAndUnload(LPVOID) {
         "medBack=%u "
         "supTrip=%u supRefill=%u tankCtx=%u tankExp=%u tankDisc=%u tankRev=%u repFull=%u repTT=%u repEmit=%u "
         "repAssign=%u repChain=%u repBoard=%u repPick=%u crewFill=%u/%u/%u crewInternal=%u crewNonTank=%u tankFace=%u "
-        "faceRetarget=%u faceTimeout=%u tactOrd=%u ovfCov=%u dismSpr=%u wedgeMv=%u atVolumes=%u atAmmo=%u atHolds=%u "
+        "faceRetarget=%u faceTimeout=%u tactOrd=%u ovfCov=%u dismSpr=%u atVolumes=%u atAmmo=%u atHolds=%u "
         "settleH=%u memH=%u objPursue=%u objCap=%u healRest=%u burnEsc=%u kitSave=%u winBrk=%u holdUp=%u lullRel=%u "
-        "brdFix=%u eligFix=%u allyVeto=%u towSup=%u fastSwp=%u mslHold=%u ffVeto=%u mgDefer=%u covFrag=%u roleSpl=%u "
-        "safeDr=%u "
+        "brdFix=%u eligFix=%u allyVeto=%u towSup=%u fastSwp=%u mslHold=%u ffVeto=%u mgDefer=%u covFrag=%u safeDr=%u "
         "trUnld=%u "
         "sqAmmo=%u sqBand=%u scav=%u mvNudge=%u mvRes=%u mvAbt=%u cvYld=%u cvPass=%u cvRes=%u "
         "advUnfrz=%u atkPrst=%u atkNoMel=%u trapHide=%u hitDirt=%u crshEsc=%u hazPrio=%u "
@@ -462,13 +461,13 @@ extern "C" __declspec(dllexport) DWORD WINAPI ShutdownAndUnload(LPVOID) {
         i.sup_refill, t.tank_ctx, t.tank_exp, t.tank_disc, t.tank_rev, t.rep_full, t.rep_tt, t.rep_emit, t.rep_assign,
         t.rep_chain, t.rep_board, t.rep_pick, t.crew_total, t.crew_breed, t.crew_inf, t.crew_internal, t.crew_nontank,
         t.tank_face, t.tank_face_retargets, t.tank_face_timeouts, i.tact_ord, i.overflow_cover, i.dismount_spread,
-        i.wedge_moves, c.at_volumes, c.at_ammo, c.at_holds, c.settle_holds, c.memory_holds, i.obj_pursue, i.obj_cap,
-        i.heal, i.burn, i.kit, i.window, i.stance, i.reload, i.board, i.eligible, i.allegiance_veto,
-        i.towed_gun_suppress, i.fast_swaps, i.missile_holds, c.ff_vetoes, c.mg_small_arms_defer, c.cover_frags,
-        c.role_splits, t.safe_doors, t.transport_unloads, i.squad_ammo, i.squad_bandages, i.scavenge, i.move_nudge,
-        i.move_resume, i.move_abort, t.convoy_yield, t.convoy_pass, t.convoy_resume, c.advance_unfreeze,
-        c.attack_persists, c.melee_prevented, c.trapped_hides, c.hit_dirt, i.crush_escapes, i.hazard_priorities,
-        nontank_repairs, support.recrews, support.rearm, support.heavy_pickup, support.corpse_loot);
+        c.at_volumes, c.at_ammo, c.at_holds, c.settle_holds, c.memory_holds, i.obj_pursue, i.obj_cap, i.heal, i.burn,
+        i.kit, i.window, i.stance, i.reload, i.board, i.eligible, i.allegiance_veto, i.towed_gun_suppress, i.fast_swaps,
+        i.missile_holds, c.ff_vetoes, c.mg_small_arms_defer, c.cover_frags, t.safe_doors, t.transport_unloads,
+        i.squad_ammo, i.squad_bandages, i.scavenge, i.move_nudge, i.move_resume, i.move_abort, t.convoy_yield,
+        t.convoy_pass, t.convoy_resume, c.advance_unfreeze, c.attack_persists, c.melee_prevented, c.trapped_hides,
+        c.hit_dirt, i.crush_escapes, i.hazard_priorities, nontank_repairs, support.recrews, support.rearm,
+        support.heavy_pickup, support.corpse_loot);
     g_Observer.close();
     goh::log::close();
     if (g_InitThread) {

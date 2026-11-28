@@ -34,6 +34,8 @@ SESSION_FILE_REL = Path("local-work/level1/session.json")
 
 # Use the same accepted keys and numeric ranges as the DLL's INI parser.
 _NATIVE_CONFIG = (ROOT / "mods/config_and_log.hpp").read_text(encoding="utf-8")
+_MODULE_BLOCK = _NATIVE_CONFIG.split("struct ModuleToggles {", 1)[1].split("\n};", 1)[0]
+MODULE_DEFAULTS = dict(re.findall(r"\bbool\s+(\w+)\{(true|false)\}", _MODULE_BLOCK))
 MODULE_KEYS = tuple(re.findall(r"\bm\.(\w+)\s*=\s*detail::parse_bool", _NATIVE_CONFIG))
 TUNING_RANGES = {
     key: (kind, float(low), float(high))
@@ -132,9 +134,8 @@ def sweep_profiles(selected, custom=(), sim_speed=8.0):
     for name in names:
         if name not in overrides:
             raise ValueError(f"unknown profile {name!r}")
-        enabled = "false" if name == "vanilla" else "true"
         profiles[name] = {
-            **{("modules", key): enabled for key in MODULE_KEYS},
+            **{("modules", key): "false" if name == "vanilla" else MODULE_DEFAULTS[key] for key in MODULE_KEYS},
             **E2E_TELEMETRY,
             PLAYER_MASK: "0" if name == "vanilla" else DEFAULT_MODDED_MASK,
             SIM_SPEED: speed,
@@ -757,7 +758,7 @@ def wait_witness(path, offset, mid, deadline):
 def launch_timeout(suite, config, requested):
     if requested is not None:
         return requested
-    if suite == "e2e":
+    if suite in ("e2e", "cqb"):
         try:
             speed = config.getfloat("testing", "sim_speed", fallback=0)
         except ValueError:
@@ -972,9 +973,9 @@ def _archive_and_grade(
     if errors and "tactical" in report:
         report["tactical"]["overall_score"] = None
     report["evidence_dir"] = str(evidence)
-    if suite == "e2e" and (evidence / "frames").is_dir():
+    if suite in harness.mission.BENCHMARK_SUITES and (evidence / "frames").is_dir():
         try:
-            _import_live_visual().annotate_e2e_frames(evidence)
+            _import_live_visual().annotate_e2e_frames(evidence, suite=suite)
         except Exception:  # noqa: BLE001 - visual annotation is best-effort
             pass
     return report
@@ -1045,7 +1046,7 @@ def _start_persistent_session(a, game, harness, binaries, options, ui, prefix, e
     ini = harness.safe_child(game, Path("binaries/x64/goh_ai.ini"))
     had_ini = ini.exists()
     original_ini = ini.read_bytes() if had_ini else b""
-    benchmark = a.suite == "e2e"
+    benchmark = a.suite in harness.mission.BENCHMARK_SUITES
     prior_selection = options.read_bytes() if benchmark and options_backup(options).exists() else None
     game_log = a.game_log or options.parents[2] / "log/game.log"
 
@@ -1171,7 +1172,7 @@ def _run_reused_trial(session, a, game, harness, binaries, ui, profile_ini, evid
             finally:
                 tmp_path.unlink(missing_ok=True)
         harness.atomic_write(ini, effective_ini)
-        benchmark = a.suite == "e2e"
+        benchmark = a.suite in harness.mission.BENCHMARK_SUITES
         screenshot_interval = float(getattr(a, "screenshot_interval", 2.5 if benchmark else 0.0) or 0.0)
         frames_dir = (evidence / "frames") if (benchmark and screenshot_interval > 0) else None
         drive_restart(ui, session.get("process"), log, a.suite, deadline,
@@ -1284,7 +1285,7 @@ def run(a, game, settings, harness, *, evidence=None, profile_ini=None):
     real_launch = _record_run is _REAL_RECORD_RUN
     keep_open = bool(getattr(a, "keep_open", False)) and not fresh_process and real_launch
     reuse = bool(getattr(a, "reuse", False)) and not fresh_process and real_launch
-    benchmark = a.suite == "e2e"
+    benchmark = a.suite in harness.mission.BENCHMARK_SUITES
 
     if fresh_process and real_launch:
         stale = load_session()
@@ -1297,7 +1298,11 @@ def run(a, game, settings, harness, *, evidence=None, profile_ini=None):
     if reuse:
         session = load_session()
         if session and ui("present") == 0:
-            compatible = Path(session["game_dir"]) == game and bool(session.get("heroic")) == benchmark
+            compatible = (
+                Path(session["game_dir"]) == game
+                and bool(session.get("heroic")) == benchmark
+                and session.get("suite") == a.suite
+            )
             if compatible:
                 if profile_ini is None:
                     base_ini = ini
@@ -1376,7 +1381,7 @@ def _record_run(a, harness, binaries, options, ui, prefix, env, evidence):
     errors = []
     process = None
     stopped = True
-    benchmark = a.suite == "e2e"
+    benchmark = a.suite in harness.mission.BENCHMARK_SUITES
     auto_launch = bool(cfg.get("testing", "auto_mission", fallback="").strip())
     # A functional run may have left the overlay selected. Preserve its
     # pending backup as well as the profile actually in use at trial entry.

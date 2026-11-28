@@ -13,8 +13,8 @@ else:
     import live_mission as mission
 
 
-def _e2e_camera():
-    p = mission.e2e()
+def _e2e_camera(suite="e2e"):
+    p = mission.phases_for(suite)[0]
     xs, ys = zip(*p.positions)
     cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
     span = math.hypot(max(xs) - min(xs), max(ys) - min(ys))
@@ -160,7 +160,7 @@ def _load_quartz():
     return cg, cf, iio
 
 
-def _draw_tactical_jpeg(src, dst, actors, roles, eye, look, hfov_deg):
+def _draw_tactical_jpeg(src, dst, actors, roles, eye, look, hfov_deg, flag_xy=None, flag_radius_m=None):
     cg, cf, iio = _load_quartz()
     src_b = str(src).encode("utf-8")
     dst_b = str(dst).encode("utf-8")
@@ -184,8 +184,8 @@ def _draw_tactical_jpeg(src, dst, actors, roles, eye, look, hfov_deg):
     cg.CGContextDrawImage(ctx, _CGRect(_CGPoint(0, 0), _CGSize(w, h)), img)
 
     # 1. Center flag 30m (600 GEM units) capture zone ring projected onto z=10 ground plane.
-    fx, fy = mission.E2E_FLAG
-    radius_gem = mission.E2E_FLAG_RADIUS_M * 20.0
+    fx, fy = mission.E2E_FLAG if flag_xy is None else flag_xy
+    radius_gem = (mission.E2E_FLAG_RADIUS_M if flag_radius_m is None else flag_radius_m) * 20.0
     ring_pts = []
     for k in range(48):
         ang = 2.0 * math.pi * k / 48.0
@@ -348,8 +348,8 @@ def _draw_tactical_jpeg(src, dst, actors, roles, eye, look, hfov_deg):
     return ok
 
 
-def annotate_e2e_frames(evidence_dir):
-    """Render team-colored tactical-*.jpg companion frames beside raw frame-*.jpg for an E2E trial."""
+def annotate_e2e_frames(evidence_dir, suite="e2e"):
+    """Render team-colored tactical-*.jpg companion frames beside raw frame-*.jpg for an E2E/CQB trial."""
     if sys.platform != "darwin":
         return 0
     evidence = Path(evidence_dir)
@@ -361,7 +361,7 @@ def annotate_e2e_frames(evidence_dir):
     if not raw_frames:
         return 0
 
-    phase, eye, look, hfov = _e2e_camera()
+    phase, eye, look, hfov = _e2e_camera(suite)
     roles = {mid: role for role, mid in phase.mids.items()}
     snapshots = []
     with telemetry.open(encoding="utf-8", errors="replace") as inp:
@@ -404,6 +404,10 @@ def annotate_e2e_frames(evidence_dir):
         dst = frames_dir / f.name.replace("frame-", "tactical-", 1)
         if "_sim" not in dst.name:
             dst = dst.with_name(re.sub(r"_\d+s(_end)?\.jpg$", rf"_sim{sim_s:03d}s\1.jpg", dst.name))
-        if _draw_tactical_jpeg(f, dst, state, roles, eye, look, hfov):
+        if _draw_tactical_jpeg(
+            f, dst, state, roles, eye, look, hfov,
+            flag_xy=phase.tactical.flag_xy if phase.tactical else None,
+            flag_radius_m=phase.tactical.flag_radius_m if phase.tactical else None,
+        ):
             written += 1
     return written

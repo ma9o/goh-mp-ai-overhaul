@@ -77,9 +77,7 @@ struct ModuleToggles {
     bool mg_crew_small_arms{true};
     bool movement_recovery{true};
     bool convoy_spacing{true};
-    bool flanking_wedge{true};
     bool cover_frag{true};
-    bool role_target_split{true};
     bool offensive_smoke{true};
 };
 
@@ -369,12 +367,8 @@ inline Settings parse_ini(std::string_view text) {
                             m.movement_recovery = detail::parse_bool(val, m.movement_recovery);
                         else if (key == "convoy_spacing")
                             m.convoy_spacing = detail::parse_bool(val, m.convoy_spacing);
-                        else if (key == "flanking_wedge")
-                            m.flanking_wedge = detail::parse_bool(val, m.flanking_wedge);
                         else if (key == "cover_frag")
                             m.cover_frag = detail::parse_bool(val, m.cover_frag);
-                        else if (key == "role_target_split")
-                            m.role_target_split = detail::parse_bool(val, m.role_target_split);
                         else if (key == "offensive_smoke")
                             m.offensive_smoke = detail::parse_bool(val, m.offensive_smoke);
                     } else if (section == "tuning") {

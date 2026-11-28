@@ -193,7 +193,7 @@ def merged_ini(path, settings):
 def run_settings(suite, overrides):
     defaults = (
         {**live_launch.E2E_TELEMETRY, live_launch.PLAYER_MASK: live_launch.DEFAULT_MODDED_MASK}
-        if suite == "e2e" else {("telemetry", "enabled"): "true"}
+        if suite in mission.BENCHMARK_SUITES else {("telemetry", "enabled"): "true"}
     )
     return {**defaults, **overrides}
 
@@ -206,6 +206,7 @@ def install(game, suite, speed, settings, write_ini=False):
     ini = safe_child(game, Path("binaries/x64/goh_ai.ini"))
     text = mission.generate(suite, speed)
     mission.check_stock(game, text)
+    is_bench = suite in mission.BENCHMARK_SUITES
     arena_data = mission.e2e_map_files(game) if suite == "e2e" else {}
     visual_data = (
         {
@@ -213,7 +214,7 @@ def install(game, suite, speed, settings, write_ini=False):
             mission.E2E_DIFFICULTY: mission.e2e_symmetric_difficulty(),
             **mission.birdseye_lod_files(game),
         }
-        if suite == "e2e"
+        if is_bench
         else {}
     )
     patch = merged_ini(ini, run_settings(suite, settings)) if write_ini or settings else None
@@ -259,7 +260,7 @@ def clean(game, options=None):
     base, info, target = overlay(game)
     arena_targets = arena_paths(game, base)
     visual_targets = visual_paths(game, base)
-    benchmark = options and target.is_file() and "GOH_L1_DONE_e2e" in target.read_text(encoding="utf-8")
+    benchmark = options and target.is_file() and mission.is_benchmark_text(target.read_text(encoding="utf-8"))
     if base.exists():
         target.unlink(missing_ok=True)
         for dst in (*visual_targets.values(), *arena_targets.values()):
@@ -321,7 +322,7 @@ def main(argv=None):
         if name in ("clean", "run", "stop"):
             p.add_argument("--profile", help="player profile directory or options.set")
         if name == "sweep":
-            p.add_argument("--suite", choices=("e2e",), default="e2e")
+            p.add_argument("--suite", choices=mission.BENCHMARK_SUITES, default="e2e")
             p.add_argument("--sim-speed", type=float, default=8.0,
                            help="DLL simulation multiplier (default 8; 0 for stock, or 0.25–20)")
             p.add_argument("--profiles", default="default",

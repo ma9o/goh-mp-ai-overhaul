@@ -16,3 +16,21 @@ Both movement features require `tactical_infantry`. They recheck the free order 
 `stat_overflow_cover` and `stat_dismount_spread` count submitted orders. `stat_mg_small_arms_defer` counts grenade candidate deferrals, potentially several per encounter. Hook teardown resets all three.
 
 All three requested Clang ASan+UBSan fixtures and the four-file lint gate passed. A move-bit clear can also mean cancellation. Actual arrival, crew exposure, subsequent rifle selection, frame cost and host/client command and checksum parity remain live smoke checks on this fingerprint. [Stream C fixture](../tests/test_tier12_squad_tactics_26734796.cpp) · [Runtime smoke scenarios](../compatibility/runtime-smoke.md)
+
+## Assault tactics evaluation & removed experiments
+
+Live A/B sweeps across both the mirror-symmetric flat-field close-quarters skirmish (`--suite cqb`, 26–32 m sandbag trenches + flanking lanes; 89 valid trials) and the staged 1v1 Oryol combined-arms battle (`--suite e2e`, 40–80 m park approach + armor) evaluated four infantry assault additions built on the existing hooks. Only the two general, empirically winning additions were kept; the two regressive features were removed cleanly so they do not clutter the codebase or hurt live fights.
+
+### Kept
+
+| Module | Admission and tuning | Empirical result |
+| --- | --- | --- |
+| **`cover_frag`** ([close_grenade_module.hpp](../../mods/close_grenade_module.hpp)) | Within `7 m` to `(max_range - 0.5 m)`, ranks anti-vehicle throws strictly higher, checks friendly blast clearance, deconflicts one thrower per target zone, lifts aim `+0.35 m` to clear sandbag lips, and grants a `2.5 s` smoke-occlusion grace once a throw order is already issued so friendly smoke blooming mid-throw does not abort an aimed toss. | Strongest single infantry addition across both ranges: **9W–1L (90.0%), mean 85.36** alone on `--suite cqb` (vs **65.97** baseline), and lifted Oryol Stage 1 infantry from **56.32** to **64.27**. |
+| **`offensive_smoke`** ([auto_smoke_module.hpp](../../mods/auto_smoke_module.hpp)) | Move-at-Will healthy non-medic riflemen with `>= 2` pure smoke grenades in squad reserve screen **actively firing** enemy MGs/field guns (`35–105 m`) or firing covered infantry clusters (`>= 2` at `35–50 m`, `>= 3` at `50–105 m`), with a `3.0 s` per-squad in-flight dedupe guard against immediate defensive double-throws. The `35 m + firing` gate aligns with GoH weapon envelopes (frags `<= 22 m`, SMGs `<= 35 m`, MGs/guns `35–105 m`) and stops squads from halting in the open to smoke unfiring contacts at spawn. | Restored `--suite cqb` (`cover_frag` + `offensive_smoke`) from **66.92** (with a `30 m` unfiring gate) to **80.60 (5W–1L, 11.68× exchange)** with zero premature spawn smoke, and achieved the highest Oryol Stage 1 infantry score (**65.81**, **+25.0 pp** survival, **+3.8** flag delta, **4W–0L**). |
+
+### Evaluated and removed
+
+| Removed experiment | Empirical failure | Root cause |
+| --- | --- | --- |
+| **`flanking_wedge`** *(removed from `tactical_infantry`)* | **7W–13L (35.0%), mean 38.20** across 20 `--suite cqb` trials (`0` completed wedge hops; **24.97** when combined with all 4 toggles vs **65.97** baseline). | First exposed a posture bug (`sync_squad_posture` set `advance`, walking flankers into open fire during `fire_until` dwell). Even after fixing posture to `hold` and adding uncovered cover fallthrough, committing `team->mode` to a dedicated 6 s wedge state starved `tactical_infantry`'s existing `Mode::left/right/bound` cover-to-cover advancement—which already fans cleanly into angled flank sandbags and midfield cover without locking the squad. |
+| **`role_target_split`** *(removed from `target_prioritization`)* | **1W–3L (25.0%), mean 41.56** isolated on `--suite cqb` (**−24.4 pts** vs baseline), dragged `cover_frag + offensive_smoke` down by **−15.7 pts** (**62.87** vs **78.54**), and dipped Oryol Stage 1 infantry (**55.22** vs **56.53**). | Static additive bonuses (`+0.07` to `+0.12`) for enemy MGs, AT carriers, medics, and infantry clusters overrode live threat, proximity, and weapon-alignment scoring—pulling close-quarters rifles/SMGs off immediate lethal targets right in front of them and inducing frequent target switches. |

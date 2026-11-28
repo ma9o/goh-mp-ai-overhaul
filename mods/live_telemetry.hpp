@@ -243,7 +243,6 @@ inline std::string number(double v) {
     F(ff_vetoes)           \
     F(mg_small_arms_defer) \
     F(cover_frags)         \
-    F(role_splits)         \
     F(advance_unfreeze)    \
     F(attack_persists)     \
     F(melee_prevented)     \
@@ -265,7 +264,6 @@ inline std::string number(double v) {
     F(tact_ord)              \
     F(overflow_cover)        \
     F(dismount_spread)       \
-    F(wedge_moves)           \
     F(obj_pursue)            \
     F(obj_cap)               \
     F(fast_swaps)            \

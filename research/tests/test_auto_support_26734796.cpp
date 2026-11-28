@@ -530,19 +530,21 @@ void hook_rollback() {
 }
 void offensive_smoke_policy() {
     using namespace goh::auto_smoke;
-    // Requires Move-at-Will, non-medic, non-heavy gunner, and >=2 pure smokes in reserve.
-    assert(!qualifies_offensive_smoke(false, false, false, 2, true, true, 3, 25.f));
-    assert(!qualifies_offensive_smoke(true, true, false, 2, true, true, 3, 25.f));
-    assert(!qualifies_offensive_smoke(true, false, true, 2, true, true, 3, 25.f));
-    assert(!qualifies_offensive_smoke(true, false, false, 1, true, true, 3, 25.f));
-    // Range gates: <16 m or >105 m rejected.
-    assert(!qualifies_offensive_smoke(true, false, false, 2, true, true, 3, 12.f));
+    // Requires Move-at-Will, non-medic, non-heavy gunner, >=2 pure smokes in reserve, and an actively firing threat.
+    assert(!qualifies_offensive_smoke(false, false, false, 2, true, true, 3, 40.f));
+    assert(!qualifies_offensive_smoke(true, true, false, 2, true, true, 3, 40.f));
+    assert(!qualifies_offensive_smoke(true, false, true, 2, true, true, 3, 40.f));
+    assert(!qualifies_offensive_smoke(true, false, false, 1, true, true, 3, 40.f));
+    assert(!qualifies_offensive_smoke(true, false, false, 2, true, false, 3, 40.f));
+    // Range gates: <35 m (leaves close fire & cover_frag sightlines open) or >105 m rejected.
+    assert(!qualifies_offensive_smoke(true, false, false, 2, true, true, 3, 24.f));
+    assert(!qualifies_offensive_smoke(true, false, false, 2, true, true, 3, 34.f));
     assert(!qualifies_offensive_smoke(true, false, false, 2, true, true, 3, 110.f));
-    // Close strongpoint blinding (<=36 m): blinds enemy MG/gun or >=2 covered cluster even before they fire.
-    assert(qualifies_offensive_smoke(true, false, false, 2, true, false, 1, 28.f));
-    assert(qualifies_offensive_smoke(true, false, false, 2, false, false, 2, 28.f));
-    assert(!qualifies_offensive_smoke(true, false, false, 2, false, false, 1, 28.f));
-    // Mid-long range (36..90 m): requires an actively firing enemy MG/gun or firing >=3 covered cluster.
+    // Medium strongpoint blinding (35..50 m): blinds actively firing enemy MG/gun or >=2 covered cluster.
+    assert(qualifies_offensive_smoke(true, false, false, 2, true, true, 1, 40.f));
+    assert(qualifies_offensive_smoke(true, false, false, 2, false, true, 2, 40.f));
+    assert(!qualifies_offensive_smoke(true, false, false, 2, false, true, 1, 40.f));
+    // Long approach range (50..105 m): requires an actively firing enemy MG/gun or firing >=3 covered cluster.
     assert(!qualifies_offensive_smoke(true, false, false, 2, true, false, 1, 75.f));
     assert(qualifies_offensive_smoke(true, false, false, 2, true, true, 1, 75.f));
     assert(!qualifies_offensive_smoke(true, false, false, 2, false, true, 2, 75.f));

@@ -347,7 +347,7 @@ def grade(lines, ai_log, game_log=None, suite="full"):
     expected = [f"{edge}_{p.name}" for p in phases for edge in ("BEGIN", "END")] + [
         "DONE_" + suite
     ]
-    if game_log is not None or suite == "e2e":
+    if game_log is not None or suite in mission.BENCHMARK_SUITES:
         markers = re.findall(r"\bGOH_L1_((?:BEGIN|END|DONE)_\w+)\b", game_log or "")
         check(
             "run",
@@ -355,7 +355,7 @@ def grade(lines, ai_log, game_log=None, suite="full"):
             markers[-len(expected):] == expected,
             f"{len(markers)} markers, expecting {len(expected)} in order",
         )
-    if suite == "e2e" and "Start mission " in (game_log or ""):
+    if suite in mission.BENCHMARK_SUITES and "Start mission " in (game_log or ""):
         # A launched trial always has this line. Standalone marker extracts
         # can still be used to score a synthetic observation stream.
         starts = re.findall(r"\bStart mission single/00-bootcamp/02_vehicle-control:0\b([^\r\n]*)", game_log)
@@ -512,7 +512,7 @@ def grade(lines, ai_log, game_log=None, suite="full"):
                 False,
                 f"{k}={delta[k]} (limit {limits[k]})",
             )
-    if suite != "e2e":
+    if suite not in mission.BENCHMARK_SUITES:
         vetoes = sum(d["ff_vetoes"] for d in phase_counts.values())
         observations.append(
             {
@@ -599,7 +599,8 @@ def battle_table(tactical, passed):
         classes = []
         for key in ("infantry", "vehicles", "support"):
             units = side[key]
-            classes.append(f"{units['alive']}/{units['total']} {units['remaining_hp_pct']:.1f}%")
+            hp_str = f"{units['remaining_hp_pct']:.1f}%" if units["remaining_hp_pct"] is not None else "—"
+            classes.append(f"{units['alive']}/{units['total']} {hp_str}")
         value = side["force_value"]
         rows.append((f"{label} (P{side['player']})", *classes, f"{value['alive_pts']:g}",
                      f"{value['hp_weighted_pts']:.1f}",

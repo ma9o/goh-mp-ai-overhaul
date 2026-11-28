@@ -302,10 +302,12 @@ inline bool holding_heavy_weapon(Address base, Address actor) noexcept {
 inline bool qualifies_offensive_smoke(bool move_at_will, bool is_medic, bool heavy_gunner, unsigned squad_smoke_total,
                                       bool enemy_mg_or_gun, bool enemy_firing, unsigned covered_cluster,
                                       float dist_m) noexcept {
-    if (!move_at_will || is_medic || heavy_gunner || squad_smoke_total < 2u) return false;
-    if (!std::isfinite(dist_m) || dist_m < 16.f || dist_m > 105.f) return false;
-    if (dist_m <= 36.f) return enemy_mg_or_gun || covered_cluster >= 2u;
-    return (enemy_mg_or_gun && enemy_firing) || (covered_cluster >= 3u && enemy_firing);
+    if (!move_at_will || is_medic || heavy_gunner || squad_smoke_total < 2u || !enemy_firing) return false;
+    // Screen actively firing strongpoints beyond close-assault / cover_frag range (35-105 m); defensive smoke still
+    // handles close emergencies at any range.
+    if (!std::isfinite(dist_m) || dist_m < 35.f || dist_m > 105.f) return false;
+    if (dist_m <= 50.f) return enemy_mg_or_gun || covered_cluster >= 2u;
+    return enemy_mg_or_gun || covered_cluster >= 3u;
 }
 
 namespace vehicle {
@@ -1087,7 +1089,7 @@ inline Threat offensive_threat_for_observer(const World& w, Address observer, Ve
         const float d2 = distance2(origin, pos);
         if (!finite(pos) || !std::isfinite(d2) || d2 <= 0.f) continue;
         const float dist_m = std::sqrt(d2) / w.length;
-        if (dist_m < 16.f || dist_m > 105.f) continue;
+        if (dist_m < 35.f || dist_m > 105.f) continue;
         const bool firing = ((relation & 0x180u) != 0) && recent(w, read<std::uint32_t>(sub, 0x68), 3.f);
         const bool human_enemy = (read<std::uint8_t>(enemy, 0x30) & 4) != 0;
         const auto weapon = read<Address>(sub, 0x40);
@@ -1112,8 +1114,8 @@ inline Threat offensive_threat_for_observer(const World& w, Address observer, Ve
             const bool covered = cov && read<int>(cov, 0x24) != 0;
             humans[human_count++] = {pos, covered, firing};
         }
-        if ((is_mg || is_gun) && (dist_m <= 36.f || firing)) {
-            const int rank = (is_gun ? 12 : 10) + (firing ? 4 : 0) + (dist_m <= 36.f ? 2 : 0);
+        if ((is_mg || is_gun) && firing) {
+            const int rank = (is_gun ? 12 : 10) + 4 + (dist_m <= 50.f ? 2 : 0);
             if (rank > best.rank || (rank == best.rank && d2 < best.distance)) best = {pos, rank, d2, false};
         }
     }
@@ -1480,8 +1482,9 @@ inline Reservation* available(const World& w, Address actor, Address squad, Vec3
         if (r.vehicle != for_vehicle) continue;
         if (r.carrier == actor && r.entity == read<std::uint32_t>(actor, 0xC0)) return nullptr;
         if (for_vehicle) continue;
-        // Never let another soldier's offensive smoke block emergency defensive or medical smoke.
-        if (!offensive_request && r.offensive) continue;
+        // Never let another soldier's offensive smoke block emergency defensive or medical smoke,
+        // except during the brief 3 s launch window so two squadmates do not double-throw at once.
+        if (!offensive_request && r.offensive && w.now - r.start >= w.duration(3.f)) continue;
         if (squad && r.squad == squad) return nullptr;
         if ((!squad || !r.squad) && allies(w.base, owner, r.player) &&
             distance2(r.anchor, anchor) <= 400 * w.length * w.length)

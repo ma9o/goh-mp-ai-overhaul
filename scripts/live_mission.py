@@ -21,6 +21,8 @@ E2E_LOD_FILES = (
 E2E_ENV = "goh/multi/1v1_kalinin/var1"
 E2E_FLAG = (-11, -7)
 E2E_FLAG_RADIUS_M = 30.0
+CQB_FLAG = (620, 360)
+CQB_FLAG_RADIUS_M = 22.0
 # GEM entity IDs are 16-bit; multi/1v1_oryol/map leaves 0x7877..0xFFEF free.
 E2E_EID_BASE = 0x8000
 MI = Path("resource/map") / MEMBER
@@ -28,7 +30,8 @@ SCALE = 20.0
 INF = "infantry_combined_ops"
 ARM = "armor_combined_ops"
 CLOSE = "close_at_and_authority"
-SUITES = ("full", "infantry", "armor", "close_at", "e2e")
+BENCHMARK_SUITES = ("e2e", "cqb")
+SUITES = ("full", "infantry", "armor", "close_at", "e2e", "cqb")
 SPEEDS = ("normal", "fast", "very_fast")
 GER = "mp/ger/mid/"
 RUS = "mp/rus/mid/"
@@ -586,12 +589,12 @@ class BattleSide:
     origin: tuple[float, float]
     yaw_deg: float
     medic_wp: tuple[float, float]
-    car_spawn: tuple[float, float, float]
-    car_rush_wp: tuple[float, float]
-    pz4_spawn: tuple[float, float, float]
-    pz4_wp: tuple[float, float]
-    t35_spawn: tuple[float, float, float]
-    t35_wp: tuple[float, float]
+    car_spawn: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    car_rush_wp: tuple[float, float] = (0.0, 0.0)
+    pz4_spawn: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    pz4_wp: tuple[float, float] = (0.0, 0.0)
+    t35_spawn: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    t35_wp: tuple[float, float] = (0.0, 0.0)
     wave: str = "entry"
 
     def role(self, name):
@@ -745,9 +748,70 @@ def e2e():
     return p
 
 
+def cqb():
+    """Close-quarters (26-32 m) flat mirror-symmetric infantry skirmish with sandbag trenches and flanking lanes."""
+    cx, cy = CQB_FLAG
+    p = Phase(
+        "cqb_infantry_skirmish",
+        5,
+        tactical=Tactical(
+            duration_s=150,
+            infantry_checkpoint_s=75,
+            flag_xy=CQB_FLAG,
+            flag_radius_m=CQB_FLAG_RADIUS_M,
+        ),
+        mid_base=4000,
+        eid_base=0x8000,
+        capacity=500,
+    )
+    # 100% mirror-symmetric sandbag lines (~26 m apart; yaw=90/270 faces N-S) on the completely flat,
+    # prop-free east field of 02_vehicle-control, plus angled West/East flanking cover and midfield cover.
+    cover_layout = (
+        ("sb_s1", cx - 135, cy - 260, 90), ("sb_s2", cx - 45, cy - 260, 90),
+        ("sb_s3", cx + 45, cy - 260, 90), ("sb_s4", cx + 135, cy - 260, 90),
+        ("sb_n1", cx - 135, cy + 260, 270), ("sb_n2", cx - 45, cy + 260, 270),
+        ("sb_n3", cx + 45, cy + 260, 270), ("sb_n4", cx + 135, cy + 260, 270),
+        ("sb_w1", cx - 250, cy - 170, 65), ("sb_w2", cx - 330, cy - 60, 45),
+        ("sb_w3", cx - 330, cy + 60, 315), ("sb_w4", cx - 250, cy + 170, 295),
+        ("sb_e1", cx + 250, cy - 170, 115), ("sb_e2", cx + 330, cy - 60, 135),
+        ("sb_e3", cx + 330, cy + 60, 225), ("sb_e4", cx + 250, cy + 170, 245),
+        ("sb_ms1", cx - 110, cy - 90, 90), ("sb_ms2", cx + 110, cy - 90, 90),
+        ("sb_mn1", cx - 110, cy + 90, 270), ("sb_mn2", cx + 110, cy + 90, 270),
+    )
+    for role, x, y, yaw in cover_layout:
+        p.add(role, "sandbag_structured_straight", x, y, yaw=yaw)
+
+    sides = (
+        BattleSide(p, "a", 2, origin=(cx, cy - 320), yaw_deg=90, medic_wp=(cx, cy - 380)),
+        BattleSide(p, "b", 3, origin=(cx, cy + 320), yaw_deg=-90, medic_wp=(cx, cy + 380)),
+    )
+    p.objective("center", *CQB_FLAG, player=None, radius=int(CQB_FLAG_RADIUS_M * SCALE))
+    for s in sides:
+        infantry_stage(s)
+        # Step onto each side's own front sandbag trench so the initial waypoint finishes immediately
+        # and tactical flanking/grenade AI has full autonomy across the 26-32 m clearing.
+        s.advance("squad", *s.local_xy(35, 0))
+        s.advance("medic", *s.medic_wp)
+
+    p.actions.append(delay(70))  # t=70, mid-fight push onto center flag
+    for s in sides:
+        s.advance("squad", *CQB_FLAG)
+    p.actions.append(delay(45))  # t=115, late push onto center flag
+    for s in sides:
+        s.advance("squad", *CQB_FLAG)
+    p.actions.append(delay(35))  # t=150, end of battle
+    return p
+
+
+def is_benchmark_text(text):
+    return any(f"GOH_L1_DONE_{s}" in text for s in BENCHMARK_SUITES)
+
+
 def phases_for(suite):
     if suite == "e2e":
         return [e2e()]
+    if suite == "cqb":
+        return [cqb()]
     constructors = {"infantry": infantry, "armor": armor, "close_at": close_at}
     return (
         [f() for f in constructors.values()]
@@ -883,13 +947,14 @@ def generate(suite="full", speed="normal"):
             (marker("END", p.name), command("delete", p.selector("phase")), delay(3))
         )
     # A live completion witness also works when GEM console output is unavailable.
-    is_e2e = suite == "e2e"
+    is_e2e = suite in BENCHMARK_SUITES
+    is_oryol = suite == "e2e"
     witness = Phase(
         "complete",
         90 + SUITES.index(suite),
-        eid_base=E2E_EID_BASE if is_e2e else 0x8000,
+        eid_base=E2E_EID_BASE if is_oryol else 0x8000,
     )
-    wx, wy = E2E_FLAG if is_e2e else (580, 300)
+    wx, wy = E2E_FLAG if is_oryol else (CQB_FLAG if suite == "cqb" else (580, 300))
     witness.human("done", RIFLE, wx, wy, mode="hold", fire="hold")
     actions.extend(
         (

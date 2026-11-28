@@ -192,7 +192,6 @@ Stats snapshot_stats() noexcept {
     s.tact_ord = tactical_infantry::stat_issued();
     s.overflow_cover = tactical_infantry::stat_overflow_cover.load(std::memory_order_relaxed);
     s.dismount_spread = tactical_infantry::stat_dismount_spread.load(std::memory_order_relaxed);
-    s.wedge_moves = tactical_infantry::stat_wedge_moves.load(std::memory_order_relaxed);
     s.obj_pursue = tactical_objectives::stat_pursues();
     s.obj_cap = tactical_objectives::stat_caps();
     s.fast_swaps = combat_logistics::stat_fast_swaps;

@@ -760,12 +760,13 @@ inline bool cover_frag_choice(const sim::World& w, Address s, const pr::Pair& p,
             }
         }
     }
-    const Vec3 aim_pt = locked_point ? *locked_point : Vec3{sum.x / cluster, sum.y / cluster, sum.z / cluster};
+    const Vec3 aim_pt =
+        locked_point ? *locked_point : Vec3{sum.x / cluster, sum.y / cluster, sum.z / cluster + 0.35f * w.length};
     if (locked_point && pr::distance(*locked_point, observed) > 4.0f * w.length) return false;
     const float d = pr::distance(self, aim_pt);
     const float dist_m = d / w.length;
     const float min_safe_m = radius / w.length + 1.5f;
-    const float max_throw_m = (p.max_range / w.length) - 1.0f;
+    const float max_throw_m = (p.max_range / w.length) - 0.5f;
     if (!(dist_m >= min_safe_m && dist_m <= max_throw_m)) return false;
     if (!locked_point) {
         Vec3 vel{};
@@ -882,13 +883,18 @@ inline bool priority(Address brain, Address s, const pr::Pair& p) {
     const bool allow_rush = move_free_rush_eligible(brain) && !holds_ranged_at(pr::scope.actor);
     return clock(w) && choice(w, s, p, payload(p.ammo), type, result, allow_rush);
 }
-inline Address live_subject(Address a, Address target, unsigned id) {
+inline Address live_subject(Address a, Address target, unsigned id, const sim::World* smoke_grace_w = nullptr) {
     auto list = pr::subjects(a);
     if (!list.valid(8)) return 0;
+    const Address brain = read<Address>(a, 0xDC8);
     for (Address p = list.first; p != list.end; p += 8) {
         Address s = read<Address>(p);
-        if (pr::hostile_observation(s) && read<Address>(s, 0x18) == target && read<unsigned>(target, 0xC0) == id &&
-            pr::eligible_subject(read<Address>(a, 0xDC8), s))
+        if (!s || read<Address>(s, 0x18) != target || read<unsigned>(target, 0xC0) != id || read<Byte>(s, 0x6C))
+            continue;
+        if (pr::hostile_observation(s) && pr::eligible_subject(brain, s)) return s;
+        if (smoke_grace_w && (read<unsigned>(s, 0x10) & (1u << 28)) && (read<unsigned>(s, 0x14) & 0x1Eu) == 2u &&
+            sim::has_actor(target) && (read<Byte>(target, 0x30) & 4) && (read<unsigned>(target, 0xDB4) & 0x100) &&
+            smoke_grace_w->now - read<unsigned>(s, 0x64) <= smoke_grace_w->duration(3.f))
             return s;
     }
     return 0;
@@ -1115,7 +1121,9 @@ inline Byte live_choice(const sim::World& w, Shot& shot, Address weapon, Choice&
         return 2;
     Address item = pr::hand_item(a);
     if (!held_by(item, a) || read<int>(item, 0x48) <= 0 || read<Address>(item, 0x40) != shot.definition) return 3;
-    Address subject = live_subject(a, shot.target, shot.target_id);
+    const bool frag_smoke_grace =
+        shot.kind == Payload::frag && shot.bound.station_point && w.now - shot.issued <= w.duration(2.5f);
+    Address subject = live_subject(a, shot.target, shot.target_id, frag_smoke_grace ? &w : nullptr);
     if (!subject) return 4;
     Payload kind = payload(shot.definition);
     if (kind == Payload::none) return 3;

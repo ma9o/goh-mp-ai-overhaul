@@ -37,7 +37,6 @@ struct Stats {
     std::uint32_t ff_vetoes{};
     std::uint32_t mg_small_arms_defer{};
     std::uint32_t cover_frags{};
-    std::uint32_t role_splits{};
 };
 
 constexpr unsigned kHookCount = 23; // dodge(5) + LOF(5) + targeting(7) + grenades(1) + AT(2) + orders(2) + blasts(1)
@@ -78,7 +77,6 @@ struct Stats {
     std::uint32_t tact_ord{};
     std::uint32_t overflow_cover{};
     std::uint32_t dismount_spread{};
-    std::uint32_t wedge_moves{};
     std::uint32_t obj_pursue{};
     std::uint32_t obj_cap{};
     std::uint32_t fast_swaps{}, missile_holds{}, squad_ammo{}, squad_bandages{}, scavenge{};

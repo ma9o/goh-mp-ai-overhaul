@@ -751,10 +751,9 @@ void lifecycle() {
     d::issued.store(9);
     t::stat_clump_spread.store(4);
     t::stat_march_cover.store(5);
-    t::stat_wedge_moves.store(3);
     assert(t::stat_issued() == 9);
     t::after_hooks_removed();
-    assert(t::stat_issued() == 0 && t::stat_clump_spread == 0 && t::stat_march_cover == 0 && t::stat_wedge_moves == 0);
+    assert(t::stat_issued() == 0 && t::stat_clump_spread == 0 && t::stat_march_cover == 0);
     d::soldiers[0].key = 1;
     d::squads[0].key = 2;
     d::claims.entries[0].actor = 3;
@@ -762,71 +761,6 @@ void lifecycle() {
     assert(!d::soldiers[0].key && !d::squads[0].key && !d::claims.entries[0].actor);
 }
 #endif
-void flanking_wedge_policy() {
-    // Trigger gates: >=4 squad, >=2 covered, >=1 open fire, no armor, fire advantage/blocked front, morale >=62, 16..55m, >=5s.
-    assert(p::should_wedge(6, 2, 1, false, 70.f, 40.f, 5.5, true));
-    assert(!p::should_wedge(6, 2, 1, false, 70.f, 40.f, 5.5, false)); // no fire advantage & unblocked front
-    assert(!p::should_wedge(3, 2, 1, false, 70.f, 40.f, 5.5, true));  // too small
-    assert(!p::should_wedge(6, 1, 1, false, 70.f, 40.f, 5.5, true));  // insufficient base of fire cover
-    assert(!p::should_wedge(6, 2, 1, true, 70.f, 40.f, 5.5, true));   // armor near blocks rifle wedge
-    assert(!p::should_wedge(6, 2, 1, false, 58.f, 40.f, 5.5, true));  // low morale
-    assert(!p::should_wedge(6, 2, 1, false, 70.f, 12.f, 5.5, true));  // too close
-    assert(!p::should_wedge(6, 2, 1, false, 70.f, 55.f, 5.5, true));  // too far (avoid crossing long MG killing zone)
-    assert(!p::should_wedge(6, 2, 1, false, 70.f, 40.f, 3.0, true));  // not stalled yet
-    // Tight 38 m cohesion leash keeps flankers mutually supported by base of fire.
-    assert(!p::wedge_cohesive({0, 0}, {900, 0}, {0, 0}, {0, 0}, {1600, 0}, 20.f));
-    assert(p::wedge_cohesive({0, 0}, {600, 0}, {0, 0}, {0, 0}, {1600, 0}, 20.f));
-
-    // Element selection: prefers assault/SMG furthest toward chosen flank; never picks heavy/medic.
-    p::Roster roster{};
-    roster[0] = {10, 1, p::Role::heavy, {0, 0}};      // MG
-    roster[1] = {11, 2, p::Role::heavy, {0, 200}};    // medic on left edge
-    roster[2] = {12, 3, p::Role::assault, {0, -100}}; // SMG right
-    roster[3] = {13, 4, p::Role::assault, {0, 120}};  // SMG left
-    roster[4] = {14, 5, p::Role::rifle, {0, 160}};    // rifle far left
-    roster[5] = {15, 6, p::Role::rifle, {0, -160}};   // rifle far right
-    // Threat is at +X (front = {1,0}, left = {0,1}).
-    const auto el = p::wedge_elements(roster, 6, {0, 0}, {800, 0}, 1.f);
-    assert(!el[0] && !el[1]);
-    assert(el[3] && el[2]); // Both assault/SMGs picked (2-man wedge); rifles + heavy stay base of fire.
-
-    // When only 1 SMG exists, pick the SMG + the rifleman already furthest toward the chosen flank.
-    roster[2].role = p::Role::rifle;
-    const auto el_left = p::wedge_elements(roster, 6, {0, 0}, {800, 0}, 1.f);
-    assert(el_left[3] && el_left[4] && !el_left[5] && !el_left[0] && !el_left[1]);
-
-    // Flank angle & two-phase direction: lateral-oblique hook (<38 deg), then curve inward to enfilade/frag range.
-    const float a0 = p::wedge_flank_angle_deg({0, 100}, {0, 0}, {800, 0}, 1.f);
-    assert(a0 > 5.f && a0 < 15.f);
-    assert(p::wedge_flank_angle_deg({0, -100}, {0, 0}, {800, 0}, 1.f) == 0.f); // wrong side
-    const auto d_hook = p::wedge_direction({0, 100}, {0, 0}, {800, 0}, 1.f, 20.f);
-    assert(d_hook.y > 0.85f && d_hook.x > 0.35f); // lateral-oblique hook
-    const float a_flanked = p::wedge_flank_angle_deg({600, 500}, {0, 0}, {800, 0}, 1.f);
-    assert(a_flanked >= 38.f);
-    assert(p::wedge_in_enfilade(a_flanked, 26.f, true, true));
-    assert(!p::wedge_in_enfilade(a_flanked, 26.f, false, true)); // must be covered
-    const auto d_close = p::wedge_direction({600, 700}, {0, 0}, {800, 0}, 1.f, 20.f);
-    assert(d_close.y < -0.4f); // curves inward toward threat at (800, 0)
-
-    // Cover-to-cover safety: unscreened cover, charging inside 11 m, or pure sideways back-wall shuffle (>45 m) rejected.
-    assert(!std::isfinite(p::score_wedge_cover(5.f, p::Sight::open, 6.f, 10.f, 10.f, 30.f, 40.f, 30.f, 8.f, false)));
-    assert(!std::isfinite(p::score_wedge_cover(5.f, p::Sight::open, 6.f, 10.f, 10.f, 30.f, 20.f, 9.f, 8.f, true)));
-    assert(!std::isfinite(p::score_wedge_cover(5.f, p::Sight::open, 6.f, 10.f, 10.f, 20.f, 80.f, 79.f, 8.f, true)));
-    const float s_open = p::score_wedge_cover(5.f, p::Sight::open, 6.f, 10.f, 10.f, 45.f, 40.f, 28.f, 8.f, true);
-    const float s_blk = p::score_wedge_cover(5.f, p::Sight::blocked, 6.f, 10.f, 10.f, 45.f, 40.f, 28.f, 8.f, true);
-    assert(std::isfinite(s_open) && s_open > s_blk + 10.f);
-
-    // Team state: wedge keeps phase=0 (does not flip base of fire), and immediately aborts on fallback.
-    p::Team tm{};
-    tm.observe_contact(10.0, true);
-    assert(tm.contact_duration(16.0) == 6.0);
-    tm.update(16.0, p::Mode::wedge_left, 10.f, 2.f, false);
-    assert(tm.mode == p::Mode::wedge_left && tm.phase == 0);
-    tm.update(23.0, p::Mode::wedge_left, 10.f, 2.f, true);
-    assert(tm.mode == p::Mode::wedge_left && tm.phase == 0 && tm.cycle == 1);
-    tm.update(24.0, p::Mode::fallback, 10.f, 2.f, false);
-    assert(tm.mode == p::Mode::fallback); // immediate abort despite <6s commit
-}
 int main() {
     posture();
     emergency_and_squad_posture();
@@ -834,7 +768,6 @@ int main() {
     spacing_and_movement();
     cover_and_authority();
     anti_clump_and_march_cover_policy();
-    flanking_wedge_policy();
 #if defined(_WIN32) || defined(GOH_TACTICAL_ADAPTER_FIXTURES)
     defensive_line();
     support_and_orders();
